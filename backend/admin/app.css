@@ -290,6 +290,21 @@ select:focus {
   gap: 5px;
   min-height: 120px;
   padding: 18px;
+  color: var(--ink);
+  text-align: left;
+}
+
+.metric-jump {
+  cursor: pointer;
+  transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease;
+}
+
+.metric-jump:hover,
+.metric-jump:focus-visible {
+  border-color: rgba(15, 107, 103, 0.38);
+  box-shadow: 0 20px 46px rgba(15, 70, 66, 0.13);
+  transform: translateY(-1px);
+  outline: none;
 }
 
 .metric span {

@@ -823,6 +823,27 @@ function bindEvents() {
     loadDashboard().catch((error) => toast(error.message));
   };
 
+  document.querySelectorAll('.metric-jump').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const { view, kind, status } = button.dataset;
+      try {
+        if (kind === 'bookings' && status) {
+          state.bookingStatus = status;
+          renderTabs($('#bookingTabs'), bookingStatuses, state.bookingStatus, onBookingTabChange);
+          await loadDashboard();
+        }
+        if (kind === 'feedback' && status) {
+          state.feedbackStatus = status;
+          renderTabs($('#feedbackTabs'), feedbackStatuses, state.feedbackStatus, onFeedbackTabChange);
+          await loadDashboard();
+        }
+        scrollToView(view);
+      } catch (error) {
+        toast(error.message);
+      }
+    });
+  });
+
   document.querySelectorAll('.nav-item').forEach((button) => {
     button.addEventListener('click', () => {
       scrollToView(button.dataset.view);

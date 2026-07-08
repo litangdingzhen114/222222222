@@ -67,12 +67,14 @@ async function main() {
   assert(adminHtml.includes('id="bookings"'), 'admin dashboard should expose booking anchor');
   assert(adminHtml.includes('id="feedback"'), 'admin dashboard should expose feedback anchor');
   assert(adminHtml.includes('id="audit"'), 'admin dashboard should expose audit anchor');
+  assert(adminHtml.includes('metric-jump'), 'admin dashboard metrics should act as browsing shortcuts');
   assert(adminJs.includes('/api/admin/home-content'), 'admin dashboard should manage home content');
   assert(adminJs.includes('maskContact'), 'admin dashboard should mask contact info in tables');
   assert(adminJs.includes('scrollToView'), 'admin dashboard should use hash-aware browsing');
   assert(adminJs.includes('hashchange'), 'admin dashboard should restore section browsing from URL hash');
   assert(adminJs.includes('aria-current'), 'admin navigation should expose the active section');
   assert(adminJs.includes('recent-jump'), 'admin recent activity should navigate to related sections');
+  assert(adminJs.includes('metric-jump'), 'admin metric shortcuts should be bound in JavaScript');
   assert(adminCss.includes('overflow-x: hidden'), 'admin layout should prevent page-level horizontal overflow');
   assert(adminCss.includes('scroll-margin-top'), 'admin sections should account for sticky navigation');
 

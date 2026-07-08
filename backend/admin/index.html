@@ -75,26 +75,26 @@
 
       <section id="appPanel" class="app-panel" hidden>
         <section class="metrics-grid" aria-label="关键指标">
-          <article class="metric">
+          <button class="metric metric-jump" type="button" data-view="bookings" title="查看预约管理">
             <span>今日预约</span>
             <strong id="bookingToday">0</strong>
             <small id="bookingTotal">总计 0</small>
-          </article>
-          <article class="metric">
+          </button>
+          <button class="metric metric-jump" type="button" data-view="feedback" data-kind="feedback" data-status="new" title="查看待处理反馈">
             <span>待处理反馈</span>
             <strong id="feedbackPending">0</strong>
             <small id="feedbackTotal">总计 0</small>
-          </article>
-          <article class="metric">
+          </button>
+          <button class="metric metric-jump" type="button" data-view="system" title="查看系统健康">
             <span>AI导游</span>
             <strong id="aiProvider">本地</strong>
             <small id="aiModel">兜底回复</small>
-          </article>
-          <article class="metric">
+          </button>
+          <button class="metric metric-jump" type="button" data-view="system" title="查看慢直播服务状态">
             <span>慢直播</span>
             <strong id="liveCount">0</strong>
             <small>点位在线配置</small>
-          </article>
+          </button>
         </section>
 
         <section class="content-grid">
