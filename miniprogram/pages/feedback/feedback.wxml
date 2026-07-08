@@ -1,0 +1,24 @@
+<view class="page page-pad feedback-page">
+  <view class="feedback-card card">
+    <view class="field-title">反馈类型</view>
+    <view class="type-grid">
+      <view
+        wx:for="{{types}}"
+        wx:key="*this"
+        class="type-item {{activeType === item ? 'active' : ''}}"
+        data-type="{{item}}"
+        bindtap="onTypeTap"
+      >
+        {{item}}
+      </view>
+    </view>
+
+    <view class="field-title">反馈内容</view>
+    <textarea class="feedback-textarea" placeholder="请描述您遇到的问题或建议" placeholder-class="feedback-placeholder" value="{{content}}" bindinput="onContentInput"></textarea>
+
+    <view class="field-title">联系方式</view>
+    <input class="feedback-input" placeholder="请填写手机号或微信号，方便我们联系您" placeholder-class="feedback-placeholder" value="{{contact}}" bindinput="onContactInput" />
+
+    <button class="feedback-submit" bindtap="onSubmit">提交</button>
+  </view>
+</view>

@@ -1,0 +1,86 @@
+<view class="page mine-page safe-bottom">
+  <view class="mine-hero">
+    <view class="hero-sun"></view>
+    <view class="hero-mountain"></view>
+    <view class="hero-bridge"></view>
+    <view class="hero-house one"></view>
+    <view class="hero-house two"></view>
+    <view class="mine-capsule"></view>
+  </view>
+
+  <view class="mine-content">
+    <view class="profile-card card">
+      <view class="avatar">{{user.avatarText}}</view>
+      <view class="profile-info">
+        <view class="nickname">{{user.nickname}}</view>
+        <view class="profile-sub">{{user.intro || '欢迎来到青田海口镇海林村文旅服务平台'}}</view>
+      </view>
+      <view class="edit-profile" bindtap="onEditProfile">修改个人资料</view>
+    </view>
+
+    <view class="stat-card card">
+      <view
+        wx:for="{{user.stats}}"
+        wx:key="id"
+        class="stat-item"
+        data-id="{{item.id}}"
+        data-title="{{item.label}}"
+        bindtap="onStatTap"
+      >
+        <view class="stat-value">{{item.value}}</view>
+        <view class="stat-label">{{item.label}}</view>
+      </view>
+    </view>
+
+    <view class="mine-section card">
+      <view class="mine-section-title">订单功能</view>
+      <view class="order-grid">
+        <view wx:for="{{user.orders}}" wx:key="id" class="order-item" data-id="{{item.id}}" data-title="{{item.title}}" bindtap="onOrderTap">
+          <view class="order-icon">
+            <image wx:if="{{item.iconPath}}" class="mine-icon-img" src="{{item.iconPath}}" mode="aspectFit"></image>
+            <text wx:else>{{item.icon}}</text>
+          </view>
+          <text>{{item.title}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="mine-section card">
+      <view class="mine-section-title">权益功能</view>
+      <view class="right-row">
+        <view wx:for="{{user.rights}}" wx:key="id" class="right-item" data-id="{{item.id}}" data-title="{{item.title}}" bindtap="onRightTap">
+          <view class="right-icon">
+            <image wx:if="{{item.iconPath}}" class="mine-icon-img" src="{{item.iconPath}}" mode="aspectFit"></image>
+            <text wx:else>{{item.icon}}</text>
+          </view>
+          <text>{{item.title}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="service-list card">
+      <view class="service-item" bindtap="onFeedbackTap">
+        <text>意见反馈</text>
+        <text class="service-arrow">›</text>
+      </view>
+      <view class="service-line"></view>
+      <view class="service-item" bindtap="onCooperationTap">
+        <text>招商合作</text>
+        <text class="service-arrow">›</text>
+      </view>
+    </view>
+
+    <button class="logout-btn" bindtap="onLogout">退出登录</button>
+
+    <view class="footer-info">
+      <view>海林村村民委员会</view>
+      <view>海口镇海林村文旅运营中心</view>
+      <view>ICP备案占位文本</view>
+    </view>
+  </view>
+
+  <view class="publish-btn" bindtap="onPublish">
+    <text class="plus">＋</text>
+    <text>发布</text>
+  </view>
+</view>

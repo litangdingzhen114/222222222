@@ -1,0 +1,25 @@
+<view class="page page-pad live-list-page">
+  <view class="live-head">
+    <view class="live-title">海林慢直播</view>
+    <view class="live-subtitle">用一块屏幕，看看村里的风、田和溪水</view>
+  </view>
+
+  <view class="live-list">
+    <view wx:for="{{lives}}" wx:key="id" class="live-card card" data-id="{{item.id}}" bindtap="onLiveTap">
+      <view class="live-cover {{item.imageClass}}">
+        <image wx:if="{{item.coverUrl}}" class="live-cover-img" src="{{item.coverUrl}}" mode="aspectFill"></image>
+        <view class="live-status">
+          <view class="status-dot"></view>
+          <text>直播中</text>
+        </view>
+        <view class="play-btn">▶</view>
+        <text class="live-cover-word">{{item.icon}}</text>
+      </view>
+      <view class="live-info">
+        <view class="live-name">{{item.title}}</view>
+        <view class="live-desc">{{item.desc}}</view>
+        <view class="live-viewers">{{item.viewers}} 人正在看</view>
+      </view>
+    </view>
+  </view>
+</view>

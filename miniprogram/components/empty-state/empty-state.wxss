@@ -1,0 +1,26 @@
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 260rpx;
+  color: #607F7A;
+}
+
+.empty-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 92rpx;
+  height: 92rpx;
+  margin-bottom: 18rpx;
+  border-radius: 50%;
+  background: #DCEDEA;
+  color: #0F6B67;
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.empty-text {
+  font-size: 26rpx;
+}

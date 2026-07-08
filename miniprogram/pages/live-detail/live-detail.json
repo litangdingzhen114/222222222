@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "直播看景",
+  "usingComponents": {
+    "section-title": "/components/section-title/section-title"
+  }
+}

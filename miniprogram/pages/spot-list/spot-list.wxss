@@ -1,0 +1,136 @@
+.spot-search {
+  display: flex;
+  align-items: center;
+  height: 78rpx;
+  padding: 0 24rpx;
+  border-radius: 999rpx;
+  background: #FBFFFC;
+  box-shadow: 0 10rpx 24rpx rgba(112, 76, 34, 0.08);
+}
+
+.search-icon {
+  margin-right: 12rpx;
+  color: #0F6B67;
+  font-size: 34rpx;
+  font-weight: 800;
+}
+
+.spot-search input {
+  flex: 1;
+  height: 78rpx;
+  color: #193C3A;
+  font-size: 27rpx;
+}
+
+.search-placeholder {
+  color: #CDBB9E;
+}
+
+.spot-tabs {
+  margin-top: 22rpx;
+  white-space: nowrap;
+}
+
+.spot-tab-row {
+  display: flex;
+  gap: 14rpx;
+}
+
+.spot-tab {
+  padding: 14rpx 26rpx;
+  border-radius: 999rpx;
+  background: #FBFFFC;
+  color: #607F7A;
+  font-size: 25rpx;
+  font-weight: 700;
+}
+
+.spot-tab.active {
+  background: #BFD9D3;
+  color: #0F6B67;
+}
+
+.spot-list {
+  margin-top: 24rpx;
+}
+
+.spot-card {
+  display: flex;
+  gap: 20rpx;
+  margin-bottom: 22rpx;
+  padding: 20rpx;
+}
+
+.spot-cover {
+  position: relative;
+  flex: 0 0 198rpx;
+  height: 176rpx;
+}
+
+.spot-cover::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, rgba(25, 60, 58, 0), rgba(25, 60, 58, 0.42));
+}
+
+.spot-cover-img {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.spot-cover text {
+  display: none;
+}
+
+.spot-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.spot-name {
+  color: #193C3A;
+  font-size: 31rpx;
+  font-weight: 900;
+}
+
+.spot-meta {
+  margin-top: 8rpx;
+  color: #1D7C78;
+  font-size: 22rpx;
+  font-weight: 700;
+}
+
+.spot-desc {
+  display: -webkit-box;
+  overflow: hidden;
+  margin-top: 10rpx;
+  color: #315A4E;
+  font-size: 24rpx;
+  line-height: 1.45;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.spot-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+  margin-top: 12rpx;
+}
+
+.spot-tags text {
+  padding: 6rpx 12rpx;
+  border-radius: 999rpx;
+  background: #F6E8D2;
+  color: #0F6B67;
+  font-size: 20rpx;
+}

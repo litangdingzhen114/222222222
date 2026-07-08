@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>海林村文旅后台</title>
+  <link rel="stylesheet" href="/admin/app.css">
+</head>
+<body>
+  <main class="admin-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" role="img"><path d="M4 15.5c4.2-6.7 8.7-8.9 16-8.9-2.6 1.9-4 4.7-4.6 8.3-2.2-1.6-4.2-1.8-6.1-.5-1.8 1.2-3.5 1.6-5.3 1.1Z"/><path d="M4.8 18.6c4.2-1.4 8.8-1.4 14.4 0"/></svg>
+        </span>
+        <span>海林村文旅后台</span>
+      </div>
+      <nav class="nav-list" aria-label="后台导航">
+        <button class="nav-item is-active" type="button" data-view="dashboard">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h7v6H4V5Zm9 0h7v4h-7V5ZM4 13h7v6H4v-6Zm9-2h7v8h-7v-8Z"/></svg>
+          总览
+        </button>
+        <button class="nav-item" type="button" data-view="bookings">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v3M17 3v3M4.5 8.5h15M6 5h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z"/></svg>
+          预约管理
+        </button>
+        <button class="nav-item" type="button" data-view="feedback">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v10H8l-3 3V5Z"/><path d="M8 9h8M8 12h5"/></svg>
+          反馈处理
+        </button>
+        <button class="nav-item" type="button" data-view="audit">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v16H6V4Z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>
+          操作审计
+        </button>
+        <button class="nav-item" type="button" data-view="system">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 4v6c0 4-3.3 6.8-8 8-4.7-1.2-8-4-8-8V7l8-4Z"/><path d="m8.5 12 2.3 2.3L16 9"/></svg>
+          系统健康
+        </button>
+      </nav>
+      <div class="sidebar-foot">
+        <div class="mini-label">当前服务</div>
+        <div id="serviceMode" class="service-mode">等待连接</div>
+      </div>
+    </aside>
+
+    <section class="workspace">
+      <header class="topbar">
+        <div>
+          <h1>运营总览</h1>
+          <p id="subtitle">预约、反馈、AI 导游与慢直播服务状态</p>
+        </div>
+        <div class="top-actions">
+          <button id="refreshBtn" class="icon-button" type="button" title="刷新">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.4-5.7"/><path d="M20 4v6h-6"/></svg>
+          </button>
+          <button id="logoutBtn" class="ghost-button" type="button">退出</button>
+        </div>
+      </header>
+
+      <section id="loginPanel" class="login-panel">
+        <form id="loginForm" class="login-box">
+          <h2>后台登录</h2>
+          <label for="tokenInput">管理 Token</label>
+          <div class="token-row">
+            <input id="tokenInput" type="password" autocomplete="current-password" placeholder="输入 ADMIN_TOKEN">
+            <button class="primary-button" type="submit">进入后台</button>
+          </div>
+          <p id="loginError" class="form-error" role="alert"></p>
+        </form>
+      </section>
+
+      <section id="appPanel" class="app-panel" hidden>
+        <section class="metrics-grid" aria-label="关键指标">
+          <article class="metric">
+            <span>今日预约</span>
+            <strong id="bookingToday">0</strong>
+            <small id="bookingTotal">总计 0</small>
+          </article>
+          <article class="metric">
+            <span>待处理反馈</span>
+            <strong id="feedbackPending">0</strong>
+            <small id="feedbackTotal">总计 0</small>
+          </article>
+          <article class="metric">
+            <span>AI导游</span>
+            <strong id="aiProvider">本地</strong>
+            <small id="aiModel">兜底回复</small>
+          </article>
+          <article class="metric">
+            <span>慢直播</span>
+            <strong id="liveCount">0</strong>
+            <small>点位在线配置</small>
+          </article>
+        </section>
+
+        <section class="content-grid">
+          <section class="main-column">
+            <div class="panel" data-section="bookings">
+              <div class="panel-head">
+                <div>
+                  <h2>预约管理</h2>
+                  <p>讲解、活动、团建与服务预约</p>
+                </div>
+                <div class="panel-tools">
+                  <input id="bookingSearch" class="search-input" type="search" placeholder="搜索预约">
+                  <button id="exportBookings" class="ghost-button" type="button">导出数据</button>
+                </div>
+              </div>
+              <div id="bookingTabs" class="status-tabs" aria-label="预约状态筛选"></div>
+              <div id="bookingBulkBar" class="bulk-bar" hidden>
+                <span id="bookingSelectedCount">已选择 0 条</span>
+                <select id="bookingBulkStatus" aria-label="批量设置预约状态"></select>
+                <input id="bookingBulkNote" type="text" placeholder="批量处理备注">
+                <button id="bookingBulkApply" class="primary-button" type="button">批量处理</button>
+                <button id="bookingBulkClear" class="ghost-button" type="button">取消选择</button>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th class="check-cell"><input id="bookingCheckAll" type="checkbox" aria-label="选择全部预约"></th>
+                      <th>服务</th>
+                      <th>日期</th>
+                      <th>人数</th>
+                      <th>联系方式</th>
+                      <th>状态</th>
+                      <th>操作</th>
+                    </tr>
+                  </thead>
+                  <tbody id="bookingRows"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="panel" data-section="feedback">
+              <div class="panel-head">
+                <div>
+                  <h2>反馈处理</h2>
+                  <p>游客建议、问题和运营线索</p>
+                </div>
+                <div class="panel-tools">
+                  <input id="feedbackSearch" class="search-input" type="search" placeholder="搜索反馈">
+                  <button id="exportFeedback" class="ghost-button" type="button">导出数据</button>
+                </div>
+              </div>
+              <div id="feedbackTabs" class="status-tabs" aria-label="反馈状态筛选"></div>
+              <div id="feedbackBulkBar" class="bulk-bar" hidden>
+                <span id="feedbackSelectedCount">已选择 0 条</span>
+                <select id="feedbackBulkStatus" aria-label="批量设置反馈状态"></select>
+                <input id="feedbackBulkNote" type="text" placeholder="批量处理备注">
+                <button id="feedbackBulkApply" class="primary-button" type="button">批量处理</button>
+                <button id="feedbackBulkClear" class="ghost-button" type="button">取消选择</button>
+              </div>
+              <div id="feedbackRows" class="feedback-list"></div>
+            </div>
+
+            <div class="panel" data-section="audit">
+              <div class="panel-head">
+                <div>
+                  <h2>操作审计</h2>
+                  <p>记录预约、反馈、导出、备份和后台处理动作</p>
+                </div>
+                <div class="panel-tools">
+                  <input id="auditSearch" class="search-input" type="search" placeholder="搜索审计">
+                  <button id="exportBackup" class="ghost-button" type="button">备份 JSON</button>
+                </div>
+              </div>
+              <div id="auditRows" class="audit-list"></div>
+            </div>
+          </section>
+
+          <aside class="right-rail">
+            <section class="panel health-panel">
+              <div class="panel-head compact">
+                <h2>系统健康</h2>
+              </div>
+              <dl class="health-list">
+                <div><dt>存储</dt><dd id="storageState">-</dd></div>
+                <div><dt>环境</dt><dd id="envState">-</dd></div>
+                <div><dt>正式域名</dt><dd id="securityDomain">-</dd></div>
+                <div><dt>HTTPS</dt><dd id="securityHttps">-</dd></div>
+                <div><dt>后台 Token</dt><dd id="securityToken">-</dd></div>
+                <div><dt>CORS</dt><dd id="securityCors">-</dd></div>
+                <div><dt>运行</dt><dd id="uptimeState">-</dd></div>
+                <div><dt>后台账号</dt><dd id="adminUser">-</dd></div>
+              </dl>
+            </section>
+            <section class="panel quick-panel">
+              <div class="panel-head compact">
+                <h2>快捷操作</h2>
+              </div>
+              <button id="quickBookingExport" class="wide-action" type="button">导出预约 CSV</button>
+              <button id="quickFeedbackExport" class="wide-action" type="button">导出反馈 CSV</button>
+              <button id="quickBackupExport" class="wide-action" type="button">下载完整备份 JSON</button>
+            </section>
+            <section class="panel recent-panel">
+              <div class="panel-head compact">
+                <h2>最新动态</h2>
+              </div>
+              <div id="recentList" class="recent-list"></div>
+            </section>
+          </aside>
+        </section>
+      </section>
+    </section>
+  </main>
+  <div id="drawerOverlay" class="drawer-overlay" hidden></div>
+  <aside id="detailDrawer" class="detail-drawer" hidden aria-label="记录详情">
+    <div class="drawer-head">
+      <div>
+        <div id="detailType" class="drawer-kicker">详情</div>
+        <h2 id="detailTitle">记录详情</h2>
+      </div>
+      <button id="drawerClose" class="icon-button" type="button" title="关闭">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+    <div id="detailBody" class="detail-body"></div>
+    <label class="detail-label" for="detailStatus">处理状态</label>
+    <select id="detailStatus"></select>
+    <label class="detail-label" for="detailNote">处理备注</label>
+    <textarea id="detailNote" rows="4" placeholder="记录电话确认、现场跟进、归档原因等"></textarea>
+    <div class="drawer-actions">
+      <button id="detailCopyContact" class="ghost-button" type="button">复制联系方式</button>
+      <button id="detailSave" class="primary-button" type="button">保存处理</button>
+    </div>
+  </aside>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="/admin/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<view class="page map-page">
+  <view class="map-header">
+    <view class="map-title">{{title}}</view>
+    <view class="map-capsule"></view>
+    <view class="search-bar">
+      <input
+        class="search-input"
+        focus="{{searchFocus}}"
+        value="{{searchKeyword}}"
+        placeholder="搜稻鱼田、停车场、田鱼家宴"
+        placeholder-class="search-placeholder"
+        confirm-type="search"
+        bindinput="onSearchInput"
+        bindconfirm="onSearchConfirm"
+      />
+      <view wx:if="{{searchKeyword}}" class="search-clear" bindtap="onClearSearch">×</view>
+    </view>
+  </view>
+
+  <scroll-view scroll-x="{{true}}" class="category-scroll" enable-flex="{{true}}">
+    <view class="category-row">
+      <view
+        wx:for="{{categories}}"
+        wx:key="id"
+        class="category-item {{activeCategory === item.id ? 'active' : ''}}"
+        data-category="{{item.id}}"
+        bindtap="onCategoryTap"
+      >
+        {{item.label}}
+      </view>
+    </view>
+  </scroll-view>
+
+  <view class="filter-summary">
+    <text>{{summaryText}}</text>
+    <text class="filter-hint">{{activeRoute ? '路线已高亮' : '点位可点选'}}</text>
+  </view>
+
+  <scroll-view scroll-x="{{true}}" class="quick-point-scroll" enable-flex="{{true}}">
+    <view class="quick-point-row">
+      <view
+        wx:for="{{filteredPoints}}"
+        wx:key="id"
+        class="point-chip {{activePoint && activePoint.id === item.id ? 'active' : ''}}"
+        data-id="{{item.id}}"
+        bindtap="onPointChipTap"
+      >
+        <text class="point-chip-title">{{item.title}}</text>
+        <text class="point-chip-meta">{{item.distance}} · {{item.type}}</text>
+      </view>
+    </view>
+  </scroll-view>
+
+  <view class="map-shell">
+    <map
+      id="hailinMap"
+      class="map-canvas"
+      latitude="{{center.latitude}}"
+      longitude="{{center.longitude}}"
+      scale="{{scale}}"
+      markers="{{markers}}"
+      polyline="{{polylines}}"
+      bindmarkertap="onMarkerTap"
+      show-location="{{showUserLocation}}"
+      enable-zoom="{{true}}"
+      enable-scroll="{{true}}"
+    >
+      <cover-view class="map-weather">瓯江 · 青田 · 海林</cover-view>
+
+      <cover-view class="subtag-float">
+        <cover-view
+          wx:for="{{subTags}}"
+          wx:key="*this"
+          class="subtag-item {{activeSubTag === item ? 'active' : ''}}"
+          data-tag="{{item}}"
+          bindtap="onSubTagTap"
+        >
+          {{item}}
+        </cover-view>
+      </cover-view>
+
+      <cover-view class="map-tools">
+        <cover-view wx:for="{{mapTools}}" wx:key="id" class="map-tool" data-id="{{item.id}}" bindtap="onToolTap">
+          <cover-image class="map-tool-icon" src="{{item.iconPath}}"></cover-image>
+          <cover-view class="map-tool-text">{{item.title}}</cover-view>
+        </cover-view>
+      </cover-view>
+
+      <cover-view wx:if="{{routePanelOpen}}" class="route-panel">
+        <cover-view class="route-panel-title">推荐路线</cover-view>
+        <cover-view
+          wx:for="{{routeSuggestions}}"
+          wx:key="id"
+          class="route-card {{activeRoute && activeRoute.id === item.id ? 'active' : ''}}"
+          data-id="{{item.id}}"
+          bindtap="onRouteTap"
+        >
+          <cover-view class="route-card-title">{{item.title}}</cover-view>
+          <cover-view class="route-card-desc">{{item.duration}} · {{item.desc}}</cover-view>
+        </cover-view>
+        <cover-view class="route-detail-btn" bindtap="onOpenRouteDetail">查看路线详情</cover-view>
+      </cover-view>
+
+      <cover-view wx:if="{{activePoint}}" class="poi-sheet">
+        <cover-view class="poi-close" bindtap="onCloseSheet">×</cover-view>
+        <cover-view class="poi-name">{{activePoint.title}}</cover-view>
+        <cover-view class="poi-meta">{{activePoint.type}} · {{activePoint.subType}} · {{activePoint.distance}}</cover-view>
+        <cover-view class="poi-desc">{{activePoint.desc}}</cover-view>
+        <cover-view class="poi-info-row">
+          <cover-view class="poi-info">开放 {{activePoint.openTime}}</cover-view>
+        </cover-view>
+        <cover-view class="poi-tip">{{activePoint.tips}}</cover-view>
+        <cover-view class="poi-actions">
+          <cover-view class="poi-btn outline" bindtap="onViewDetail">详情</cover-view>
+          <cover-view class="poi-btn outline" bindtap="onGoHere">导航</cover-view>
+          <cover-view class="poi-btn primary" bindtap="onPointAction">{{activePoint.actionText}}</cover-view>
+        </cover-view>
+      </cover-view>
+    </map>
+  </view>
+</view>

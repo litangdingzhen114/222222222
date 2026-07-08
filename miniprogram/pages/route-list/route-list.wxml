@@ -1,0 +1,23 @@
+<view class="page page-pad route-list-page">
+  <view class="route-hero">
+    <view class="route-hero-title">精品路线</view>
+    <view class="route-hero-subtitle">把海林村的风景、风物与风味串成一段好行程</view>
+  </view>
+
+  <view class="route-list">
+    <view wx:for="{{routes}}" wx:key="id" class="route-card card" data-id="{{item.id}}" bindtap="onRouteTap">
+      <view class="route-cover {{item.imageClass}}">
+        <image wx:if="{{item.imageUrl}}" class="route-cover-img" src="{{item.imageUrl}}" mode="aspectFill"></image>
+        <text>线</text>
+      </view>
+      <view class="route-main">
+        <view class="route-name">{{item.name}}</view>
+        <view class="route-sub">{{item.subtitle}}</view>
+        <view class="route-meta">
+          <text>{{item.duration}}</text>
+          <text>{{item.cost}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,37 @@
+<view class="page page-pad spot-list-page">
+  <view class="spot-search">
+    <text class="search-icon">⌕</text>
+    <input placeholder="搜索景点/打卡点" placeholder-class="search-placeholder" bindinput="onSearchInput" />
+  </view>
+
+  <scroll-view scroll-x="{{true}}" class="spot-tabs" enable-flex="{{true}}">
+    <view class="spot-tab-row">
+      <view
+        wx:for="{{categories}}"
+        wx:key="*this"
+        class="spot-tab {{activeCategory === item ? 'active' : ''}}"
+        data-category="{{item}}"
+        bindtap="onCategoryTap"
+      >
+        {{item}}
+      </view>
+    </view>
+  </scroll-view>
+
+  <view class="spot-list">
+    <view wx:for="{{spots}}" wx:key="id" class="spot-card card" data-id="{{item.id}}" bindtap="onSpotTap">
+      <view class="spot-cover image-ph {{item.images[0]}}">
+        <image wx:if="{{item.coverUrl}}" class="spot-cover-img" src="{{item.coverUrl}}" mode="aspectFill"></image>
+        <text>{{item.icon}}</text>
+      </view>
+      <view class="spot-info">
+        <view class="spot-name">{{item.name}}</view>
+        <view class="spot-meta">{{item.openTime}} · {{item.distance}}</view>
+        <view class="spot-desc">{{item.desc}}</view>
+        <view class="spot-tags">
+          <text wx:for="{{item.tags}}" wx:key="*this">{{item}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

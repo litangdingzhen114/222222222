@@ -1,0 +1,6 @@
+storage/*.json
+storage/*.tmp
+storage/*.corrupt-*
+storage/logs/
+.env
+*.log

@@ -1,0 +1,56 @@
+<view wx:if="{{spot}}" class="page spot-detail-page safe-bottom">
+  <swiper class="spot-hero-swiper" indicator-dots="{{true}}" indicator-color="rgba(255,253,248,0.48)" indicator-active-color="#FBFFFC">
+    <swiper-item wx:for="{{heroImages}}" wx:key="key">
+      <view class="spot-hero {{item.imageClass}}">
+        <image wx:if="{{item.url}}" class="spot-hero-img" src="{{item.url}}" mode="aspectFill"></image>
+        <text class="spot-hero-word">{{spot.icon}}</text>
+      </view>
+    </swiper-item>
+  </swiper>
+
+  <view class="detail-content">
+    <view class="detail-card card">
+      <view class="detail-title-row">
+        <view class="detail-name">{{spot.name}}</view>
+        <view class="detail-distance">{{spot.distance}}</view>
+      </view>
+      <view class="detail-tags">
+        <text wx:for="{{spot.tags}}" wx:key="*this">{{item}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">开放时间</text>
+        <text class="info-value">{{spot.openTime}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">建议游玩</text>
+        <text class="info-value">{{spot.duration}}</text>
+      </view>
+    </view>
+
+    <view class="intro-card card">
+      <section-title title="景点介绍"></section-title>
+      <view class="intro-text">{{spot.desc}}</view>
+      <view class="action-row">
+        <button class="outline-btn detail-action" bindtap="onAudioGuide">语音讲解</button>
+        <button class="primary-btn detail-action" bindtap="onNavigate">导航</button>
+      </view>
+    </view>
+
+    <section-title title="周边推荐"></section-title>
+    <view class="nearby-row">
+      <view wx:for="{{nearby}}" wx:key="id" class="nearby-card card" data-id="{{item.id}}" bindtap="onNearbyTap">
+        <view class="nearby-img {{item.images[0]}}">
+          <image wx:if="{{item.coverUrl}}" class="nearby-photo" src="{{item.coverUrl}}" mode="aspectFill"></image>
+          <text>{{item.icon}}</text>
+        </view>
+        <view class="nearby-title">{{item.name}}</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="bottom-bar">
+    <button class="bottom-mini {{favorite ? 'active' : ''}}" bindtap="onFavorite">{{favorite ? '已收藏' : '收藏'}}</button>
+    <button class="bottom-mini" open-type="share">分享</button>
+    <button class="bottom-main" bindtap="onNavigate">去这里</button>
+  </view>
+</view>

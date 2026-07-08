@@ -1,0 +1,31 @@
+<view class="page page-pad booking-page">
+  <view class="booking-hero">
+    <view class="booking-title">青田海林讲解服务</view>
+    <view class="booking-desc">村情馆、稻鱼田、溪谷步道、青田石纹手作点可预约讲解，适合亲子、研学和团队游客。</view>
+  </view>
+
+  <view class="booking-card card">
+    <view class="form-item">
+      <text class="form-label">预约日期</text>
+      <picker mode="date" value="{{date}}" bindchange="onDateChange">
+        <view class="picker-value">{{date}}</view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">预约人数</text>
+      <view class="stepper">
+        <view class="step-btn" bindtap="onMinus">−</view>
+        <view class="step-value">{{people}}</view>
+        <view class="step-btn" bindtap="onPlus">＋</view>
+      </view>
+    </view>
+
+    <view class="form-item vertical">
+      <text class="form-label">联系方式</text>
+      <input class="contact-input" placeholder="请填写手机号或微信号" placeholder-class="form-placeholder" value="{{contact}}" bindinput="onContactInput" />
+    </view>
+
+    <button class="submit-btn" bindtap="onSubmit">提交预约</button>
+  </view>
+</view>

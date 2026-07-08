@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "寻味美食",
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "food-card": "/components/food-card/food-card"
+  }
+}

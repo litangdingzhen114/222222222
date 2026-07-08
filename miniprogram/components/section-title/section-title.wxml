@@ -1,0 +1,10 @@
+<view class="section-title">
+  <view class="title-left">
+    <view class="grain">穗</view>
+    <text class="title-text">{{title}}</text>
+  </view>
+  <view wx:if="{{moreText}}" class="title-more" bindtap="onMoreTap">
+    <text>{{moreText}}</text>
+    <text class="more-arrow">›</text>
+  </view>
+</view>

@@ -1,0 +1,62 @@
+{
+  "pages": [
+    "pages/home/home",
+    "pages/map/map",
+    "pages/food/food",
+    "pages/mine/mine",
+    "pages/mine-feature/mine-feature",
+    "pages/profile-edit/profile-edit",
+    "pages/publish/publish",
+    "pages/user-list/user-list",
+    "pages/spot-list/spot-list",
+    "pages/spot-detail/spot-detail",
+    "pages/route-list/route-list",
+    "pages/route-detail/route-detail",
+    "pages/live-list/live-list",
+    "pages/live-detail/live-detail",
+    "pages/ai-guide/ai-guide",
+    "pages/booking/booking",
+    "pages/feedback/feedback"
+  ],
+  "window": {
+    "navigationBarTitleText": "一部手机游海林村",
+    "navigationBarBackgroundColor": "#EEF6F4",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#EEF6F4"
+  },
+  "tabBar": {
+    "color": "#9FB8B3",
+    "selectedColor": "#0F6B67",
+    "backgroundColor": "#FBFFFC",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/home/home",
+        "text": "首页",
+        "iconPath": "assets/tabbar/home.png",
+        "selectedIconPath": "assets/tabbar/home-active.png"
+      },
+      {
+        "pagePath": "pages/map/map",
+        "text": "全域旅游地图",
+        "iconPath": "assets/tabbar/map.png",
+        "selectedIconPath": "assets/tabbar/map-active.png"
+      },
+      {
+        "pagePath": "pages/food/food",
+        "text": "寻味美食",
+        "iconPath": "assets/tabbar/food.png",
+        "selectedIconPath": "assets/tabbar/food-active.png"
+      },
+      {
+        "pagePath": "pages/mine/mine",
+        "text": "我的",
+        "iconPath": "assets/tabbar/mine.png",
+        "selectedIconPath": "assets/tabbar/mine-active.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

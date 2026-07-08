@@ -1,0 +1,19 @@
+<view class="food-card card" bindtap="handleTap">
+  <view class="food-cover image-ph {{item.imageClass}}">
+    <image wx:if="{{item.imageUrl}}" class="food-cover-img" src="{{item.imageUrl}}" mode="aspectFill"></image>
+    <text class="food-cover-icon">{{item.icon}}</text>
+  </view>
+  <view class="food-main">
+    <view class="food-head">
+      <text class="food-name">{{item.name}}</text>
+      <text class="food-distance">{{item.distance}}</text>
+    </view>
+    <view class="food-meta">
+      <text>人均：{{item.perCapita}}</text>
+    </view>
+    <view class="food-desc">{{item.desc}}</view>
+    <view class="food-tags">
+      <text wx:for="{{item.tags}}" wx:key="*this" class="food-tag">{{item}}</text>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,32 @@
+<view class="ai-page">
+  <view class="ai-head">
+    <view class="ai-title">智能助手</view>
+    <view class="ai-subtitle">海林村 AI 导游小林 · 真实后端优先，本地知识兜底</view>
+  </view>
+
+  <scroll-view class="chat-list" scroll-y scroll-into-view="{{lastMessageId}}">
+    <view
+      wx:for="{{messages}}"
+      wx:key="id"
+      id="{{item.id}}"
+      class="message-row {{item.role === 'user' ? 'user' : 'assistant'}}"
+    >
+      <view class="avatar">{{item.role === 'user' ? '客' : '林'}}</view>
+      <view class="message-bubble">
+        <view wx:if="{{item.role === 'assistant' && item.source}}" class="source-tag {{item.source}}">
+          {{item.source === 'backend' ? '真实 AI' : item.source === 'loading' ? '连接中' : '本地兜底'}}
+        </view>
+        <text>{{item.content}}</text>
+      </view>
+    </view>
+  </scroll-view>
+
+  <view class="quick-row">
+    <view wx:for="{{quickQuestions}}" wx:key="*this" class="quick-chip" data-question="{{item}}" bindtap="onQuickTap">{{item}}</view>
+  </view>
+
+  <view class="input-bar">
+    <input value="{{inputValue}}" placeholder="问问小林：路线、美食、直播、停车..." placeholder-class="input-placeholder" bindinput="onInput" confirm-type="send" bindconfirm="onSend" />
+    <button class="send-btn {{isSending ? 'disabled' : ''}}" bindtap="onSend">{{isSending ? '发送中' : '发送'}}</button>
+  </view>
+</view>

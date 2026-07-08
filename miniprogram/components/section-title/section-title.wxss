@@ -1,0 +1,43 @@
+.section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 46rpx 0 24rpx;
+}
+
+.title-left {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.grain {
+  width: 46rpx;
+  margin-right: 10rpx;
+  color: #C89C3F;
+  font-size: 34rpx;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.title-text {
+  color: #0F4F4B;
+  font-size: 40rpx;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: 6rpx;
+}
+
+.title-more {
+  display: flex;
+  align-items: center;
+  color: #607F7A;
+  font-size: 24rpx;
+  line-height: 1;
+}
+
+.more-arrow {
+  margin-left: 4rpx;
+  color: #0F6B67;
+  font-size: 32rpx;
+}

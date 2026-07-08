@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.env.*
+!backend/.env.example
+
+# Runtime storage
+backend/storage/*.json
+backend/storage/*.tmp
+backend/storage/logs/*.log
+backend/storage/logs/*.txt
+!backend/storage/.gitkeep
+!backend/storage/logs/.gitkeep
+
+# Local tooling state
+.git/
+.git-hailin/
+.codex/
+.agents/
+work/
+outputs/
+project.private.config.json
+
+# OS and editor noise
+.DS_Store
+Thumbs.db
+*.swp
+*.swo

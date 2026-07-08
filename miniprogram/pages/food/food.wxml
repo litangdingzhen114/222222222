@@ -1,0 +1,47 @@
+<view class="page food-page">
+  <view class="food-nav">
+    <view class="food-back"></view>
+    <view class="food-page-title">寻味海林地图</view>
+    <view class="food-capsule"></view>
+  </view>
+
+  <view class="food-banner">
+    <image class="food-banner-photo" src="/assets/photos/ricefish-drying.jpg" mode="aspectFill"></image>
+    <view class="food-banner-copy">
+      <view class="food-banner-title">寻味海林</view>
+      <view class="food-banner-subtitle">品味乡野</view>
+    </view>
+    <view class="bowl">
+      <view class="bowl-body"></view>
+      <view class="chopstick one"></view>
+      <view class="chopstick two"></view>
+      <text class="bowl-word">味</text>
+    </view>
+  </view>
+
+  <view class="food-feature-panel">
+    <view wx:for="{{featureCards}}" wx:key="id" class="food-feature" data-title="{{item.title}}" bindtap="onFeatureTap">
+      <view class="feature-icon">
+        <image wx:if="{{item.iconPath}}" class="feature-icon-img" src="{{item.iconPath}}" mode="aspectFit"></image>
+        <text wx:else>{{item.icon}}</text>
+      </view>
+      <text>{{item.title}}</text>
+    </view>
+  </view>
+
+  <view class="food-search">
+    <text class="food-search-icon">⌕</text>
+    <input placeholder="请输入" placeholder-class="food-placeholder" bindinput="onSearchInput" />
+  </view>
+
+  <view class="filter-row">
+    <view wx:for="{{filters}}" wx:key="*this" class="filter-item" data-title="{{item}}" bindtap="onFilterTap">
+      <text>{{item}}</text>
+      <text class="filter-arrow">⌄</text>
+    </view>
+  </view>
+
+  <view class="food-list">
+    <food-card wx:for="{{foods}}" wx:key="id" item="{{item}}" bind:cardtap="onFoodTap"></food-card>
+  </view>
+</view>

@@ -1,0 +1,251 @@
+.food-page {
+  background: #FBFFFC;
+  padding-bottom: 40rpx;
+}
+
+.food-nav {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  height: 170rpx;
+  padding-bottom: 24rpx;
+  background: #FBFFFC;
+}
+
+.food-page-title {
+  color: #193C3A;
+  font-size: 36rpx;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.food-back {
+  position: absolute;
+  left: 34rpx;
+  bottom: 34rpx;
+  width: 28rpx;
+  height: 28rpx;
+  border-left: 5rpx solid #193C3A;
+  border-bottom: 5rpx solid #193C3A;
+  transform: rotate(45deg);
+}
+
+.food-capsule {
+  position: absolute;
+  right: 24rpx;
+  bottom: 18rpx;
+  width: 200rpx;
+  height: 64rpx;
+  border-radius: 999rpx;
+  background: #EEF6F4;
+  border: 2rpx solid #DCEDEA;
+  box-shadow: 0 8rpx 22rpx rgba(26, 74, 70, 0.04);
+}
+
+.food-banner {
+  position: relative;
+  min-height: 390rpx;
+  margin-top: 0;
+  overflow: hidden;
+  border-radius: 0;
+  background:
+    radial-gradient(circle at 18% 24%, rgba(251, 255, 252, 0.78) 0%, rgba(251, 255, 252, 0) 18%),
+    linear-gradient(135deg, #0F6B67 0%, #77B7B0 42%, #E6D69D 100%);
+  box-shadow: none;
+}
+
+.food-banner::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+  background:
+    linear-gradient(90deg, rgba(251, 255, 252, 0.82), rgba(251, 255, 252, 0.34) 46%, rgba(15, 79, 75, 0.08)),
+    linear-gradient(0deg, rgba(15, 79, 75, 0.42), rgba(15, 79, 75, 0));
+}
+
+.food-banner-photo {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.food-banner-copy {
+  position: relative;
+  z-index: 2;
+  width: 470rpx;
+  padding: 80rpx 0 0 54rpx;
+  color: #FBFFFC;
+}
+
+.food-banner-title {
+  color: #0F4F4B;
+  font-size: 64rpx;
+  font-weight: 900;
+  line-height: 1.05;
+}
+
+.food-banner-subtitle {
+  margin-top: 14rpx;
+  color: #0F4F4B;
+  font-size: 46rpx;
+  font-weight: 700;
+}
+
+.bowl {
+  position: absolute;
+  right: 18rpx;
+  bottom: 18rpx;
+  width: 330rpx;
+  height: 250rpx;
+}
+
+.bowl-body {
+  position: absolute;
+  right: 0;
+  bottom: 10rpx;
+  width: 270rpx;
+  height: 128rpx;
+  border-radius: 0 0 100rpx 100rpx;
+  background: rgba(251, 255, 252, 0.72);
+}
+
+.chopstick {
+  position: absolute;
+  top: 36rpx;
+  width: 210rpx;
+  height: 10rpx;
+  border-radius: 999rpx;
+  background: rgba(25, 60, 58, 0.42);
+  transform-origin: right center;
+}
+
+.chopstick.one {
+  right: 28rpx;
+  transform: rotate(-28deg);
+}
+
+.chopstick.two {
+  right: 8rpx;
+  transform: rotate(-18deg);
+}
+
+.bowl-word {
+  display: none;
+}
+
+.food-feature-panel {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18rpx;
+  margin: -34rpx 24rpx 0;
+  padding: 28rpx 28rpx 30rpx;
+  border-radius: 28rpx;
+  background: #FBFFFC;
+  box-shadow: 0 10rpx 28rpx rgba(0, 0, 0, 0.04);
+}
+
+.food-feature {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 132rpx;
+  overflow: hidden;
+  padding: 18rpx 22rpx;
+  border-radius: 18rpx;
+  background: linear-gradient(135deg, #E2F0EC, #FBFFFC);
+  color: #0F4F4B;
+  font-size: 31rpx;
+  font-weight: 900;
+}
+
+.feature-icon {
+  position: absolute;
+  right: 20rpx;
+  bottom: 14rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 78rpx;
+  height: 78rpx;
+  border-radius: 0;
+  background: transparent;
+  color: #0F6B67;
+  font-size: 30rpx;
+  font-weight: 900;
+}
+
+.feature-icon-img {
+  width: 64rpx;
+  height: 64rpx;
+}
+
+.food-search {
+  display: flex;
+  align-items: center;
+  height: 88rpx;
+  margin: 30rpx 34rpx 0;
+  padding: 0 26rpx;
+  border-radius: 999rpx;
+  background: #EEF6F4;
+  box-shadow: none;
+}
+
+.food-search-icon {
+  margin-right: 14rpx;
+  color: #8EA6A0;
+  font-size: 34rpx;
+  font-weight: 800;
+}
+
+.food-search input {
+  flex: 1;
+  height: 88rpx;
+  color: #193C3A;
+  font-size: 31rpx;
+}
+
+.food-placeholder {
+  color: #8EA6A0;
+}
+
+.filter-row {
+  display: flex;
+  gap: 14rpx;
+  margin: 22rpx 0 0;
+  padding: 0 34rpx 24rpx;
+  border-bottom: 2rpx solid #F1F1F1;
+}
+
+.filter-item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 68rpx;
+  border-radius: 999rpx;
+  background: #FBFFFC;
+  color: #193C3A;
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.filter-arrow {
+  margin-left: 6rpx;
+  font-size: 22rpx;
+}
+
+.food-list {
+  padding: 28rpx 34rpx 28rpx;
+}

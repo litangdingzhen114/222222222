@@ -1,0 +1,33 @@
+<view class="page page-pad profile-edit-page">
+  <view class="profile-preview">
+    <view class="avatar-preview">{{avatarText}}</view>
+    <view>
+      <view class="preview-name">{{nickname || '海林村访客'}}</view>
+      <view class="preview-sub">{{intro || '写一句你和海林村的关系'}}</view>
+    </view>
+  </view>
+
+  <view class="form-card card">
+    <view class="field-block">
+      <view class="field-label">昵称</view>
+      <input class="form-input" maxlength="16" placeholder="请输入昵称" placeholder-class="form-placeholder" value="{{nickname}}" data-field="nickname" bindinput="onInput" />
+    </view>
+
+    <view class="field-block">
+      <view class="field-label">头像文字</view>
+      <input class="form-input" maxlength="2" placeholder="例如：瓯、海、青" placeholder-class="form-placeholder" value="{{avatarText}}" data-field="avatarText" bindinput="onInput" />
+    </view>
+
+    <view class="field-block">
+      <view class="field-label">联系方式</view>
+      <input class="form-input" placeholder="手机号或微信号，用于预约联系" placeholder-class="form-placeholder" value="{{contact}}" data-field="contact" bindinput="onInput" />
+    </view>
+
+    <view class="field-block">
+      <view class="field-label">个人简介</view>
+      <textarea class="form-textarea" maxlength="80" placeholder="比如：亲子游游客 / 民宿主理人 / 研学老师" placeholder-class="form-placeholder" value="{{intro}}" data-field="intro" bindinput="onInput"></textarea>
+    </view>
+
+    <button class="save-btn" bindtap="onSave">保存资料</button>
+  </view>
+</view>

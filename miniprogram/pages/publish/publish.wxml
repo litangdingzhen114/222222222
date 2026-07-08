@@ -1,0 +1,38 @@
+<view class="page page-pad publish-page">
+  <view class="publish-hero">
+    <view class="publish-title">发布海林游记</view>
+    <view class="publish-sub">记录路线、照片点位、餐食体验或服务建议，帮助后来游客更好地逛海林。</view>
+  </view>
+
+  <view class="publish-card card">
+    <view class="field-block">
+      <view class="field-label">标题</view>
+      <input class="form-input" maxlength="28" placeholder="例如：稻鱼田边的半日慢游" placeholder-class="form-placeholder" value="{{title}}" data-field="title" bindinput="onInput" />
+    </view>
+
+    <view class="field-block">
+      <view class="field-label">主题</view>
+      <picker mode="selector" range="{{topics}}" value="{{topicIndex}}" bindchange="onTopicChange">
+        <view class="topic-picker">{{topics[topicIndex]}}</view>
+      </picker>
+    </view>
+
+    <view class="field-block">
+      <view class="field-label">正文</view>
+      <textarea class="form-textarea" maxlength="600" placeholder="写下路线、体验、适合人群、注意事项或推荐时间" placeholder-class="form-placeholder" value="{{content}}" data-field="content" bindinput="onInput"></textarea>
+    </view>
+
+    <view class="field-block">
+      <view class="field-label">图片</view>
+      <view class="image-uploader" bindtap="onChooseImage">
+        <image wx:if="{{imagePath}}" class="chosen-image" src="{{imagePath}}" mode="aspectFill"></image>
+        <view wx:else class="upload-empty">
+          <view class="upload-plus">＋</view>
+          <view>添加一张游记图片</view>
+        </view>
+      </view>
+    </view>
+
+    <button class="submit-btn" bindtap="onSubmit">发布游记</button>
+  </view>
+</view>

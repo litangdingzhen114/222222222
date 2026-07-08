@@ -1,0 +1,47 @@
+<view wx:if="{{live}}" class="page live-detail-page page-pad">
+  <view wx:if="{{videoUrl}}" class="real-player-wrap">
+    <video
+      class="real-player"
+      src="{{videoUrl}}"
+      controls="{{true}}"
+      autoplay="{{true}}"
+      loop="{{true}}"
+      object-fit="cover"
+      bindtap="onFullscreen"
+      binderror="onVideoError"
+    ></video>
+    <cover-view class="live-time-badge">
+      <cover-view class="live-time-dot"></cover-view>
+      <cover-view class="live-time-text">{{currentTime}}</cover-view>
+    </cover-view>
+  </view>
+
+  <view wx:else class="mock-player {{live.imageClass}}" bindtap="onFullscreen">
+    <image wx:if="{{live.coverUrl}}" class="mock-cover" src="{{live.coverUrl}}" mode="aspectFill"></image>
+    <view class="live-status">
+      <view class="status-dot"></view>
+      <text>直播中</text>
+    </view>
+    <view class="scan-line"></view>
+    <view class="mock-play">▶</view>
+    <view class="mock-caption">未配置真实直播流 · 当前为本地封面</view>
+    <text class="mock-word">{{live.icon}}</text>
+  </view>
+
+  <view class="live-info-card card">
+    <view class="live-name">{{live.title}}</view>
+    <view class="online">{{live.viewers}} 人正在观看</view>
+    <view class="live-desc">{{live.desc}}</view>
+  </view>
+
+  <section-title title="周边推荐"></section-title>
+  <view class="nearby-row">
+    <view wx:for="{{nearby}}" wx:key="id" class="nearby-card card">
+      <view class="nearby-img {{item.imageClass}}">
+        <image wx:if="{{item.imageUrl}}" class="nearby-photo" src="{{item.imageUrl}}" mode="aspectFill"></image>
+        <text>{{item.icon}}</text>
+      </view>
+      <view class="nearby-title">{{item.title}}</view>
+    </view>
+  </view>
+</view>

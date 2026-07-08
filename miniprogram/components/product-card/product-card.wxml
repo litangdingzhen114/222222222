@@ -1,0 +1,8 @@
+<view class="product-card" bindtap="onTap">
+  <view class="product-img image-ph {{item.imageClass}}">
+    <image wx:if="{{item.imageUrl}}" class="product-cover" src="{{item.imageUrl}}" mode="aspectFill"></image>
+    <text class="price-tag">¥{{item.price}}</text>
+    <text class="product-icon">{{item.icon}}</text>
+  </view>
+  <view class="product-title">{{item.title}}</view>
+</view>

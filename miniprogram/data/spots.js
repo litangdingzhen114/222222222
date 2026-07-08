@@ -1,0 +1,72 @@
+module.exports = [
+  {
+    id: 'ancient-tree',
+    name: '海林村口会客点',
+    category: '自然风光',
+    tags: ['自然风光', '拍照打卡', '免费'],
+    openTime: '全天开放',
+    duration: '约 20 分钟',
+    distance: '0.2公里',
+    desc: '这里是游客进入海口镇海林村后的第一处服务节点，适合做集合、咨询、导览领取和第一张打卡照。真实上线后可接后台公告与实时客流。',
+    images: ['ph-oujiang', 'ph-village', 'ph-creek'],
+    coverUrl: '/assets/photos/ai-village-gate.jpg',
+    imageUrls: ['/assets/photos/ai-village-gate.jpg', '/assets/photos/qingtian-city.jpg', '/assets/photos/qingtian-tashan.jpg'],
+    icon: '瓯'
+  },
+  {
+    id: 'rice-view',
+    name: '稻鱼田观景点',
+    category: '自然风光',
+    tags: ['自然风光', '拍照打卡', '免费'],
+    openTime: '08:00-18:30',
+    duration: '约 40 分钟',
+    distance: '0.5公里',
+    desc: '青田以田鱼和稻鱼共生闻名，海林村的田园内容可围绕“看得见的生态课堂”展开。晴天傍晚光线柔和，适合亲子研学和摄影团队。',
+    images: ['ph-ricefish', 'ph-rice', 'ph-route'],
+    coverUrl: '/assets/photos/ricefish-terrace.jpg',
+    imageUrls: ['/assets/photos/ricefish-terrace.jpg', '/assets/photos/ricefish-paddy.jpg', '/assets/photos/ricefish-harvest.jpg'],
+    icon: '鱼'
+  },
+  {
+    id: 'creek-trail',
+    name: '溪谷慢行步道',
+    category: '自然风光',
+    tags: ['自然风光', '亲子体验', '免费'],
+    openTime: '全天开放',
+    duration: '约 1 小时',
+    distance: '0.7公里',
+    desc: '步道沿山溪铺设，串联石桥、茶歇和林荫休息点。路线平缓，适合家庭散步、轻徒步和慢直播点位展示。',
+    images: ['ph-creek', 'ph-homestay', 'ph-village'],
+    coverUrl: '/assets/photos/qingtian-tashan.jpg',
+    imageUrls: ['/assets/photos/qingtian-tashan.jpg', '/assets/photos/qingtian-city.jpg', '/assets/photos/ai-village-gate.jpg'],
+    icon: '溪'
+  },
+  {
+    id: 'museum',
+    name: '海林村情馆',
+    category: '人文历史',
+    tags: ['人文历史', '研学', '免费'],
+    openTime: '09:00-17:00',
+    duration: '约 45 分钟',
+    distance: '0.4公里',
+    desc: '村情馆用于展示海林村区位、村庄治理、侨乡联系、农文旅业态和活动公告，是后续接真实后台内容的核心入口。',
+    images: ['ph-museum', 'ph-stone', 'ph-homestay'],
+    coverUrl: '/assets/photos/ai-village-gate.jpg',
+    imageUrls: ['/assets/photos/ai-village-gate.jpg', '/assets/photos/ai-stone-souvenir.jpg', '/assets/photos/ai-overseas-cafe.jpg'],
+    icon: '馆'
+  },
+  {
+    id: 'workshop',
+    name: '青田石纹手作点',
+    category: '亲子体验',
+    tags: ['非遗体验', '亲子体验', '预约'],
+    openTime: '09:30-16:30',
+    duration: '约 1.5 小时',
+    distance: '0.9公里',
+    desc: '手作点以青田石的青灰、纹理和印章文化为视觉灵感，提供拓印、香囊、村游纪念章等体验，适合亲子、研学和团建预约。',
+    images: ['ph-stone', 'ph-product-stone', 'ph-workshop'],
+    coverUrl: '/assets/photos/ai-stone-souvenir.jpg',
+    imageUrls: ['/assets/photos/ai-stone-souvenir.jpg', '/assets/photos/ai-fish-keychain.jpg', '/assets/photos/ai-oujiang-postcards.jpg'],
+    icon: '石'
+  }
+];

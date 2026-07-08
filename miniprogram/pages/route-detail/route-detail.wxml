@@ -1,0 +1,50 @@
+<view wx:if="{{route}}" class="page route-detail-page safe-bottom">
+  <view class="route-cover-large {{route.imageClass}}">
+    <image wx:if="{{route.imageUrl}}" class="route-cover-photo" src="{{route.imageUrl}}" mode="aspectFill"></image>
+    <view class="route-cover-copy">
+      <view class="route-cover-title">{{route.name}}</view>
+      <view class="route-cover-sub">{{route.subtitle}}</view>
+    </view>
+    <text class="route-cover-word">游</text>
+  </view>
+
+  <view class="route-detail-content">
+    <view class="route-info-card card">
+      <view class="info-title">推荐理由</view>
+      <view class="info-desc">{{route.reason}}</view>
+      <view class="route-info-grid">
+        <view>
+          <text class="grid-label">游玩时长</text>
+          <text class="grid-value">{{route.duration}}</text>
+        </view>
+        <view>
+          <text class="grid-label">适合人群</text>
+          <text class="grid-value">{{route.audience}}</text>
+        </view>
+        <view>
+          <text class="grid-label">费用参考</text>
+          <text class="grid-value">{{route.cost}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="timeline-card card">
+      <view class="info-title">行程安排</view>
+      <view class="timeline">
+        <view wx:for="{{route.timeline}}" wx:key="time" class="timeline-item">
+          <view class="timeline-time">{{item.time}}</view>
+          <view class="timeline-dot"></view>
+          <view class="timeline-main">
+            <view class="timeline-title">{{item.title}}</view>
+            <view class="timeline-desc">{{item.desc}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="route-bottom-bar">
+    <button class="route-fav {{favorite ? 'active' : ''}}" bindtap="onFavorite">{{favorite ? '已收藏' : '收藏'}}</button>
+    <button class="route-start" bindtap="onStart">立即出发</button>
+  </view>
+</view>

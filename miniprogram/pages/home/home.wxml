@@ -1,0 +1,161 @@
+<view class="page home-page">
+  <view class="top-search">
+    <view class="search-box" bindtap="onSearchTap">
+      <text class="search-icon">⌕</text>
+      <text class="search-text">搜索地点/美食/路线</text>
+    </view>
+    <view class="capsule-space"></view>
+  </view>
+  <view class="region-strip">
+    <text>{{locationText}}</text>
+    <text class="service-pill">{{serviceMode}}</text>
+  </view>
+
+  <view class="home-body">
+    <swiper class="banner-swiper" autoplay="{{true}}" circular="{{true}}" interval="4200" duration="500" indicator-dots="{{true}}" indicator-color="rgba(255,253,248,0.48)" indicator-active-color="#FBFFFC">
+      <swiper-item wx:for="{{banners}}" wx:key="id">
+        <view class="banner-card {{item.imageClass}}">
+          <image wx:if="{{item.imageUrl}}" class="banner-photo" src="{{item.imageUrl}}" mode="aspectFill"></image>
+          <view class="banner-copy">
+            <view class="banner-tag">{{item.tag}}</view>
+            <view class="banner-title">{{item.title}}</view>
+            <view class="banner-subtitle">{{item.subtitle}}</view>
+          </view>
+          <view wx:if="{{!item.imageUrl}}" class="banner-art">
+            <view class="art-sun"></view>
+            <view class="art-mountain one"></view>
+            <view class="art-mountain two"></view>
+            <view class="art-house"></view>
+            <text class="art-word">{{item.icon}}</text>
+          </view>
+        </view>
+      </swiper-item>
+    </swiper>
+
+    <view class="notice-card">
+      <view class="notice-icon">铃</view>
+      <text class="notice-text">{{notice}}</text>
+    </view>
+
+    <view class="grid-panel card">
+      <swiper class="grid-swiper" current="{{gridCurrent}}" bindchange="onGridChange">
+        <swiper-item wx:for="{{gridPages}}" wx:for-item="gridPage" wx:key="id">
+          <view class="grid-wrap">
+            <view
+              wx:for="{{gridPage.items}}"
+              wx:key="id"
+              class="grid-item"
+              data-title="{{item.title}}"
+              data-url="{{item.url}}"
+              data-open-type="{{item.openType}}"
+              bindtap="onGridTap"
+            >
+              <view class="grid-icon">
+                <image wx:if="{{item.iconPath}}" class="grid-icon-img" src="{{item.iconPath}}" mode="aspectFit"></image>
+                <text wx:else>{{item.icon}}</text>
+              </view>
+              <text class="grid-text">{{item.title}}</text>
+            </view>
+          </view>
+        </swiper-item>
+      </swiper>
+      <view class="grid-dots">
+        <view wx:for="{{gridPages}}" wx:key="id" class="grid-dot {{gridCurrent === index ? 'active' : ''}}"></view>
+      </view>
+    </view>
+
+    <view class="weather-strip">
+      <text>{{weather}}</text>
+    </view>
+
+    <section-title title="热门推荐"></section-title>
+    <view class="hot-grid">
+      <view
+        wx:for="{{hotRecommends}}"
+        wx:key="id"
+        class="hot-card {{item.imageClass}}"
+        data-title="{{item.title}}"
+        bindtap="onRecommendTap"
+      >
+        <image wx:if="{{item.imageUrl}}" class="hot-photo" src="{{item.imageUrl}}" mode="aspectFill"></image>
+        <view class="hot-copy">
+          <view class="hot-title">{{item.title}}</view>
+          <view class="hot-subtitle">{{item.subtitle}}</view>
+          <view class="hot-more">{{item.buttonText}}</view>
+        </view>
+        <view class="hot-illus">{{item.icon}}</view>
+      </view>
+    </view>
+
+    <section-title title="海林特色文创" moreText="更多" bind:moretap="onMoreProducts"></section-title>
+    <view class="product-panel card">
+      <view class="product-head">
+        <view>
+          <view class="product-title-main">文创好礼等您来选</view>
+          <view class="product-sub">把青田石色、田鱼朱金与瓯江山水带回家</view>
+        </view>
+      </view>
+      <scroll-view scroll-x="{{true}}" class="product-scroll" enable-flex="{{true}}">
+        <view class="product-row">
+          <product-card wx:for="{{products}}" wx:key="id" item="{{item}}" bind:producttap="onProductTap"></product-card>
+        </view>
+      </scroll-view>
+    </view>
+
+    <section-title title="海林必打卡榜单"></section-title>
+    <scroll-view scroll-x="{{true}}" class="ranking-scroll" enable-flex="{{true}}">
+      <view class="ranking-row">
+        <view wx:for="{{rankings}}" wx:key="id" class="ranking-card card" data-title="{{item.title}}" bindtap="onRankingTap">
+          <view class="ranking-title">{{item.title}}</view>
+          <view class="ranking-tabs">
+            <text wx:for="{{item.tabs}}" wx:key="*this">{{item}}</text>
+          </view>
+          <view class="ranking-list">
+            <view wx:for="{{item.items}}" wx:key="title" class="ranking-img {{item.imageClass}}">
+              <image wx:if="{{item.imageUrl}}" class="ranking-photo" src="{{item.imageUrl}}" mode="aspectFill"></image>
+              <text class="ranking-img-word">{{item.icon}}</text>
+              <text class="ranking-img-title">{{item.title}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+
+    <section-title title="海林长廊"></section-title>
+    <scroll-view scroll-x="{{true}}" class="corridor-scroll" enable-flex="{{true}}">
+      <view class="corridor-row">
+        <view wx:for="{{corridor}}" wx:key="id" class="corridor-card">
+          <view class="corridor-img {{item.imageClass}}">
+            <image wx:if="{{item.imageUrl}}" class="corridor-photo" src="{{item.imageUrl}}" mode="aspectFill"></image>
+            <text>{{item.icon}}</text>
+          </view>
+          <view class="corridor-title">{{item.title}}</view>
+        </view>
+      </view>
+    </scroll-view>
+
+    <section-title title="精彩推荐"></section-title>
+    <view class="feed-waterfall">
+      <view class="feed-col">
+        <view wx:for="{{feedsLeft}}" wx:key="id" class="feed-card card" bindtap="onFeedTap">
+          <view class="feed-img {{item.imageClass}}">
+            <image wx:if="{{item.imageUrl}}" class="feed-photo" src="{{item.imageUrl}}" mode="aspectFill"></image>
+            <text>{{item.icon}}</text>
+          </view>
+          <view class="feed-title">{{item.title}}</view>
+          <view class="feed-user">来自 {{item.user}}</view>
+        </view>
+      </view>
+      <view class="feed-col">
+        <view wx:for="{{feedsRight}}" wx:key="id" class="feed-card card" bindtap="onFeedTap">
+          <view class="feed-img {{item.imageClass}}">
+            <image wx:if="{{item.imageUrl}}" class="feed-photo" src="{{item.imageUrl}}" mode="aspectFill"></image>
+            <text>{{item.icon}}</text>
+          </view>
+          <view class="feed-title">{{item.title}}</view>
+          <view class="feed-user">来自 {{item.user}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
