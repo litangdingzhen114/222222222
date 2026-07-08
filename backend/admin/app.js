@@ -115,7 +115,7 @@ function syncViewFromHash(options = {}) {
 function currentViewByScroll() {
   const offset = 120;
   let current = 'dashboard';
-  navViews.forEach((view) => {
+  navViews.filter((view) => view !== 'system').forEach((view) => {
     const target = targetForView(view);
     if (!target) return;
     if (target.getBoundingClientRect().top <= offset) {
@@ -127,6 +127,10 @@ function currentViewByScroll() {
 
 function scheduleScrollSpy() {
   if ($('#appPanel').hidden || Date.now() < state.suppressScrollSpyUntil) return;
+  if (viewFromHash() === 'system') {
+    setActiveView('system');
+    return;
+  }
   if (state.scrollSpyTimer) return;
   state.scrollSpyTimer = requestAnimationFrame(() => {
     state.scrollSpyTimer = null;
@@ -239,6 +243,21 @@ function renderTabs(container, statuses, active, onChange) {
   });
 }
 
+function emptyState(title, description, action = null) {
+  const actionMarkup = action ? `
+    <button class="text-button focus-jump" type="button" data-view="${escapeHtml(action.view)}">
+      ${escapeHtml(action.label)}
+    </button>
+  ` : '';
+  return `
+    <div class="empty-state">
+      <strong>${escapeHtml(title)}</strong>
+      <span>${escapeHtml(description)}</span>
+      ${actionMarkup}
+    </div>
+  `;
+}
+
 function renderStatusOptions(statuses, active) {
   return statuses
     .filter(([value]) => value !== 'all')
@@ -274,6 +293,10 @@ function updateSummary(summary) {
   setHealthState('#securityHttps', security.httpsEnabled ? '已启用' : '未启用', Boolean(security.httpsEnabled));
   setHealthState('#securityToken', security.adminTokenConfigured ? '已配置' : '未配置', Boolean(security.adminTokenConfigured));
   setHealthState('#securityCors', security.corsRestricted ? '已限制' : '未限制', Boolean(security.corsRestricted));
+  $('#bookingToday').closest('.metric').classList.toggle('is-attention', (bookings.new || 0) + (bookings.processing || 0) > 0);
+  $('#feedbackPending').closest('.metric').classList.toggle('is-attention', (feedback.new || 0) + (feedback.processing || 0) > 0);
+  $('#liveCount').closest('.metric').classList.toggle('is-attention', (summary.counts.lives.total || 0) === 0);
+  renderFocusItems(summary);
   renderRecent(summary);
 }
 
@@ -282,6 +305,107 @@ function setHealthState(selector, text, ok) {
   node.textContent = text;
   node.classList.toggle('is-good', ok);
   node.classList.toggle('is-bad', !ok);
+}
+
+function sumCounts(counts, keys) {
+  return keys.reduce((total, key) => total + (counts[key] || 0), 0);
+}
+
+function renderFocusItems(summary) {
+  const bookings = summary.counts.bookings || {};
+  const feedback = summary.counts.feedback || {};
+  const system = summary.system || {};
+  const security = system.security || {};
+  const homeSource = state.homeContent && state.homeContent.meta ? state.homeContent.meta.source : 'defaults';
+  const bookingTodo = sumCounts(bookings, ['new', 'processing']);
+  const feedbackTodo = sumCounts(feedback, ['new', 'processing']);
+  const securityIssues = [
+    !system.storageWritable && '存储异常',
+    !security.publicBaseUrl && '域名未配置',
+    !security.httpsEnabled && 'HTTPS 未启用',
+    !security.adminTokenConfigured && '后台 Token 未配置',
+    !security.corsRestricted && 'CORS 未限制'
+  ].filter(Boolean);
+
+  const items = [
+    bookingTodo ? {
+      level: 'warning',
+      label: '预约',
+      title: `${bookingTodo} 条预约待确认或跟进`,
+      description: '先确认日期、人数和联系方式，避免游客到村后无人衔接。',
+      view: 'bookings',
+      kind: 'bookings',
+      status: bookings.new ? 'new' : 'processing',
+      action: '处理预约'
+    } : {
+      level: 'good',
+      label: '预约',
+      title: '预约暂无积压',
+      description: '可以复查最新预约或导出今日服务表。',
+      view: 'bookings',
+      action: '查看预约'
+    },
+    feedbackTodo ? {
+      level: 'warning',
+      label: '反馈',
+      title: `${feedbackTodo} 条反馈需要处理`,
+      description: '优先回复有联系方式的游客建议，保留处理备注方便审计。',
+      view: 'feedback',
+      kind: 'feedback',
+      status: feedback.new ? 'new' : 'processing',
+      action: '处理反馈'
+    } : {
+      level: 'good',
+      label: '反馈',
+      title: '游客反馈已清空',
+      description: '可以查看已处理反馈，复盘高频问题。',
+      view: 'feedback',
+      action: '查看反馈'
+    },
+    securityIssues.length ? {
+      level: 'warning',
+      label: '生产',
+      title: `${securityIssues.length} 项上线风险`,
+      description: securityIssues.join('、'),
+      view: 'system',
+      action: '查看系统'
+    } : {
+      level: 'good',
+      label: '生产',
+      title: '生产安全项正常',
+      description: '域名、HTTPS、Token、CORS 与存储状态都已通过当前检查。',
+      view: 'system',
+      action: '查看系统'
+    },
+    homeSource === 'storage' ? {
+      level: 'good',
+      label: '内容',
+      title: '首页内容已保存',
+      description: '后台编辑内容会同步给小程序首页接口。',
+      view: 'home-content',
+      action: '编辑首页'
+    } : {
+      level: 'warning',
+      label: '内容',
+      title: '首页仍在使用默认内容',
+      description: '上线前建议保存一次真实运营内容，避免回退到模板文案。',
+      view: 'home-content',
+      action: '完善首页'
+    }
+  ];
+
+  $('#focusItems').innerHTML = items.map((item) => `
+    <button class="focus-item focus-jump is-${item.level}" type="button"
+      data-view="${escapeHtml(item.view)}"
+      ${item.kind ? `data-kind="${escapeHtml(item.kind)}"` : ''}
+      ${item.status ? `data-status="${escapeHtml(item.status)}"` : ''}>
+      <span class="focus-kicker">${escapeHtml(item.label)}</span>
+      <strong>${escapeHtml(item.title)}</strong>
+      <small>${escapeHtml(item.description)}</small>
+      <span class="focus-cta">${escapeHtml(item.action)}</span>
+    </button>
+  `).join('');
+  bindJumpControls($('#focusItems'));
 }
 
 function renderRecent(summary) {
@@ -305,10 +429,8 @@ function renderRecent(summary) {
       </div>
       <div class="recent-meta">${escapeHtml(item.meta)}</div>
     </button>
-  `).join('') : '<div class="recent-meta">暂无动态</div>';
-  document.querySelectorAll('.recent-jump').forEach((button) => {
-    button.addEventListener('click', () => scrollToView(button.dataset.view));
-  });
+  `).join('') : '<div class="empty-state is-compact"><strong>暂无动态</strong><span>新的预约和反馈会出现在这里。</span></div>';
+  bindJumpControls($('#recentList'));
 }
 
 function renderBookings(items) {
@@ -332,7 +454,7 @@ function renderBookings(items) {
         </div>
       </td>
     </tr>
-  `).join('') : '<tr><td colspan="7">暂无预约</td></tr>';
+  `).join('') : `<tr><td colspan="7">${emptyState('暂无预约', '新的讲解、活动、团建预约会出现在这里。', { view: 'home-content', label: '检查首页入口' })}</td></tr>`;
   updateBulkControls('bookings');
 }
 
@@ -356,7 +478,7 @@ function renderFeedback(items) {
       <div class="feedback-content">${escapeHtml(item.content || '')}</div>
       <div class="feedback-content">${formatDate(item.createdAt)} · ${escapeHtml(maskContact(item.contact))} · ${escapeHtml(statusText[item.status] || item.status || '-')}</div>
     </article>
-  `).join('') : '<div class="feedback-content">暂无反馈</div>';
+  `).join('') : emptyState('暂无反馈', '游客建议、问题和运营线索会在这里集中处理。', { view: 'dashboard', label: '回到总览' });
   updateBulkControls('feedback');
 }
 
@@ -373,7 +495,7 @@ function renderAudit(items) {
       </div>
       <div class="audit-detail">${escapeHtml(JSON.stringify(item.detail || {}))}</div>
     </article>
-  `).join('') : '<div class="feedback-content">暂无审计记录</div>';
+  `).join('') : emptyState('暂无审计记录', '状态更新、导出、备份和首页内容变更会自动留下记录。', { view: 'system', label: '查看系统健康' });
 }
 
 function homeStats(content) {
@@ -414,6 +536,9 @@ function renderHomeContent(payload) {
       <small>${escapeHtml(item.meta || '-')}</small>
     </article>
   `).join('') : '<div class="recent-meta">暂无首页内容</div>';
+  if (state.summary) {
+    renderFocusItems(state.summary);
+  }
 }
 
 function parseHomeEditor() {
@@ -577,6 +702,8 @@ function bindRecordControls() {
   document.querySelectorAll('.detail-trigger').forEach((button) => {
     button.addEventListener('click', () => openDetail(button.dataset.kind, button.dataset.id));
   });
+
+  bindJumpControls();
 }
 
 async function applyBulk(kind) {
@@ -747,6 +874,51 @@ async function copyDetailContact() {
   }
 }
 
+function changeBookingStatus(status, options = {}) {
+  state.bookingStatus = status || 'all';
+  renderTabs($('#bookingTabs'), bookingStatuses, state.bookingStatus, changeBookingStatus);
+  if (options.load !== false) {
+    loadDashboard().catch((error) => toast(error.message));
+  }
+}
+
+function changeFeedbackStatus(status, options = {}) {
+  state.feedbackStatus = status || 'all';
+  renderTabs($('#feedbackTabs'), feedbackStatuses, state.feedbackStatus, changeFeedbackStatus);
+  if (options.load !== false) {
+    loadDashboard().catch((error) => toast(error.message));
+  }
+}
+
+async function jumpToWorkView(view, kind, status) {
+  if (kind === 'bookings' && status) {
+    state.bookingStatus = status;
+    renderTabs($('#bookingTabs'), bookingStatuses, state.bookingStatus, changeBookingStatus);
+    await loadDashboard();
+  }
+  if (kind === 'feedback' && status) {
+    state.feedbackStatus = status;
+    renderTabs($('#feedbackTabs'), feedbackStatuses, state.feedbackStatus, changeFeedbackStatus);
+    await loadDashboard();
+  }
+  scrollToView(view || 'dashboard');
+}
+
+function bindJumpControls(root = document) {
+  root.querySelectorAll('.metric-jump, .recent-jump, .focus-jump').forEach((button) => {
+    if (button.dataset.jumpBound === 'true') return;
+    button.dataset.jumpBound = 'true';
+    button.addEventListener('click', async () => {
+      const { view, kind, status } = button.dataset;
+      try {
+        await jumpToWorkView(view, kind, status);
+      } catch (error) {
+        toast(error.message);
+      }
+    });
+  });
+}
+
 function bindEvents() {
   populateStaticSelects();
 
@@ -768,6 +940,7 @@ function bindEvents() {
     showLogin('');
   });
   $('#refreshBtn').addEventListener('click', () => loadDashboard().then(() => toast('已刷新')).catch((error) => toast(error.message)));
+  $('#focusRefresh').addEventListener('click', () => loadDashboard().then(() => toast('待办已刷新')).catch((error) => toast(error.message)));
   $('#exportBookings').addEventListener('click', () => exportData('bookings'));
   $('#exportFeedback').addEventListener('click', () => exportData('feedback'));
   $('#exportBackup').addEventListener('click', exportBackup);
@@ -812,37 +985,7 @@ function bindEvents() {
     bindEvents.auditTimer = setTimeout(loadDashboard, 260);
   });
 
-  const onBookingTabChange = (status) => {
-    state.bookingStatus = status;
-    renderTabs($('#bookingTabs'), bookingStatuses, state.bookingStatus, onBookingTabChange);
-    loadDashboard().catch((error) => toast(error.message));
-  };
-  const onFeedbackTabChange = (status) => {
-    state.feedbackStatus = status;
-    renderTabs($('#feedbackTabs'), feedbackStatuses, state.feedbackStatus, onFeedbackTabChange);
-    loadDashboard().catch((error) => toast(error.message));
-  };
-
-  document.querySelectorAll('.metric-jump').forEach((button) => {
-    button.addEventListener('click', async () => {
-      const { view, kind, status } = button.dataset;
-      try {
-        if (kind === 'bookings' && status) {
-          state.bookingStatus = status;
-          renderTabs($('#bookingTabs'), bookingStatuses, state.bookingStatus, onBookingTabChange);
-          await loadDashboard();
-        }
-        if (kind === 'feedback' && status) {
-          state.feedbackStatus = status;
-          renderTabs($('#feedbackTabs'), feedbackStatuses, state.feedbackStatus, onFeedbackTabChange);
-          await loadDashboard();
-        }
-        scrollToView(view);
-      } catch (error) {
-        toast(error.message);
-      }
-    });
-  });
+  bindJumpControls();
 
   document.querySelectorAll('.nav-item').forEach((button) => {
     button.addEventListener('click', () => {
@@ -853,8 +996,8 @@ function bindEvents() {
   window.addEventListener('hashchange', () => syncViewFromHash());
   window.addEventListener('scroll', scheduleScrollSpy, { passive: true });
 
-  renderTabs($('#bookingTabs'), bookingStatuses, state.bookingStatus, onBookingTabChange);
-  renderTabs($('#feedbackTabs'), feedbackStatuses, state.feedbackStatus, onFeedbackTabChange);
+  renderTabs($('#bookingTabs'), bookingStatuses, state.bookingStatus, changeBookingStatus);
+  renderTabs($('#feedbackTabs'), feedbackStatuses, state.feedbackStatus, changeFeedbackStatus);
   setActiveView(viewFromHash());
 }
 

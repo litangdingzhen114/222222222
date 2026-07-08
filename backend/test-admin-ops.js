@@ -68,6 +68,8 @@ async function main() {
   assert(adminHtml.includes('id="feedback"'), 'admin dashboard should expose feedback anchor');
   assert(adminHtml.includes('id="audit"'), 'admin dashboard should expose audit anchor');
   assert(adminHtml.includes('metric-jump'), 'admin dashboard metrics should act as browsing shortcuts');
+  assert(adminHtml.includes('focusItems'), 'admin dashboard should expose an operations focus list');
+  assert(adminHtml.includes('focusRefresh'), 'admin dashboard should refresh operations focus items');
   assert(adminJs.includes('/api/admin/home-content'), 'admin dashboard should manage home content');
   assert(adminJs.includes('maskContact'), 'admin dashboard should mask contact info in tables');
   assert(adminJs.includes('scrollToView'), 'admin dashboard should use hash-aware browsing');
@@ -75,6 +77,13 @@ async function main() {
   assert(adminJs.includes('aria-current'), 'admin navigation should expose the active section');
   assert(adminJs.includes('recent-jump'), 'admin recent activity should navigate to related sections');
   assert(adminJs.includes('metric-jump'), 'admin metric shortcuts should be bound in JavaScript');
+  assert(adminJs.includes('renderFocusItems'), 'admin dashboard should render prioritized operations tasks');
+  assert(adminJs.includes('bindJumpControls'), 'admin dashboard should share jump behavior across shortcuts');
+  assert(adminJs.includes('emptyState'), 'admin dashboard should render explicit empty states');
+  assert(adminJs.includes("view !== 'system'"), 'admin scroll spy should not treat sticky health rail as normal content');
+  assert(adminCss.includes('ops-focus'), 'admin dashboard should style the operations focus list');
+  assert(adminCss.includes('empty-state'), 'admin dashboard should style empty data states');
+  assert(adminCss.includes('position: sticky'), 'admin health rail should stay visible on desktop');
   assert(adminCss.includes('overflow-x: hidden'), 'admin layout should prevent page-level horizontal overflow');
   assert(adminCss.includes('scroll-margin-top'), 'admin sections should account for sticky navigation');
 
