@@ -11,6 +11,12 @@ Page({
 
   onLoad(options) {
     const spot = findById(spots, options.id);
+    if (!spot) {
+      quickToast('景点不存在');
+      setTimeout(() => wx.navigateBack({ delta: 1 }), 500);
+      return;
+    }
+
     const heroImages = (spot.imageUrls || []).map((url, index) => ({
       key: url,
       url,
@@ -30,11 +36,23 @@ Page({
   },
 
   onAudioGuide() {
-    quickToast('语音讲解建设中');
+    wx.navigateTo({
+      url: `/pages/ai-guide/ai-guide?question=${encodeURIComponent(`${this.data.spot.name}怎么游玩`)}`
+    });
   },
 
   onNavigate() {
     quickToast('正在打开导航');
+  },
+
+  onServiceTap(event) {
+    const { url, openType } = event.currentTarget.dataset;
+    if (!url) return;
+    if (openType === 'switchTab') {
+      wx.switchTab({ url });
+      return;
+    }
+    wx.navigateTo({ url });
   },
 
   onNearbyTap(event) {

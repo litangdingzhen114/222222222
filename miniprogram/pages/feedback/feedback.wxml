@@ -1,4 +1,16 @@
 <view class="page page-pad feedback-page">
+  <view class="feedback-hero">
+    <view class="feedback-title">意见反馈</view>
+    <view class="feedback-desc">把游玩中遇到的问题、内容纠错或合作需求发给海林村文旅服务后台。</view>
+  </view>
+
+  <view class="promise-grid">
+    <view wx:for="{{promiseCards}}" wx:key="title" class="promise-card">
+      <view class="promise-title">{{item.title}}</view>
+      <view class="promise-desc">{{item.desc}}</view>
+    </view>
+  </view>
+
   <view class="feedback-card card">
     <view class="field-title">反馈类型</view>
     <view class="type-grid">
@@ -14,6 +26,9 @@
     </view>
 
     <view class="field-title">反馈内容</view>
+    <view class="example-row">
+      <text wx:for="{{examples}}" wx:key="*this">{{item}}</text>
+    </view>
     <textarea class="feedback-textarea" placeholder="请描述您遇到的问题或建议" placeholder-class="feedback-placeholder" value="{{content}}" bindinput="onContentInput"></textarea>
 
     <view class="field-title">联系方式</view>

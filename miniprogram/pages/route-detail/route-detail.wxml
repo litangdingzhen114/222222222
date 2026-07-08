@@ -28,6 +28,21 @@
       </view>
     </view>
 
+    <view wx:if="{{route.included && route.included.length}}" class="included-card card">
+      <view class="info-title">包含内容</view>
+      <view class="included-grid">
+        <view wx:for="{{route.included}}" wx:key="*this" class="included-item">{{item}}</view>
+      </view>
+    </view>
+
+    <view wx:if="{{route.prepares && route.prepares.length}}" class="prepare-card card">
+      <view class="info-title">出发准备</view>
+      <view wx:for="{{route.prepares}}" wx:key="*this" class="prepare-row">
+        <text></text>
+        <view>{{item}}</view>
+      </view>
+    </view>
+
     <view class="timeline-card card">
       <view class="info-title">行程安排</view>
       <view class="timeline">

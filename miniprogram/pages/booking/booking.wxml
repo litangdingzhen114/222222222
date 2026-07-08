@@ -4,7 +4,39 @@
     <view class="booking-desc">村情馆、稻鱼田、溪谷步道、青田石纹手作点可预约讲解，适合亲子、研学和团队游客。</view>
   </view>
 
+  <view class="section-head">
+    <text>选择服务</text>
+    <text>{{serviceOptions.length}} 项</text>
+  </view>
+  <view class="service-option-grid">
+    <view
+      wx:for="{{serviceOptions}}"
+      wx:key="id"
+      class="service-option {{selectedServiceId === item.id ? 'active' : ''}}"
+      data-id="{{item.id}}"
+      bindtap="onServiceTap"
+    >
+      <view class="service-option-head">
+        <text>{{item.title}}</text>
+        <text>{{item.tag}}</text>
+      </view>
+      <view class="service-option-desc">{{item.desc}}</view>
+    </view>
+  </view>
+
+  <view class="section-head">
+    <text>快速方案</text>
+    <text>点选填入人数</text>
+  </view>
+  <view class="quick-plan-list">
+    <view wx:for="{{quickPlans}}" wx:key="id" class="quick-plan-card" data-id="{{item.id}}" bindtap="onQuickPlanTap">
+      <view class="quick-plan-title">{{item.title}}</view>
+      <view class="quick-plan-desc">{{item.desc}}</view>
+    </view>
+  </view>
+
   <view class="booking-card card">
+    <view class="booking-card-title">预约信息</view>
     <view class="form-item">
       <text class="form-label">预约日期</text>
       <picker mode="date" value="{{date}}" bindchange="onDateChange">
@@ -26,6 +58,16 @@
       <input class="contact-input" placeholder="请填写手机号或微信号" placeholder-class="form-placeholder" value="{{contact}}" bindinput="onContactInput" />
     </view>
 
+    <view class="form-item vertical">
+      <text class="form-label">补充需求</text>
+      <textarea class="remark-input" placeholder="可填写到达时间、老人儿童人数、餐食忌口、课程主题等" placeholder-class="form-placeholder" value="{{remark}}" bindinput="onRemarkInput"></textarea>
+    </view>
+
     <button class="submit-btn" bindtap="onSubmit">提交预约</button>
+  </view>
+
+  <view class="booking-tip-card">
+    <view class="booking-tip-title">预约须知</view>
+    <view wx:for="{{bookingTips}}" wx:key="*this" class="booking-tip-row">{{item}}</view>
   </view>
 </view>

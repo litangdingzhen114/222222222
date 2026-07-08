@@ -122,6 +122,32 @@
   </block>
 
   <block wx:else>
+    <block wx:if="{{feature.highlights && feature.highlights.length}}">
+      <view class="section-head">
+        <text>服务亮点</text>
+        <text class="section-meta">{{feature.highlights.length}} 项</text>
+      </view>
+      <view class="feature-highlight-grid">
+        <view wx:for="{{feature.highlights}}" wx:key="title" class="feature-highlight-card">
+          <view class="feature-highlight-title">{{item.title}}</view>
+          <view class="feature-highlight-desc">{{item.desc}}</view>
+        </view>
+      </view>
+    </block>
+
+    <view wx:if="{{feature.process && feature.process.length}}" class="service-flow-card card">
+      <view class="service-flow-title">预约流程</view>
+      <view wx:for="{{feature.process}}" wx:key="*this" class="flow-step">
+        <text class="flow-index">{{index + 1}}</text>
+        <text class="flow-copy">{{item}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{feature.notes && feature.notes.length}}" class="service-note-card">
+      <view class="service-note-title">预订须知</view>
+      <view wx:for="{{feature.notes}}" wx:key="*this" class="service-note-item">{{item}}</view>
+    </view>
+
     <view class="section-head">
       <text>选择服务</text>
       <text class="section-meta">{{feature.cards.length}} 项</text>

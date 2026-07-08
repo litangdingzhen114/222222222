@@ -6,7 +6,7 @@ Page({
     inputValue: '',
     lastMessageId: 'msg-0',
     isSending: false,
-    quickQuestions: ['路线推荐', '田鱼美食', '慢直播怎么接', '停车场在哪'],
+    quickQuestions: ['半日路线', '亲子研学', '田鱼家宴', '青田石手作', '停车场在哪', '直播点位', '民宿推荐', '雨天怎么玩'],
     messages: [
       {
         id: 'msg-0',
@@ -15,6 +15,14 @@ Page({
         content: '您好，我是海林村 AI 导游小林，可以帮您推荐路线、美食、直播点位、住宿和青田地域文化。配置后端后，我会切换为真实 AI 回复。'
       }
     ]
+  },
+
+  onLoad(options) {
+    if (options.question) {
+      setTimeout(() => {
+        this.sendQuestion(decodeURIComponent(options.question));
+      }, 300);
+    }
   },
 
   onInput(event) {

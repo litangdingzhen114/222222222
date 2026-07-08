@@ -36,6 +36,40 @@
       </view>
     </view>
 
+    <section-title wx:if="{{spot.highlights && spot.highlights.length}}" title="亮点玩法"></section-title>
+    <view wx:if="{{spot.highlights && spot.highlights.length}}" class="highlight-list">
+      <view wx:for="{{spot.highlights}}" wx:key="*this" class="highlight-item card">
+        <text class="highlight-index">{{index + 1}}</text>
+        <text class="highlight-copy">{{item}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{spot.visitTips && spot.visitTips.length}}" class="tips-card card">
+      <view class="tips-title">到访建议</view>
+      <view wx:for="{{spot.visitTips}}" wx:key="*this" class="tip-row">
+        <text></text>
+        <view>{{item}}</view>
+      </view>
+    </view>
+
+    <section-title wx:if="{{spot.services && spot.services.length}}" title="服务衔接"></section-title>
+    <view wx:if="{{spot.services && spot.services.length}}" class="service-link-list">
+      <view
+        wx:for="{{spot.services}}"
+        wx:key="title"
+        class="service-link-card card"
+        data-url="{{item.url}}"
+        data-open-type="{{item.openType}}"
+        bindtap="onServiceTap"
+      >
+        <view>
+          <view class="service-link-title">{{item.title}}</view>
+          <view class="service-link-desc">{{item.desc}}</view>
+        </view>
+        <text class="service-link-arrow">›</text>
+      </view>
+    </view>
+
     <section-title title="周边推荐"></section-title>
     <view class="nearby-row">
       <view wx:for="{{nearby}}" wx:key="id" class="nearby-card card" data-id="{{item.id}}" bindtap="onNearbyTap">

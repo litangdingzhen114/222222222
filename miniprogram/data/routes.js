@@ -1,4 +1,32 @@
-module.exports = [
+const routeDetails = {
+  'half-day': {
+    included: ['村口集合与路线说明', '溪谷步道慢行建议', '田鱼家宴预约衔接', '停车与返程提示'],
+    prepares: ['建议上午到村，午餐体验更顺。', '自驾游客先在村口确认停车点。', '如需讲解或餐食，请至少提前半天预约。'],
+    bookingUrl: '/pages/mine-feature/mine-feature?id=tour'
+  },
+  'one-day': {
+    included: ['村情馆讲解', '稻鱼田观景', '青田石纹手作', '溪畔茶歇与伴手礼'],
+    prepares: ['建议穿适合步行的鞋，全天路线点位较多。', '手作课程需提前确认人数和材料。', '摄影团队可备注想要的拍摄时段。'],
+    bookingUrl: '/pages/mine-feature/mine-feature?id=tour'
+  },
+  'parent-child': {
+    included: ['稻鱼课堂任务卡', '共富集市观察', '石纹手作体验', '溪谷自然观察'],
+    prepares: ['建议为孩子准备防晒帽和替换衣物。', '研学团队请提前说明年级、人数和课程目标。', '雨天可把户外观察改为村情馆和手作课。'],
+    bookingUrl: '/pages/mine-feature/mine-feature?id=activity'
+  },
+  photo: {
+    included: ['光线顺序点位建议', '溪谷与田园机位', '侨乡小院细节拍摄', '讲解跟拍可选'],
+    prepares: ['建议下午出发，傍晚到稻鱼田等待柔光。', '如需人像跟拍，请提前预约摄影服务。', '雨后溪谷湿滑，设备注意防潮。'],
+    bookingUrl: '/pages/mine-feature/mine-feature?id=guide'
+  },
+  food: {
+    included: ['稻鱼生态讲解', '田鱼家宴预约', '共富集市选购', '溪畔茶点收尾'],
+    prepares: ['请提前备注忌口、老人儿童人数和用餐时间。', '团队用餐建议至少提前一天确认桌数。', '伴手礼可选择到村自提或统一打包。'],
+    bookingUrl: '/pages/mine-feature/mine-feature?id=mall'
+  }
+};
+
+const routes = [
   {
     id: 'half-day',
     name: '瓯江山村半日游',
@@ -85,3 +113,8 @@ module.exports = [
     ]
   }
 ];
+
+module.exports = routes.map((route) => ({
+  ...route,
+  ...(routeDetails[route.id] || {})
+}));

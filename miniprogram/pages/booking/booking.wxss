@@ -19,9 +19,93 @@
   line-height: 1.6;
 }
 
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 30rpx 4rpx 16rpx;
+  color: #193C3A;
+  font-size: 30rpx;
+  font-weight: 900;
+}
+
+.section-head text:last-child {
+  color: #607F7A;
+  font-size: 23rpx;
+  font-weight: 700;
+}
+
+.service-option-grid,
+.quick-plan-list {
+  display: grid;
+  gap: 16rpx;
+}
+
+.service-option {
+  padding: 24rpx;
+  border: 2rpx solid transparent;
+  border-radius: 22rpx;
+  background: #FBFFFC;
+  box-shadow: 0 10rpx 26rpx rgba(26, 74, 70, 0.06);
+}
+
+.service-option.active {
+  border-color: #1D7C78;
+  background: #F3FBF9;
+}
+
+.service-option-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18rpx;
+}
+
+.service-option-head text:first-child {
+  color: #193C3A;
+  font-size: 29rpx;
+  font-weight: 900;
+}
+
+.service-option-head text:last-child {
+  flex-shrink: 0;
+  padding: 6rpx 14rpx;
+  border-radius: 999rpx;
+  background: #DCEDEA;
+  color: #0F6B67;
+  font-size: 21rpx;
+  font-weight: 800;
+}
+
+.service-option-desc,
+.quick-plan-desc {
+  margin-top: 10rpx;
+  color: #607F7A;
+  font-size: 24rpx;
+  line-height: 1.45;
+}
+
+.quick-plan-card {
+  padding: 22rpx;
+  border-radius: 20rpx;
+  background: #F9F2E6;
+}
+
+.quick-plan-title {
+  color: #5B422B;
+  font-size: 27rpx;
+  font-weight: 900;
+}
+
 .booking-card {
   margin-top: 24rpx;
   padding: 28rpx;
+}
+
+.booking-card-title {
+  color: #0F6B67;
+  font-size: 31rpx;
+  font-weight: 900;
 }
 
 .form-item {
@@ -86,6 +170,18 @@
   font-size: 27rpx;
 }
 
+.remark-input {
+  width: 100%;
+  min-height: 150rpx;
+  margin-top: 18rpx;
+  padding: 20rpx;
+  border-radius: 20rpx;
+  background: #EEF6F4;
+  color: #193C3A;
+  font-size: 27rpx;
+  line-height: 1.5;
+}
+
 .form-placeholder {
   color: #8EA6A0;
 }
@@ -101,4 +197,38 @@
   color: #FBFFFC;
   font-size: 29rpx;
   font-weight: 900;
+}
+
+.booking-tip-card {
+  margin-top: 22rpx;
+  padding: 24rpx;
+  border-radius: 22rpx;
+  background: #FBFFFC;
+  box-shadow: 0 10rpx 26rpx rgba(26, 74, 70, 0.06);
+}
+
+.booking-tip-title {
+  color: #193C3A;
+  font-size: 28rpx;
+  font-weight: 900;
+}
+
+.booking-tip-row {
+  position: relative;
+  margin-top: 14rpx;
+  padding-left: 24rpx;
+  color: #607F7A;
+  font-size: 24rpx;
+  line-height: 1.5;
+}
+
+.booking-tip-row::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 14rpx;
+  width: 8rpx;
+  height: 8rpx;
+  border-radius: 50%;
+  background: #C89C3F;
 }

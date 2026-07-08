@@ -81,6 +81,102 @@
   gap: 18rpx;
 }
 
+.feature-highlight-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16rpx;
+}
+
+.feature-highlight-card {
+  min-height: 146rpx;
+  padding: 22rpx;
+  border: 2rpx solid #DCEDEA;
+  border-radius: 20rpx;
+  background: #FBFFFC;
+  box-shadow: 0 10rpx 26rpx rgba(26, 74, 70, 0.06);
+}
+
+.feature-highlight-title {
+  color: #193C3A;
+  font-size: 27rpx;
+  font-weight: 900;
+  line-height: 1.3;
+}
+
+.feature-highlight-desc {
+  margin-top: 10rpx;
+  color: #607F7A;
+  font-size: 23rpx;
+  line-height: 1.45;
+}
+
+.service-flow-card {
+  margin-top: 22rpx;
+  padding: 28rpx;
+}
+
+.service-flow-title,
+.service-note-title {
+  color: #0F6B67;
+  font-size: 29rpx;
+  font-weight: 900;
+}
+
+.flow-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 16rpx;
+  margin-top: 20rpx;
+  color: #315A4E;
+  font-size: 25rpx;
+  line-height: 1.5;
+}
+
+.flow-index {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 42rpx;
+  height: 42rpx;
+  border-radius: 50%;
+  background: #DCEDEA;
+  color: #0F6B67;
+  font-size: 23rpx;
+  font-weight: 900;
+}
+
+.flow-copy {
+  flex: 1;
+}
+
+.service-note-card {
+  margin-top: 20rpx;
+  padding: 24rpx;
+  border-radius: 20rpx;
+  background: #F9F2E6;
+}
+
+.service-note-item {
+  position: relative;
+  margin-top: 14rpx;
+  padding-left: 24rpx;
+  color: #5B422B;
+  font-size: 24rpx;
+  line-height: 1.5;
+}
+
+.service-note-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 14rpx;
+  width: 8rpx;
+  height: 8rpx;
+  border-radius: 50%;
+  background: #C89C3F;
+}
+
 .choice-card,
 .coupon-card,
 .task-card,

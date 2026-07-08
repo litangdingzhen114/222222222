@@ -1,4 +1,55 @@
+.feedback-hero {
+  min-height: 210rpx;
+  padding: 32rpx;
+  border-radius: 30rpx;
+  background:
+    radial-gradient(circle at 82% 18%, rgba(255, 253, 248, 0.34), transparent 24%),
+    linear-gradient(135deg, #0E6B78, #77B7B0);
+  color: #FBFFFC;
+}
+
+.feedback-title {
+  font-size: 42rpx;
+  font-weight: 900;
+}
+
+.feedback-desc {
+  margin-top: 16rpx;
+  color: rgba(251, 255, 252, 0.9);
+  font-size: 26rpx;
+  line-height: 1.55;
+}
+
+.promise-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14rpx;
+  margin-top: 22rpx;
+}
+
+.promise-card {
+  min-height: 142rpx;
+  padding: 18rpx;
+  border-radius: 20rpx;
+  background: #FBFFFC;
+  box-shadow: 0 10rpx 26rpx rgba(26, 74, 70, 0.06);
+}
+
+.promise-title {
+  color: #193C3A;
+  font-size: 25rpx;
+  font-weight: 900;
+}
+
+.promise-desc {
+  margin-top: 8rpx;
+  color: #607F7A;
+  font-size: 21rpx;
+  line-height: 1.45;
+}
+
 .feedback-card {
+  margin-top: 22rpx;
   padding: 28rpx;
 }
 
@@ -31,6 +82,22 @@
 .type-item.active {
   background: #BFD9D3;
   color: #0F6B67;
+}
+
+.example-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+  margin: -4rpx 0 18rpx;
+}
+
+.example-row text {
+  padding: 8rpx 14rpx;
+  border-radius: 999rpx;
+  background: #F9F2E6;
+  color: #5B422B;
+  font-size: 22rpx;
+  font-weight: 700;
 }
 
 .feedback-textarea {

@@ -8,8 +8,15 @@ Page({
   },
 
   onLoad(options) {
+    const route = findById(routes, options.id);
+    if (!route) {
+      quickToast('路线不存在');
+      setTimeout(() => wx.navigateBack({ delta: 1 }), 500);
+      return;
+    }
+
     this.setData({
-      route: findById(routes, options.id)
+      route
     });
   },
 
@@ -19,6 +26,11 @@ Page({
   },
 
   onStart() {
+    const route = this.data.route;
+    if (route.bookingUrl) {
+      wx.navigateTo({ url: route.bookingUrl });
+      return;
+    }
     quickToast('已为您规划出发路线');
   }
 });
