@@ -83,6 +83,9 @@ async function main() {
   assert(adminJs.includes("view !== 'system'"), 'admin scroll spy should not treat sticky health rail as normal content');
   assert(adminCss.includes('ops-focus'), 'admin dashboard should style the operations focus list');
   assert(adminCss.includes('empty-state'), 'admin dashboard should style empty data states');
+  assert(adminCss.includes('--sidebar-width'), 'admin dashboard should reserve fixed sidebar width');
+  assert(adminCss.includes('position: fixed'), 'admin sidebar should stay fixed on desktop and tablet layouts');
+  assert(adminCss.includes('grid-column: 2'), 'admin workspace should render beside the fixed sidebar');
   assert(adminCss.includes('position: sticky'), 'admin health rail should stay visible on desktop');
   assert(adminCss.includes('overflow-x: hidden'), 'admin layout should prevent page-level horizontal overflow');
   assert(adminCss.includes('scroll-margin-top'), 'admin sections should account for sticky navigation');
