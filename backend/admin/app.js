@@ -1,4 +1,13 @@
 const TOKEN_KEY = 'hailin-admin-token';
+const navViews = ['dashboard', 'home-content', 'bookings', 'feedback', 'audit', 'system'];
+const navSelectors = {
+  dashboard: '#dashboard',
+  'home-content': '#home-content',
+  bookings: '#bookings',
+  feedback: '#feedback',
+  audit: '#audit',
+  system: '#system'
+};
 
 const bookingStatuses = [
   ['all', '全部'],
@@ -39,10 +48,104 @@ const state = {
   homeContent: null,
   selectedBookings: new Set(),
   selectedFeedback: new Set(),
-  detail: null
+  detail: null,
+  activeView: 'dashboard',
+  initialViewApplied: false,
+  scrollSpyTimer: null,
+  suppressScrollSpyUntil: 0
 };
 
 const $ = (selector) => document.querySelector(selector);
+
+function viewFromHash() {
+  const view = window.location.hash.replace(/^#/, '');
+  return navViews.includes(view) ? view : 'dashboard';
+}
+
+function targetForView(view) {
+  const selector = navSelectors[view] || navSelectors.dashboard;
+  return document.querySelector(selector);
+}
+
+function setActiveView(view) {
+  const nextView = navViews.includes(view) ? view : 'dashboard';
+  state.activeView = nextView;
+  document.querySelectorAll('.nav-item').forEach((button) => {
+    const active = button.dataset.view === nextView;
+    button.classList.toggle('is-active', active);
+    if (active) {
+      button.setAttribute('aria-current', 'page');
+      button.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    } else {
+      button.removeAttribute('aria-current');
+    }
+  });
+}
+
+function scrollToView(view, options = {}) {
+  const nextView = navViews.includes(view) ? view : 'dashboard';
+  const target = targetForView(nextView);
+  if (!target) return;
+
+  const behavior = options.behavior || 'smooth';
+  state.suppressScrollSpyUntil = Date.now() + 700;
+  setActiveView(nextView);
+
+  if (options.updateHash !== false) {
+    const nextHash = `#${nextView}`;
+    if (window.location.hash !== nextHash) {
+      history.pushState(null, '', nextHash);
+    }
+  }
+
+  if (nextView === 'dashboard') {
+    window.scrollTo({ top: 0, behavior });
+    return;
+  }
+  target.scrollIntoView({ behavior, block: 'start' });
+}
+
+function syncViewFromHash(options = {}) {
+  scrollToView(viewFromHash(), {
+    behavior: options.behavior || 'auto',
+    updateHash: false
+  });
+}
+
+function currentViewByScroll() {
+  const offset = 120;
+  let current = 'dashboard';
+  navViews.forEach((view) => {
+    const target = targetForView(view);
+    if (!target) return;
+    if (target.getBoundingClientRect().top <= offset) {
+      current = view;
+    }
+  });
+  return current;
+}
+
+function scheduleScrollSpy() {
+  if ($('#appPanel').hidden || Date.now() < state.suppressScrollSpyUntil) return;
+  if (state.scrollSpyTimer) return;
+  state.scrollSpyTimer = requestAnimationFrame(() => {
+    state.scrollSpyTimer = null;
+    setActiveView(currentViewByScroll());
+  });
+}
+
+function applyInitialView() {
+  if (state.initialViewApplied) return;
+  state.initialViewApplied = true;
+  const initialView = viewFromHash();
+  setActiveView(initialView);
+  requestAnimationFrame(() => {
+    scrollToView(initialView, { behavior: 'auto', updateHash: false });
+    setTimeout(() => {
+      scrollToView(initialView, { behavior: 'auto', updateHash: false });
+    }, 180);
+  });
+}
 
 function escapeHtml(value) {
   return String(value == null ? '' : value)
@@ -185,22 +288,27 @@ function renderRecent(summary) {
   const items = [
     ...summary.recent.bookings.map((item) => ({
       title: item.service || '预约',
-      meta: `${formatDate(item.createdAt)} · ${maskContact(item.contact)}`
+      meta: `${formatDate(item.createdAt)} · ${maskContact(item.contact)}`,
+      view: 'bookings'
     })),
     ...summary.recent.feedback.map((item) => ({
       title: item.nickname || '游客反馈',
-      meta: `${formatDate(item.createdAt)} · ${item.content || '-'}`
+      meta: `${formatDate(item.createdAt)} · ${item.content || '-'}`,
+      view: 'feedback'
     }))
   ].slice(0, 6);
 
   $('#recentList').innerHTML = items.length ? items.map((item) => `
-    <div class="recent-item">
+    <button class="recent-item recent-jump" type="button" data-view="${escapeHtml(item.view)}">
       <div class="recent-top">
         <span class="recent-title">${escapeHtml(item.title)}</span>
       </div>
       <div class="recent-meta">${escapeHtml(item.meta)}</div>
-    </div>
+    </button>
   `).join('') : '<div class="recent-meta">暂无动态</div>';
+  document.querySelectorAll('.recent-jump').forEach((button) => {
+    button.addEventListener('click', () => scrollToView(button.dataset.view));
+  });
 }
 
 function renderBookings(items) {
@@ -400,6 +508,8 @@ async function loadDashboard() {
   renderFeedback(feedback.items);
   renderAudit(audit.items);
   bindRecordControls();
+  applyInitialView();
+  scheduleScrollSpy();
 }
 
 function selectionFor(kind) {
@@ -715,20 +825,16 @@ function bindEvents() {
 
   document.querySelectorAll('.nav-item').forEach((button) => {
     button.addEventListener('click', () => {
-      document.querySelectorAll('.nav-item').forEach((item) => item.classList.remove('is-active'));
-      button.classList.add('is-active');
-      const view = button.dataset.view;
-      if (view === 'home-content') document.querySelector('[data-section="home-content"]').scrollIntoView({ behavior: 'smooth', block: 'start' });
-      if (view === 'bookings') document.querySelector('[data-section="bookings"]').scrollIntoView({ behavior: 'smooth', block: 'start' });
-      if (view === 'feedback') document.querySelector('[data-section="feedback"]').scrollIntoView({ behavior: 'smooth', block: 'start' });
-      if (view === 'audit') document.querySelector('[data-section="audit"]').scrollIntoView({ behavior: 'smooth', block: 'start' });
-      if (view === 'system') document.querySelector('.right-rail').scrollIntoView({ behavior: 'smooth', block: 'start' });
-      if (view === 'dashboard') window.scrollTo({ top: 0, behavior: 'smooth' });
+      scrollToView(button.dataset.view);
     });
   });
 
+  window.addEventListener('hashchange', () => syncViewFromHash());
+  window.addEventListener('scroll', scheduleScrollSpy, { passive: true });
+
   renderTabs($('#bookingTabs'), bookingStatuses, state.bookingStatus, onBookingTabChange);
   renderTabs($('#feedbackTabs'), feedbackStatuses, state.feedbackStatus, onFeedbackTabChange);
+  setActiveView(viewFromHash());
 }
 
 bindEvents();

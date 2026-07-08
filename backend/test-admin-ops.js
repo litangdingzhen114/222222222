@@ -58,13 +58,23 @@ function stopProcess(child) {
 async function main() {
   const adminHtml = fs.readFileSync(path.join(__dirname, 'admin', 'index.html'), 'utf8');
   const adminJs = fs.readFileSync(path.join(__dirname, 'admin', 'app.js'), 'utf8');
+  const adminCss = fs.readFileSync(path.join(__dirname, 'admin', 'app.css'), 'utf8');
   assert(adminHtml.includes('auditRows'), 'admin dashboard should render audit trail rows');
   assert(adminHtml.includes('exportBackup'), 'admin dashboard should expose one-click backup');
   assert(adminJs.includes('/api/admin/audit'), 'admin dashboard should load audit trail');
   assert(adminJs.includes('/api/admin/backup'), 'admin dashboard should download JSON backup');
   assert(adminHtml.includes('homeContentEditor'), 'admin dashboard should render home content editor');
+  assert(adminHtml.includes('id="bookings"'), 'admin dashboard should expose booking anchor');
+  assert(adminHtml.includes('id="feedback"'), 'admin dashboard should expose feedback anchor');
+  assert(adminHtml.includes('id="audit"'), 'admin dashboard should expose audit anchor');
   assert(adminJs.includes('/api/admin/home-content'), 'admin dashboard should manage home content');
   assert(adminJs.includes('maskContact'), 'admin dashboard should mask contact info in tables');
+  assert(adminJs.includes('scrollToView'), 'admin dashboard should use hash-aware browsing');
+  assert(adminJs.includes('hashchange'), 'admin dashboard should restore section browsing from URL hash');
+  assert(adminJs.includes('aria-current'), 'admin navigation should expose the active section');
+  assert(adminJs.includes('recent-jump'), 'admin recent activity should navigate to related sections');
+  assert(adminCss.includes('overflow-x: hidden'), 'admin layout should prevent page-level horizontal overflow');
+  assert(adminCss.includes('scroll-margin-top'), 'admin sections should account for sticky navigation');
 
   const storageDir = fs.mkdtempSync(path.join(os.tmpdir(), 'hailin-admin-ops-test-'));
   const backend = spawn(process.execPath, [path.join(__dirname, 'server.js')], {
