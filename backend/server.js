@@ -437,11 +437,13 @@ function homePayload() {
     gridPages,
     products,
     hotRecommends: recommend.hotRecommends,
+    itineraries: recommend.itineraries,
+    serviceCards: recommend.serviceCards,
     rankings: recommend.rankings,
     corridor: recommend.corridor,
     feeds: recommend.feeds,
-    notice: '海林村真实后端已接入：预约、反馈、慢直播与 AI 导游由本地服务提供',
-    weather: '青田海口镇今日多云，瓯江沿线适合村游慢行',
+    notice: '今日推荐：先到游客中心确认停车与讲解，再走溪谷步道，午餐预约海林田鱼家宴',
+    weather: '青田海口镇多云间晴，瓯江沿线适合慢行；亲水步道雨后注意防滑',
     serviceMode: '真实服务已连接',
     locationText: LOCATION_TEXT
   };
@@ -498,6 +500,8 @@ function sanitizeHomeContent(input) {
     gridPages: sanitizeContentList(input.gridPages, defaults.gridPages, 6),
     products: sanitizeContentList(input.products, defaults.products, 24),
     hotRecommends: sanitizeContentList(input.hotRecommends, defaults.hotRecommends, 12),
+    itineraries: sanitizeContentList(input.itineraries, defaults.itineraries, 12),
+    serviceCards: sanitizeContentList(input.serviceCards, defaults.serviceCards, 12),
     rankings: sanitizeContentList(input.rankings, defaults.rankings, 8),
     corridor: sanitizeContentList(input.corridor, defaults.corridor, 16),
     feeds: sanitizeContentList(input.feeds, defaults.feeds, 30),
@@ -514,6 +518,8 @@ function homeContentStats(content) {
     gridItems: content.gridPages.reduce((total, page) => total + (Array.isArray(page.items) ? page.items.length : 0), 0),
     products: content.products.length,
     hotRecommends: content.hotRecommends.length,
+    itineraries: content.itineraries.length,
+    serviceCards: content.serviceCards.length,
     rankings: content.rankings.length,
     corridor: content.corridor.length,
     feeds: content.feeds.length

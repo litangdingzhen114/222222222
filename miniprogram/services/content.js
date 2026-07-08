@@ -19,11 +19,13 @@ function loadHomeData() {
     gridPages,
     products,
     hotRecommends: recommend.hotRecommends,
+    itineraries: recommend.itineraries,
+    serviceCards: recommend.serviceCards,
     rankings: recommend.rankings,
     corridor: recommend.corridor,
     feeds: recommend.feeds,
-    notice: '海口镇海林村文旅服务升级中，慢直播、AI导游与预约服务可接入真实后台',
-    weather: '青田海口镇今日多云，瓯江沿线适合村游慢行',
+    notice: '今日推荐：先到游客中心确认停车与讲解，再走溪谷步道，午餐预约海林田鱼家宴',
+    weather: '青田海口镇多云间晴，瓯江沿线适合慢行；亲水步道雨后注意防滑',
     serviceMode: serviceModeText(),
     locationText: serviceConfig.locationText
   };

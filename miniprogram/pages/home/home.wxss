@@ -127,6 +127,10 @@
   background: linear-gradient(120deg, #355E5D 0%, #87A6A0 48%, #D7C7AC 48%, #F4E9DA 100%);
 }
 
+.banner-evening {
+  background: linear-gradient(120deg, #123330 0%, #3F8FA2 48%, #C99729 48%, #F4E9DA 100%);
+}
+
 .banner-copy {
   position: relative;
   z-index: 2;
@@ -386,6 +390,14 @@
   background: linear-gradient(135deg, #315A4E, #A7472D);
 }
 
+.recommend-food {
+  background: linear-gradient(135deg, #7C2F24, #C99729);
+}
+
+.recommend-live {
+  background: linear-gradient(135deg, #0E6B78, #123330);
+}
+
 .hot-copy {
   position: relative;
   z-index: 2;
@@ -417,6 +429,180 @@
 
 .hot-illus {
   display: none;
+}
+
+.itinerary-scroll {
+  width: 100%;
+  white-space: nowrap;
+}
+
+.itinerary-row {
+  display: flex;
+  gap: 18rpx;
+}
+
+.itinerary-card {
+  position: relative;
+  width: 560rpx;
+  height: 332rpx;
+  flex: 0 0 560rpx;
+  overflow: hidden;
+  border-radius: 28rpx;
+  background: #123330;
+  color: #FBFFFC;
+  box-shadow: 0 14rpx 32rpx rgba(26, 74, 70, 0.12);
+}
+
+.itinerary-photo,
+.itinerary-mask {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.itinerary-mask {
+  background:
+    linear-gradient(90deg, rgba(18, 51, 48, 0.84) 0%, rgba(18, 51, 48, 0.54) 54%, rgba(18, 51, 48, 0.18) 100%),
+    linear-gradient(0deg, rgba(18, 51, 48, 0.42), rgba(18, 51, 48, 0));
+}
+
+.itinerary-copy {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: 28rpx;
+}
+
+.itinerary-label {
+  align-self: flex-start;
+  padding: 7rpx 14rpx;
+  border-radius: 999rpx;
+  background: rgba(251, 255, 252, 0.18);
+  color: #E2F0EC;
+  font-size: 21rpx;
+  font-weight: 800;
+}
+
+.itinerary-title {
+  margin-top: 18rpx;
+  font-size: 38rpx;
+  font-weight: 900;
+  line-height: 1.18;
+}
+
+.itinerary-time {
+  margin-top: 8rpx;
+  color: #F0C76D;
+  font-size: 24rpx;
+  font-weight: 800;
+}
+
+.itinerary-route {
+  width: 390rpx;
+  margin-top: 12rpx;
+  color: rgba(251, 255, 252, 0.9);
+  font-size: 24rpx;
+  line-height: 1.45;
+  white-space: normal;
+}
+
+.itinerary-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+  margin-top: auto;
+}
+
+.itinerary-tags text {
+  padding: 6rpx 12rpx;
+  border-radius: 999rpx;
+  background: rgba(251, 255, 252, 0.76);
+  color: #0F4F4B;
+  font-size: 20rpx;
+  font-weight: 800;
+}
+
+.service-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16rpx;
+}
+
+.service-card {
+  display: flex;
+  min-height: 184rpx;
+  padding: 22rpx 20rpx;
+  border: 1rpx solid #D5E7E2;
+  border-radius: 24rpx;
+  background: #FBFFFC;
+  box-shadow: 0 8rpx 18rpx rgba(26, 74, 70, 0.04);
+}
+
+.service-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 58rpx;
+  width: 58rpx;
+  height: 58rpx;
+  margin-right: 14rpx;
+  border-radius: 50%;
+  background: #DCEDEA;
+  color: #0F6B67;
+  font-size: 20rpx;
+  font-weight: 900;
+}
+
+.service-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.service-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.service-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  color: #193C3A;
+  font-size: 28rpx;
+  font-weight: 900;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.service-status {
+  flex: 0 0 auto;
+  padding: 5rpx 9rpx;
+  border-radius: 999rpx;
+  background: #F4E9DA;
+  color: #A7472D;
+  font-size: 18rpx;
+  font-weight: 800;
+}
+
+.service-desc {
+  margin-top: 9rpx;
+  color: #607F7A;
+  font-size: 22rpx;
+  line-height: 1.42;
+}
+
+.service-action {
+  margin-top: 12rpx;
+  color: #0F6B67;
+  font-size: 22rpx;
+  font-weight: 900;
 }
 
 .product-panel {

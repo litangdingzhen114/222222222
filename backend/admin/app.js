@@ -503,6 +503,8 @@ function homeStats(content) {
     banners: (content.banners || []).length,
     gridItems: (content.gridPages || []).reduce((total, page) => total + (Array.isArray(page.items) ? page.items.length : 0), 0),
     hotRecommends: (content.hotRecommends || []).length,
+    itineraries: (content.itineraries || []).length,
+    serviceCards: (content.serviceCards || []).length,
     feeds: (content.feeds || []).length
   };
 }
@@ -526,7 +528,9 @@ function renderHomeContent(payload) {
 
   const previewItems = [
     ...(content.banners || []).slice(0, 3).map((item) => ({ type: '轮播', title: item.title, meta: item.subtitle || item.tag })),
-    ...(content.hotRecommends || []).slice(0, 4).map((item) => ({ type: '推荐', title: item.title, meta: item.subtitle || item.buttonText }))
+    ...(content.hotRecommends || []).slice(0, 4).map((item) => ({ type: '推荐', title: item.title, meta: item.subtitle || item.buttonText })),
+    ...(content.itineraries || []).slice(0, 3).map((item) => ({ type: '行程', title: item.title, meta: item.route || item.time })),
+    ...(content.serviceCards || []).slice(0, 3).map((item) => ({ type: '服务', title: item.title, meta: item.desc || item.status }))
   ];
 
   $('#homePreviewList').innerHTML = previewItems.length ? previewItems.map((item) => `

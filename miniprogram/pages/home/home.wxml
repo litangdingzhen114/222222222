@@ -68,6 +68,56 @@
       <text>{{weather}}</text>
     </view>
 
+    <section-title title="今日这样游" moreText="更多路线" bind:moretap="onMoreRoutes"></section-title>
+    <scroll-view scroll-x="{{true}}" class="itinerary-scroll" enable-flex="{{true}}">
+      <view class="itinerary-row">
+        <view
+          wx:for="{{itineraries}}"
+          wx:key="id"
+          class="itinerary-card"
+          data-title="{{item.title}}"
+          data-url="{{item.url}}"
+          data-open-type="{{item.openType}}"
+          bindtap="onItineraryTap"
+        >
+          <image wx:if="{{item.imageUrl}}" class="itinerary-photo" src="{{item.imageUrl}}" mode="aspectFill"></image>
+          <view class="itinerary-mask"></view>
+          <view class="itinerary-copy">
+            <view class="itinerary-label">{{item.label}}</view>
+            <view class="itinerary-title">{{item.title}}</view>
+            <view class="itinerary-time">{{item.time}}</view>
+            <view class="itinerary-route">{{item.route}}</view>
+            <view class="itinerary-tags">
+              <text wx:for="{{item.highlights}}" wx:key="*this">{{item}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+
+    <section-title title="到村服务"></section-title>
+    <view class="service-grid">
+      <view
+        wx:for="{{serviceCards}}"
+        wx:key="id"
+        class="service-card"
+        data-title="{{item.title}}"
+        data-url="{{item.url}}"
+        data-open-type="{{item.openType}}"
+        bindtap="onServiceTap"
+      >
+        <view class="service-icon">{{item.icon}}</view>
+        <view class="service-copy">
+          <view class="service-title-row">
+            <text class="service-title">{{item.title}}</text>
+            <text class="service-status">{{item.status}}</text>
+          </view>
+          <view class="service-desc">{{item.desc}}</view>
+          <view class="service-action">{{item.actionText}}</view>
+        </view>
+      </view>
+    </view>
+
     <section-title title="热门推荐"></section-title>
     <view class="hot-grid">
       <view
@@ -75,6 +125,8 @@
         wx:key="id"
         class="hot-card {{item.imageClass}}"
         data-title="{{item.title}}"
+        data-url="{{item.url}}"
+        data-open-type="{{item.openType}}"
         bindtap="onRecommendTap"
       >
         <image wx:if="{{item.imageUrl}}" class="hot-photo" src="{{item.imageUrl}}" mode="aspectFill"></image>

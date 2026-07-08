@@ -143,6 +143,10 @@ async function main() {
     assert.strictEqual(homeContent.status, 200);
     assert(Array.isArray(homeContent.body.data.content.banners));
     assert(homeContent.body.data.content.banners.length > 0);
+    assert(Array.isArray(homeContent.body.data.content.itineraries));
+    assert(homeContent.body.data.content.itineraries.length >= 3);
+    assert(Array.isArray(homeContent.body.data.content.serviceCards));
+    assert(homeContent.body.data.content.serviceCards.length >= 4);
     assert.strictEqual(homeContent.body.data.meta.source, 'defaults');
 
     const editedHome = {
@@ -167,6 +171,8 @@ async function main() {
     assert.strictEqual(publicHome.body.data.notice, 'Admin edited home notice');
     assert.strictEqual(publicHome.body.data.weather, 'Admin edited weather');
     assert.strictEqual(publicHome.body.data.banners[0].title, 'Admin edited banner');
+    assert(publicHome.body.data.itineraries.length >= 3);
+    assert(publicHome.body.data.serviceCards.length >= 4);
 
     const updated = await requestJson(`http://${HOST}:${PORT}/api/admin/bookings/${booking.body.data.id}/status`, {
       method: 'PATCH',

@@ -7,6 +7,8 @@ Page({
     gridPages: [],
     products: [],
     hotRecommends: [],
+    itineraries: [],
+    serviceCards: [],
     rankings: [],
     corridor: [],
     feedsLeft: [],
@@ -30,6 +32,8 @@ Page({
         gridPages: data.gridPages || [],
         products: data.products || [],
         hotRecommends: data.hotRecommends || [],
+        itineraries: data.itineraries || [],
+        serviceCards: data.serviceCards || [],
         rankings: data.rankings || [],
         corridor: data.corridor || [],
         feedsLeft: feeds.filter((_, index) => index % 2 === 0),
@@ -54,21 +58,34 @@ Page({
 
   onGridTap(event) {
     const { title, url, openType } = event.currentTarget.dataset;
+    this.navigateByDataset(title, url, openType);
+  },
+
+  onRecommendTap(event) {
+    const { title, url, openType } = event.currentTarget.dataset;
+    this.navigateByDataset(title, url, openType);
+  },
+
+  onItineraryTap(event) {
+    const { title, url, openType } = event.currentTarget.dataset;
+    this.navigateByDataset(title, url, openType);
+  },
+
+  onServiceTap(event) {
+    const { title, url, openType } = event.currentTarget.dataset;
+    this.navigateByDataset(title, url, openType);
+  },
+
+  navigateByDataset(title, url, openType) {
     if (!url) {
       featureComing(title);
       return;
     }
-
     if (openType === 'switchTab') {
       wx.switchTab({ url });
       return;
     }
-
     wx.navigateTo({ url });
-  },
-
-  onRecommendTap(event) {
-    featureComing(event.currentTarget.dataset.title);
   },
 
   onProductTap(event) {
@@ -81,6 +98,10 @@ Page({
 
   onMoreProducts() {
     quickToast('更多文创建设中');
+  },
+
+  onMoreRoutes() {
+    wx.navigateTo({ url: '/pages/route-list/route-list' });
   },
 
   onFeedTap() {
