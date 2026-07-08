@@ -55,3 +55,19 @@ npm test
 ```
 
 当前后端使用文件型存储，适合试运营和轻量上线。长期生产运行建议迁移到数据库，并给上传媒体和慢直播接对象存储/CDN。
+
+## Vercel 部署
+
+仓库已经包含 `api/index.js` 和 `vercel.json`，可以作为 Vercel Project 从 GitHub 导入。Vercel 会把 `/health`、`/api/*`、`/admin/*`、`/media/*` 转发给同一个 Node.js Function。
+
+生产环境变量至少需要：
+
+```text
+NODE_ENV=production
+PUBLIC_BASE_URL=https://api.sunmaosun.com
+ALLOWED_ORIGINS=https://api.sunmaosun.com
+ADMIN_TOKEN=replace-with-a-strong-random-token-at-least-24-characters
+KIMI_API_KEY=replace-with-your-kimi-key
+```
+
+在 Vercel 上没有显式设置 `STORAGE_DIR` 时，函数会使用 `/tmp/hailin-storage`。这只适合预览和轻量演示，数据可能随实例回收或重新部署丢失。正式运营前应迁移预约、反馈、审计和日志到数据库或托管存储。

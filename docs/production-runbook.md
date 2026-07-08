@@ -30,6 +30,23 @@ KIMI_MODEL=kimi-k2.6
 npm run backend
 ```
 
+## Vercel 部署
+
+可以把 GitHub 仓库 `https://github.com/litangdingzhen114/hailin` 导入 Vercel。仓库内的 `api/index.js` 会作为 Node.js Function 入口，`vercel.json` 会把 `/health`、`/api/*`、`/admin/*`、`/media/*` 转发到后端函数。
+
+Vercel 环境变量：
+
+```text
+NODE_ENV=production
+PUBLIC_BASE_URL=https://api.sunmaosun.com
+ALLOWED_ORIGINS=https://api.sunmaosun.com
+ADMIN_TOKEN=换成强随机Token
+KIMI_API_KEY=你的KimiKey
+KIMI_MODEL=kimi-k2.6
+```
+
+Vercel Function 默认使用 `/tmp/hailin-storage` 作为临时文件存储，只适合预览。正式运营需要迁移到数据库/托管存储，否则预约、反馈和审计数据可能丢失。
+
 后台入口：
 
 ```text

@@ -20,6 +20,7 @@ backend/storage/logs/*.txt
 # Local tooling state
 .git/
 .git-hailin/
+.vercel/
 .codex/
 .agents/
 work/

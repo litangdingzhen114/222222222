@@ -1010,27 +1010,44 @@ async function handleRequest(req, res) {
   }
 }
 
-try {
+function bootstrap() {
   validateStartupConfig();
   ensureStorage();
-} catch (error) {
-  console.error(`Startup configuration error: ${error.message}`);
-  process.exit(1);
 }
 
-const server = http.createServer(handleRequest);
-server.listen(PORT, HOST, () => {
-  console.log(`Hailin backend listening at http://${HOST}:${PORT}`);
-  if (!ADMIN_TOKEN) {
-    console.warn('ADMIN_TOKEN is not configured; admin API is disabled.');
+function startServer() {
+  try {
+    bootstrap();
+  } catch (error) {
+    console.error(`Startup configuration error: ${error.message}`);
+    process.exit(1);
   }
-});
 
-function shutdown(signal) {
-  console.log(`Received ${signal}, shutting down...`);
-  server.close(() => process.exit(0));
-  setTimeout(() => process.exit(1), 5000).unref();
+  const server = http.createServer(handleRequest);
+  server.listen(PORT, HOST, () => {
+    console.log(`Hailin backend listening at http://${HOST}:${PORT}`);
+    if (!ADMIN_TOKEN) {
+      console.warn('ADMIN_TOKEN is not configured; admin API is disabled.');
+    }
+  });
+
+  function shutdown(signal) {
+    console.log(`Received ${signal}, shutting down...`);
+    server.close(() => process.exit(0));
+    setTimeout(() => process.exit(1), 5000).unref();
+  }
+
+  process.on('SIGINT', shutdown);
+  process.on('SIGTERM', shutdown);
+  return server;
 }
 
-process.on('SIGINT', shutdown);
-process.on('SIGTERM', shutdown);
+if (require.main === module) {
+  startServer();
+}
+
+module.exports = {
+  bootstrap,
+  handleRequest,
+  startServer
+};

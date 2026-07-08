@@ -6,12 +6,13 @@
     "start": "node backend/server.js",
     "backend": "node backend/server.js",
     "test:backend": "node backend/test-kimi.js",
+    "test:vercel": "node backend/test-vercel-adapter.js",
     "test:mine": "node miniprogram/tests/mine-page.test.js",
     "test:map": "node miniprogram/tests/map-page.test.js",
     "test:admin-ops": "node backend/test-admin-ops.js",
     "test:production": "node backend/test-production.js",
     "test:security": "node backend/test-security.js",
-    "test": "node backend/test-kimi.js && node backend/test-production.js && node backend/test-security.js && node backend/test-admin-ops.js && node miniprogram/tests/mine-page.test.js && node miniprogram/tests/map-page.test.js"
+    "test": "node backend/test-kimi.js && node backend/test-vercel-adapter.js && node backend/test-production.js && node backend/test-security.js && node backend/test-admin-ops.js && node miniprogram/tests/mine-page.test.js && node miniprogram/tests/map-page.test.js"
   },
   "engines": {
     "node": ">=18"
