@@ -27,6 +27,18 @@ http://127.0.0.1:8787
 http://127.0.0.1:8787/admin/
 ```
 
+后台管理页源码位于 `backend/admin-src/`，使用 Vite、React、Ant Design、React Router 和 TanStack Query。开发后台前端可运行：
+
+```bash
+npm run admin:dev
+```
+
+构建后台静态资源到 `backend/admin/`：
+
+```bash
+npm run admin:build
+```
+
 ## 线上域名规划
 
 - 原有 Vercel 网站继续使用 `https://www.sunmaosun.com`

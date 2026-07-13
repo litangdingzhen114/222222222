@@ -57,38 +57,23 @@ function stopProcess(child) {
 
 async function main() {
   const adminHtml = fs.readFileSync(path.join(__dirname, 'admin', 'index.html'), 'utf8');
-  const adminJs = fs.readFileSync(path.join(__dirname, 'admin', 'app.js'), 'utf8');
-  const adminCss = fs.readFileSync(path.join(__dirname, 'admin', 'app.css'), 'utf8');
-  assert(adminHtml.includes('auditRows'), 'admin dashboard should render audit trail rows');
-  assert(adminHtml.includes('exportBackup'), 'admin dashboard should expose one-click backup');
-  assert(adminJs.includes('/api/admin/audit'), 'admin dashboard should load audit trail');
-  assert(adminJs.includes('/api/admin/backup'), 'admin dashboard should download JSON backup');
-  assert(adminHtml.includes('homeContentEditor'), 'admin dashboard should render home content editor');
-  assert(adminHtml.includes('id="bookings"'), 'admin dashboard should expose booking anchor');
-  assert(adminHtml.includes('id="feedback"'), 'admin dashboard should expose feedback anchor');
-  assert(adminHtml.includes('id="audit"'), 'admin dashboard should expose audit anchor');
-  assert(adminHtml.includes('metric-jump'), 'admin dashboard metrics should act as browsing shortcuts');
-  assert(adminHtml.includes('focusItems'), 'admin dashboard should expose an operations focus list');
-  assert(adminHtml.includes('focusRefresh'), 'admin dashboard should refresh operations focus items');
-  assert(adminJs.includes('/api/admin/home-content'), 'admin dashboard should manage home content');
-  assert(adminJs.includes('maskContact'), 'admin dashboard should mask contact info in tables');
-  assert(adminJs.includes('scrollToView'), 'admin dashboard should use hash-aware browsing');
-  assert(adminJs.includes('hashchange'), 'admin dashboard should restore section browsing from URL hash');
-  assert(adminJs.includes('aria-current'), 'admin navigation should expose the active section');
-  assert(adminJs.includes('recent-jump'), 'admin recent activity should navigate to related sections');
-  assert(adminJs.includes('metric-jump'), 'admin metric shortcuts should be bound in JavaScript');
-  assert(adminJs.includes('renderFocusItems'), 'admin dashboard should render prioritized operations tasks');
-  assert(adminJs.includes('bindJumpControls'), 'admin dashboard should share jump behavior across shortcuts');
-  assert(adminJs.includes('emptyState'), 'admin dashboard should render explicit empty states');
-  assert(adminJs.includes("view !== 'system'"), 'admin scroll spy should not treat sticky health rail as normal content');
-  assert(adminCss.includes('ops-focus'), 'admin dashboard should style the operations focus list');
-  assert(adminCss.includes('empty-state'), 'admin dashboard should style empty data states');
-  assert(adminCss.includes('--sidebar-width'), 'admin dashboard should reserve fixed sidebar width');
-  assert(adminCss.includes('position: fixed'), 'admin sidebar should stay fixed on desktop and tablet layouts');
-  assert(adminCss.includes('grid-column: 2'), 'admin workspace should render beside the fixed sidebar');
-  assert(adminCss.includes('position: sticky'), 'admin health rail should stay visible on desktop');
-  assert(adminCss.includes('overflow-x: hidden'), 'admin layout should prevent page-level horizontal overflow');
-  assert(adminCss.includes('scroll-margin-top'), 'admin sections should account for sticky navigation');
+  const apiSource = fs.readFileSync(path.join(__dirname, 'admin-src', 'src', 'api.ts'), 'utf8');
+  const bookingsPage = fs.readFileSync(path.join(__dirname, 'admin-src', 'src', 'pages', 'BookingsPage.tsx'), 'utf8');
+  const auditPage = fs.readFileSync(path.join(__dirname, 'admin-src', 'src', 'pages', 'AuditPage.tsx'), 'utf8');
+  const homePage = fs.readFileSync(path.join(__dirname, 'admin-src', 'src', 'pages', 'HomeContentPage.tsx'), 'utf8');
+  const livePage = fs.readFileSync(path.join(__dirname, 'admin-src', 'src', 'pages', 'LiveContentPage.tsx'), 'utf8');
+  const detailDrawer = fs.readFileSync(path.join(__dirname, 'admin-src', 'src', 'pages', 'RecordDetailDrawer.tsx'), 'utf8');
+  assert(adminHtml.includes('/admin/assets/'), 'admin dashboard should be built as static assets');
+  assert(apiSource.includes('/api/admin/audit'), 'admin dashboard should load audit trail');
+  assert(apiSource.includes('/api/admin/backup'), 'admin dashboard should download JSON backup');
+  assert(apiSource.includes('/api/admin/home-content'), 'admin dashboard should manage home content');
+  assert(apiSource.includes('/api/admin/lives'), 'admin dashboard should manage live stream content');
+  assert(auditPage.includes('fetchBackupBlob'), 'admin dashboard should expose one-click backup');
+  assert(homePage.includes('json-editor'), 'admin dashboard should render home content editor');
+  assert(livePage.includes('saveLiveContent'), 'admin dashboard should save live stream points');
+  assert(livePage.includes('Switch'), 'admin dashboard should toggle live stream points');
+  assert(bookingsPage.includes('rowSelection'), 'admin dashboard should support table row selection');
+  assert(detailDrawer.includes('maskContact'), 'admin dashboard should mask contact info in tables');
 
   const storageDir = fs.mkdtempSync(path.join(os.tmpdir(), 'hailin-admin-ops-test-'));
   const backend = spawn(process.execPath, [path.join(__dirname, 'server.js')], {
@@ -174,22 +159,122 @@ async function main() {
     assert(publicHome.body.data.itineraries.length >= 3);
     assert(publicHome.body.data.serviceCards.length >= 4);
 
+    const liveContent = await requestJson(`http://${HOST}:${PORT}/api/admin/lives`, {
+      headers: authHeaders
+    });
+    assert.strictEqual(liveContent.status, 200);
+    assert(Array.isArray(liveContent.body.data.items));
+    assert(liveContent.body.data.items.length > 0);
+    assert.strictEqual(liveContent.body.data.meta.source, 'defaults');
+
+    const disabledLive = liveContent.body.data.items[1];
+    const editedLiveItems = liveContent.body.data.items.map((item, index) => {
+      if (index === 0) {
+        return {
+          ...item,
+          title: 'Admin edited live point',
+          liveUrl: 'https://cdn.example.com/hailin-live.mp4',
+          hlsUrl: '',
+          viewers: 456,
+          enabled: true,
+          sortOrder: 1
+        };
+      }
+      if (index === 1) return { ...item, enabled: false };
+      return item;
+    });
+    const savedLives = await requestJson(`http://${HOST}:${PORT}/api/admin/lives`, {
+      method: 'PUT',
+      headers: authHeaders,
+      body: JSON.stringify({ items: editedLiveItems })
+    });
+    assert.strictEqual(savedLives.status, 200);
+    assert.strictEqual(savedLives.body.data.meta.source, 'storage');
+    assert.strictEqual(savedLives.body.data.items[0].title, 'Admin edited live point');
+    assert.strictEqual(savedLives.body.data.meta.stats.customSources, 1);
+
+    const publicLives = await requestJson(`http://${HOST}:${PORT}/api/hailin/lives`);
+    assert.strictEqual(publicLives.status, 200);
+    assert(publicLives.body.data.some((item) => item.title === 'Admin edited live point'));
+    assert(publicLives.body.data.some((item) => item.liveUrl === 'https://cdn.example.com/hailin-live.mp4'));
+    if (disabledLive) {
+      assert(!publicLives.body.data.some((item) => item.id === disabledLive.id), 'disabled live points should be hidden from public API');
+    }
+
+    const summaryAfterLives = await requestJson(`http://${HOST}:${PORT}/api/admin/summary`, {
+      headers: authHeaders
+    });
+    assert.strictEqual(summaryAfterLives.status, 200);
+    assert.strictEqual(summaryAfterLives.body.data.counts.lives.customSources, 1);
+
+    const notedNewBooking = await requestJson(`http://${HOST}:${PORT}/api/admin/bookings/${booking.body.data.id}/status`, {
+      method: 'PATCH',
+      headers: authHeaders,
+      body: JSON.stringify({ status: 'new', note: '先记录待确认备注' })
+    });
+    assert.strictEqual(notedNewBooking.status, 200);
+    assert.strictEqual(notedNewBooking.body.data.status, 'new');
+    assert.strictEqual(notedNewBooking.body.data.lastHandledBy, 'ops-admin');
+    assert(notedNewBooking.body.data.lastHandledAt, 'note-only update should record handled time');
+    assert(notedNewBooking.body.data.statusHistory.some((item) => item.type === 'note' && item.note === '先记录待确认备注'), 'note-only update should append history');
+
     const updated = await requestJson(`http://${HOST}:${PORT}/api/admin/bookings/${booking.body.data.id}/status`, {
       method: 'PATCH',
       headers: authHeaders,
       body: JSON.stringify({ status: 'confirmed', note: '电话确认通过' })
     });
     assert.strictEqual(updated.status, 200);
+    assert.strictEqual(updated.body.data.status, 'confirmed');
+    assert.strictEqual(updated.body.data.lastHandledBy, 'ops-admin');
+    assert(updated.body.data.lastHandledAt, 'status update should record handled time');
+    assert(updated.body.data.statusHistory.some((item) => item.fromStatus === 'new' && item.toStatus === 'confirmed'), 'status update should append history');
+
+    const invalidBookingTransition = await requestJson(`http://${HOST}:${PORT}/api/admin/bookings/${booking.body.data.id}/status`, {
+      method: 'PATCH',
+      headers: authHeaders,
+      body: JSON.stringify({ status: 'new', note: '不能回退到待确认' })
+    });
+    assert.strictEqual(invalidBookingTransition.status, 409);
+
+    const completedBulk = await requestJson(`http://${HOST}:${PORT}/api/admin/bookings/bulk-status`, {
+      method: 'PATCH',
+      headers: authHeaders,
+      body: JSON.stringify({ ids: [booking.body.data.id], status: 'completed', note: '批量完成接待' })
+    });
+    assert.strictEqual(completedBulk.status, 200);
+    assert.strictEqual(completedBulk.body.data.updated, 1);
+    assert.strictEqual(completedBulk.body.data.items[0].status, 'completed');
+    assert.strictEqual(completedBulk.body.data.items[0].adminNote, '批量完成接待');
+    assert(completedBulk.body.data.items[0].completedAt, 'completed booking should record completedAt');
+
+    const resolvedFeedback = await requestJson(`http://${HOST}:${PORT}/api/admin/feedback/${feedback.body.data.id}/status`, {
+      method: 'PATCH',
+      headers: authHeaders,
+      body: JSON.stringify({ status: 'resolved', note: '已电话回复游客' })
+    });
+    assert.strictEqual(resolvedFeedback.status, 200);
+    assert.strictEqual(resolvedFeedback.body.data.status, 'resolved');
+    assert(resolvedFeedback.body.data.resolvedAt, 'resolved feedback should record resolvedAt');
+
+    const invalidFeedbackTransition = await requestJson(`http://${HOST}:${PORT}/api/admin/feedback/${feedback.body.data.id}/status`, {
+      method: 'PATCH',
+      headers: authHeaders,
+      body: JSON.stringify({ status: 'new', note: '不能回退到待处理' })
+    });
+    assert.strictEqual(invalidFeedbackTransition.status, 409);
 
     const audit = await requestJson(`http://${HOST}:${PORT}/api/admin/audit?pageSize=20`, {
       headers: authHeaders
     });
     assert.strictEqual(audit.status, 200);
     assert(audit.body.data.items.some((item) => item.action === 'booking.status.updated'), 'status update should be audited');
+    assert(audit.body.data.items.some((item) => item.action === 'booking.bulk-status.updated'), 'bulk status update should be audited');
+    assert(audit.body.data.items.some((item) => item.action === 'feedback.status.updated'), 'feedback status update should be audited');
     assert(audit.body.data.items.some((item) => item.action === 'home-content.updated'), 'home content update should be audited');
+    assert(audit.body.data.items.some((item) => item.action === 'lives-content.updated'), 'live content update should be audited');
     assert(audit.body.data.items.some((item) => item.action === 'booking.created'), 'public booking creation should be audited');
     assert(audit.body.data.items.some((item) => item.action === 'feedback.created'), 'public feedback creation should be audited');
-    const statusAudit = audit.body.data.items.find((item) => item.action === 'booking.status.updated');
+    const statusAudit = audit.body.data.items.find((item) => item.action === 'booking.status.updated' && item.detail.status === 'confirmed');
     assert.strictEqual(statusAudit.adminUser, 'ops-admin');
     assert.strictEqual(statusAudit.targetId, booking.body.data.id);
     assert.strictEqual(statusAudit.detail.status, 'confirmed');
@@ -204,8 +289,25 @@ async function main() {
     assert.strictEqual(backup.meta.service, 'hailin-backend');
     assert.strictEqual(backup.data.bookings.length, 1);
     assert.strictEqual(backup.data.feedback.length, 1);
+    assert.strictEqual(backup.data.bookings[0].status, 'completed');
+    assert.strictEqual(backup.data.bookings[0].lastHandledBy, 'ops-admin');
+    assert(backup.data.bookings[0].statusHistory.length >= 3);
+    assert.strictEqual(backup.data.feedback[0].status, 'resolved');
+    assert(backup.data.feedback[0].statusHistory.length >= 2);
     assert.strictEqual(backup.data.homeContent.content.notice, 'Admin edited home notice');
+    assert.strictEqual(backup.data.liveContent.items[0].title, 'Admin edited live point');
     assert(backup.data.audit.length >= 3);
+
+    const resetLives = await requestJson(`http://${HOST}:${PORT}/api/admin/lives/reset`, {
+      method: 'POST',
+      headers: authHeaders
+    });
+    assert.strictEqual(resetLives.status, 200);
+    assert.strictEqual(resetLives.body.data.meta.source, 'defaults');
+
+    const resetPublicLives = await requestJson(`http://${HOST}:${PORT}/api/hailin/lives`);
+    assert.strictEqual(resetPublicLives.status, 200);
+    assert.notStrictEqual(resetPublicLives.body.data[0].title, 'Admin edited live point');
 
     const resetHome = await requestJson(`http://${HOST}:${PORT}/api/admin/home-content/reset`, {
       method: 'POST',

@@ -169,11 +169,12 @@ async function assertProductionSecurityRuntime() {
 async function main() {
   assert.strictEqual(serviceConfig.apiBaseUrl, BACKEND_DOMAIN);
   const adminHtml = fs.readFileSync(path.join(__dirname, 'admin', 'index.html'), 'utf8');
-  const adminJs = fs.readFileSync(path.join(__dirname, 'admin', 'app.js'), 'utf8');
-  assert(adminHtml.includes('securityHttps'), 'admin dashboard should render HTTPS safety state');
-  assert(adminHtml.includes('securityCors'), 'admin dashboard should render CORS safety state');
-  assert(adminHtml.includes('securityToken'), 'admin dashboard should render admin token safety state');
-  assert(adminJs.includes('system.security'), 'admin dashboard should consume backend security summary');
+  const systemPage = fs.readFileSync(path.join(__dirname, 'admin-src', 'src', 'pages', 'SystemPage.tsx'), 'utf8');
+  assert(adminHtml.includes('/admin/assets/'), 'admin dashboard should be built as a routed app');
+  assert(systemPage.includes('httpsEnabled'), 'admin dashboard should render HTTPS safety state');
+  assert(systemPage.includes('corsRestricted'), 'admin dashboard should render CORS safety state');
+  assert(systemPage.includes('adminTokenConfigured'), 'admin dashboard should render admin token safety state');
+  assert(systemPage.includes('system.security'), 'admin dashboard should consume backend security summary');
   await assertProductionRejectsMissingAdminToken();
   await assertProductionSecurityRuntime();
   console.log('production security checks ok');
