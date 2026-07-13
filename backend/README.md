@@ -73,6 +73,12 @@ KIMI_MODEL=kimi-k2.6
 Authorization: Bearer <ADMIN_TOKEN>
 ```
 
+后台前端源码在 `backend/admin-src/`，构建产物在 `backend/admin/`。修改后台页面后运行：
+
+```bash
+npm run admin:build
+```
+
 已提供：
 
 - `GET /api/admin/session`
@@ -80,6 +86,9 @@ Authorization: Bearer <ADMIN_TOKEN>
 - `GET /api/admin/home-content`
 - `PUT /api/admin/home-content`
 - `POST /api/admin/home-content/reset`
+- `GET /api/admin/lives`
+- `PUT /api/admin/lives`
+- `POST /api/admin/lives/reset`
 - `GET /api/admin/bookings`
 - `GET /api/admin/feedback`
 - `GET /api/admin/audit`
@@ -88,6 +97,11 @@ Authorization: Bearer <ADMIN_TOKEN>
 - `PATCH /api/admin/feedback/:id/status`
 - `GET /api/admin/export?type=bookings`
 - `GET /api/admin/export?type=feedback`
+
+预约/反馈处理会记录 `statusHistory`、`lastHandledAt`、`lastHandledBy` 和终态时间。后台状态流转规则：
+
+- 预约：`new` -> `confirmed/cancelled` -> `processing/completed/cancelled` -> `completed/cancelled`
+- 反馈：`new` -> `processing/resolved/archived` -> `resolved/archived` -> `archived`
 
 ## 生产化能力
 

@@ -70,9 +70,26 @@ const LOCATION_TEXT = '浙江省丽水市青田县海口镇海林村';
 const REGION_KEYWORDS = ['瓯江', '青田石', '田鱼', '侨乡', '山水村落'];
 const BOOKING_STATUSES = ['new', 'confirmed', 'processing', 'completed', 'cancelled'];
 const FEEDBACK_STATUSES = ['new', 'processing', 'resolved', 'archived'];
+const STATUS_TRANSITIONS = {
+  booking: {
+    new: ['confirmed', 'cancelled'],
+    confirmed: ['processing', 'completed', 'cancelled'],
+    processing: ['completed', 'cancelled'],
+    completed: [],
+    cancelled: []
+  },
+  feedback: {
+    new: ['processing', 'resolved', 'archived'],
+    processing: ['resolved', 'archived'],
+    resolved: ['archived'],
+    archived: []
+  }
+};
 const AUDIT_FILE = 'audit.json';
 const HOME_CONTENT_FILE = 'home-content.json';
 const HOME_CONTENT_VERSION = '1';
+const LIVES_CONTENT_FILE = 'lives-content.json';
+const LIVES_CONTENT_VERSION = '1';
 const rateBuckets = new Map();
 
 class HttpError extends Error {
@@ -97,7 +114,7 @@ function clientIp(req) {
 function corsHeaders(req) {
   const origin = req.headers.origin;
   const headers = {
-    'Access-Control-Allow-Methods': 'GET,POST,PATCH,OPTIONS',
+    'Access-Control-Allow-Methods': 'GET,POST,PUT,PATCH,OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Admin-Token',
     'Access-Control-Max-Age': '86400'
   };
@@ -307,13 +324,24 @@ function writeJsonObject(fileName, payload) {
   fs.renameSync(tempPath, filePath);
 }
 
-function appendRecord(fileName, payload) {
+function appendRecord(fileName, payload, req) {
   const records = readRecords(fileName);
+  const now = new Date().toISOString();
   const record = {
     id: crypto.randomUUID(),
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: now,
+    updatedAt: now,
     status: 'new',
+    statusHistory: [{
+      id: crypto.randomUUID(),
+      type: 'created',
+      at: now,
+      by: 'public',
+      fromStatus: '',
+      toStatus: 'new',
+      note: '游客提交',
+      requestId: req?.requestId || ''
+    }],
     ...payload
   };
   records.unshift(record);
@@ -339,52 +367,103 @@ function appendAudit(req, action, targetType, targetId, detail = {}) {
   return entry;
 }
 
-function updateRecordStatus(fileName, id, allowedStatuses, status, note) {
+function ensureAllowedStatus(allowedStatuses, status) {
   if (!allowedStatuses.includes(status)) {
     throw new HttpError(400, 'Invalid status', `Allowed: ${allowedStatuses.join(', ')}`);
   }
+}
 
+function ensureStatusTransition(kind, currentStatus, nextStatus) {
+  const fromStatus = cleanText(currentStatus, 40) || 'new';
+  if (fromStatus === nextStatus) return;
+
+  const allowedNext = STATUS_TRANSITIONS[kind]?.[fromStatus] || [];
+  if (!allowedNext.includes(nextStatus)) {
+    throw new HttpError(409, 'Invalid status transition', `${fromStatus} -> ${nextStatus} is not allowed`);
+  }
+}
+
+function nextStatusFields(kind, status, now, record) {
+  const fields = {
+    lastHandledAt: now,
+    lastHandledBy: ADMIN_USER
+  };
+  if (kind === 'booking') {
+    if (status === 'completed') fields.completedAt = record.completedAt || now;
+    if (status === 'cancelled') fields.cancelledAt = record.cancelledAt || now;
+  }
+  if (kind === 'feedback') {
+    if (status === 'resolved') fields.resolvedAt = record.resolvedAt || now;
+    if (status === 'archived') fields.archivedAt = record.archivedAt || now;
+  }
+  return fields;
+}
+
+function applyStatusUpdate(record, kind, status, note, req, now) {
+  const fromStatus = cleanText(record.status, 40) || 'new';
+  ensureStatusTransition(kind, fromStatus, status);
+
+  const noteProvided = note !== undefined;
+  const adminNote = noteProvided ? cleanText(note, 500) : cleanText(record.adminNote, 500);
+  const history = Array.isArray(record.statusHistory) ? record.statusHistory.slice(-49) : [];
+  const historyEntry = {
+    id: crypto.randomUUID(),
+    type: fromStatus === status ? 'note' : 'status',
+    at: now,
+    by: ADMIN_USER,
+    fromStatus,
+    toStatus: status,
+    note: noteProvided ? adminNote : '',
+    requestId: req.requestId
+  };
+
+  return {
+    ...record,
+    ...nextStatusFields(kind, status, now, record),
+    status,
+    adminNote,
+    updatedAt: now,
+    statusHistory: [...history, historyEntry]
+  };
+}
+
+function updateRecordStatus(fileName, id, kind, allowedStatuses, status, note, req) {
+  ensureAllowedStatus(allowedStatuses, status);
   const records = readRecords(fileName);
   const index = records.findIndex((item) => item.id === id);
   if (index === -1) throw new HttpError(404, 'Record not found');
 
-  records[index] = {
-    ...records[index],
-    status,
-    adminNote: cleanText(note, 500),
-    updatedAt: new Date().toISOString()
-  };
+  records[index] = applyStatusUpdate(records[index], kind, status, note, req, new Date().toISOString());
   writeRecords(fileName, records);
   return records[index];
 }
 
-function updateRecordsStatus(fileName, ids, allowedStatuses, status, note) {
+function updateRecordsStatus(fileName, ids, kind, allowedStatuses, status, note, req) {
   if (!Array.isArray(ids) || !ids.length) {
     throw new HttpError(400, 'Ids are required');
   }
   if (ids.length > 100) {
     throw new HttpError(400, 'Bulk update supports at most 100 records');
   }
-  if (!allowedStatuses.includes(status)) {
-    throw new HttpError(400, 'Invalid status', `Allowed: ${allowedStatuses.join(', ')}`);
-  }
+  ensureAllowedStatus(allowedStatuses, status);
 
   const idSet = new Set(ids.map((id) => cleanText(id, 120)).filter(Boolean));
   const records = readRecords(fileName);
   const updated = [];
   const now = new Date().toISOString();
+  const targetRecords = records.filter((record) => idSet.has(record.id));
+  if (!targetRecords.length) throw new HttpError(404, 'No matching records found');
+
+  for (const record of targetRecords) {
+    ensureStatusTransition(kind, record.status, status);
+  }
+
   for (let index = 0; index < records.length; index += 1) {
     if (!idSet.has(records[index].id)) continue;
-    records[index] = {
-      ...records[index],
-      status,
-      adminNote: cleanText(note, 500),
-      updatedAt: now
-    };
+    records[index] = applyStatusUpdate(records[index], kind, status, note, req, now);
     updated.push(records[index]);
   }
 
-  if (!updated.length) throw new HttpError(404, 'No matching records found');
   writeRecords(fileName, records);
   return updated;
 }
@@ -582,13 +661,115 @@ function managedHomePayload() {
   };
 }
 
+function defaultLiveItems() {
+  return lives.map((item, index) => ({
+    ...deepClone(item),
+    enabled: true,
+    sortOrder: index + 1,
+    statusText: '直播中'
+  }));
+}
+
+function sanitizeLiveItem(input, fallback = {}, index = 0) {
+  const raw = input && typeof input === 'object' ? input : {};
+  const id = cleanText(raw.id, 80) || cleanText(fallback.id, 80) || `live-${index + 1}`;
+  return {
+    id,
+    title: cleanText(raw.title, 100) || cleanText(fallback.title, 100) || '海林慢直播',
+    viewers: normalizePositiveInt(raw.viewers, Number(fallback.viewers) || 0, 0, 999999),
+    desc: cleanText(raw.desc, 500) || cleanText(fallback.desc, 500),
+    imageClass: cleanText(raw.imageClass, 80) || cleanText(fallback.imageClass, 80),
+    icon: cleanText(raw.icon, 8) || cleanText(fallback.icon, 8) || '播',
+    coverUrl: cleanText(raw.coverUrl, 300) || cleanText(fallback.coverUrl, 300),
+    liveUrl: cleanText(raw.liveUrl, 500),
+    hlsUrl: cleanText(raw.hlsUrl, 500),
+    enabled: raw.enabled !== false,
+    sortOrder: normalizePositiveInt(raw.sortOrder, Number(fallback.sortOrder) || index + 1, 0, 9999),
+    statusText: cleanText(raw.statusText, 40) || cleanText(fallback.statusText, 40) || '直播中'
+  };
+}
+
+function sanitizeLiveItems(input) {
+  const defaults = defaultLiveItems();
+  const source = Array.isArray(input) ? input : defaults;
+  return source
+    .slice(0, 24)
+    .map((item, index) => sanitizeLiveItem(item, defaults[index], index))
+    .filter((item) => item.id && item.title)
+    .sort((a, b) => a.sortOrder - b.sortOrder);
+}
+
+function liveContentStats(items) {
+  return {
+    total: items.length,
+    enabled: items.filter((item) => item.enabled !== false).length,
+    customSources: items.filter((item) => item.liveUrl || item.hlsUrl).length
+  };
+}
+
+function defaultLiveEnvelope() {
+  const items = defaultLiveItems();
+  return {
+    meta: {
+      source: 'defaults',
+      version: LIVES_CONTENT_VERSION,
+      updatedAt: '',
+      updatedBy: '',
+      stats: liveContentStats(items)
+    },
+    items
+  };
+}
+
+function readLiveContentEnvelope() {
+  const stored = readJsonObject(LIVES_CONTENT_FILE);
+  if (!stored || !stored.items) return defaultLiveEnvelope();
+
+  const items = sanitizeLiveItems(stored.items);
+  return {
+    meta: {
+      source: 'storage',
+      version: cleanText(stored.version, 20) || LIVES_CONTENT_VERSION,
+      updatedAt: cleanText(stored.updatedAt, 40),
+      updatedBy: cleanText(stored.updatedBy, 80),
+      stats: liveContentStats(items)
+    },
+    items
+  };
+}
+
+function saveLiveContent(req, rawItems) {
+  const items = sanitizeLiveItems(rawItems);
+  const stored = {
+    version: LIVES_CONTENT_VERSION,
+    updatedAt: new Date().toISOString(),
+    updatedBy: ADMIN_USER,
+    items
+  };
+  writeJsonObject(LIVES_CONTENT_FILE, stored);
+  appendAudit(req, 'lives-content.updated', 'lives-content', 'lives', {
+    updatedAt: stored.updatedAt,
+    stats: liveContentStats(items)
+  });
+  return readLiveContentEnvelope();
+}
+
+function resetLiveContent(req) {
+  const filePath = storagePath(LIVES_CONTENT_FILE);
+  if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+  appendAudit(req, 'lives-content.reset', 'lives-content', 'lives', {});
+  return defaultLiveEnvelope();
+}
+
 function livePayload(req) {
   const origin = PUBLIC_BASE_URL || `http://${req.headers.host || `${HOST}:${PORT}`}`;
-  return lives.map((item) => ({
-    ...item,
-    liveUrl: `${origin}/media/hailin-live.mp4`,
-    hlsUrl: ''
-  }));
+  return readLiveContentEnvelope().items
+    .filter((item) => item.enabled !== false)
+    .map((item) => ({
+      ...item,
+      liveUrl: item.liveUrl || (item.hlsUrl ? '' : `${origin}/media/hailin-live.mp4`),
+      hlsUrl: item.hlsUrl || ''
+    }));
 }
 
 function localGuideReply(question) {
@@ -742,11 +923,12 @@ function adminSummary() {
   const bookings = readRecords('bookings.json');
   const feedback = readRecords('feedback.json');
   const homeContent = readHomeContentEnvelope();
+  const liveContent = readLiveContentEnvelope();
   return {
     counts: {
       bookings: { ...countByStatus(bookings, BOOKING_STATUSES), today: todayCount(bookings) },
       feedback: { ...countByStatus(feedback, FEEDBACK_STATUSES), today: todayCount(feedback) },
-      lives: { total: lives.length },
+      lives: liveContent.meta.stats,
       mapPoints: { total: mapPoints.length },
       homeContent: {
         source: homeContent.meta.source,
@@ -826,6 +1008,7 @@ function backupPayload() {
   const feedback = readRecords('feedback.json');
   const audit = readRecords(AUDIT_FILE);
   const homeContent = readHomeContentEnvelope();
+  const liveContent = readLiveContentEnvelope();
 
   return {
     meta: {
@@ -835,14 +1018,16 @@ function backupPayload() {
       counts: {
         bookings: bookings.length,
         feedback: feedback.length,
-        audit: audit.length
+        audit: audit.length,
+        lives: liveContent.items.length
       }
     },
     data: {
       bookings,
       feedback,
       audit,
-      homeContent
+      homeContent,
+      liveContent
     }
   };
 }
@@ -855,8 +1040,8 @@ function csvEscape(value) {
 
 function recordsToCsv(type, records) {
   const headers = type === 'feedback'
-    ? ['id', 'createdAt', 'status', 'nickname', 'contact', 'content', 'adminNote']
-    : ['id', 'createdAt', 'status', 'service', 'date', 'people', 'contact', 'remark', 'adminNote'];
+    ? ['id', 'createdAt', 'updatedAt', 'status', 'nickname', 'contact', 'content', 'adminNote', 'lastHandledAt', 'lastHandledBy', 'resolvedAt', 'archivedAt']
+    : ['id', 'createdAt', 'updatedAt', 'status', 'service', 'date', 'people', 'contact', 'remark', 'adminNote', 'lastHandledAt', 'lastHandledBy', 'completedAt', 'cancelledAt'];
   const rows = [headers.join(',')];
   for (const record of records) {
     rows.push(headers.map((header) => csvEscape(record[header])).join(','));
@@ -873,7 +1058,10 @@ function contentType(filePath) {
     '.png': 'image/png',
     '.jpg': 'image/jpeg',
     '.jpeg': 'image/jpeg',
-    '.svg': 'image/svg+xml'
+    '.svg': 'image/svg+xml',
+    '.webp': 'image/webp',
+    '.woff': 'font/woff',
+    '.woff2': 'font/woff2'
   }[extension] || 'application/octet-stream';
 }
 
@@ -888,7 +1076,7 @@ function serveStaticFile(req, res, filePath, cacheControl = 'no-store') {
     ...securityHeaders({
       'Content-Type': contentType(filePath),
       'Cache-Control': cacheControl,
-      'Content-Security-Policy': "default-src 'self'; connect-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'"
+      'Content-Security-Policy': "default-src 'self'; connect-src 'self'; img-src 'self' data:; font-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; base-uri 'none'; form-action 'none'"
     }),
     'Content-Length': body.length,
     'X-Request-Id': req.requestId
@@ -966,14 +1154,28 @@ async function handleAdminRequest(req, res, url, route) {
     sendJson(req, res, 200, { data: readHomeContentEnvelope() });
     return;
   }
+  if (route === 'GET /api/admin/lives') {
+    sendJson(req, res, 200, { data: readLiveContentEnvelope() });
+    return;
+  }
   if (route === 'PUT /api/admin/home-content') {
     const body = await readBody(req);
     const envelope = saveHomeContent(req, body.content || body);
     sendJson(req, res, 200, { data: envelope });
     return;
   }
+  if (route === 'PUT /api/admin/lives') {
+    const body = await readBody(req);
+    const envelope = saveLiveContent(req, body.items || body.lives || body);
+    sendJson(req, res, 200, { data: envelope });
+    return;
+  }
   if (route === 'POST /api/admin/home-content/reset') {
     sendJson(req, res, 200, { data: resetHomeContent(req) });
+    return;
+  }
+  if (route === 'POST /api/admin/lives/reset') {
+    sendJson(req, res, 200, { data: resetLiveContent(req) });
     return;
   }
   if (route === 'GET /api/admin/bookings') {
@@ -1015,7 +1217,7 @@ async function handleAdminRequest(req, res, url, route) {
 
   if (route === 'PATCH /api/admin/bookings/bulk-status') {
     const body = await readBody(req);
-    const items = updateRecordsStatus('bookings.json', body.ids, BOOKING_STATUSES, cleanText(body.status), body.note);
+    const items = updateRecordsStatus('bookings.json', body.ids, 'booking', BOOKING_STATUSES, cleanText(body.status), body.note, req);
     appendAudit(req, 'booking.bulk-status.updated', 'booking', 'bulk', {
       ids: items.map((item) => item.id),
       status: cleanText(body.status),
@@ -1027,7 +1229,7 @@ async function handleAdminRequest(req, res, url, route) {
 
   if (route === 'PATCH /api/admin/feedback/bulk-status') {
     const body = await readBody(req);
-    const items = updateRecordsStatus('feedback.json', body.ids, FEEDBACK_STATUSES, cleanText(body.status), body.note);
+    const items = updateRecordsStatus('feedback.json', body.ids, 'feedback', FEEDBACK_STATUSES, cleanText(body.status), body.note, req);
     appendAudit(req, 'feedback.bulk-status.updated', 'feedback', 'bulk', {
       ids: items.map((item) => item.id),
       status: cleanText(body.status),
@@ -1040,8 +1242,9 @@ async function handleAdminRequest(req, res, url, route) {
   const bookingStatus = route.match(/^PATCH \/api\/admin\/bookings\/([^/]+)\/status$/);
   if (bookingStatus) {
     const body = await readBody(req);
-    const record = updateRecordStatus('bookings.json', bookingStatus[1], BOOKING_STATUSES, cleanText(body.status), body.note);
+    const record = updateRecordStatus('bookings.json', bookingStatus[1], 'booking', BOOKING_STATUSES, cleanText(body.status), body.note, req);
     appendAudit(req, 'booking.status.updated', 'booking', record.id, {
+      fromStatus: record.statusHistory?.[record.statusHistory.length - 1]?.fromStatus,
       status: record.status,
       note: record.adminNote
     });
@@ -1052,8 +1255,9 @@ async function handleAdminRequest(req, res, url, route) {
   const feedbackStatus = route.match(/^PATCH \/api\/admin\/feedback\/([^/]+)\/status$/);
   if (feedbackStatus) {
     const body = await readBody(req);
-    const record = updateRecordStatus('feedback.json', feedbackStatus[1], FEEDBACK_STATUSES, cleanText(body.status), body.note);
+    const record = updateRecordStatus('feedback.json', feedbackStatus[1], 'feedback', FEEDBACK_STATUSES, cleanText(body.status), body.note, req);
     appendAudit(req, 'feedback.status.updated', 'feedback', record.id, {
+      fromStatus: record.statusHistory?.[record.statusHistory.length - 1]?.fromStatus,
       status: record.status,
       note: record.adminNote
     });
@@ -1145,7 +1349,7 @@ async function handleRequest(req, res) {
     }
     if (route === 'POST /api/hailin/bookings') {
       const body = await readBody(req);
-      const record = appendRecord('bookings.json', validateBooking(body));
+      const record = appendRecord('bookings.json', validateBooking(body), req);
       appendAudit(req, 'booking.created', 'public', record.id, {
         service: record.service,
         date: record.date,
@@ -1157,7 +1361,7 @@ async function handleRequest(req, res) {
     }
     if (route === 'POST /api/hailin/feedback') {
       const body = await readBody(req);
-      const record = appendRecord('feedback.json', validateFeedback(body));
+      const record = appendRecord('feedback.json', validateFeedback(body), req);
       appendAudit(req, 'feedback.created', 'public', record.id, {
         nickname: record.nickname,
         source: record.source

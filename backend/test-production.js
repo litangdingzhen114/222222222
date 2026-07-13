@@ -144,6 +144,14 @@ async function main() {
     assert.strictEqual(updated.body.data.status, 'confirmed');
     assert.strictEqual(updated.body.data.adminNote, '电话已确认');
 
+    const secondUpdated = await requestJson(`http://${HOST}:${PORT}/api/admin/bookings/${secondBooking.body.data.id}/status`, {
+      method: 'PATCH',
+      headers: authHeaders,
+      body: JSON.stringify({ status: 'confirmed', note: '第二条预约已确认' })
+    });
+    assert.strictEqual(secondUpdated.status, 200);
+    assert.strictEqual(secondUpdated.body.data.status, 'confirmed');
+
     const bulkUpdated = await requestJson(`http://${HOST}:${PORT}/api/admin/bookings/bulk-status`, {
       method: 'PATCH',
       headers: authHeaders,
