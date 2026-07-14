@@ -15,6 +15,7 @@ export function LoginPage() {
   const { login } = useAuth();
   const { message } = App.useApp();
   const [form] = Form.useForm<LoginValues>();
+  const showDevTokenTip = import.meta.env.DEV;
 
   const submit = async (values: LoginValues) => {
     const token = values.token.trim();
@@ -55,9 +56,11 @@ export function LoginPage() {
               进入后台
             </Button>
           </Form>
-          <Text className="login-tip" type="secondary">
-            本地开发默认 Token：hailin-admin-dev-token
-          </Text>
+          {showDevTokenTip ? (
+            <Text className="login-tip" type="secondary">
+              本地开发默认 Token：hailin-admin-dev-token
+            </Text>
+          ) : null}
         </Card>
         <div className="login-visual-panel" aria-hidden="true">
           <img src={loginVisual} alt="" />
