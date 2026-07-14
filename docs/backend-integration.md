@@ -112,7 +112,21 @@ POST /api/admin/home-content/reset
 GET /media/hailin-live.mp4
 ```
 
-并在 `GET /api/hailin/lives` 中把所有点位的 `liveUrl` 指向这段视频。后续接真实摄像头时，把 `backend/server.js` 的 `livePayload()` 替换成摄像头/HLS 地址即可。
+小程序从以下接口读取慢直播点位：
+
+```text
+GET /api/hailin/lives
+```
+
+后台可维护慢直播点位、封面、排序、启停状态和真实播放源：
+
+```text
+GET /api/admin/lives
+PUT /api/admin/lives
+POST /api/admin/lives/reset
+```
+
+未配置真实播放源时，后端会把启用点位的 `liveUrl` 兜底到 `/media/hailin-live.mp4`。后续接真实摄像头时，优先在后台填入 MP4/FLV 或 HLS 地址，不需要直接修改 `backend/server.js`。
 
 ## 预约和反馈
 
