@@ -65,6 +65,8 @@ const recommend = require('../miniprogram/data/recommend');
 const mapPoints = require('../miniprogram/data/mapPoints');
 const foods = require('../miniprogram/data/foods');
 const lives = require('../miniprogram/data/lives');
+const spots = require('../miniprogram/data/spots');
+const routes = require('../miniprogram/data/routes');
 
 const LOCATION_TEXT = '浙江省丽水市青田县海口镇海林村';
 const REGION_KEYWORDS = ['瓯江', '青田石', '田鱼', '侨乡', '山水村落'];
@@ -90,6 +92,39 @@ const HOME_CONTENT_FILE = 'home-content.json';
 const HOME_CONTENT_VERSION = '1';
 const LIVES_CONTENT_FILE = 'lives-content.json';
 const LIVES_CONTENT_VERSION = '1';
+const RESOURCE_CONTENT_VERSION = '1';
+const CONTENT_RESOURCES = {
+  spots: {
+    label: '景点',
+    fileName: 'spots-content.json',
+    defaults: spots,
+    limit: 80
+  },
+  routes: {
+    label: '路线',
+    fileName: 'routes-content.json',
+    defaults: routes,
+    limit: 60
+  },
+  foods: {
+    label: '美食',
+    fileName: 'foods-content.json',
+    defaults: foods,
+    limit: 80
+  },
+  'map-points': {
+    label: '地图点位',
+    fileName: 'map-points-content.json',
+    defaults: mapPoints,
+    limit: 160
+  },
+  products: {
+    label: '文创商品',
+    fileName: 'products-content.json',
+    defaults: products,
+    limit: 80
+  }
+};
 const rateBuckets = new Map();
 
 class HttpError extends Error {
@@ -661,10 +696,14 @@ function resetHomeContent(req) {
 
 function managedHomePayload() {
   const envelope = readHomeContentEnvelope();
-  return {
+  const content = {
     ...envelope.content,
     contentMeta: envelope.meta
   };
+  if (envelope.meta.source !== 'storage') {
+    content.products = managedContentItems('products');
+  }
+  return content;
 }
 
 function defaultLiveItems() {
@@ -765,6 +804,131 @@ function resetLiveContent(req) {
   if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
   appendAudit(req, 'lives-content.reset', 'lives-content', 'lives', {});
   return defaultLiveEnvelope();
+}
+
+function getContentResourceConfig(key) {
+  const cleanKey = cleanText(key, 80);
+  const config = CONTENT_RESOURCES[cleanKey];
+  if (!config) throw new HttpError(404, 'Content resource not found');
+  return { key: cleanKey, ...config };
+}
+
+function sanitizeResourceItem(rawItem, fallbackItem, index, resourceKey) {
+  const safe = sanitizeJsonValue(rawItem);
+  const item = safe && typeof safe === 'object' && !Array.isArray(safe) ? safe : {};
+  const fallback = fallbackItem && typeof fallbackItem === 'object' ? fallbackItem : {};
+  const fallbackId = fallback.id == null ? '' : fallback.id;
+  if (item.id == null || item.id === '') {
+    item.id = fallbackId || `${resourceKey}-${index + 1}`;
+  }
+  return item;
+}
+
+function sanitizeResourceItems(resourceKey, rawItems, fallbackOnInvalid = true) {
+  const config = getContentResourceConfig(resourceKey);
+  if (!Array.isArray(rawItems)) {
+    if (fallbackOnInvalid) return deepClone(config.defaults);
+    throw new HttpError(400, 'Content resource items must be an array');
+  }
+
+  const fallbackItems = Array.isArray(config.defaults) ? config.defaults : [];
+  return rawItems
+    .slice(0, config.limit)
+    .map((item, index) => sanitizeResourceItem(item, fallbackItems[index], index, config.key))
+    .filter((item) => item && typeof item === 'object' && item.id != null);
+}
+
+function contentResourceStats(items) {
+  return {
+    total: items.length,
+    withImage: items.filter((item) => item.imageUrl || item.coverUrl || (Array.isArray(item.imageUrls) && item.imageUrls.length)).length,
+    withTarget: items.filter((item) => item.targetUrl || item.bookingUrl || item.refId).length,
+    hidden: items.filter((item) => item.enabled === false || item.status === 'disabled').length
+  };
+}
+
+function contentResourceIndex() {
+  return Object.entries(CONTENT_RESOURCES).map(([key, config]) => {
+    const envelope = readContentResourceEnvelope(key);
+    return {
+      key,
+      label: config.label,
+      limit: config.limit,
+      meta: envelope.meta
+    };
+  });
+}
+
+function defaultContentResourceEnvelope(resourceKey) {
+  const config = getContentResourceConfig(resourceKey);
+  const items = sanitizeResourceItems(config.key, config.defaults);
+  return {
+    key: config.key,
+    label: config.label,
+    limit: config.limit,
+    meta: {
+      source: 'defaults',
+      version: RESOURCE_CONTENT_VERSION,
+      updatedAt: '',
+      updatedBy: '',
+      stats: contentResourceStats(items)
+    },
+    items
+  };
+}
+
+function readContentResourceEnvelope(resourceKey) {
+  const config = getContentResourceConfig(resourceKey);
+  const stored = readJsonObject(config.fileName);
+  if (!stored || !stored.items) return defaultContentResourceEnvelope(config.key);
+
+  const items = sanitizeResourceItems(config.key, stored.items);
+  return {
+    key: config.key,
+    label: config.label,
+    limit: config.limit,
+    meta: {
+      source: 'storage',
+      version: cleanText(stored.version, 20) || RESOURCE_CONTENT_VERSION,
+      updatedAt: cleanText(stored.updatedAt, 40),
+      updatedBy: cleanText(stored.updatedBy, 80),
+      stats: contentResourceStats(items)
+    },
+    items
+  };
+}
+
+function saveContentResource(req, resourceKey, rawItems) {
+  const config = getContentResourceConfig(resourceKey);
+  const items = sanitizeResourceItems(config.key, rawItems, false);
+  const stored = {
+    version: RESOURCE_CONTENT_VERSION,
+    updatedAt: new Date().toISOString(),
+    updatedBy: ADMIN_USER,
+    items
+  };
+  writeJsonObject(config.fileName, stored);
+  appendAudit(req, 'resource-content.updated', 'resource-content', config.key, {
+    label: config.label,
+    updatedAt: stored.updatedAt,
+    stats: contentResourceStats(items)
+  });
+  return readContentResourceEnvelope(config.key);
+}
+
+function resetContentResource(req, resourceKey) {
+  const config = getContentResourceConfig(resourceKey);
+  const filePath = storagePath(config.fileName);
+  if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+  appendAudit(req, 'resource-content.reset', 'resource-content', config.key, {
+    label: config.label
+  });
+  return defaultContentResourceEnvelope(config.key);
+}
+
+function managedContentItems(resourceKey) {
+  return readContentResourceEnvelope(resourceKey).items
+    .filter((item) => item.enabled !== false && item.status !== 'disabled');
 }
 
 function livePayload(req) {
@@ -930,12 +1094,14 @@ function adminSummary() {
   const feedback = readRecords('feedback.json');
   const homeContent = readHomeContentEnvelope();
   const liveContent = readLiveContentEnvelope();
+  const resourceContent = contentResourceIndex();
   return {
     counts: {
       bookings: { ...countByStatus(bookings, BOOKING_STATUSES), today: todayCount(bookings) },
       feedback: { ...countByStatus(feedback, FEEDBACK_STATUSES), today: todayCount(feedback) },
       lives: liveContent.meta.stats,
-      mapPoints: { total: mapPoints.length },
+      resources: Object.fromEntries(resourceContent.map((item) => [item.key, item.meta.stats])),
+      mapPoints: { total: readContentResourceEnvelope('map-points').meta.stats.total },
       homeContent: {
         source: homeContent.meta.source,
         updatedAt: homeContent.meta.updatedAt,
@@ -1015,6 +1181,9 @@ function backupPayload() {
   const audit = readRecords(AUDIT_FILE);
   const homeContent = readHomeContentEnvelope();
   const liveContent = readLiveContentEnvelope();
+  const resourceContent = Object.fromEntries(
+    Object.keys(CONTENT_RESOURCES).map((key) => [key, readContentResourceEnvelope(key)])
+  );
 
   return {
     meta: {
@@ -1025,7 +1194,8 @@ function backupPayload() {
         bookings: bookings.length,
         feedback: feedback.length,
         audit: audit.length,
-        lives: liveContent.items.length
+        lives: liveContent.items.length,
+        resources: Object.keys(resourceContent).length
       }
     },
     data: {
@@ -1033,7 +1203,8 @@ function backupPayload() {
       feedback,
       audit,
       homeContent,
-      liveContent
+      liveContent,
+      resourceContent
     }
   };
 }
@@ -1164,6 +1335,10 @@ async function handleAdminRequest(req, res, url, route) {
     sendJson(req, res, 200, { data: readLiveContentEnvelope() });
     return;
   }
+  if (route === 'GET /api/admin/resources') {
+    sendJson(req, res, 200, { data: { items: contentResourceIndex() } });
+    return;
+  }
   if (route === 'PUT /api/admin/home-content') {
     const body = await readBody(req);
     const envelope = saveHomeContent(req, body.content || body);
@@ -1182,6 +1357,23 @@ async function handleAdminRequest(req, res, url, route) {
   }
   if (route === 'POST /api/admin/lives/reset') {
     sendJson(req, res, 200, { data: resetLiveContent(req) });
+    return;
+  }
+  const resourceRead = route.match(/^GET \/api\/admin\/resources\/([^/]+)$/);
+  if (resourceRead) {
+    sendJson(req, res, 200, { data: readContentResourceEnvelope(decodeURIComponent(resourceRead[1])) });
+    return;
+  }
+  const resourceSave = route.match(/^PUT \/api\/admin\/resources\/([^/]+)$/);
+  if (resourceSave) {
+    const body = await readBody(req);
+    const envelope = saveContentResource(req, decodeURIComponent(resourceSave[1]), body.items || body);
+    sendJson(req, res, 200, { data: envelope });
+    return;
+  }
+  const resourceReset = route.match(/^POST \/api\/admin\/resources\/([^/]+)\/reset$/);
+  if (resourceReset) {
+    sendJson(req, res, 200, { data: resetContentResource(req, decodeURIComponent(resourceReset[1])) });
     return;
   }
   if (route === 'GET /api/admin/bookings') {
@@ -1330,11 +1522,23 @@ async function handleRequest(req, res) {
       return;
     }
     if (route === 'GET /api/hailin/map-points') {
-      sendJson(req, res, 200, { data: mapPoints });
+      sendJson(req, res, 200, { data: managedContentItems('map-points') });
       return;
     }
     if (route === 'GET /api/hailin/foods') {
-      sendJson(req, res, 200, { data: foods });
+      sendJson(req, res, 200, { data: managedContentItems('foods') });
+      return;
+    }
+    if (route === 'GET /api/hailin/spots') {
+      sendJson(req, res, 200, { data: managedContentItems('spots') });
+      return;
+    }
+    if (route === 'GET /api/hailin/routes') {
+      sendJson(req, res, 200, { data: managedContentItems('routes') });
+      return;
+    }
+    if (route === 'GET /api/hailin/products') {
+      sendJson(req, res, 200, { data: managedContentItems('products') });
       return;
     }
     if (route === 'GET /api/hailin/lives') {

@@ -5,6 +5,8 @@ const recommend = require('../data/recommend');
 const mapPoints = require('../data/mapPoints');
 const foods = require('../data/foods');
 const lives = require('../data/lives');
+const spots = require('../data/spots');
+const routes = require('../data/routes');
 const { request, serviceConfig, serviceModeText } = require('./api');
 
 function withFallback(endpoint, fallbackValue) {
@@ -41,6 +43,18 @@ function loadFoods() {
   return withFallback(serviceConfig.endpoints.foods, foods);
 }
 
+function loadSpots() {
+  return withFallback(serviceConfig.endpoints.spots, spots);
+}
+
+function loadRoutes() {
+  return withFallback(serviceConfig.endpoints.routes, routes);
+}
+
+function loadProducts() {
+  return withFallback(serviceConfig.endpoints.products, products);
+}
+
 function loadLives() {
   return withFallback(serviceConfig.endpoints.lives, lives);
 }
@@ -63,6 +77,9 @@ module.exports = {
   loadHomeData,
   loadMapPoints,
   loadFoods,
+  loadSpots,
+  loadRoutes,
+  loadProducts,
   loadLives,
   submitBooking,
   submitFeedback

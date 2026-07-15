@@ -1,4 +1,5 @@
-const routes = require('../../data/routes');
+const fallbackRoutes = require('../../data/routes');
+const { loadRoutes } = require('../../services/content');
 const { findById, quickToast } = require('../../utils/mock');
 
 Page({
@@ -8,7 +9,13 @@ Page({
   },
 
   onLoad(options) {
-    const route = findById(routes, options.id);
+    loadRoutes().then((routes) => {
+      const route = findById(routes, options.id) || findById(fallbackRoutes, options.id);
+      this.applyRoute(route);
+    });
+  },
+
+  applyRoute(route) {
     if (!route) {
       quickToast('路线不存在');
       setTimeout(() => wx.navigateBack({ delta: 1 }), 500);

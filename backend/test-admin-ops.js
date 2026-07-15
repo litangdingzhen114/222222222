@@ -62,16 +62,20 @@ async function main() {
   const auditPage = fs.readFileSync(path.join(__dirname, 'admin-src', 'src', 'pages', 'AuditPage.tsx'), 'utf8');
   const homePage = fs.readFileSync(path.join(__dirname, 'admin-src', 'src', 'pages', 'HomeContentPage.tsx'), 'utf8');
   const livePage = fs.readFileSync(path.join(__dirname, 'admin-src', 'src', 'pages', 'LiveContentPage.tsx'), 'utf8');
+  const resourcePage = fs.readFileSync(path.join(__dirname, 'admin-src', 'src', 'pages', 'ResourceContentPage.tsx'), 'utf8');
   const detailDrawer = fs.readFileSync(path.join(__dirname, 'admin-src', 'src', 'pages', 'RecordDetailDrawer.tsx'), 'utf8');
   assert(adminHtml.includes('/admin/assets/'), 'admin dashboard should be built as static assets');
   assert(apiSource.includes('/api/admin/audit'), 'admin dashboard should load audit trail');
   assert(apiSource.includes('/api/admin/backup'), 'admin dashboard should download JSON backup');
   assert(apiSource.includes('/api/admin/home-content'), 'admin dashboard should manage home content');
   assert(apiSource.includes('/api/admin/lives'), 'admin dashboard should manage live stream content');
+  assert(apiSource.includes('/api/admin/resources'), 'admin dashboard should manage resource content');
   assert(auditPage.includes('fetchBackupBlob'), 'admin dashboard should expose one-click backup');
   assert(homePage.includes('json-editor'), 'admin dashboard should render home content editor');
   assert(livePage.includes('saveLiveContent'), 'admin dashboard should save live stream points');
   assert(livePage.includes('Switch'), 'admin dashboard should toggle live stream points');
+  assert(resourcePage.includes('saveResourceContent'), 'admin dashboard should save resource content');
+  assert(resourcePage.includes('map-points'), 'admin dashboard should manage map points');
   assert(bookingsPage.includes('rowSelection'), 'admin dashboard should support table row selection');
   assert(detailDrawer.includes('maskContact'), 'admin dashboard should mask contact info in tables');
 
@@ -207,6 +211,36 @@ async function main() {
     assert.strictEqual(summaryAfterLives.status, 200);
     assert.strictEqual(summaryAfterLives.body.data.counts.lives.customSources, 1);
 
+    const spotContent = await requestJson(`http://${HOST}:${PORT}/api/admin/resources/spots`, {
+      headers: authHeaders
+    });
+    assert.strictEqual(spotContent.status, 200);
+    assert(Array.isArray(spotContent.body.data.items));
+    assert(spotContent.body.data.items.length > 0);
+    assert.strictEqual(spotContent.body.data.meta.source, 'defaults');
+
+    const editedSpots = spotContent.body.data.items.map((item, index) => (
+      index === 0 ? { ...item, name: 'Admin edited spot', desc: '后台编辑后的景点内容' } : item
+    ));
+    const savedSpots = await requestJson(`http://${HOST}:${PORT}/api/admin/resources/spots`, {
+      method: 'PUT',
+      headers: authHeaders,
+      body: JSON.stringify({ items: editedSpots })
+    });
+    assert.strictEqual(savedSpots.status, 200);
+    assert.strictEqual(savedSpots.body.data.meta.source, 'storage');
+    assert.strictEqual(savedSpots.body.data.items[0].name, 'Admin edited spot');
+
+    const publicSpots = await requestJson(`http://${HOST}:${PORT}/api/hailin/spots`);
+    assert.strictEqual(publicSpots.status, 200);
+    assert.strictEqual(publicSpots.body.data[0].name, 'Admin edited spot');
+
+    const resourceSummary = await requestJson(`http://${HOST}:${PORT}/api/admin/summary`, {
+      headers: authHeaders
+    });
+    assert.strictEqual(resourceSummary.status, 200);
+    assert(resourceSummary.body.data.counts.resources.spots.total >= 1);
+
     const notedNewBooking = await requestJson(`http://${HOST}:${PORT}/api/admin/bookings/${booking.body.data.id}/status`, {
       method: 'PATCH',
       headers: authHeaders,
@@ -272,6 +306,7 @@ async function main() {
     assert(audit.body.data.items.some((item) => item.action === 'feedback.status.updated'), 'feedback status update should be audited');
     assert(audit.body.data.items.some((item) => item.action === 'home-content.updated'), 'home content update should be audited');
     assert(audit.body.data.items.some((item) => item.action === 'lives-content.updated'), 'live content update should be audited');
+    assert(audit.body.data.items.some((item) => item.action === 'resource-content.updated'), 'resource content update should be audited');
     assert(audit.body.data.items.some((item) => item.action === 'booking.created'), 'public booking creation should be audited');
     assert(audit.body.data.items.some((item) => item.action === 'feedback.created'), 'public feedback creation should be audited');
     const statusAudit = audit.body.data.items.find((item) => item.action === 'booking.status.updated' && item.detail.status === 'confirmed');

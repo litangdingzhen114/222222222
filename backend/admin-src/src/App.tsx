@@ -2,6 +2,7 @@ import {
   AuditOutlined,
   CalendarOutlined,
   DashboardOutlined,
+  EnvironmentOutlined,
   HomeOutlined,
   LogoutOutlined,
   MessageOutlined,
@@ -22,6 +23,7 @@ import { FeedbackPage } from './pages/FeedbackPage';
 import { HomeContentPage } from './pages/HomeContentPage';
 import { LoginPage } from './pages/LoginPage';
 import { LiveContentPage } from './pages/LiveContentPage';
+import { ResourceContentPage } from './pages/ResourceContentPage';
 import { SystemPage } from './pages/SystemPage';
 
 const { Header, Sider, Content } = Layout;
@@ -30,6 +32,7 @@ const { Title, Text } = Typography;
 const navItems = [
   { key: '/dashboard', icon: <DashboardOutlined />, label: '总览', title: '运营总览', subtitle: '预约、反馈、AI 导游与慢直播服务状态' },
   { key: '/home-content', icon: <HomeOutlined />, label: '首页内容', title: '首页内容', subtitle: '轮播、入口、推荐区和首页公告' },
+  { key: '/resources', icon: <EnvironmentOutlined />, label: '内容资源', title: '内容资源', subtitle: '景点、路线、美食、地图点位与文创商品' },
   { key: '/lives', icon: <PlayCircleOutlined />, label: '慢直播管理', title: '慢直播管理', subtitle: '直播点位、播放源、启停状态与排序' },
   { key: '/bookings', icon: <CalendarOutlined />, label: '预约管理', title: '预约管理', subtitle: '讲解、活动、团建与服务预约' },
   { key: '/feedback', icon: <MessageOutlined />, label: '反馈处理', title: '反馈处理', subtitle: '游客建议、问题和运营线索' },
@@ -102,6 +105,7 @@ function AdminLayout() {
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/home-content" element={<HomeContentPage />} />
+            <Route path="/resources" element={<ResourceContentPage />} />
             <Route path="/lives" element={<LiveContentPage />} />
             <Route path="/bookings" element={<BookingsPage />} />
             <Route path="/feedback" element={<FeedbackPage />} />

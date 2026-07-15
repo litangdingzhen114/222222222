@@ -1,4 +1,5 @@
-const spots = require('../../data/spots');
+const fallbackSpots = require('../../data/spots');
+const { loadSpots } = require('../../services/content');
 const { findById, quickToast } = require('../../utils/mock');
 
 Page({
@@ -10,22 +11,33 @@ Page({
   },
 
   onLoad(options) {
-    const spot = findById(spots, options.id);
+    this.loadSpot(options.id);
+  },
+
+  loadSpot(id) {
+    loadSpots().then((spots) => {
+      const spot = findById(spots, id) || findById(fallbackSpots, id);
+      this.applySpot(spot, spots);
+    });
+  },
+
+  applySpot(spot, spots) {
     if (!spot) {
       quickToast('景点不存在');
       setTimeout(() => wx.navigateBack({ delta: 1 }), 500);
       return;
     }
 
+    const imageClasses = spot.images || [];
     const heroImages = (spot.imageUrls || []).map((url, index) => ({
       key: url,
       url,
-      imageClass: spot.images[index] || spot.images[0]
+      imageClass: imageClasses[index] || imageClasses[0]
     }));
 
     this.setData({
       spot,
-      heroImages: heroImages.length ? heroImages : (spot.images || []).map((imageClass, index) => ({ key: `${imageClass}-${index}`, imageClass })),
+      heroImages: heroImages.length ? heroImages : imageClasses.map((imageClass, index) => ({ key: `${imageClass}-${index}`, imageClass })),
       nearby: spots.filter((item) => item.id !== spot.id).slice(0, 3)
     });
   },

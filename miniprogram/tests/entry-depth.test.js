@@ -33,6 +33,10 @@ const spotWxml = fs.readFileSync(path.join(root, 'miniprogram/pages/spot-detail/
 const routeWxml = fs.readFileSync(path.join(root, 'miniprogram/pages/route-detail/route-detail.wxml'), 'utf8');
 const bookingJs = fs.readFileSync(path.join(root, 'miniprogram/pages/booking/booking.js'), 'utf8');
 const bookingWxml = fs.readFileSync(path.join(root, 'miniprogram/pages/booking/booking.wxml'), 'utf8');
+const spotListJs = fs.readFileSync(path.join(root, 'miniprogram/pages/spot-list/spot-list.js'), 'utf8');
+const spotDetailJs = fs.readFileSync(path.join(root, 'miniprogram/pages/spot-detail/spot-detail.js'), 'utf8');
+const routeListJs = fs.readFileSync(path.join(root, 'miniprogram/pages/route-list/route-list.js'), 'utf8');
+const routeDetailJs = fs.readFileSync(path.join(root, 'miniprogram/pages/route-detail/route-detail.js'), 'utf8');
 const mineWxml = fs.readFileSync(path.join(root, 'miniprogram/pages/mine-feature/mine-feature.wxml'), 'utf8');
 const feedbackWxml = fs.readFileSync(path.join(root, 'miniprogram/pages/feedback/feedback.wxml'), 'utf8');
 
@@ -42,6 +46,10 @@ assert(routeWxml.includes('包含内容'), 'route detail should render included 
 assert(routeWxml.includes('出发准备'), 'route detail should render preparation notes');
 assert(bookingJs.includes('serviceOptions'), 'booking page should expose service options');
 assert(bookingWxml.includes('快速方案'), 'booking page should render quick plans');
+assert(spotListJs.includes('loadSpots'), 'spot list should load backend-managed spot content');
+assert(spotDetailJs.includes('loadSpots'), 'spot detail should load backend-managed spot content');
+assert(routeListJs.includes('loadRoutes'), 'route list should load backend-managed route content');
+assert(routeDetailJs.includes('loadRoutes'), 'route detail should load backend-managed route content');
 assert(mineWxml.includes('服务亮点'), 'mine feature page should render service highlights');
 assert(feedbackWxml.includes('意见反馈'), 'feedback page should explain feedback scope');
 

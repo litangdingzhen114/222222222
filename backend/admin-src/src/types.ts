@@ -163,11 +163,57 @@ export type LiveContentEnvelope = {
   };
 };
 
+export type ResourceKey = 'spots' | 'routes' | 'foods' | 'map-points' | 'products';
+
+export type ResourceContentItem = Record<string, unknown> & {
+  id?: string | number;
+  title?: string;
+  name?: string;
+  subtitle?: string;
+  desc?: string;
+  type?: string;
+  category?: string;
+  imageUrl?: string;
+  coverUrl?: string;
+  targetUrl?: string;
+  enabled?: boolean;
+  status?: string;
+};
+
+export type ResourceContentMeta = {
+  source?: string;
+  version?: string;
+  updatedAt?: string;
+  updatedBy?: string;
+  stats?: {
+    total?: number;
+    withImage?: number;
+    withTarget?: number;
+    hidden?: number;
+  };
+};
+
+export type ResourceContentSummary = {
+  key: ResourceKey;
+  label: string;
+  limit: number;
+  meta: ResourceContentMeta;
+};
+
+export type ResourceContentEnvelope = {
+  key: ResourceKey;
+  label: string;
+  limit: number;
+  meta: ResourceContentMeta;
+  items: ResourceContentItem[];
+};
+
 export type AdminSummary = {
   counts: {
     bookings: Record<string, number>;
     feedback: Record<string, number>;
     lives: { total?: number; enabled?: number; customSources?: number };
+    resources?: Record<string, ResourceContentMeta['stats']>;
     mapPoints?: { total: number };
     homeContent?: Record<string, number | string | undefined>;
   };

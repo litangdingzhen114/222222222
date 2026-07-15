@@ -83,6 +83,21 @@ async function main() {
     const unauthorized = await requestJson(`http://${HOST}:${PORT}/api/admin/summary`);
     assert.strictEqual(unauthorized.status, 401);
 
+    const publicSpots = await requestJson(`http://${HOST}:${PORT}/api/hailin/spots`);
+    assert.strictEqual(publicSpots.status, 200);
+    assert(Array.isArray(publicSpots.body.data));
+    assert(publicSpots.body.data.length > 0);
+
+    const publicRoutes = await requestJson(`http://${HOST}:${PORT}/api/hailin/routes`);
+    assert.strictEqual(publicRoutes.status, 200);
+    assert(Array.isArray(publicRoutes.body.data));
+    assert(publicRoutes.body.data.length > 0);
+
+    const publicProducts = await requestJson(`http://${HOST}:${PORT}/api/hailin/products`);
+    assert.strictEqual(publicProducts.status, 200);
+    assert(Array.isArray(publicProducts.body.data));
+    assert(publicProducts.body.data.length > 0);
+
     const invalidBooking = await requestJson(`http://${HOST}:${PORT}/api/hailin/bookings`, {
       method: 'POST',
       body: JSON.stringify({ people: 2 })

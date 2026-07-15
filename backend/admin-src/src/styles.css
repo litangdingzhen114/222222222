@@ -297,6 +297,16 @@ body {
   display: none;
 }
 
+.resource-descriptions {
+  margin-bottom: 14px;
+}
+
+.resource-json-editor {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
 @media (max-width: 760px) {
   .admin-header {
     align-items: flex-start;

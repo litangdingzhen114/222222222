@@ -1,8 +1,15 @@
-const routes = require('../../data/routes');
+const fallbackRoutes = require('../../data/routes');
+const { loadRoutes } = require('../../services/content');
 
 Page({
   data: {
-    routes
+    routes: fallbackRoutes
+  },
+
+  onLoad() {
+    loadRoutes().then((routes) => {
+      this.setData({ routes });
+    });
   },
 
   onRouteTap(event) {

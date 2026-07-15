@@ -11,6 +11,9 @@ const publicContract = [
   ['home', 'GET'],
   ['mapPoints', 'GET'],
   ['foods', 'GET'],
+  ['spots', 'GET'],
+  ['routes', 'GET'],
+  ['products', 'GET'],
   ['lives', 'GET'],
   ['aiGuide', 'POST'],
   ['booking', 'POST'],
@@ -37,6 +40,7 @@ publicContract.forEach(([key, method]) => {
   ['GET', '/api/admin/lives'],
   ['PUT', '/api/admin/lives'],
   ['POST', '/api/admin/lives/reset'],
+  ['GET', '/api/admin/resources'],
   ['GET', '/api/admin/bookings'],
   ['GET', '/api/admin/feedback'],
   ['GET', '/api/admin/audit'],
@@ -68,8 +72,22 @@ assert(
   backendServer.includes('PATCH \\/api\\/admin\\/feedback\\/([^/]+)\\/status'),
   'feedback detail status route should be implemented'
 );
+assert(
+  backendServer.includes('GET \\/api\\/admin\\/resources\\/([^/]+)'),
+  'resource detail route should be implemented'
+);
+assert(
+  backendServer.includes('PUT \\/api\\/admin\\/resources\\/([^/]+)'),
+  'resource save route should be implemented'
+);
+assert(
+  backendServer.includes('POST \\/api\\/admin\\/resources\\/([^/]+)\\/reset'),
+  'resource reset route should be implemented'
+);
 assert(adminApi.includes('/api/admin/${kind}/${id}/status'), 'admin frontend should call detail status route');
 assert(adminApi.includes('/api/admin/${kind}/bulk-status'), 'admin frontend should call bulk status route');
+assert(adminApi.includes('/api/admin/resources/${key}'), 'admin frontend should call resource detail route');
+assert(adminApi.includes('/api/admin/resources/${key}/reset'), 'admin frontend should call resource reset route');
 assert.strictEqual(serviceConfig.live.provider, 'backend');
 assert.strictEqual(serviceConfig.ai.provider, 'backend-proxy');
 

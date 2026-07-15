@@ -8,6 +8,9 @@ import type {
   ListResponse,
   LiveContentEnvelope,
   LiveItem,
+  ResourceContentEnvelope,
+  ResourceContentSummary,
+  ResourceKey,
   RecordKind
 } from './types';
 
@@ -95,6 +98,25 @@ export function saveLiveContent(items: LiveItem[]) {
 
 export function resetLiveContent() {
   return apiRequest<LiveContentEnvelope>('/api/admin/lives/reset', { method: 'POST' });
+}
+
+export function listResourceContent() {
+  return apiRequest<{ items: ResourceContentSummary[] }>('/api/admin/resources');
+}
+
+export function getResourceContent(key: ResourceKey) {
+  return apiRequest<ResourceContentEnvelope>(`/api/admin/resources/${key}`);
+}
+
+export function saveResourceContent(key: ResourceKey, items: ResourceContentEnvelope['items']) {
+  return apiRequest<ResourceContentEnvelope>(`/api/admin/resources/${key}`, {
+    method: 'PUT',
+    body: JSON.stringify({ items })
+  });
+}
+
+export function resetResourceContent(key: ResourceKey) {
+  return apiRequest<ResourceContentEnvelope>(`/api/admin/resources/${key}/reset`, { method: 'POST' });
 }
 
 export function listBookings(params: QueryParams) {
