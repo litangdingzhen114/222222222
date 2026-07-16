@@ -46,7 +46,7 @@ Page({
     selectedServiceId: serviceOptions[0].id,
     selectedService: serviceOptions[0],
     quickPlans,
-    bookingTips: ['提交后后台会生成预约记录', '真实上线可接短信/微信通知', '团队需求建议提前 1 天确认'],
+    bookingTips: ['提交后后台会生成订单', '后台处理进度会同步到我的订单', '团队需求建议提前 1 天确认'],
     date: todayText(),
     people: 2,
     contact: '',
