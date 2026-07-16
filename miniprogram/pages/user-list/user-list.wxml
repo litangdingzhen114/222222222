@@ -6,6 +6,7 @@
 
   <view wx:if="{{items.length}}" class="content-list">
     <view wx:for="{{items}}" wx:key="id" class="content-item" data-url="{{item.targetUrl}}" bindtap="onItemTap">
+      <image wx:if="{{item.imagePath}}" class="item-image" src="{{item.imagePath}}" mode="aspectFill"></image>
       <view class="item-topic">{{item.topic || meta.title}}</view>
       <view class="item-title">{{item.title}}</view>
       <view class="item-summary">{{item.summary}}</view>
