@@ -245,6 +245,71 @@
   font-weight: 900;
 }
 
+.order-preview-card {
+  margin-top: 22rpx;
+  padding: 28rpx;
+  border-radius: 22rpx;
+  background:
+    linear-gradient(135deg, rgba(220, 237, 234, 0.7), rgba(251, 255, 252, 0.96)),
+    #FBFFFC;
+  border: 2rpx solid #DCEDEA;
+}
+
+.preview-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18rpx;
+  color: #607F7A;
+  font-size: 24rpx;
+  font-weight: 800;
+}
+
+.preview-head text:last-child {
+  flex-shrink: 0;
+  color: #A7472D;
+  font-size: 28rpx;
+  font-weight: 900;
+}
+
+.preview-title {
+  margin-top: 12rpx;
+  color: #193C3A;
+  font-size: 34rpx;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.preview-grid {
+  display: grid;
+  gap: 12rpx;
+  margin-top: 22rpx;
+}
+
+.preview-cell {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18rpx;
+  padding: 16rpx 0;
+  border-top: 2rpx solid rgba(96, 127, 122, 0.12);
+  color: #315A4E;
+  font-size: 25rpx;
+  line-height: 1.45;
+}
+
+.preview-cell text:first-child {
+  flex: 0 0 140rpx;
+  color: #607F7A;
+  font-weight: 700;
+}
+
+.preview-cell text:last-child {
+  flex: 1;
+  text-align: right;
+  font-weight: 900;
+}
+
 .form-card {
   margin-top: 22rpx;
   padding: 28rpx;
@@ -519,8 +584,22 @@
 .record-status {
   flex-shrink: 0;
   min-width: 86rpx;
+  padding: 8rpx 14rpx;
+  border-radius: 999rpx;
+  background: #E4F2EF;
   color: #0F6B67;
   font-size: 24rpx;
   font-weight: 900;
   text-align: right;
+}
+
+.record-empty {
+  padding: 34rpx 28rpx;
+  border: 2rpx dashed #BFD9D3;
+  border-radius: 20rpx;
+  background: rgba(251, 255, 252, 0.68);
+  color: #607F7A;
+  font-size: 24rpx;
+  line-height: 1.5;
+  text-align: center;
 }

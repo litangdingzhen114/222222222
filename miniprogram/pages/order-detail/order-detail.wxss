@@ -4,8 +4,10 @@
 
 .detail-card,
 .section-card {
-  padding: 24rpx;
+  padding: 26rpx;
   margin-bottom: 18rpx;
+  border: 2rpx solid #e2efec;
+  box-shadow: 0 12rpx 32rpx rgba(26, 74, 70, 0.07);
 }
 
 .detail-head {
@@ -16,9 +18,11 @@
 }
 
 .detail-title {
+  max-width: 430rpx;
   color: #173c38;
   font-size: 34rpx;
   font-weight: 800;
+  line-height: 1.35;
 }
 
 .detail-no {
@@ -37,6 +41,38 @@
   font-weight: 800;
 }
 
+.detail-status.status-waiting,
+.status-hint.status-waiting {
+  color: #0f6b67;
+  background: #e3f2ee;
+}
+
+.detail-status.status-confirmed,
+.detail-status.status-shipped,
+.status-hint.status-confirmed,
+.status-hint.status-shipped {
+  color: #125a8a;
+  background: #e6f1fb;
+}
+
+.detail-status.status-warning,
+.status-hint.status-warning {
+  color: #95611a;
+  background: #fbf0d7;
+}
+
+.detail-status.status-done,
+.status-hint.status-done {
+  color: #2f6b3f;
+  background: #e4f3e8;
+}
+
+.detail-status.status-muted,
+.status-hint.status-muted {
+  color: #6d7d79;
+  background: #edf1ef;
+}
+
 .detail-meta {
   display: flex;
   flex-wrap: wrap;
@@ -44,6 +80,77 @@
   margin-top: 20rpx;
   color: #607b76;
   font-size: 24rpx;
+}
+
+.status-hint {
+  margin-top: 22rpx;
+  padding: 18rpx 20rpx;
+  border-radius: 16rpx;
+  font-size: 24rpx;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.progress-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10rpx;
+  margin-top: 24rpx;
+}
+
+.progress-step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #8aa19d;
+  font-size: 22rpx;
+  font-weight: 800;
+}
+
+.progress-step::before {
+  content: "";
+  position: absolute;
+  top: 14rpx;
+  left: -50%;
+  width: 100%;
+  height: 4rpx;
+  background: #dcebea;
+}
+
+.progress-step:first-child::before {
+  display: none;
+}
+
+.progress-step.done::before,
+.progress-step.active::before {
+  background: #0f6b67;
+}
+
+.progress-dot {
+  position: relative;
+  z-index: 1;
+  width: 30rpx;
+  height: 30rpx;
+  border: 6rpx solid #dcebea;
+  border-radius: 50%;
+  background: #fbfffc;
+}
+
+.progress-step.done,
+.progress-step.active {
+  color: #0f6b67;
+}
+
+.progress-step.done .progress-dot,
+.progress-step.active .progress-dot {
+  border-color: #0f6b67;
+  background: #0f6b67;
+}
+
+.progress-name {
+  margin-top: 10rpx;
+  line-height: 1.2;
 }
 
 .section-title {
@@ -74,7 +181,11 @@
 }
 
 .copy-btn,
+.again-btn,
 .cancel-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-top: 20rpx;
   border-radius: 999rpx;
   color: #ffffff;
@@ -84,6 +195,20 @@
 
 .cancel-btn {
   background: #c2412d;
+}
+
+.again-btn {
+  background: #0f6b67;
+}
+
+.section-tip {
+  margin-top: 18rpx;
+  padding: 18rpx 20rpx;
+  border-radius: 16rpx;
+  background: #f5faf8;
+  color: #607b76;
+  font-size: 24rpx;
+  line-height: 1.5;
 }
 
 .verify-code {
@@ -112,6 +237,7 @@
 }
 
 .timeline-dot {
+  flex-shrink: 0;
   width: 18rpx;
   height: 18rpx;
   margin-top: 8rpx;
@@ -132,4 +258,23 @@
   color: #708985;
   font-size: 23rpx;
   line-height: 1.6;
+}
+
+.detail-actions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16rpx;
+  padding-bottom: 8rpx;
+}
+
+.detail-actions.single {
+  grid-template-columns: 1fr;
+}
+
+.detail-actions .again-btn,
+.detail-actions .cancel-btn {
+  height: 86rpx;
+  margin-top: 0;
+  font-size: 27rpx;
+  font-weight: 900;
 }

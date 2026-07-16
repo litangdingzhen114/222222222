@@ -6,7 +6,10 @@
   padding: 28rpx;
   border-radius: 20rpx;
   color: #ffffff;
-  background: linear-gradient(135deg, #0f6b67, #4d8f74);
+  background:
+    radial-gradient(circle at 86% 24%, rgba(255, 255, 255, 0.28), transparent 24%),
+    linear-gradient(135deg, #0f6b67, #4d8f74);
+  box-shadow: 0 18rpx 42rpx rgba(26, 74, 70, 0.14);
 }
 
 .order-title {
@@ -18,6 +21,36 @@
   margin-top: 10rpx;
   color: rgba(255, 255, 255, 0.82);
   font-size: 24rpx;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14rpx;
+  margin-top: 18rpx;
+}
+
+.summary-card {
+  min-height: 112rpx;
+  padding: 18rpx 14rpx;
+  border: 2rpx solid #dcecea;
+  border-radius: 18rpx;
+  background: #fbfffc;
+  box-shadow: 0 10rpx 26rpx rgba(26, 74, 70, 0.06);
+}
+
+.summary-value {
+  color: #173c38;
+  font-size: 38rpx;
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.summary-label {
+  margin-top: 8rpx;
+  color: #607b76;
+  font-size: 22rpx;
+  font-weight: 700;
 }
 
 .filter-scroll {
@@ -33,13 +66,16 @@
 .filter-chip {
   flex: 0 0 auto;
   padding: 14rpx 22rpx;
+  border: 2rpx solid transparent;
   border-radius: 999rpx;
   color: #4f6d68;
   background: #ffffff;
   font-size: 24rpx;
+  font-weight: 700;
 }
 
 .filter-chip.active {
+  border-color: #0f6b67;
   color: #ffffff;
   background: #0f6b67;
 }
@@ -50,7 +86,9 @@
 }
 
 .order-card {
-  padding: 24rpx;
+  padding: 26rpx;
+  border: 2rpx solid #e2efec;
+  box-shadow: 0 12rpx 32rpx rgba(26, 74, 70, 0.07);
 }
 
 .order-card-head {
@@ -61,9 +99,11 @@
 }
 
 .order-name {
+  max-width: 430rpx;
   color: #173c38;
   font-size: 30rpx;
   font-weight: 800;
+  line-height: 1.35;
 }
 
 .order-no {
@@ -82,6 +122,32 @@
   font-weight: 700;
 }
 
+.order-status.status-waiting {
+  color: #0f6b67;
+  background: #e3f2ee;
+}
+
+.order-status.status-confirmed,
+.order-status.status-shipped {
+  color: #125a8a;
+  background: #e6f1fb;
+}
+
+.order-status.status-warning {
+  color: #95611a;
+  background: #fbf0d7;
+}
+
+.order-status.status-done {
+  color: #2f6b3f;
+  background: #e4f3e8;
+}
+
+.order-status.status-muted {
+  color: #6d7d79;
+  background: #edf1ef;
+}
+
 .order-meta {
   display: flex;
   flex-wrap: wrap;
@@ -96,4 +162,56 @@
   color: #34534e;
   font-size: 24rpx;
   line-height: 1.6;
+}
+
+.order-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 18rpx;
+  padding-top: 18rpx;
+  border-top: 2rpx solid #e7efed;
+  color: #0f6b67;
+  font-size: 25rpx;
+  font-weight: 800;
+}
+
+.foot-arrow {
+  font-size: 34rpx;
+  line-height: 1;
+}
+
+.empty-card {
+  padding: 42rpx 28rpx;
+  border-radius: 22rpx;
+  background: #fbfffc;
+  text-align: center;
+  box-shadow: 0 12rpx 32rpx rgba(26, 74, 70, 0.07);
+}
+
+.empty-title {
+  color: #173c38;
+  font-size: 32rpx;
+  font-weight: 900;
+}
+
+.empty-desc {
+  margin-top: 12rpx;
+  color: #607b76;
+  font-size: 24rpx;
+  line-height: 1.5;
+}
+
+.empty-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 82rpx;
+  margin-top: 26rpx;
+  border-radius: 999rpx;
+  background: #0f6b67;
+  color: #ffffff;
+  font-size: 27rpx;
+  font-weight: 900;
 }

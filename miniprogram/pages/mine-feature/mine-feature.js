@@ -24,11 +24,39 @@ function orderTypeByFeature(featureId) {
   return 'service';
 }
 
+function getSelectedCard(feature, index) {
+  const cards = feature && Array.isArray(feature.cards) ? feature.cards : [];
+  return cards[index] || cards[0] || {};
+}
+
+function buildOrderPreview(feature, card, date, people) {
+  const isMall = feature && feature.id === 'mall';
+  return {
+    service: (feature && feature.service) || '海林村服务',
+    item: card.title || '请选择服务',
+    price: card.price || '后台确认',
+    date: date || todayText(),
+    peopleText: `${people || 1}${isMall ? ' 份' : ' 人/份'}`
+  };
+}
+
+function decorateOrderRecord(item) {
+  return {
+    ...item,
+    recordNo: item.orderNo || item.id,
+    recordStatus: item.status || '已提交',
+    recordDate: item.date || '日期待确认',
+    recordPeople: item.people ? `${item.people}人/份` : '数量待确认'
+  };
+}
+
 Page({
   data: {
     id: '',
     feature: {},
     selectedIndex: 0,
+    selectedCard: {},
+    orderPreview: {},
     date: todayText(),
     people: 2,
     contact: '',
@@ -70,12 +98,16 @@ Page({
     const selectedIndex = targetItem
       ? Math.max(0, (feature.cards || []).findIndex((item) => item.title === targetItem || targetItem.includes(item.title)))
       : 0;
+    const selectedCard = getSelectedCard(feature, selectedIndex);
+    const people = feature.id === 'mall' ? 1 : 2;
     this.setData({
       id,
       feature,
       selectedIndex,
+      selectedCard,
+      orderPreview: buildOrderPreview(feature, selectedCard, todayText(), people),
       contact: state.profile.contact || '',
-      people: feature.id === 'mall' ? 1 : 2,
+      people,
       cooperationTypes: feature.types || [],
       activeCooperationType: feature.types ? feature.types[0] : ''
     });
@@ -92,7 +124,7 @@ Page({
   refreshState() {
     const state = loadUserCenter();
     const id = this.data.id;
-    const orders = state.orders.filter((item) => item.featureId === id);
+    const orders = state.orders.filter((item) => item.featureId === id).map(decorateOrderRecord);
 
     this.setData({
       coupons: state.coupons,
@@ -107,13 +139,21 @@ Page({
   },
 
   onCardTap(event) {
+    const selectedIndex = Number(event.currentTarget.dataset.index);
+    const selectedCard = getSelectedCard(this.data.feature, selectedIndex);
     this.setData({
-      selectedIndex: Number(event.currentTarget.dataset.index)
+      selectedIndex,
+      selectedCard,
+      orderPreview: buildOrderPreview(this.data.feature, selectedCard, this.data.date, this.data.people)
     });
   },
 
   onDateChange(event) {
-    this.setData({ date: event.detail.value });
+    const date = event.detail.value;
+    this.setData({
+      date,
+      orderPreview: buildOrderPreview(this.data.feature, this.data.selectedCard, date, this.data.people)
+    });
   },
 
   onContactInput(event) {
@@ -125,11 +165,19 @@ Page({
   },
 
   onMinus() {
-    this.setData({ people: Math.max(1, this.data.people - 1) });
+    const people = Math.max(1, this.data.people - 1);
+    this.setData({
+      people,
+      orderPreview: buildOrderPreview(this.data.feature, this.data.selectedCard, this.data.date, people)
+    });
   },
 
   onPlus() {
-    this.setData({ people: Math.min(200, this.data.people + 1) });
+    const people = Math.min(200, this.data.people + 1);
+    this.setData({
+      people,
+      orderPreview: buildOrderPreview(this.data.feature, this.data.selectedCard, this.data.date, people)
+    });
   },
 
   onSubmitService() {
@@ -140,10 +188,11 @@ Page({
     }
 
     const feature = this.data.feature;
-    const card = feature.cards[this.data.selectedIndex] || feature.cards[0];
+    const card = this.data.selectedCard.title ? this.data.selectedCard : getSelectedCard(feature, this.data.selectedIndex);
     const payload = {
       service: feature.service,
       featureId: feature.id,
+      type: orderTypeByFeature(feature.id),
       item: card.title,
       date: this.data.date,
       people: this.data.people,
@@ -159,7 +208,7 @@ Page({
     submitOrder({
       ...payload,
       clientId: getClientId(),
-      orderType: orderTypeByFeature(feature.id),
+      orderType: payload.type,
       orderId: order.id,
       source: 'mine-page'
     })

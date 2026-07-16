@@ -2,15 +2,22 @@
   <view class="detail-card card">
     <view class="detail-head">
       <view>
-        <view class="detail-title">{{order.item || order.service}}</view>
+        <view class="detail-title">{{order.title}}</view>
         <view class="detail-no">{{order.orderNo || order.id}}</view>
       </view>
-      <view class="detail-status">{{order.statusText}}</view>
+      <view class="detail-status {{order.statusClass}}">{{order.statusText}}</view>
     </view>
     <view class="detail-meta">
       <text>{{order.typeText}}</text>
-      <text>{{order.date}}</text>
-      <text>{{order.people}} 人/份</text>
+      <text>{{order.dateText}}</text>
+      <text>{{order.peopleText}}</text>
+    </view>
+    <view class="status-hint {{order.statusClass}}">{{order.statusHint}}</view>
+    <view class="progress-row">
+      <view wx:for="{{order.progressSteps}}" wx:key="key" class="progress-step {{item.stateClass}}">
+        <view class="progress-dot"></view>
+        <view class="progress-name">{{item.title}}</view>
+      </view>
     </view>
   </view>
 
@@ -24,15 +31,16 @@
     <view class="info-row"><text>后台备注</text><text>{{order.adminNote || '暂无'}}</text></view>
   </view>
 
-  <view wx:if="{{order.type === 'product'}}" class="section-card card">
+  <view wx:if="{{order.hasLogistics}}" class="section-card card">
     <view class="section-title">发货信息</view>
     <view class="info-row"><text>物流公司</text><text>{{order.logistics.carrier || '待后台填写'}}</text></view>
     <view class="info-row"><text>快递单号</text><text>{{order.logistics.trackingNo || '暂无'}}</text></view>
     <view class="info-row"><text>发货时间</text><text>{{order.logistics.shippedAt || '未发货'}}</text></view>
-    <button class="copy-btn" bindtap="onCopyTracking">复制快递单号</button>
+    <button wx:if="{{order.canCopyTracking}}" class="copy-btn" bindtap="onCopyTracking">复制快递单号</button>
+    <view wx:else class="section-tip">后台发货后，这里会出现物流公司和快递单号。</view>
   </view>
 
-  <view wx:if="{{order.type === 'ticket'}}" class="section-card card">
+  <view wx:if="{{order.hasVerification}}" class="section-card card">
     <view class="section-title">核销信息</view>
     <view class="verify-code">{{order.verification.code || '-'}}</view>
     <view class="verify-note">{{order.verification.verifiedAt ? '已核销：' + order.verification.verifiedAt : '到场后向工作人员出示核销码'}}</view>
@@ -51,5 +59,8 @@
     <view wx:if="{{!order.timeline.length}}" class="timeline-empty">暂无进度，后台确认后会同步显示。</view>
   </view>
 
-  <button wx:if="{{canCancel}}" class="cancel-btn" loading="{{cancelling}}" bindtap="onCancelOrder">取消订单</button>
+  <view class="detail-actions {{canCancel ? '' : 'single'}}">
+    <button class="again-btn" bindtap="onBookAgain">再次预约</button>
+    <button wx:if="{{canCancel}}" class="cancel-btn" loading="{{cancelling}}" bindtap="onCancelOrder">取消订单</button>
+  </view>
 </view>

@@ -38,7 +38,9 @@ const spotDetailJs = fs.readFileSync(path.join(root, 'miniprogram/pages/spot-det
 const routeListJs = fs.readFileSync(path.join(root, 'miniprogram/pages/route-list/route-list.js'), 'utf8');
 const routeDetailJs = fs.readFileSync(path.join(root, 'miniprogram/pages/route-detail/route-detail.js'), 'utf8');
 const orderListJs = fs.readFileSync(path.join(root, 'miniprogram/pages/order-list/order-list.js'), 'utf8');
+const orderListWxml = fs.readFileSync(path.join(root, 'miniprogram/pages/order-list/order-list.wxml'), 'utf8');
 const orderDetailJs = fs.readFileSync(path.join(root, 'miniprogram/pages/order-detail/order-detail.js'), 'utf8');
+const orderDetailWxml = fs.readFileSync(path.join(root, 'miniprogram/pages/order-detail/order-detail.wxml'), 'utf8');
 const appJson = fs.readFileSync(path.join(root, 'miniprogram/app.json'), 'utf8');
 const mineWxml = fs.readFileSync(path.join(root, 'miniprogram/pages/mine-feature/mine-feature.wxml'), 'utf8');
 const feedbackWxml = fs.readFileSync(path.join(root, 'miniprogram/pages/feedback/feedback.wxml'), 'utf8');
@@ -56,9 +58,13 @@ assert(routeDetailJs.includes('loadRoutes'), 'route detail should load backend-m
 assert(appJson.includes('pages/order-list/order-list'), 'app should register order list page');
 assert(appJson.includes('pages/order-detail/order-detail'), 'app should register order detail page');
 assert(orderListJs.includes('loadOrders'), 'order list should load backend-managed orders');
+assert(orderListJs.includes('statusKey'), 'order list should normalize local and remote order statuses');
+assert(orderListWxml.includes('summary-grid'), 'order list should render operational summary cards');
 assert(orderDetailJs.includes('loadOrderDetail'), 'order detail should load backend-managed order detail');
 assert(orderDetailJs.includes('cancelOrder'), 'order detail should allow cancellable orders to be cancelled');
+assert(orderDetailWxml.includes('progressSteps'), 'order detail should render fulfillment progress steps');
 assert(mineWxml.includes('服务亮点'), 'mine feature page should render service highlights');
+assert(mineWxml.includes('确认预约'), 'mine feature page should render a booking confirmation card');
 assert(feedbackWxml.includes('意见反馈'), 'feedback page should explain feedback scope');
 
 console.log('entry detail depth ok');
