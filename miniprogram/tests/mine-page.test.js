@@ -123,9 +123,28 @@ const order = userCenter.addOrder('guide', {
 });
 assert.strictEqual(order.featureId, 'guide', 'order should keep feature id');
 assert(userCenter.loadUserCenter().orders.some((item) => item.id === order.id), 'order should persist locally');
+const updatedOrder = userCenter.updateOrder(order.id, { orderNo: 'HLTEST001', status: '待确认' });
+assert.strictEqual(updatedOrder.orderNo, 'HLTEST001', 'order should support remote metadata sync');
+assert.strictEqual(userCenter.completePointTask('favorite').ok, true, 'point task should be completable');
+
+const favoriteTarget = '/pages/spot-detail/spot-detail?id=test-favorite';
+const favoriteResult = userCenter.toggleFavorite({
+  id: 'spot-rice-view',
+  title: '稻鱼田观景点',
+  summary: '测试收藏景点',
+  targetUrl: favoriteTarget
+});
+assert.strictEqual(favoriteResult.favorite, true, 'favorite should be added');
+assert.strictEqual(userCenter.isFavorite(favoriteTarget), true, 'favorite target should be detectable');
+const unfavoriteResult = userCenter.toggleFavorite({
+  id: 'spot-rice-view',
+  title: '稻鱼田观景点',
+  summary: '测试收藏景点',
+  targetUrl: favoriteTarget
+});
+assert.strictEqual(unfavoriteResult.favorite, false, 'favorite should be removable');
 
 assert.strictEqual(userCenter.claimCoupon('coupon-ricefish').ok, true, 'claiming coupon should succeed');
 assert.strictEqual(userCenter.useCoupon('coupon-ricefish').ok, true, 'using claimed coupon should succeed');
-assert.strictEqual(userCenter.completePointTask('favorite').ok, true, 'point task should be completable');
 
 console.log('mine page feature coverage ok');

@@ -1,6 +1,7 @@
 const fallbackRoutes = require('../../data/routes');
 const { loadRoutes } = require('../../services/content');
 const { findById, quickToast } = require('../../utils/mock');
+const { isFavorite, toggleFavorite } = require('../../utils/userCenter');
 
 Page({
   data: {
@@ -23,13 +24,21 @@ Page({
     }
 
     this.setData({
-      route
+      route,
+      favorite: isFavorite(`/pages/route-detail/route-detail?id=${route.id}`)
     });
   },
 
   onFavorite() {
-    this.setData({ favorite: !this.data.favorite });
-    quickToast(this.data.favorite ? '已收藏路线' : '已取消收藏');
+    const route = this.data.route;
+    const result = toggleFavorite({
+      id: `route-${route.id}`,
+      title: route.name,
+      summary: route.subtitle || route.reason,
+      targetUrl: `/pages/route-detail/route-detail?id=${route.id}`
+    });
+    this.setData({ favorite: result.favorite });
+    quickToast(result.favorite ? '已收藏路线' : '已取消收藏');
   },
 
   onStart() {

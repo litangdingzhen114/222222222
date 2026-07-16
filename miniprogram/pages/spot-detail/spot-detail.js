@@ -1,6 +1,7 @@
 const fallbackSpots = require('../../data/spots');
 const { loadSpots } = require('../../services/content');
 const { findById, quickToast } = require('../../utils/mock');
+const { isFavorite, toggleFavorite } = require('../../utils/userCenter');
 
 Page({
   data: {
@@ -38,13 +39,21 @@ Page({
     this.setData({
       spot,
       heroImages: heroImages.length ? heroImages : imageClasses.map((imageClass, index) => ({ key: `${imageClass}-${index}`, imageClass })),
+      favorite: isFavorite(`/pages/spot-detail/spot-detail?id=${spot.id}`),
       nearby: spots.filter((item) => item.id !== spot.id).slice(0, 3)
     });
   },
 
   onFavorite() {
-    this.setData({ favorite: !this.data.favorite });
-    quickToast(this.data.favorite ? '已收藏' : '已取消收藏');
+    const spot = this.data.spot;
+    const result = toggleFavorite({
+      id: `spot-${spot.id}`,
+      title: spot.name,
+      summary: spot.desc,
+      targetUrl: `/pages/spot-detail/spot-detail?id=${spot.id}`
+    });
+    this.setData({ favorite: result.favorite });
+    quickToast(result.favorite ? '已收藏' : '已取消收藏');
   },
 
   onAudioGuide() {

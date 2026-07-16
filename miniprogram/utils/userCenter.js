@@ -143,6 +143,37 @@ function getStats(state = loadUserCenter()) {
   };
 }
 
+function favoriteKey(item) {
+  return item.targetUrl || `${item.type || 'item'}:${item.id || item.title}`;
+}
+
+function isFavorite(targetUrl) {
+  const state = loadUserCenter();
+  return state.favorites.some((item) => item.targetUrl === targetUrl);
+}
+
+function toggleFavorite(payload) {
+  const state = loadUserCenter();
+  const favorite = {
+    id: payload.id || `fav-${Date.now()}`,
+    title: String(payload.title || '').trim(),
+    summary: String(payload.summary || '').trim(),
+    targetUrl: payload.targetUrl || '',
+    createdAt: formatDateTime(new Date())
+  };
+  const key = favoriteKey(favorite);
+  const index = state.favorites.findIndex((item) => favoriteKey(item) === key);
+  if (index >= 0) {
+    state.favorites.splice(index, 1);
+    saveUserCenter(state);
+    return { favorite: false, count: state.favorites.length };
+  }
+  state.favorites.unshift(favorite);
+  if (state.favorites.length >= 3) state.completedTasks.favorite = true;
+  saveUserCenter(state);
+  return { favorite: true, count: state.favorites.length };
+}
+
 function getMergedUser(user = baseUser) {
   const state = loadUserCenter();
   const stats = getStats(state);
@@ -324,12 +355,14 @@ module.exports = {
   formatDate,
   getMergedUser,
   getStats,
+  isFavorite,
   loadUserCenter,
   publishNote,
   recordVerification,
   resetUserCenter,
   saveProfile,
   saveUserCenter,
+  toggleFavorite,
   updateOrder,
   useCoupon
 };
