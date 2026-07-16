@@ -37,6 +37,9 @@ const spotListJs = fs.readFileSync(path.join(root, 'miniprogram/pages/spot-list/
 const spotDetailJs = fs.readFileSync(path.join(root, 'miniprogram/pages/spot-detail/spot-detail.js'), 'utf8');
 const routeListJs = fs.readFileSync(path.join(root, 'miniprogram/pages/route-list/route-list.js'), 'utf8');
 const routeDetailJs = fs.readFileSync(path.join(root, 'miniprogram/pages/route-detail/route-detail.js'), 'utf8');
+const orderListJs = fs.readFileSync(path.join(root, 'miniprogram/pages/order-list/order-list.js'), 'utf8');
+const orderDetailJs = fs.readFileSync(path.join(root, 'miniprogram/pages/order-detail/order-detail.js'), 'utf8');
+const appJson = fs.readFileSync(path.join(root, 'miniprogram/app.json'), 'utf8');
 const mineWxml = fs.readFileSync(path.join(root, 'miniprogram/pages/mine-feature/mine-feature.wxml'), 'utf8');
 const feedbackWxml = fs.readFileSync(path.join(root, 'miniprogram/pages/feedback/feedback.wxml'), 'utf8');
 
@@ -50,6 +53,11 @@ assert(spotListJs.includes('loadSpots'), 'spot list should load backend-managed 
 assert(spotDetailJs.includes('loadSpots'), 'spot detail should load backend-managed spot content');
 assert(routeListJs.includes('loadRoutes'), 'route list should load backend-managed route content');
 assert(routeDetailJs.includes('loadRoutes'), 'route detail should load backend-managed route content');
+assert(appJson.includes('pages/order-list/order-list'), 'app should register order list page');
+assert(appJson.includes('pages/order-detail/order-detail'), 'app should register order detail page');
+assert(orderListJs.includes('loadOrders'), 'order list should load backend-managed orders');
+assert(orderDetailJs.includes('loadOrderDetail'), 'order detail should load backend-managed order detail');
+assert(orderDetailJs.includes('cancelOrder'), 'order detail should allow cancellable orders to be cancelled');
 assert(mineWxml.includes('服务亮点'), 'mine feature page should render service highlights');
 assert(feedbackWxml.includes('意见反馈'), 'feedback page should explain feedback scope');
 

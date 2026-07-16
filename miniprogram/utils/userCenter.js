@@ -7,6 +7,7 @@ const {
 } = require('../data/mineFeatures');
 
 const STORAGE_KEY = 'hailin_user_center';
+const CLIENT_ID_KEY = 'hailin_client_id';
 const memoryStore = {};
 
 function clone(value) {
@@ -100,6 +101,22 @@ function loadUserCenter() {
   return normalizeState(readStorage());
 }
 
+function randomText() {
+  return Math.random().toString(36).slice(2, 8);
+}
+
+function getClientId() {
+  const existing = wxReady() ? wx.getStorageSync(CLIENT_ID_KEY) : memoryStore[CLIENT_ID_KEY];
+  if (existing) return existing;
+  const clientId = `client-${Date.now()}-${randomText()}`;
+  if (wxReady()) {
+    wx.setStorageSync(CLIENT_ID_KEY, clientId);
+  } else {
+    memoryStore[CLIENT_ID_KEY] = clientId;
+  }
+  return clientId;
+}
+
 function saveUserCenter(state) {
   const normalized = normalizeState(state);
   writeStorage(normalized);
@@ -108,6 +125,11 @@ function saveUserCenter(state) {
 
 function resetUserCenter() {
   removeStorage();
+  if (wxReady() && wx.removeStorageSync) {
+    wx.removeStorageSync(CLIENT_ID_KEY);
+  } else {
+    delete memoryStore[CLIENT_ID_KEY];
+  }
   const state = createDefaultState();
   writeStorage(state);
   return state;
@@ -286,6 +308,7 @@ module.exports = {
   claimCoupon,
   completePointTask,
   decorateTasks,
+  getClientId,
   formatDate,
   getMergedUser,
   getStats,

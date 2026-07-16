@@ -1,3 +1,5 @@
+const { getClientId } = require('./utils/userCenter');
+
 App({
   globalData: {
     appName: '一部手机游海林村',
@@ -6,5 +8,6 @@ App({
 
   onLaunch() {
     wx.setStorageSync('hailin_app_ready', true);
+    getClientId();
   }
 });

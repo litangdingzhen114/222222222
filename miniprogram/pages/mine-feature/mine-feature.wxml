@@ -197,7 +197,7 @@
       <text class="section-meta">{{orders.length}} 条</text>
     </view>
     <view class="record-list">
-      <view wx:for="{{orders}}" wx:key="id" class="record-item">
+      <view wx:for="{{orders}}" wx:key="id" class="record-item" data-id="{{item.id}}" bindtap="onOrderRecordTap">
         <view>
           <view class="record-title">{{item.item}}</view>
           <view class="record-desc">{{item.date}} · {{item.people}}人/份 · {{item.createdAt}}</view>

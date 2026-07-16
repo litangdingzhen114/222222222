@@ -1,5 +1,5 @@
 const { featureMap } = require('../../data/mineFeatures');
-const { submitBooking, submitFeedback } = require('../../services/content');
+const { submitFeedback, submitOrder } = require('../../services/content');
 const { todayText } = require('../../utils/format');
 const { quickToast } = require('../../utils/mock');
 const {
@@ -9,10 +9,19 @@ const {
   claimCoupon,
   completePointTask,
   decorateTasks,
+  getClientId,
   loadUserCenter,
   recordVerification,
   useCoupon
 } = require('../../utils/userCenter');
+
+function orderTypeByFeature(featureId) {
+  if (featureId === 'mall') return 'product';
+  if (featureId === 'ticket') return 'ticket';
+  if (featureId === 'stay') return 'stay';
+  if (featureId === 'venue') return 'venue';
+  return 'service';
+}
 
 Page({
   data: {
@@ -141,13 +150,15 @@ Page({
     this.setData({ submitting: true });
     this.refreshState();
 
-    submitBooking({
+    submitOrder({
       ...payload,
+      clientId: getClientId(),
+      orderType: orderTypeByFeature(feature.id),
       orderId: order.id,
       source: 'mine-page'
     })
       .then(() => {
-        quickToast('已提交至后台');
+        quickToast('订单已提交至后台');
       })
       .catch(() => {
         quickToast('已本地记录，后端接通后同步');
@@ -156,6 +167,12 @@ Page({
         this.setData({ submitting: false, remark: '' });
         this.refreshState();
       });
+  },
+
+  onOrderRecordTap(event) {
+    wx.navigateTo({
+      url: `/pages/order-detail/order-detail?id=${event.currentTarget.dataset.id}`
+    });
   },
 
   onVerifyInput(event) {

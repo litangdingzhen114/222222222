@@ -72,6 +72,21 @@ const LOCATION_TEXT = '浙江省丽水市青田县海口镇海林村';
 const REGION_KEYWORDS = ['瓯江', '青田石', '田鱼', '侨乡', '山水村落'];
 const BOOKING_STATUSES = ['new', 'confirmed', 'processing', 'completed', 'cancelled'];
 const FEEDBACK_STATUSES = ['new', 'processing', 'resolved', 'archived'];
+const ORDER_TYPES = ['product', 'service', 'ticket', 'stay', 'venue'];
+const ORDER_STATUSES = [
+  'new',
+  'confirmed',
+  'pending_shipment',
+  'shipped',
+  'received',
+  'pending_service',
+  'in_service',
+  'pending_verify',
+  'verified',
+  'completed',
+  'cancelled',
+  'expired'
+];
 const STATUS_TRANSITIONS = {
   booking: {
     new: ['confirmed', 'cancelled'],
@@ -85,6 +100,50 @@ const STATUS_TRANSITIONS = {
     processing: ['resolved', 'archived'],
     resolved: ['archived'],
     archived: []
+  },
+  order: {
+    product: {
+      new: ['confirmed', 'cancelled'],
+      confirmed: ['pending_shipment', 'cancelled'],
+      pending_shipment: ['shipped', 'cancelled'],
+      shipped: ['received', 'completed'],
+      received: ['completed'],
+      completed: [],
+      cancelled: []
+    },
+    service: {
+      new: ['confirmed', 'cancelled'],
+      confirmed: ['pending_service', 'cancelled'],
+      pending_service: ['in_service', 'cancelled'],
+      in_service: ['completed', 'cancelled'],
+      completed: [],
+      cancelled: []
+    },
+    ticket: {
+      new: ['confirmed', 'cancelled'],
+      confirmed: ['pending_verify', 'cancelled'],
+      pending_verify: ['verified', 'expired', 'cancelled'],
+      verified: ['completed'],
+      completed: [],
+      cancelled: [],
+      expired: []
+    },
+    stay: {
+      new: ['confirmed', 'cancelled'],
+      confirmed: ['pending_service', 'cancelled'],
+      pending_service: ['in_service', 'cancelled'],
+      in_service: ['completed', 'cancelled'],
+      completed: [],
+      cancelled: []
+    },
+    venue: {
+      new: ['confirmed', 'cancelled'],
+      confirmed: ['pending_service', 'cancelled'],
+      pending_service: ['in_service', 'cancelled'],
+      in_service: ['completed', 'cancelled'],
+      completed: [],
+      cancelled: []
+    }
   }
 };
 const AUDIT_FILE = 'audit.json';
@@ -543,6 +602,219 @@ function validateFeedback(body) {
     content,
     source: cleanText(body.source, 40) || 'mini-program'
   };
+}
+
+function normalizeOrderType(value, featureId = '') {
+  const cleanType = cleanText(value, 40);
+  if (ORDER_TYPES.includes(cleanType)) return cleanType;
+  const feature = cleanText(featureId, 40);
+  if (feature === 'mall') return 'product';
+  if (feature === 'ticket') return 'ticket';
+  if (feature === 'stay') return 'stay';
+  if (feature === 'venue') return 'venue';
+  return 'service';
+}
+
+function generateOrderNo(now = new Date()) {
+  const date = now.toISOString().slice(0, 10).replace(/-/g, '');
+  const suffix = crypto.randomBytes(3).toString('hex').toUpperCase();
+  return `HL${date}${suffix}`;
+}
+
+function defaultNextOrderStatus(type) {
+  if (type === 'product') return 'pending_shipment';
+  if (type === 'ticket') return 'pending_verify';
+  return 'pending_service';
+}
+
+function validateOrder(body) {
+  const contact = cleanText(body.contact, 80);
+  if (!contact) throw new HttpError(400, 'Contact is required');
+
+  const people = normalizePositiveInt(body.people || body.quantity, 1, 1, 200);
+  const featureId = cleanText(body.featureId, 40);
+  const type = normalizeOrderType(body.orderType || body.type, featureId);
+  const clientId = cleanText(body.clientId, 120);
+
+  return {
+    clientId,
+    type,
+    featureId,
+    service: cleanText(body.service, 100) || '海林村文旅服务',
+    item: cleanText(body.item || body.title || body.service, 120) || '海林村文旅服务',
+    date: cleanText(body.date, 40) || new Date().toISOString().slice(0, 10),
+    people,
+    contact,
+    remark: cleanText(body.remark || body.note, 800),
+    price: cleanText(body.price, 80),
+    source: cleanText(body.source, 40) || 'mini-program'
+  };
+}
+
+function createOrder(body, req) {
+  const payload = validateOrder(body);
+  const records = readRecords('orders.json');
+  const now = new Date().toISOString();
+  const record = {
+    id: crypto.randomUUID(),
+    orderNo: generateOrderNo(new Date(now)),
+    createdAt: now,
+    updatedAt: now,
+    status: 'new',
+    paymentStatus: 'offline_confirm',
+    logistics: {
+      carrier: '',
+      trackingNo: '',
+      shippedAt: '',
+      receivedAt: ''
+    },
+    verification: {
+      code: `HL${crypto.randomBytes(3).toString('hex').toUpperCase()}`,
+      verifiedAt: '',
+      verifiedBy: ''
+    },
+    statusHistory: [{
+      id: crypto.randomUUID(),
+      type: 'created',
+      at: now,
+      by: 'public',
+      fromStatus: '',
+      toStatus: 'new',
+      note: '游客提交订单',
+      requestId: req?.requestId || ''
+    }],
+    ...payload
+  };
+  records.unshift(record);
+  writeRecords('orders.json', records);
+  appendAudit(req, 'order.created', 'public', record.id, {
+    orderNo: record.orderNo,
+    type: record.type,
+    item: record.item
+  });
+  return record;
+}
+
+function ensureOrderTransition(orderType, currentStatus, nextStatus) {
+  ensureAllowedStatus(ORDER_STATUSES, nextStatus);
+  const type = normalizeOrderType(orderType);
+  const current = cleanText(currentStatus, 40) || 'new';
+  if (current === nextStatus) return;
+  const allowedNext = STATUS_TRANSITIONS.order[type]?.[current] || [];
+  if (!allowedNext.includes(nextStatus)) {
+    throw new HttpError(409, 'Invalid order status transition', `${current} -> ${nextStatus} is not allowed for ${type}`);
+  }
+}
+
+function orderStatusFields(status, body, now, record) {
+  const fields = {
+    lastHandledAt: now,
+    lastHandledBy: ADMIN_USER
+  };
+  if (status === 'shipped') {
+    fields.logistics = {
+      ...(record.logistics || {}),
+      carrier: cleanText(body.carrier || body.logistics?.carrier, 80),
+      trackingNo: cleanText(body.trackingNo || body.logistics?.trackingNo, 120),
+      shippedAt: cleanText(body.shippedAt || body.logistics?.shippedAt, 40) || now
+    };
+  }
+  if (status === 'received') {
+    fields.logistics = {
+      ...(record.logistics || {}),
+      receivedAt: cleanText(body.receivedAt || body.logistics?.receivedAt, 40) || now
+    };
+  }
+  if (status === 'verified') {
+    fields.verification = {
+      ...(record.verification || {}),
+      code: cleanText(body.verifyCode || body.verification?.code, 40) || record.verification?.code || '',
+      verifiedAt: cleanText(body.verifiedAt || body.verification?.verifiedAt, 40) || now,
+      verifiedBy: ADMIN_USER
+    };
+  }
+  if (status === 'completed') fields.completedAt = record.completedAt || now;
+  if (status === 'cancelled') fields.cancelledAt = record.cancelledAt || now;
+  if (status === 'expired') fields.expiredAt = record.expiredAt || now;
+  return fields;
+}
+
+function updateOrderFulfillment(id, body, req) {
+  const nextStatus = cleanText(body.status, 40);
+  const records = readRecords('orders.json');
+  const index = records.findIndex((item) => item.id === id || item.orderNo === id);
+  if (index === -1) throw new HttpError(404, 'Order not found');
+
+  const record = records[index];
+  ensureOrderTransition(record.type, record.status, nextStatus);
+
+  const now = new Date().toISOString();
+  const noteProvided = body.note !== undefined;
+  const adminNote = noteProvided ? cleanText(body.note, 800) : cleanText(record.adminNote, 800);
+  const fromStatus = cleanText(record.status, 40) || 'new';
+  const history = Array.isArray(record.statusHistory) ? record.statusHistory.slice(-59) : [];
+  records[index] = {
+    ...record,
+    ...orderStatusFields(nextStatus, body, now, record),
+    status: nextStatus,
+    adminNote,
+    updatedAt: now,
+    statusHistory: [
+      ...history,
+      {
+        id: crypto.randomUUID(),
+        type: fromStatus === nextStatus ? 'note' : 'status',
+        at: now,
+        by: ADMIN_USER,
+        fromStatus,
+        toStatus: nextStatus,
+        note: noteProvided ? adminNote : '',
+        requestId: req.requestId
+      }
+    ]
+  };
+  writeRecords('orders.json', records);
+  return records[index];
+}
+
+function cancelPublicOrder(id, body, req) {
+  const clientId = cleanText(body.clientId, 120);
+  if (!clientId) throw new HttpError(400, 'Client id is required');
+
+  const records = readRecords('orders.json');
+  const index = records.findIndex((item) => item.id === id || item.orderNo === id);
+  if (index === -1) throw new HttpError(404, 'Order not found');
+  if (records[index].clientId !== clientId) throw new HttpError(403, 'Order does not belong to this client');
+
+  ensureOrderTransition(records[index].type, records[index].status, 'cancelled');
+  const now = new Date().toISOString();
+  const history = Array.isArray(records[index].statusHistory) ? records[index].statusHistory.slice(-59) : [];
+  const fromStatus = cleanText(records[index].status, 40) || 'new';
+  records[index] = {
+    ...records[index],
+    status: 'cancelled',
+    cancelledAt: now,
+    updatedAt: now,
+    statusHistory: [
+      ...history,
+      {
+        id: crypto.randomUUID(),
+        type: 'status',
+        at: now,
+        by: 'public',
+        fromStatus,
+        toStatus: 'cancelled',
+        note: cleanText(body.note, 300) || '游客取消订单',
+        requestId: req.requestId
+      }
+    ]
+  };
+  writeRecords('orders.json', records);
+  appendAudit(req, 'order.cancelled', 'public', records[index].id, {
+    orderNo: records[index].orderNo,
+    clientId
+  });
+  return records[index];
 }
 
 function homePayload() {
@@ -1092,6 +1364,7 @@ function storageWritable() {
 function adminSummary() {
   const bookings = readRecords('bookings.json');
   const feedback = readRecords('feedback.json');
+  const orders = readRecords('orders.json');
   const homeContent = readHomeContentEnvelope();
   const liveContent = readLiveContentEnvelope();
   const resourceContent = contentResourceIndex();
@@ -1099,6 +1372,7 @@ function adminSummary() {
     counts: {
       bookings: { ...countByStatus(bookings, BOOKING_STATUSES), today: todayCount(bookings) },
       feedback: { ...countByStatus(feedback, FEEDBACK_STATUSES), today: todayCount(feedback) },
+      orders: { ...countByStatus(orders, ORDER_STATUSES), today: todayCount(orders) },
       lives: liveContent.meta.stats,
       resources: Object.fromEntries(resourceContent.map((item) => [item.key, item.meta.stats])),
       mapPoints: { total: readContentResourceEnvelope('map-points').meta.stats.total },
@@ -1109,6 +1383,7 @@ function adminSummary() {
       }
     },
     recent: {
+      orders: orders.slice(0, 5),
       bookings: bookings.slice(0, 5),
       feedback: feedback.slice(0, 5)
     },
@@ -1155,6 +1430,42 @@ function listAdminRecords(fileName, query) {
   };
 }
 
+function listOrders(query, admin = false) {
+  const page = normalizePositiveInt(query.get('page'), 1, 1, 1000);
+  const pageSize = normalizePositiveInt(query.get('pageSize'), admin ? 20 : 50, 1, 100);
+  const status = cleanText(query.get('status'), 40);
+  const type = cleanText(query.get('type'), 40);
+  const clientId = cleanText(query.get('clientId'), 120);
+  const search = cleanText(query.get('q'), 120);
+
+  if (!admin && !clientId) {
+    throw new HttpError(400, 'Client id is required');
+  }
+
+  const all = readRecords('orders.json')
+    .filter((record) => admin || record.clientId === clientId)
+    .filter((record) => !status || record.status === status)
+    .filter((record) => !type || record.type === type)
+    .filter((record) => matchesQuery(record, search));
+  const start = (page - 1) * pageSize;
+
+  return {
+    items: all.slice(start, start + pageSize),
+    page,
+    pageSize,
+    total: all.length
+  };
+}
+
+function findPublicOrder(id, query) {
+  const clientId = cleanText(query.get('clientId'), 120);
+  if (!clientId) throw new HttpError(400, 'Client id is required');
+  const order = readRecords('orders.json').find((item) => item.id === id || item.orderNo === id);
+  if (!order) throw new HttpError(404, 'Order not found');
+  if (order.clientId !== clientId) throw new HttpError(403, 'Order does not belong to this client');
+  return order;
+}
+
 function listAuditRecords(query) {
   const page = normalizePositiveInt(query.get('page'), 1, 1, 1000);
   const pageSize = normalizePositiveInt(query.get('pageSize'), 30, 1, 100);
@@ -1178,6 +1489,7 @@ function listAuditRecords(query) {
 function backupPayload() {
   const bookings = readRecords('bookings.json');
   const feedback = readRecords('feedback.json');
+  const orders = readRecords('orders.json');
   const audit = readRecords(AUDIT_FILE);
   const homeContent = readHomeContentEnvelope();
   const liveContent = readLiveContentEnvelope();
@@ -1193,6 +1505,7 @@ function backupPayload() {
       counts: {
         bookings: bookings.length,
         feedback: feedback.length,
+        orders: orders.length,
         audit: audit.length,
         lives: liveContent.items.length,
         resources: Object.keys(resourceContent).length
@@ -1200,6 +1513,7 @@ function backupPayload() {
     },
     data: {
       bookings,
+      orders,
       feedback,
       audit,
       homeContent,
@@ -1384,6 +1698,10 @@ async function handleAdminRequest(req, res, url, route) {
     sendJson(req, res, 200, { data: listAdminRecords('feedback.json', url.searchParams) });
     return;
   }
+  if (route === 'GET /api/admin/orders') {
+    sendJson(req, res, 200, { data: listOrders(url.searchParams, true) });
+    return;
+  }
   if (route === 'GET /api/admin/audit') {
     sendJson(req, res, 200, { data: listAuditRecords(url.searchParams) });
     return;
@@ -1460,6 +1778,28 @@ async function handleAdminRequest(req, res, url, route) {
       note: record.adminNote
     });
     sendJson(req, res, 200, { data: record });
+    return;
+  }
+
+  const orderRead = route.match(/^GET \/api\/admin\/orders\/([^/]+)$/);
+  if (orderRead) {
+    const order = readRecords('orders.json').find((item) => item.id === orderRead[1] || item.orderNo === orderRead[1]);
+    if (!order) throw new HttpError(404, 'Order not found');
+    sendJson(req, res, 200, { data: order });
+    return;
+  }
+
+  const orderFulfillment = route.match(/^PATCH \/api\/admin\/orders\/([^/]+)\/fulfillment$/);
+  if (orderFulfillment) {
+    const body = await readBody(req);
+    const order = updateOrderFulfillment(orderFulfillment[1], body, req);
+    appendAudit(req, 'order.fulfillment.updated', 'order', order.id, {
+      orderNo: order.orderNo,
+      type: order.type,
+      status: order.status,
+      note: cleanText(body.note, 800)
+    });
+    sendJson(req, res, 200, { data: order });
     return;
   }
 
@@ -1557,6 +1897,15 @@ async function handleRequest(req, res) {
       sendError(req, res, 405, 'Method not allowed');
       return;
     }
+    if (route === 'GET /api/hailin/orders') {
+      sendJson(req, res, 200, { data: listOrders(url.searchParams, false) });
+      return;
+    }
+    const publicOrderRead = route.match(/^GET \/api\/hailin\/orders\/([^/]+)$/);
+    if (publicOrderRead) {
+      sendJson(req, res, 200, { data: findPublicOrder(publicOrderRead[1], url.searchParams) });
+      return;
+    }
     if (route === 'POST /api/hailin/bookings') {
       const body = await readBody(req);
       const record = appendRecord('bookings.json', validateBooking(body), req);
@@ -1577,6 +1926,19 @@ async function handleRequest(req, res) {
         source: record.source
       });
       sendJson(req, res, 201, { data: record, message: '反馈已提交' });
+      return;
+    }
+    if (route === 'POST /api/hailin/orders') {
+      const body = await readBody(req);
+      const record = createOrder(body, req);
+      sendJson(req, res, 201, { data: record, message: '订单已提交' });
+      return;
+    }
+    const publicOrderCancel = route.match(/^PATCH \/api\/hailin\/orders\/([^/]+)\/cancel$/);
+    if (publicOrderCancel) {
+      const body = await readBody(req);
+      const record = cancelPublicOrder(publicOrderCancel[1], body, req);
+      sendJson(req, res, 200, { data: record, message: '订单已取消' });
       return;
     }
     if (route === 'POST /api/hailin/ai-guide') {

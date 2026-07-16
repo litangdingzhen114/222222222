@@ -1,0 +1,55 @@
+<view class="page page-pad order-detail-page">
+  <view class="detail-card card">
+    <view class="detail-head">
+      <view>
+        <view class="detail-title">{{order.item || order.service}}</view>
+        <view class="detail-no">{{order.orderNo || order.id}}</view>
+      </view>
+      <view class="detail-status">{{order.statusText}}</view>
+    </view>
+    <view class="detail-meta">
+      <text>{{order.typeText}}</text>
+      <text>{{order.date}}</text>
+      <text>{{order.people}} 人/份</text>
+    </view>
+  </view>
+
+  <view class="section-card card">
+    <view class="section-title">订单信息</view>
+    <view class="info-row"><text>服务项目</text><text>{{order.service}}</text></view>
+    <view class="info-row"><text>选择内容</text><text>{{order.item}}</text></view>
+    <view class="info-row"><text>参考价格</text><text>{{order.price || '-'}}</text></view>
+    <view class="info-row"><text>联系方式</text><text>{{order.contact}}</text></view>
+    <view class="info-row"><text>游客备注</text><text>{{order.remark || '无'}}</text></view>
+    <view class="info-row"><text>后台备注</text><text>{{order.adminNote || '暂无'}}</text></view>
+  </view>
+
+  <view wx:if="{{order.type === 'product'}}" class="section-card card">
+    <view class="section-title">发货信息</view>
+    <view class="info-row"><text>物流公司</text><text>{{order.logistics.carrier || '待后台填写'}}</text></view>
+    <view class="info-row"><text>快递单号</text><text>{{order.logistics.trackingNo || '暂无'}}</text></view>
+    <view class="info-row"><text>发货时间</text><text>{{order.logistics.shippedAt || '未发货'}}</text></view>
+    <button class="copy-btn" bindtap="onCopyTracking">复制快递单号</button>
+  </view>
+
+  <view wx:if="{{order.type === 'ticket'}}" class="section-card card">
+    <view class="section-title">核销信息</view>
+    <view class="verify-code">{{order.verification.code || '-'}}</view>
+    <view class="verify-note">{{order.verification.verifiedAt ? '已核销：' + order.verification.verifiedAt : '到场后向工作人员出示核销码'}}</view>
+  </view>
+
+  <view class="section-card card">
+    <view class="section-title">履约进度</view>
+    <view wx:for="{{order.timeline}}" wx:key="id" class="timeline-item">
+      <view class="timeline-dot"></view>
+      <view>
+        <view class="timeline-title">{{item.title}}</view>
+        <view class="timeline-desc">{{item.at}} · {{item.by || '-'}}</view>
+        <view wx:if="{{item.note}}" class="timeline-note">{{item.note}}</view>
+      </view>
+    </view>
+    <view wx:if="{{!order.timeline.length}}" class="timeline-empty">暂无进度，后台确认后会同步显示。</view>
+  </view>
+
+  <button wx:if="{{canCancel}}" class="cancel-btn" loading="{{cancelling}}" bindtap="onCancelOrder">取消订单</button>
+</view>

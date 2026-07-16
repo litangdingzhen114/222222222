@@ -1,0 +1,135 @@
+.order-detail-page {
+  background: #eef6f4;
+}
+
+.detail-card,
+.section-card {
+  padding: 24rpx;
+  margin-bottom: 18rpx;
+}
+
+.detail-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18rpx;
+}
+
+.detail-title {
+  color: #173c38;
+  font-size: 34rpx;
+  font-weight: 800;
+}
+
+.detail-no {
+  margin-top: 8rpx;
+  color: #78908c;
+  font-size: 22rpx;
+}
+
+.detail-status {
+  flex: 0 0 auto;
+  padding: 8rpx 16rpx;
+  border-radius: 999rpx;
+  color: #0f6b67;
+  background: #e3f2ee;
+  font-size: 24rpx;
+  font-weight: 800;
+}
+
+.detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14rpx;
+  margin-top: 20rpx;
+  color: #607b76;
+  font-size: 24rpx;
+}
+
+.section-title {
+  margin-bottom: 18rpx;
+  color: #173c38;
+  font-size: 30rpx;
+  font-weight: 800;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 20rpx;
+  padding: 14rpx 0;
+  border-bottom: 1rpx solid #e7efed;
+  color: #34534e;
+  font-size: 24rpx;
+}
+
+.info-row text:first-child {
+  flex: 0 0 150rpx;
+  color: #7a908c;
+}
+
+.info-row text:last-child {
+  flex: 1;
+  text-align: right;
+}
+
+.copy-btn,
+.cancel-btn {
+  margin-top: 20rpx;
+  border-radius: 999rpx;
+  color: #ffffff;
+  background: #0f6b67;
+  font-size: 26rpx;
+}
+
+.cancel-btn {
+  background: #c2412d;
+}
+
+.verify-code {
+  padding: 24rpx;
+  border-radius: 18rpx;
+  color: #0f6b67;
+  background: #e4f2ef;
+  text-align: center;
+  font-size: 44rpx;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.verify-note {
+  margin-top: 14rpx;
+  color: #607b76;
+  text-align: center;
+  font-size: 24rpx;
+}
+
+.timeline-item {
+  position: relative;
+  display: flex;
+  gap: 18rpx;
+  padding-bottom: 24rpx;
+}
+
+.timeline-dot {
+  width: 18rpx;
+  height: 18rpx;
+  margin-top: 8rpx;
+  border-radius: 50%;
+  background: #0f6b67;
+}
+
+.timeline-title {
+  color: #173c38;
+  font-size: 26rpx;
+  font-weight: 800;
+}
+
+.timeline-desc,
+.timeline-note,
+.timeline-empty {
+  margin-top: 6rpx;
+  color: #708985;
+  font-size: 23rpx;
+  line-height: 1.6;
+}

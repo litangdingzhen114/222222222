@@ -33,6 +33,10 @@ Page({
     });
   },
 
+  onOrderCenterTap() {
+    wx.navigateTo({ url: '/pages/order-list/order-list' });
+  },
+
   onRightTap(event) {
     wx.navigateTo({
       url: `/pages/mine-feature/mine-feature?id=${event.currentTarget.dataset.id}`

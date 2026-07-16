@@ -5,6 +5,8 @@
     "pages/food/food",
     "pages/mine/mine",
     "pages/mine-feature/mine-feature",
+    "pages/order-list/order-list",
+    "pages/order-detail/order-detail",
     "pages/profile-edit/profile-edit",
     "pages/publish/publish",
     "pages/user-list/user-list",

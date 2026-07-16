@@ -139,6 +139,34 @@ async function main() {
     assert.strictEqual(feedback.status, 201);
     assert.ok(feedback.body.data.id);
 
+    const order = await requestJson(`http://${HOST}:${PORT}/api/hailin/orders`, {
+      method: 'POST',
+      body: JSON.stringify({
+        clientId: 'client-production',
+        orderType: 'ticket',
+        featureId: 'ticket',
+        service: '海林村活动票券',
+        item: '稻鱼田体验票',
+        date: '2026-07-11',
+        people: 2,
+        contact: '13600000000',
+        remark: '亲子票券'
+      })
+    });
+    assert.strictEqual(order.status, 201);
+    assert.ok(order.body.data.orderNo);
+
+    const myOrders = await requestJson(`http://${HOST}:${PORT}/api/hailin/orders?clientId=client-production`);
+    assert.strictEqual(myOrders.status, 200);
+    assert.strictEqual(myOrders.body.data.total, 1);
+
+    const cancelledOrder = await requestJson(`http://${HOST}:${PORT}/api/hailin/orders/${order.body.data.id}/cancel`, {
+      method: 'PATCH',
+      body: JSON.stringify({ clientId: 'client-production', note: '测试取消' })
+    });
+    assert.strictEqual(cancelledOrder.status, 200);
+    assert.strictEqual(cancelledOrder.body.data.status, 'cancelled');
+
     const authHeaders = { Authorization: `Bearer ${ADMIN_TOKEN}` };
     const summary = await requestJson(`http://${HOST}:${PORT}/api/admin/summary`, { headers: authHeaders });
     assert.strictEqual(summary.status, 200);

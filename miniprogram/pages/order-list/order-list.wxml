@@ -1,0 +1,41 @@
+<view class="page page-pad order-list-page">
+  <view class="order-hero">
+    <view class="order-title">我的订单</view>
+    <view class="order-sub">查看预约、票券、文创商品和服务履约进度</view>
+  </view>
+
+  <scroll-view class="filter-scroll" scroll-x>
+    <view class="filter-row">
+      <view
+        wx:for="{{statusFilters}}"
+        wx:key="value"
+        class="filter-chip {{activeStatus === item.value ? 'active' : ''}}"
+        data-status="{{item.value}}"
+        bindtap="onFilterTap"
+      >{{item.label}}</view>
+    </view>
+  </scroll-view>
+
+  <view wx:if="{{filteredOrders.length}}" class="order-list">
+    <view wx:for="{{filteredOrders}}" wx:key="id" class="order-card card" data-id="{{item.id}}" bindtap="onOrderTap">
+      <view class="order-card-head">
+        <view>
+          <view class="order-name">{{item.item || item.service}}</view>
+          <view class="order-no">{{item.orderNo || item.id}}</view>
+        </view>
+        <view class="order-status">{{item.statusText}}</view>
+      </view>
+      <view class="order-meta">
+        <text>{{item.typeText}}</text>
+        <text>{{item.date}}</text>
+        <text>{{item.people}} 人/份</text>
+      </view>
+      <view class="order-desc">{{item.remark || item.price || '后台确认后会同步履约进度'}}</view>
+    </view>
+  </view>
+
+  <view wx:elif="{{!loading}}" class="empty-card">
+    <view class="empty-title">还没有订单</view>
+    <view class="empty-desc">预约讲解、购买文创或报名活动后，订单会出现在这里。</view>
+  </view>
+</view>

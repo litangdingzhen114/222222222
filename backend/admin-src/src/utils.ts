@@ -62,8 +62,16 @@ export function statusColor(status?: string) {
     new: 'orange',
     confirmed: 'blue',
     processing: 'geekblue',
+    pending_shipment: 'gold',
+    shipped: 'blue',
+    received: 'cyan',
+    pending_service: 'gold',
+    in_service: 'geekblue',
+    pending_verify: 'purple',
+    verified: 'green',
     completed: 'green',
     cancelled: 'red',
+    expired: 'red',
     resolved: 'green',
     archived: 'default'
   }[status || ''] || 'default';
@@ -72,6 +80,9 @@ export function statusColor(status?: string) {
 export function auditActionText(action?: string) {
   return {
     'booking.created': '提交预约',
+    'order.created': '提交订单',
+    'order.cancelled': '取消订单',
+    'order.fulfillment.updated': '更新订单履约',
     'feedback.created': '提交反馈',
     'booking.status.updated': '更新预约状态',
     'feedback.status.updated': '更新反馈状态',

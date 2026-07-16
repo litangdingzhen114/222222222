@@ -63,6 +63,7 @@ async function main() {
   const homePage = fs.readFileSync(path.join(__dirname, 'admin-src', 'src', 'pages', 'HomeContentPage.tsx'), 'utf8');
   const livePage = fs.readFileSync(path.join(__dirname, 'admin-src', 'src', 'pages', 'LiveContentPage.tsx'), 'utf8');
   const resourcePage = fs.readFileSync(path.join(__dirname, 'admin-src', 'src', 'pages', 'ResourceContentPage.tsx'), 'utf8');
+  const ordersPage = fs.readFileSync(path.join(__dirname, 'admin-src', 'src', 'pages', 'OrdersPage.tsx'), 'utf8');
   const detailDrawer = fs.readFileSync(path.join(__dirname, 'admin-src', 'src', 'pages', 'RecordDetailDrawer.tsx'), 'utf8');
   assert(adminHtml.includes('/admin/assets/'), 'admin dashboard should be built as static assets');
   assert(apiSource.includes('/api/admin/audit'), 'admin dashboard should load audit trail');
@@ -70,12 +71,15 @@ async function main() {
   assert(apiSource.includes('/api/admin/home-content'), 'admin dashboard should manage home content');
   assert(apiSource.includes('/api/admin/lives'), 'admin dashboard should manage live stream content');
   assert(apiSource.includes('/api/admin/resources'), 'admin dashboard should manage resource content');
+  assert(apiSource.includes('/api/admin/orders'), 'admin dashboard should manage order fulfillment');
   assert(auditPage.includes('fetchBackupBlob'), 'admin dashboard should expose one-click backup');
   assert(homePage.includes('json-editor'), 'admin dashboard should render home content editor');
   assert(livePage.includes('saveLiveContent'), 'admin dashboard should save live stream points');
   assert(livePage.includes('Switch'), 'admin dashboard should toggle live stream points');
   assert(resourcePage.includes('saveResourceContent'), 'admin dashboard should save resource content');
   assert(resourcePage.includes('map-points'), 'admin dashboard should manage map points');
+  assert(ordersPage.includes('updateOrderFulfillment'), 'admin dashboard should update order fulfillment');
+  assert(ordersPage.includes('trackingNo'), 'admin dashboard should handle shipment tracking numbers');
   assert(bookingsPage.includes('rowSelection'), 'admin dashboard should support table row selection');
   assert(detailDrawer.includes('maskContact'), 'admin dashboard should mask contact info in tables');
 
@@ -126,6 +130,66 @@ async function main() {
     assert.strictEqual(unauthorizedAudit.status, 401);
 
     const authHeaders = { Authorization: `Bearer ${ADMIN_TOKEN}` };
+
+    const productOrder = await requestJson(`http://${HOST}:${PORT}/api/hailin/orders`, {
+      method: 'POST',
+      body: JSON.stringify({
+        clientId: 'client-admin-ops',
+        orderType: 'product',
+        featureId: 'mall',
+        service: '共富集市采购意向',
+        item: '稻鱼米礼盒',
+        date: '2026-07-12',
+        people: 2,
+        contact: '13600000000',
+        price: '98元起',
+        remark: '需要发货'
+      })
+    });
+    assert.strictEqual(productOrder.status, 201);
+    assert.strictEqual(productOrder.body.data.status, 'new');
+    assert(productOrder.body.data.orderNo, 'order should generate order number');
+
+    const adminOrders = await requestJson(`http://${HOST}:${PORT}/api/admin/orders?type=product`, {
+      headers: authHeaders
+    });
+    assert.strictEqual(adminOrders.status, 200);
+    assert(adminOrders.body.data.items.some((item) => item.id === productOrder.body.data.id), 'admin should list product order');
+
+    const confirmedOrder = await requestJson(`http://${HOST}:${PORT}/api/admin/orders/${productOrder.body.data.id}/fulfillment`, {
+      method: 'PATCH',
+      headers: authHeaders,
+      body: JSON.stringify({ status: 'confirmed', note: '已确认库存' })
+    });
+    assert.strictEqual(confirmedOrder.status, 200);
+    assert.strictEqual(confirmedOrder.body.data.status, 'confirmed');
+
+    const pendingShipmentOrder = await requestJson(`http://${HOST}:${PORT}/api/admin/orders/${productOrder.body.data.id}/fulfillment`, {
+      method: 'PATCH',
+      headers: authHeaders,
+      body: JSON.stringify({ status: 'pending_shipment', note: '等待打包发货' })
+    });
+    assert.strictEqual(pendingShipmentOrder.status, 200);
+    assert.strictEqual(pendingShipmentOrder.body.data.status, 'pending_shipment');
+
+    const shippedOrder = await requestJson(`http://${HOST}:${PORT}/api/admin/orders/${productOrder.body.data.id}/fulfillment`, {
+      method: 'PATCH',
+      headers: authHeaders,
+      body: JSON.stringify({
+        status: 'shipped',
+        carrier: '顺丰速运',
+        trackingNo: 'SF1234567890',
+        note: '后台填写发货信息'
+      })
+    });
+    assert.strictEqual(shippedOrder.status, 200);
+    assert.strictEqual(shippedOrder.body.data.status, 'shipped');
+    assert.strictEqual(shippedOrder.body.data.logistics.trackingNo, 'SF1234567890');
+
+    const publicOrderDetail = await requestJson(`http://${HOST}:${PORT}/api/hailin/orders/${productOrder.body.data.id}?clientId=client-admin-ops`);
+    assert.strictEqual(publicOrderDetail.status, 200);
+    assert.strictEqual(publicOrderDetail.body.data.status, 'shipped');
+    assert.strictEqual(publicOrderDetail.body.data.logistics.carrier, '顺丰速运');
     const homeContent = await requestJson(`http://${HOST}:${PORT}/api/admin/home-content`, {
       headers: authHeaders
     });
@@ -307,6 +371,8 @@ async function main() {
     assert(audit.body.data.items.some((item) => item.action === 'home-content.updated'), 'home content update should be audited');
     assert(audit.body.data.items.some((item) => item.action === 'lives-content.updated'), 'live content update should be audited');
     assert(audit.body.data.items.some((item) => item.action === 'resource-content.updated'), 'resource content update should be audited');
+    assert(audit.body.data.items.some((item) => item.action === 'order.created'), 'public order creation should be audited');
+    assert(audit.body.data.items.some((item) => item.action === 'order.fulfillment.updated'), 'order fulfillment update should be audited');
     assert(audit.body.data.items.some((item) => item.action === 'booking.created'), 'public booking creation should be audited');
     assert(audit.body.data.items.some((item) => item.action === 'feedback.created'), 'public feedback creation should be audited');
     const statusAudit = audit.body.data.items.find((item) => item.action === 'booking.status.updated' && item.detail.status === 'confirmed');

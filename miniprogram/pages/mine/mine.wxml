@@ -59,6 +59,11 @@
     </view>
 
     <view class="service-list card">
+      <view class="service-item" bindtap="onOrderCenterTap">
+        <text>我的订单</text>
+        <text class="service-arrow">›</text>
+      </view>
+      <view class="service-line"></view>
       <view class="service-item" bindtap="onFeedbackTap">
         <text>意见反馈</text>
         <text class="service-arrow">›</text>

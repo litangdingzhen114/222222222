@@ -1,6 +1,7 @@
 const { todayText } = require('../../utils/format');
-const { submitBooking } = require('../../services/content');
+const { submitOrder } = require('../../services/content');
 const { quickToast } = require('../../utils/mock');
+const { getClientId } = require('../../utils/userCenter');
 
 const serviceOptions = [
   {
@@ -94,17 +95,20 @@ Page({
       quickToast('请填写联系方式');
       return;
     }
-    submitBooking({
+    submitOrder({
       service: this.data.selectedService.service,
       item: this.data.selectedService.title,
       date: this.data.date,
       people: this.data.people,
       contact: this.data.contact,
       remark: this.data.remark,
+      clientId: getClientId(),
+      orderType: 'service',
+      featureId: this.data.selectedService.id,
       source: 'booking-page'
     })
       .then(() => {
-        quickToast('预约已提交至后台');
+        quickToast('订单已提交至后台');
       })
       .catch(() => {
         quickToast('已记录预约，后台未配置时本地兜底');

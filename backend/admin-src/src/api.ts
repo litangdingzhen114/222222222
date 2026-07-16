@@ -8,6 +8,7 @@ import type {
   ListResponse,
   LiveContentEnvelope,
   LiveItem,
+  OrderRecord,
   ResourceContentEnvelope,
   ResourceContentSummary,
   ResourceKey,
@@ -127,6 +128,10 @@ export function listFeedback(params: QueryParams) {
   return apiRequest<ListResponse<FeedbackRecord>>(`/api/admin/feedback${queryString(params)}`);
 }
 
+export function listOrders(params: QueryParams) {
+  return apiRequest<ListResponse<OrderRecord>>(`/api/admin/orders${queryString(params)}`);
+}
+
 export function listAudit(params: QueryParams) {
   return apiRequest<ListResponse<AuditRecord>>(`/api/admin/audit${queryString(params)}`);
 }
@@ -147,6 +152,22 @@ export function updateBulkStatus(
   payload: { ids: string[]; status: string; note?: string }
 ) {
   return apiRequest<{ updated: number }>(`/api/admin/${kind}/bulk-status`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload)
+  });
+}
+
+export function updateOrderFulfillment(
+  id: string,
+  payload: {
+    status: string;
+    note?: string;
+    carrier?: string;
+    trackingNo?: string;
+    verifyCode?: string;
+  }
+) {
+  return apiRequest<OrderRecord>(`/api/admin/orders/${id}/fulfillment`, {
     method: 'PATCH',
     body: JSON.stringify(payload)
   });

@@ -19,7 +19,8 @@ module.exports = {
     lives: '/api/hailin/lives',
     aiGuide: '/api/hailin/ai-guide',
     booking: '/api/hailin/bookings',
-    feedback: '/api/hailin/feedback'
+    feedback: '/api/hailin/feedback',
+    orders: '/api/hailin/orders'
   },
 
   live: {

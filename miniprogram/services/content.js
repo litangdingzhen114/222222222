@@ -73,6 +73,30 @@ function submitFeedback(payload) {
   });
 }
 
+function submitOrder(payload) {
+  return request(serviceConfig.endpoints.orders, {
+    method: 'POST',
+    data: payload
+  });
+}
+
+function loadOrders(clientId) {
+  const endpoint = `${serviceConfig.endpoints.orders}?clientId=${encodeURIComponent(clientId || '')}`;
+  return withFallback(endpoint, { items: [], page: 1, pageSize: 50, total: 0 });
+}
+
+function loadOrderDetail(id, clientId) {
+  const endpoint = `${serviceConfig.endpoints.orders}/${encodeURIComponent(id)}?clientId=${encodeURIComponent(clientId || '')}`;
+  return request(endpoint);
+}
+
+function cancelOrder(id, clientId, note) {
+  return request(`${serviceConfig.endpoints.orders}/${encodeURIComponent(id)}/cancel`, {
+    method: 'PATCH',
+    data: { clientId, note }
+  });
+}
+
 module.exports = {
   loadHomeData,
   loadMapPoints,
@@ -82,5 +106,9 @@ module.exports = {
   loadProducts,
   loadLives,
   submitBooking,
-  submitFeedback
+  submitFeedback,
+  submitOrder,
+  loadOrders,
+  loadOrderDetail,
+  cancelOrder
 };

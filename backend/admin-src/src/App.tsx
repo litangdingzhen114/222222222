@@ -8,7 +8,8 @@ import {
   MessageOutlined,
   PlayCircleOutlined,
   ReloadOutlined,
-  SafetyCertificateOutlined
+  SafetyCertificateOutlined,
+  ShoppingCartOutlined
 } from '@ant-design/icons';
 import { App, Button, Layout, Menu, Space, Tag, Typography } from 'antd';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -23,6 +24,7 @@ import { FeedbackPage } from './pages/FeedbackPage';
 import { HomeContentPage } from './pages/HomeContentPage';
 import { LoginPage } from './pages/LoginPage';
 import { LiveContentPage } from './pages/LiveContentPage';
+import { OrdersPage } from './pages/OrdersPage';
 import { ResourceContentPage } from './pages/ResourceContentPage';
 import { SystemPage } from './pages/SystemPage';
 
@@ -34,6 +36,7 @@ const navItems = [
   { key: '/home-content', icon: <HomeOutlined />, label: '首页内容', title: '首页内容', subtitle: '轮播、入口、推荐区和首页公告' },
   { key: '/resources', icon: <EnvironmentOutlined />, label: '内容资源', title: '内容资源', subtitle: '景点、路线、美食、地图点位与文创商品' },
   { key: '/lives', icon: <PlayCircleOutlined />, label: '慢直播管理', title: '慢直播管理', subtitle: '直播点位、播放源、启停状态与排序' },
+  { key: '/orders', icon: <ShoppingCartOutlined />, label: '订单履约', title: '订单履约', subtitle: '实物发货、票券核销与村游服务进度' },
   { key: '/bookings', icon: <CalendarOutlined />, label: '预约管理', title: '预约管理', subtitle: '讲解、活动、团建与服务预约' },
   { key: '/feedback', icon: <MessageOutlined />, label: '反馈处理', title: '反馈处理', subtitle: '游客建议、问题和运营线索' },
   { key: '/audit', icon: <AuditOutlined />, label: '操作审计', title: '操作审计', subtitle: '记录预约、反馈、导出、备份和后台处理动作' },
@@ -107,6 +110,7 @@ function AdminLayout() {
             <Route path="/home-content" element={<HomeContentPage />} />
             <Route path="/resources" element={<ResourceContentPage />} />
             <Route path="/lives" element={<LiveContentPage />} />
+            <Route path="/orders" element={<OrdersPage />} />
             <Route path="/bookings" element={<BookingsPage />} />
             <Route path="/feedback" element={<FeedbackPage />} />
             <Route path="/audit" element={<AuditPage />} />
