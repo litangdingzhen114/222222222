@@ -59,9 +59,18 @@ assert(appJson.includes('pages/order-list/order-list'), 'app should register ord
 assert(appJson.includes('pages/order-detail/order-detail'), 'app should register order detail page');
 assert(orderListJs.includes('loadOrders'), 'order list should load backend-managed orders');
 assert(orderListJs.includes('statusKey'), 'order list should normalize local and remote order statuses');
+assert(
+  orderListJs.indexOf('statusLabels[order.remoteStatus]') < orderListJs.indexOf('localStatusMap[order.status]'),
+  'order list should prefer backend remoteStatus over stale local status text'
+);
 assert(orderListWxml.includes('summary-grid'), 'order list should render operational summary cards');
 assert(orderDetailJs.includes('loadOrderDetail'), 'order detail should load backend-managed order detail');
 assert(orderDetailJs.includes('cancelOrder'), 'order detail should allow cancellable orders to be cancelled');
+assert(
+  orderDetailJs.indexOf('statusLabels[order.remoteStatus]') < orderDetailJs.indexOf('localStatusMap[order.status]'),
+  'order detail should prefer backend remoteStatus over stale local status text'
+);
+assert(orderDetailJs.includes('order.remoteId === id || order.orderNo === id'), 'order detail should resolve local fallback by remote id or order number');
 assert(orderDetailWxml.includes('progressSteps'), 'order detail should render fulfillment progress steps');
 assert(mineWxml.includes('服务亮点'), 'mine feature page should render service highlights');
 assert(mineWxml.includes('确认预约'), 'mine feature page should render a booking confirmation card');

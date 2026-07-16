@@ -73,7 +73,11 @@ const typeByFeatureId = {
 };
 
 function getStatusKey(order) {
-  return order.statusKey || localStatusMap[order.status] || order.remoteStatus || order.status || 'new';
+  if (statusLabels[order.remoteStatus]) return order.remoteStatus;
+  if (statusLabels[order.status]) return order.status;
+  if (localStatusMap[order.status]) return localStatusMap[order.status];
+  if (statusLabels[order.statusKey]) return order.statusKey;
+  return order.remoteStatus || order.statusKey || order.status || 'new';
 }
 
 function localOrders() {

@@ -96,7 +96,11 @@ const typeByFeatureId = {
 };
 
 function getStatusKey(order) {
-  return order.statusKey || localStatusMap[order.status] || order.remoteStatus || order.status || 'new';
+  if (statusLabels[order.remoteStatus]) return order.remoteStatus;
+  if (statusLabels[order.status]) return order.status;
+  if (localStatusMap[order.status]) return localStatusMap[order.status];
+  if (statusLabels[order.statusKey]) return order.statusKey;
+  return order.remoteStatus || order.statusKey || order.status || 'new';
 }
 
 function getTypeText(type) {
@@ -121,7 +125,7 @@ function getProgressSteps(order, statusKey) {
 }
 
 function localOrder(id) {
-  const item = loadUserCenter().orders.find((order) => order.id === id);
+  const item = loadUserCenter().orders.find((order) => order.id === id || order.remoteId === id || order.orderNo === id);
   return item ? {
     ...item,
     orderNo: item.id,
