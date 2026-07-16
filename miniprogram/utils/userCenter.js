@@ -213,6 +213,18 @@ function addOrder(featureId, payload) {
   return order;
 }
 
+function updateOrder(orderId, patch) {
+  const state = loadUserCenter();
+  const index = state.orders.findIndex((item) => item.id === orderId || item.remoteId === orderId);
+  if (index === -1) return null;
+  state.orders[index] = {
+    ...state.orders[index],
+    ...patch
+  };
+  saveUserCenter(state);
+  return state.orders[index];
+}
+
 function claimCoupon(couponId) {
   const state = loadUserCenter();
   const coupon = state.coupons.find((item) => item.id === couponId);
@@ -318,5 +330,6 @@ module.exports = {
   resetUserCenter,
   saveProfile,
   saveUserCenter,
+  updateOrder,
   useCoupon
 };

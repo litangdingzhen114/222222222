@@ -12,6 +12,7 @@ const {
   getClientId,
   loadUserCenter,
   recordVerification,
+  updateOrder,
   useCoupon
 } = require('../../utils/userCenter');
 
@@ -162,7 +163,14 @@ Page({
       orderId: order.id,
       source: 'mine-page'
     })
-      .then(() => {
+      .then((remoteOrder) => {
+        updateOrder(order.id, {
+          id: remoteOrder.id || order.id,
+          remoteId: remoteOrder.id || '',
+          orderNo: remoteOrder.orderNo || '',
+          remoteStatus: remoteOrder.status || 'new',
+          status: '待确认'
+        });
         quickToast('订单已提交至后台');
       })
       .catch(() => {
