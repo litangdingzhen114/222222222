@@ -20,7 +20,7 @@
   </view>
 
   <view class="food-feature-panel">
-    <view wx:for="{{featureCards}}" wx:key="id" class="food-feature" data-title="{{item.title}}" bindtap="onFeatureTap">
+    <view wx:for="{{featureCards}}" wx:key="id" class="food-feature" data-id="{{item.id}}" data-title="{{item.title}}" bindtap="onFeatureTap">
       <view class="feature-icon">
         <image wx:if="{{item.iconPath}}" class="feature-icon-img" src="{{item.iconPath}}" mode="aspectFit"></image>
         <text wx:else>{{item.icon}}</text>
@@ -31,11 +31,11 @@
 
   <view class="food-search">
     <text class="food-search-icon">⌕</text>
-    <input placeholder="请输入" placeholder-class="food-placeholder" bindinput="onSearchInput" />
+    <input placeholder="搜索田鱼、茶点、咖啡" placeholder-class="food-placeholder" bindinput="onSearchInput" />
   </view>
 
   <view class="filter-row">
-    <view wx:for="{{filters}}" wx:key="*this" class="filter-item" data-title="{{item}}" bindtap="onFilterTap">
+    <view wx:for="{{filters}}" wx:key="*this" class="filter-item {{activeFilter === item ? 'active' : ''}}" data-title="{{item}}" bindtap="onFilterTap">
       <text>{{item}}</text>
       <text class="filter-arrow">⌄</text>
     </view>

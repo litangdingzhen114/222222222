@@ -53,7 +53,7 @@ Page({
   },
 
   onSearchTap() {
-    quickToast('真实搜索可由后端接入');
+    wx.switchTab({ url: '/pages/map/map' });
   },
 
   onGridTap(event) {
@@ -89,15 +89,20 @@ Page({
   },
 
   onProductTap(event) {
-    quickToast('文创商城建设中');
+    wx.navigateTo({ url: '/pages/mine-feature/mine-feature?id=mall' });
   },
 
   onRankingTap(event) {
-    quickToast(`${event.currentTarget.dataset.title}榜单建设中`);
+    const title = event.currentTarget.dataset.title || '';
+    if (title.includes('美食') || title.includes('田鱼')) {
+      wx.switchTab({ url: '/pages/food/food' });
+      return;
+    }
+    wx.switchTab({ url: '/pages/map/map' });
   },
 
   onMoreProducts() {
-    quickToast('更多文创建设中');
+    wx.navigateTo({ url: '/pages/mine-feature/mine-feature?id=mall' });
   },
 
   onMoreRoutes() {
@@ -105,6 +110,6 @@ Page({
   },
 
   onFeedTap() {
-    quickToast('游记详情建设中');
+    wx.navigateTo({ url: '/pages/user-list/user-list?type=notes' });
   }
 });

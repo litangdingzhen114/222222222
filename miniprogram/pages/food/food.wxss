@@ -229,16 +229,22 @@
 }
 
 .filter-item {
-  flex: 1;
+  flex: 1 1 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  min-width: 0;
   min-height: 68rpx;
   border-radius: 999rpx;
   background: #FBFFFC;
   color: #193C3A;
   font-size: 28rpx;
   font-weight: 700;
+}
+
+.filter-item.active {
+  color: #FFFFFF;
+  background: #0F6B67;
 }
 
 .filter-arrow {

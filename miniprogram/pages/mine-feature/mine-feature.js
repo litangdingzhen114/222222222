@@ -65,9 +65,14 @@ Page({
     }
 
     const state = loadUserCenter();
+    const targetItem = decodeURIComponent(options.item || '');
+    const selectedIndex = targetItem
+      ? Math.max(0, (feature.cards || []).findIndex((item) => item.title === targetItem || targetItem.includes(item.title)))
+      : 0;
     this.setData({
       id,
       feature,
+      selectedIndex,
       contact: state.profile.contact || '',
       people: feature.id === 'mall' ? 1 : 2,
       cooperationTypes: feature.types || [],

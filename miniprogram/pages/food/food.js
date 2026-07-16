@@ -4,8 +4,11 @@ const { quickToast } = require('../../utils/mock');
 
 Page({
   data: {
+    allFoods: fallbackFoods,
     foods: fallbackFoods,
-    filters: ['全部类别', '附近', '全村'],
+    keyword: '',
+    activeFilter: '全部类别',
+    filters: ['全部类别', '青田田鱼', '溪畔茶点', '侨乡', '研学'],
     featureCards: [
       { id: 'rank', title: '田鱼榜单', icon: '榜', iconPath: '/assets/icons/ricefish.png' },
       { id: 'map', title: '美食地图', icon: '图', iconPath: '/assets/icons/map-food.png' },
@@ -16,22 +19,62 @@ Page({
 
   onLoad() {
     loadFoods().then((foods) => {
-      this.setData({ foods });
+      this.setData({
+        allFoods: foods,
+        foods: this.filterFoods(foods, this.data.keyword, this.data.activeFilter)
+      });
+    });
+  },
+
+  filterFoods(source, keyword, filter) {
+    const word = String(keyword || '').trim().toLowerCase();
+    return source.filter((item) => {
+      const text = `${item.name} ${item.desc} ${(item.tags || []).join(' ')}`.toLowerCase();
+      const matchedKeyword = !word || text.includes(word);
+      const matchedFilter = !filter || filter === '全部类别' || (item.tags || []).includes(filter) || text.includes(filter.toLowerCase());
+      return matchedKeyword && matchedFilter;
     });
   },
 
   onFeatureTap(event) {
-    quickToast(`${event.currentTarget.dataset.title}建设中`);
+    const id = event.currentTarget.dataset.id;
+    if (id === 'map') {
+      wx.switchTab({ url: '/pages/map/map' });
+      return;
+    }
+    if (id === 'banquet') {
+      wx.navigateTo({ url: '/pages/mine-feature/mine-feature?id=mall' });
+      return;
+    }
+    const filter = id === 'special' ? '侨乡' : '青田田鱼';
+    this.setData({
+      activeFilter: filter,
+      foods: this.filterFoods(this.data.allFoods, this.data.keyword, filter)
+    });
   },
 
   onFilterTap(event) {
-    quickToast(`${event.currentTarget.dataset.title}筛选建设中`);
+    const activeFilter = event.currentTarget.dataset.title;
+    this.setData({
+      activeFilter,
+      foods: this.filterFoods(this.data.allFoods, this.data.keyword, activeFilter)
+    });
   },
 
-  onSearchInput() {},
+  onSearchInput(event) {
+    const keyword = event.detail.value;
+    this.setData({
+      keyword,
+      foods: this.filterFoods(this.data.allFoods, keyword, this.data.activeFilter)
+    });
+  },
 
   onFoodTap(event) {
     const food = this.data.foods.find((item) => item.id === event.detail.id);
-    quickToast(food ? `${food.name}详情建设中` : '美食详情建设中');
+    if (!food) {
+      quickToast('美食信息不存在');
+      return;
+    }
+    wx.navigateTo({ url: `/pages/mine-feature/mine-feature?id=mall&item=${encodeURIComponent(food.name)}` });
   }
 });
