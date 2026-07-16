@@ -8,11 +8,11 @@
   min-height: 180rpx;
   padding: 30rpx;
   border-radius: 28rpx;
-  background:
-    radial-gradient(circle at 82% 22%, rgba(244, 213, 142, 0.34), transparent 26%),
-    linear-gradient(135deg, #0E6B78, #77B7B0);
-  color: #FBFFFC;
-  box-shadow: 0 18rpx 44rpx rgba(26, 74, 70, 0.14);
+  border: 2rpx solid #DCEDEA;
+  border-left: 10rpx solid #0F6B67;
+  background: #FBFFFC;
+  color: #193C3A;
+  box-shadow: 0 12rpx 32rpx rgba(26, 74, 70, 0.07);
 }
 
 .avatar-preview {
@@ -37,7 +37,7 @@
 
 .preview-sub {
   margin-top: 10rpx;
-  color: rgba(251, 255, 252, 0.86);
+  color: #607F7A;
   font-size: 24rpx;
   line-height: 1.5;
 }
@@ -90,7 +90,7 @@
   height: 88rpx;
   margin-top: 6rpx;
   border-radius: 999rpx;
-  background: linear-gradient(135deg, #1D7C78, #0F6B67);
+  background: #0F6B67;
   color: #FBFFFC;
   font-size: 29rpx;
   font-weight: 900;

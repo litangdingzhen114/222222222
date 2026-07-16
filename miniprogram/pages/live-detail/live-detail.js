@@ -16,8 +16,6 @@ const VIDEO_SOURCE_CANDIDATES = [
   PACKAGE_LIVE_VIDEO,
   PACKAGE_LIVE_VIDEO_FALLBACK
 ].filter(Boolean);
-const BACKEND_LIVE_VIDEO = mediaUrl('/media/hailin-live.mp4');
-
 function uniqueVideoSources(sources) {
   return sources
     .map((source) => String(source || '').trim())
@@ -26,7 +24,7 @@ function uniqueVideoSources(sources) {
 }
 
 function preferredLiveVideoUrl(live) {
-  return String((live && (live.hlsUrl || live.liveUrl)) || BACKEND_LIVE_VIDEO || '').trim();
+  return String((live && (live.hlsUrl || live.liveUrl)) || '').trim();
 }
 
 Page({
@@ -78,7 +76,8 @@ Page({
       remoteSource,
       USER_LIVE_VIDEO,
       PACKAGE_LIVE_VIDEO,
-      PACKAGE_LIVE_VIDEO_FALLBACK
+      PACKAGE_LIVE_VIDEO_FALLBACK,
+      mediaUrl('/media/hailin-live.mp4')
     ]);
 
     if (remoteSource) {

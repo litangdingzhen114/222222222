@@ -116,19 +116,19 @@
 }
 
 .banner-oujiang {
-  background: linear-gradient(120deg, #0E6B78 0%, #59AEB2 46%, #E6D69D 46%, #F4E9B8 100%);
+  background: #CFE4E2;
 }
 
 .banner-ricefish {
-  background: linear-gradient(120deg, #0F6B67 0%, #3F8F75 42%, #D94B35 42%, #F0C76D 100%);
+  background: #E8D9B7;
 }
 
 .banner-stone {
-  background: linear-gradient(120deg, #355E5D 0%, #87A6A0 48%, #D7C7AC 48%, #F4E9DA 100%);
+  background: #D6D0C4;
 }
 
 .banner-evening {
-  background: linear-gradient(120deg, #123330 0%, #3F8FA2 48%, #C99729 48%, #F4E9DA 100%);
+  background: #D7C7AC;
 }
 
 .banner-copy {
@@ -375,27 +375,27 @@
 }
 
 .recommend-guide {
-  background: linear-gradient(135deg, #0E6B78, #59AEB2);
+  background: #CFE4E2;
 }
 
 .recommend-drama {
-  background: linear-gradient(135deg, #355E5D, #87A6A0);
+  background: #D6D0C4;
 }
 
 .recommend-family {
-  background: linear-gradient(135deg, #1D7C78, #C89C3F);
+  background: #E8D9B7;
 }
 
 .recommend-hotel {
-  background: linear-gradient(135deg, #315A4E, #A7472D);
+  background: #D7C7AC;
 }
 
 .recommend-food {
-  background: linear-gradient(135deg, #7C2F24, #C99729);
+  background: #E7C79D;
 }
 
 .recommend-live {
-  background: linear-gradient(135deg, #0E6B78, #123330);
+  background: #BFD9D3;
 }
 
 .hot-copy {
@@ -608,9 +608,8 @@
 .product-panel {
   padding: 28rpx 26rpx 30rpx;
   border-radius: 24rpx;
-  background:
-    radial-gradient(circle at 86% 18%, rgba(15, 107, 103, 0.12), transparent 28%),
-    linear-gradient(135deg, #E2F0EC, #F4E9DA);
+  border: 2rpx solid #DCEDEA;
+  background: #FBFFFC;
 }
 
 .product-title-main {

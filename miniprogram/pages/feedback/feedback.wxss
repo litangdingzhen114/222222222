@@ -2,10 +2,10 @@
   min-height: 210rpx;
   padding: 32rpx;
   border-radius: 30rpx;
-  background:
-    radial-gradient(circle at 82% 18%, rgba(255, 253, 248, 0.34), transparent 24%),
-    linear-gradient(135deg, #0E6B78, #77B7B0);
-  color: #FBFFFC;
+  border: 2rpx solid #DCEDEA;
+  border-left: 10rpx solid #0F6B67;
+  background: #FBFFFC;
+  color: #193C3A;
 }
 
 .feedback-title {
@@ -15,7 +15,7 @@
 
 .feedback-desc {
   margin-top: 16rpx;
-  color: rgba(251, 255, 252, 0.9);
+  color: #607F7A;
   font-size: 26rpx;
   line-height: 1.55;
 }
@@ -131,7 +131,7 @@
   height: 86rpx;
   margin-top: 32rpx;
   border-radius: 999rpx;
-  background: linear-gradient(135deg, #1D7C78, #0F6B67);
+  background: #0F6B67;
   color: #FBFFFC;
   font-size: 29rpx;
   font-weight: 900;

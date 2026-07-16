@@ -5,11 +5,11 @@
 .order-hero {
   padding: 28rpx;
   border-radius: 20rpx;
-  color: #ffffff;
-  background:
-    radial-gradient(circle at 86% 24%, rgba(255, 255, 255, 0.28), transparent 24%),
-    linear-gradient(135deg, #0f6b67, #4d8f74);
-  box-shadow: 0 18rpx 42rpx rgba(26, 74, 70, 0.14);
+  border: 2rpx solid #dcecea;
+  border-left: 10rpx solid #0f6b67;
+  color: #173c38;
+  background: #fbfffc;
+  box-shadow: 0 12rpx 32rpx rgba(26, 74, 70, 0.07);
 }
 
 .order-title {
@@ -19,7 +19,7 @@
 
 .order-sub {
   margin-top: 10rpx;
-  color: rgba(255, 255, 255, 0.82);
+  color: #607b76;
   font-size: 24rpx;
 }
 

@@ -289,7 +289,7 @@
   justify-content: center;
   height: 78rpx;
   border-radius: 999rpx;
-  background: linear-gradient(135deg, #1D7C78, #0F6B67);
+  background: #0F6B67;
   color: #FBFFFC;
   font-size: 28rpx;
   font-weight: 900;

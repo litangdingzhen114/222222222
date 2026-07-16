@@ -2,9 +2,11 @@
   min-height: 220rpx;
   padding: 34rpx;
   border-radius: 32rpx;
-  background: linear-gradient(135deg, #0F6B67 0%, #1D7C78 54%, #BFD9D3 100%);
-  color: #FBFFFC;
-  box-shadow: 0 18rpx 44rpx rgba(154, 91, 31, 0.18);
+  border: 2rpx solid #DCEDEA;
+  border-left: 10rpx solid #0F6B67;
+  background: #FBFFFC;
+  color: #193C3A;
+  box-shadow: 0 12rpx 32rpx rgba(26, 74, 70, 0.07);
 }
 
 .route-hero-title {
@@ -15,7 +17,7 @@
 .route-hero-subtitle {
   width: 520rpx;
   margin-top: 18rpx;
-  color: rgba(255, 253, 248, 0.9);
+  color: #607F7A;
   font-size: 26rpx;
   line-height: 1.55;
 }

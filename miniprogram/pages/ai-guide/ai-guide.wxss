@@ -68,7 +68,7 @@
 }
 
 .message-row.user .message-bubble {
-  background: linear-gradient(135deg, #1D7C78, #0F4F4B);
+  background: #0F6B67;
   color: #FBFFFC;
 }
 
@@ -141,7 +141,7 @@
   width: 132rpx;
   height: 76rpx;
   border-radius: 999rpx;
-  background: linear-gradient(135deg, #1D7C78, #0F4F4B);
+  background: #0F6B67;
   color: #FBFFFC;
   font-size: 26rpx;
   font-weight: 900;

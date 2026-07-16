@@ -57,7 +57,7 @@ button::after {
   min-height: 76rpx;
   padding: 0 28rpx;
   border-radius: 999rpx;
-  background: linear-gradient(135deg, #1D7C78, #0F4F4B);
+  background: #0F6B67;
   color: #FBFFFC;
   font-size: 28rpx;
   font-weight: 600;
@@ -82,7 +82,7 @@ button::after {
   position: relative;
   overflow: hidden;
   border-radius: 24rpx;
-  background: linear-gradient(135deg, #A9D2CB, #1D7C78);
+  background: #DCEDEA;
 }
 
 .image-ph .ph-icon {
@@ -95,79 +95,79 @@ button::after {
 }
 
 .ph-village {
-  background: linear-gradient(135deg, #8DBCB6 0%, #E6D69D 55%, #6EA183 100%);
+  background: #DCEDEA;
 }
 
 .ph-rice {
-  background: linear-gradient(135deg, #E6D69D 0%, #C89C3F 56%, #5F8E67 100%);
+  background: #F2E4C8;
 }
 
 .ph-creek {
-  background: linear-gradient(135deg, #D7ECE8 0%, #77B7B0 52%, #1D7C78 100%);
+  background: #CFE8E2;
 }
 
 .ph-museum {
-  background: linear-gradient(135deg, #325B5A 0%, #87A6A0 52%, #D7C7AC 100%);
+  background: #D7C7AC;
 }
 
 .ph-workshop {
-  background: linear-gradient(135deg, #517A76 0%, #BFD9D3 55%, #A7472D 100%);
+  background: #D8D1C0;
 }
 
 .ph-orchard {
-  background: linear-gradient(135deg, #F0DFA7 0%, #B76532 48%, #5F8E67 100%);
+  background: #EBD8A6;
 }
 
 .ph-homestay {
-  background: linear-gradient(135deg, #E8DDD0 0%, #9FB8B3 58%, #325B5A 100%);
+  background: #E8DDD0;
 }
 
 .ph-food {
-  background: linear-gradient(135deg, #D94B35 0%, #C89C3F 55%, #315A4E 100%);
+  background: #E7C79D;
 }
 
 .ph-live {
-  background: linear-gradient(135deg, #0F6B67 0%, #A9D2CB 52%, #315A4E 100%);
+  background: #BFD9D3;
 }
 
 .ph-route {
-  background: linear-gradient(135deg, #0F4F4B 0%, #77B7B0 54%, #E8DDD0 100%);
+  background: #D8E6E2;
 }
 
 .ph-product-rice {
-  background: linear-gradient(135deg, #E6D69D, #1D7C78);
+  background: #E6D69D;
 }
 
 .ph-product-sachet {
-  background: linear-gradient(135deg, #597A79, #A7472D);
+  background: #D7C7AC;
 }
 
 .ph-product-postcard {
-  background: linear-gradient(135deg, #D7ECE8, #517A76);
+  background: #D7ECE8;
 }
 
 .ph-oujiang {
-  background: linear-gradient(135deg, #0E6B78 0%, #59AEB2 48%, #D7ECE8 100%);
+  background: #CFE4E2;
 }
 
 .ph-ricefish {
-  background: linear-gradient(135deg, #0F6B67 0%, #E6D69D 52%, #D94B35 100%);
+  background: #E8D9B7;
 }
 
 .ph-stone {
-  background: linear-gradient(135deg, #355E5D 0%, #8EA6A0 50%, #D7C7AC 100%);
+  background: #D6D0C4;
 }
 
 .ph-overseas {
-  background: linear-gradient(135deg, #325B5A 0%, #C89C3F 54%, #A7472D 100%);
+  background: #E0C89B;
 }
 
 .ph-product-fish {
-  background: linear-gradient(135deg, #0F6B67 0%, #E6D69D 52%, #D94B35 100%);
+  background: #E8D9B7;
 }
 
 .ph-product-stone {
-  background: linear-gradient(135deg, #355E5D 0%, #8EA6A0 50%, #D7C7AC 100%);
+  background: #D6D0C4;
 }
 
 .safe-bottom {

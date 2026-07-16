@@ -1,7 +1,10 @@
 <view class="page page-pad live-list-page">
   <view class="live-head">
-    <view class="live-title">海林慢直播</view>
-    <view class="live-subtitle">用一块屏幕，看看村里的风、田和溪水</view>
+    <image class="live-head-photo" src="/assets/photos/ricefish-paddy.jpg" mode="aspectFill"></image>
+    <view class="live-head-copy">
+      <view class="live-title">海林慢直播</view>
+      <view class="live-subtitle">用一块屏幕，看看村里的风、田和溪水</view>
+    </view>
   </view>
 
   <view class="live-list">

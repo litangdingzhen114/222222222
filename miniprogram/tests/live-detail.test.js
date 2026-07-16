@@ -23,6 +23,13 @@ global.wx = {
   },
   showToast(options) {
     toastTitles.push(options.title);
+  },
+  getFileSystemManager() {
+    return {
+      stat(options) {
+        options.success({ stats: { size: 4096 } });
+      }
+    };
   }
 };
 
@@ -46,6 +53,14 @@ function createContext(videoUrl, videoSourceIndex, videoSourceCandidates) {
 assert(pageConfig, 'live detail page should register config');
 
 let context = createContext('', -1);
+pageConfig.prepareVideo.call(context, {
+  liveUrl: '',
+  hlsUrl: ''
+});
+assert.strictEqual(context.data.videoUrl, 'http://usr/hailin-live.mp4');
+assert.strictEqual(context.videoSourceCandidates[0], 'http://usr/hailin-live.mp4');
+
+context = createContext('', -1);
 pageConfig.prepareVideo.call(context, {
   liveUrl: 'http://127.0.0.1:8787/media/hailin-live.mp4'
 });

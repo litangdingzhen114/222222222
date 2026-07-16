@@ -1,10 +1,7 @@
 <view class="page mine-page safe-bottom">
   <view class="mine-hero">
-    <view class="hero-sun"></view>
-    <view class="hero-mountain"></view>
-    <view class="hero-bridge"></view>
-    <view class="hero-house one"></view>
-    <view class="hero-house two"></view>
+    <image class="mine-hero-photo" src="/assets/photos/ricefish-paddy.jpg" mode="aspectFill"></image>
+    <view class="mine-hero-shade"></view>
     <view class="mine-capsule"></view>
   </view>
 
