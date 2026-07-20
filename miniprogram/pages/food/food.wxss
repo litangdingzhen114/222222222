@@ -219,26 +219,36 @@
   color: #8EA6A0;
 }
 
-.filter-row {
-  display: flex;
-  gap: 14rpx;
+.filter-scroll {
   margin: 22rpx 0 0;
-  padding: 0 34rpx 24rpx;
   border-bottom: 2rpx solid #F1F1F1;
+  white-space: nowrap;
+}
+
+.filter-row {
+  white-space: nowrap;
+  padding: 0 34rpx 24rpx;
 }
 
 .filter-item {
-  flex: 1 1 0;
-  display: flex;
+  flex: 0 0 auto;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 0;
+  min-width: 132rpx;
   min-height: 68rpx;
-  border-radius: 999rpx;
+  margin-right: 14rpx;
+  padding: 0 20rpx;
+  border-radius: 14rpx;
   background: #FBFFFC;
   color: #193C3A;
-  font-size: 28rpx;
+  font-size: 26rpx;
   font-weight: 700;
+  white-space: nowrap;
+}
+
+.filter-item:last-child {
+  margin-right: 0;
 }
 
 .filter-item.active {
@@ -247,8 +257,14 @@
 }
 
 .filter-arrow {
+  flex-shrink: 0;
   margin-left: 6rpx;
   font-size: 22rpx;
+}
+
+.filter-text {
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .food-list {

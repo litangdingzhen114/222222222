@@ -34,12 +34,14 @@
     <input placeholder="搜索田鱼、茶点、咖啡" placeholder-class="food-placeholder" bindinput="onSearchInput" />
   </view>
 
-  <view class="filter-row">
-    <view wx:for="{{filters}}" wx:key="*this" class="filter-item {{activeFilter === item ? 'active' : ''}}" data-title="{{item}}" bindtap="onFilterTap">
-      <text>{{item}}</text>
-      <text class="filter-arrow">⌄</text>
+  <scroll-view class="filter-scroll" scroll-x="{{true}}" enable-flex="{{true}}">
+    <view class="filter-row">
+      <view wx:for="{{filters}}" wx:key="*this" class="filter-item {{activeFilter === item ? 'active' : ''}}" data-title="{{item}}" bindtap="onFilterTap">
+        <text class="filter-text">{{item}}</text>
+        <text class="filter-arrow">⌄</text>
+      </view>
     </view>
-  </view>
+  </scroll-view>
 
   <view class="food-list">
     <food-card wx:for="{{foods}}" wx:key="id" item="{{item}}" bind:cardtap="onFoodTap"></food-card>
