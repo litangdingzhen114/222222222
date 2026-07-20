@@ -94,6 +94,7 @@ export function auditActionText(action?: string) {
     'lives-content.reset': '恢复默认慢直播',
     'bookings.csv.exported': '导出预约 CSV',
     'feedback.csv.exported': '导出反馈 CSV',
+    'orders.csv.exported': '导出订单 CSV',
     'backup.exported': '下载完整备份'
   }[action || ''] || action || '系统操作';
 }

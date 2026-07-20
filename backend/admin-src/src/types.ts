@@ -86,6 +86,7 @@ export type ListResponse<T> = {
   page: number;
   pageSize: number;
   total: number;
+  stats?: Record<string, number>;
 };
 
 export type StatusHistoryEntry = {

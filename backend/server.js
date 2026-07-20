@@ -1430,11 +1430,9 @@ function listAdminRecords(fileName, query) {
   };
 }
 
-function listOrders(query, admin = false) {
-  const page = normalizePositiveInt(query.get('page'), 1, 1, 1000);
-  const pageSize = normalizePositiveInt(query.get('pageSize'), admin ? 20 : 50, 1, 100);
+function filterOrders(query, admin = false) {
   const status = cleanText(query.get('status'), 40);
-  const type = cleanText(query.get('type'), 40);
+  const type = cleanText(query.get('orderType'), 40) || cleanText(query.get('type'), 40);
   const clientId = cleanText(query.get('clientId'), 120);
   const search = cleanText(query.get('q'), 120);
 
@@ -1442,18 +1440,56 @@ function listOrders(query, admin = false) {
     throw new HttpError(400, 'Client id is required');
   }
 
-  const all = readRecords('orders.json')
+  return readRecords('orders.json')
     .filter((record) => admin || record.clientId === clientId)
     .filter((record) => !status || record.status === status)
     .filter((record) => !type || record.type === type)
     .filter((record) => matchesQuery(record, search));
+}
+
+function orderListStats(records) {
+  const stats = {
+    total: records.length,
+    new: 0,
+    confirmed: 0,
+    pendingShipment: 0,
+    shipped: 0,
+    pendingService: 0,
+    pendingVerify: 0,
+    completed: 0,
+    cancelled: 0,
+    expired: 0,
+    actionRequired: 0
+  };
+
+  for (const record of records) {
+    if (record.status === 'new') stats.new += 1;
+    if (record.status === 'confirmed') stats.confirmed += 1;
+    if (record.status === 'pending_shipment') stats.pendingShipment += 1;
+    if (record.status === 'shipped') stats.shipped += 1;
+    if (record.status === 'pending_service') stats.pendingService += 1;
+    if (record.status === 'pending_verify') stats.pendingVerify += 1;
+    if (record.status === 'completed') stats.completed += 1;
+    if (record.status === 'cancelled') stats.cancelled += 1;
+    if (record.status === 'expired') stats.expired += 1;
+  }
+
+  stats.actionRequired = stats.new + stats.pendingShipment + stats.pendingVerify + stats.pendingService;
+  return stats;
+}
+
+function listOrders(query, admin = false) {
+  const page = normalizePositiveInt(query.get('page'), 1, 1, 1000);
+  const pageSize = normalizePositiveInt(query.get('pageSize'), admin ? 20 : 50, 1, 100);
+  const all = filterOrders(query, admin);
   const start = (page - 1) * pageSize;
 
   return {
     items: all.slice(start, start + pageSize),
     page,
     pageSize,
-    total: all.length
+    total: all.length,
+    stats: orderListStats(all)
   };
 }
 
@@ -1529,13 +1565,26 @@ function csvEscape(value) {
   return text;
 }
 
+function csvFieldValue(record, pathName) {
+  const value = pathName.split('.').reduce((current, key) => (
+    current && typeof current === 'object' ? current[key] : undefined
+  ), record);
+  if (value == null) return '';
+  if (Array.isArray(value)) return JSON.stringify(value);
+  if (typeof value === 'object') return JSON.stringify(value);
+  return value;
+}
+
 function recordsToCsv(type, records) {
-  const headers = type === 'feedback'
-    ? ['id', 'createdAt', 'updatedAt', 'status', 'nickname', 'contact', 'content', 'adminNote', 'lastHandledAt', 'lastHandledBy', 'resolvedAt', 'archivedAt']
-    : ['id', 'createdAt', 'updatedAt', 'status', 'service', 'date', 'people', 'contact', 'remark', 'adminNote', 'lastHandledAt', 'lastHandledBy', 'completedAt', 'cancelledAt'];
+  const headersByType = {
+    bookings: ['id', 'createdAt', 'updatedAt', 'status', 'service', 'date', 'people', 'contact', 'remark', 'adminNote', 'lastHandledAt', 'lastHandledBy', 'completedAt', 'cancelledAt'],
+    feedback: ['id', 'createdAt', 'updatedAt', 'status', 'nickname', 'contact', 'content', 'adminNote', 'lastHandledAt', 'lastHandledBy', 'resolvedAt', 'archivedAt'],
+    orders: ['id', 'orderNo', 'createdAt', 'updatedAt', 'type', 'status', 'featureId', 'service', 'item', 'date', 'people', 'contact', 'price', 'remark', 'adminNote', 'logistics.carrier', 'logistics.trackingNo', 'logistics.shippedAt', 'verification.code', 'verification.verifiedAt', 'lastHandledAt', 'lastHandledBy', 'completedAt', 'cancelledAt', 'expiredAt']
+  };
+  const headers = headersByType[type] || headersByType.bookings;
   const rows = [headers.join(',')];
   for (const record of records) {
-    rows.push(headers.map((header) => csvEscape(record[header])).join(','));
+    rows.push(headers.map((header) => csvEscape(csvFieldValue(record, header))).join(','));
   }
   return `\uFEFF${rows.join('\n')}`;
 }
@@ -1718,9 +1767,24 @@ async function handleAdminRequest(req, res, url, route) {
     return;
   }
   if (route === 'GET /api/admin/export') {
-    const type = url.searchParams.get('type') === 'feedback' ? 'feedback' : 'bookings';
-    const fileName = type === 'feedback' ? 'feedback.json' : 'bookings.json';
-    const csv = recordsToCsv(type, readRecords(fileName));
+    const requestedType = cleanText(url.searchParams.get('type'), 40);
+    const exportConfig = {
+      bookings: { type: 'bookings', records: () => readRecords('bookings.json') },
+      feedback: { type: 'feedback', records: () => readRecords('feedback.json') },
+      orders: {
+        type: 'orders',
+        records: () => {
+          const exportQuery = new URLSearchParams(url.searchParams);
+          const orderType = cleanText(exportQuery.get('orderType'), 40);
+          exportQuery.delete('type');
+          if (orderType) exportQuery.set('type', orderType);
+          return filterOrders(exportQuery, true);
+        }
+      }
+    };
+    const config = exportConfig[requestedType] || exportConfig.bookings;
+    const type = config.type;
+    const csv = recordsToCsv(type, config.records());
     appendAudit(req, `${type}.csv.exported`, type, 'export', {
       format: 'csv'
     });

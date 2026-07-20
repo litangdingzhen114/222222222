@@ -27,6 +27,12 @@ export function SystemPage() {
     message.success('反馈 CSV 已导出');
   };
 
+  const exportOrders = async () => {
+    const blob = await fetchExportBlob('orders');
+    downloadBlob(blob, 'hailin-orders.csv');
+    message.success('订单 CSV 已导出');
+  };
+
   const exportBackup = async () => {
     const blob = await fetchBackupBlob();
     downloadBlob(blob, `hailin-backup-${new Date().toISOString().slice(0, 10)}.json`);
@@ -67,6 +73,7 @@ export function SystemPage() {
         <Space wrap>
           <Button onClick={exportBookings}>导出预约 CSV</Button>
           <Button onClick={exportFeedback}>导出反馈 CSV</Button>
+          <Button onClick={exportOrders}>导出订单 CSV</Button>
           <Button type="primary" onClick={exportBackup}>下载完整备份 JSON</Button>
         </Space>
       </Card>

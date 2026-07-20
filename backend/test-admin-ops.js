@@ -64,6 +64,7 @@ async function main() {
   const livePage = fs.readFileSync(path.join(__dirname, 'admin-src', 'src', 'pages', 'LiveContentPage.tsx'), 'utf8');
   const resourcePage = fs.readFileSync(path.join(__dirname, 'admin-src', 'src', 'pages', 'ResourceContentPage.tsx'), 'utf8');
   const ordersPage = fs.readFileSync(path.join(__dirname, 'admin-src', 'src', 'pages', 'OrdersPage.tsx'), 'utf8');
+  const systemPage = fs.readFileSync(path.join(__dirname, 'admin-src', 'src', 'pages', 'SystemPage.tsx'), 'utf8');
   const detailDrawer = fs.readFileSync(path.join(__dirname, 'admin-src', 'src', 'pages', 'RecordDetailDrawer.tsx'), 'utf8');
   assert(adminHtml.includes('/admin/assets/'), 'admin dashboard should be built as static assets');
   assert(apiSource.includes('/api/admin/audit'), 'admin dashboard should load audit trail');
@@ -80,6 +81,8 @@ async function main() {
   assert(resourcePage.includes('map-points'), 'admin dashboard should manage map points');
   assert(ordersPage.includes('updateOrderFulfillment'), 'admin dashboard should update order fulfillment');
   assert(ordersPage.includes('trackingNo'), 'admin dashboard should handle shipment tracking numbers');
+  assert(ordersPage.includes("fetchExportBlob('orders'"), 'admin dashboard should export orders');
+  assert(systemPage.includes("fetchExportBlob('orders'"), 'system page should export orders');
   assert(bookingsPage.includes('rowSelection'), 'admin dashboard should support table row selection');
   assert(detailDrawer.includes('maskContact'), 'admin dashboard should mask contact info in tables');
 
@@ -155,6 +158,9 @@ async function main() {
     });
     assert.strictEqual(adminOrders.status, 200);
     assert(adminOrders.body.data.items.some((item) => item.id === productOrder.body.data.id), 'admin should list product order');
+    assert.strictEqual(adminOrders.body.data.stats.total, 1);
+    assert.strictEqual(adminOrders.body.data.stats.new, 1);
+    assert.strictEqual(adminOrders.body.data.stats.actionRequired, 1);
 
     const confirmedOrder = await requestJson(`http://${HOST}:${PORT}/api/admin/orders/${productOrder.body.data.id}/fulfillment`, {
       method: 'PATCH',
@@ -190,6 +196,24 @@ async function main() {
     assert.strictEqual(publicOrderDetail.status, 200);
     assert.strictEqual(publicOrderDetail.body.data.status, 'shipped');
     assert.strictEqual(publicOrderDetail.body.data.logistics.carrier, '顺丰速运');
+
+    const shippedAdminOrders = await requestJson(`http://${HOST}:${PORT}/api/admin/orders?type=product&status=shipped`, {
+      headers: authHeaders
+    });
+    assert.strictEqual(shippedAdminOrders.status, 200);
+    assert.strictEqual(shippedAdminOrders.body.data.stats.shipped, 1);
+    assert.strictEqual(shippedAdminOrders.body.data.stats.actionRequired, 0);
+
+    const orderCsvResponse = await request(`http://${HOST}:${PORT}/api/admin/export?type=orders`, {
+      headers: authHeaders
+    });
+    assert.strictEqual(orderCsvResponse.status, 200);
+    assert.match(orderCsvResponse.headers.get('content-type'), /text\/csv/);
+    assert.match(orderCsvResponse.headers.get('content-disposition'), /hailin-orders/);
+    const orderCsv = await orderCsvResponse.text();
+    assert(orderCsv.includes(productOrder.body.data.orderNo), 'order CSV should include order number');
+    assert(orderCsv.includes('SF1234567890'), 'order CSV should include shipment tracking number');
+
     const homeContent = await requestJson(`http://${HOST}:${PORT}/api/admin/home-content`, {
       headers: authHeaders
     });
@@ -373,6 +397,7 @@ async function main() {
     assert(audit.body.data.items.some((item) => item.action === 'resource-content.updated'), 'resource content update should be audited');
     assert(audit.body.data.items.some((item) => item.action === 'order.created'), 'public order creation should be audited');
     assert(audit.body.data.items.some((item) => item.action === 'order.fulfillment.updated'), 'order fulfillment update should be audited');
+    assert(audit.body.data.items.some((item) => item.action === 'orders.csv.exported'), 'order export should be audited');
     assert(audit.body.data.items.some((item) => item.action === 'booking.created'), 'public booking creation should be audited');
     assert(audit.body.data.items.some((item) => item.action === 'feedback.created'), 'public feedback creation should be audited');
     const statusAudit = audit.body.data.items.find((item) => item.action === 'booking.status.updated' && item.detail.status === 'confirmed');
@@ -395,6 +420,7 @@ async function main() {
     assert(backup.data.bookings[0].statusHistory.length >= 3);
     assert.strictEqual(backup.data.feedback[0].status, 'resolved');
     assert(backup.data.feedback[0].statusHistory.length >= 2);
+    assert.strictEqual(backup.data.orders[0].status, 'shipped');
     assert.strictEqual(backup.data.homeContent.content.notice, 'Admin edited home notice');
     assert.strictEqual(backup.data.liveContent.items[0].title, 'Admin edited live point');
     assert(backup.data.audit.length >= 3);

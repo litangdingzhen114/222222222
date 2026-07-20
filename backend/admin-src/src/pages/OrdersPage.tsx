@@ -1,12 +1,12 @@
-import { App, Button, Card, Descriptions, Drawer, Form, Input, Select, Space, Table, Tag, Timeline, Typography } from 'antd';
+import { App, Button, Card, Col, Descriptions, Drawer, Form, Input, Row, Select, Space, Statistic, Table, Tag, Timeline, Typography } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { listOrders, updateOrderFulfillment } from '../api';
+import { fetchExportBlob, listOrders, updateOrderFulfillment } from '../api';
 import type { OrderRecord } from '../types';
 import { orderStatusOptions, orderTypeOptions } from '../types';
-import { formatDate, maskContact, statusColor, statusText } from '../utils';
+import { downloadBlob, formatDate, maskContact, statusColor, statusText } from '../utils';
 
 const { Text } = Typography;
 const pageSize = 10;
@@ -201,6 +201,15 @@ export function OrdersPage() {
     onError: (error) => message.error(error instanceof Error ? error.message : '订单处理失败')
   });
 
+  const stats = query.data?.stats || {};
+  const pendingFulfillment = (stats.pendingShipment || 0) + (stats.pendingService || 0) + (stats.pendingVerify || 0);
+
+  const exportData = async () => {
+    const blob = await fetchExportBlob('orders', { status, orderType: type, q });
+    downloadBlob(blob, 'hailin-orders.csv');
+    message.success('订单 CSV 已导出');
+  };
+
   const setParam = (key: string, value: string | number) => {
     const next = new URLSearchParams(searchParams);
     if (value === '') next.delete(key);
@@ -243,6 +252,29 @@ export function OrdersPage() {
 
   return (
     <Space direction="vertical" size={16} className="page-stack">
+      <Row gutter={[16, 16]}>
+        <Col xs={12} lg={6}>
+          <Card>
+            <Statistic title="当前筛选" value={stats.total ?? query.data?.total ?? 0} suffix="单" />
+          </Card>
+        </Col>
+        <Col xs={12} lg={6}>
+          <Card>
+            <Statistic title="待确认" value={stats.new || 0} suffix="单" />
+          </Card>
+        </Col>
+        <Col xs={12} lg={6}>
+          <Card>
+            <Statistic title="待履约" value={pendingFulfillment} suffix="单" />
+          </Card>
+        </Col>
+        <Col xs={12} lg={6}>
+          <Card>
+            <Statistic title="已完成" value={stats.completed || 0} suffix="单" />
+          </Card>
+        </Col>
+      </Row>
+
       <Card>
         <Space wrap className="toolbar">
           <Select value={type} options={orderTypeOptions} onChange={(value) => setParam('type', value)} className="status-filter" />
@@ -254,6 +286,7 @@ export function OrdersPage() {
             onSearch={(value) => setParam('q', value.trim())}
             className="search-box"
           />
+          <Button onClick={exportData}>导出 CSV</Button>
         </Space>
       </Card>
 

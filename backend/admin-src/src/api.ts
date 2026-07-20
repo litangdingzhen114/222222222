@@ -173,8 +173,8 @@ export function updateOrderFulfillment(
   });
 }
 
-export async function fetchExportBlob(type: 'bookings' | 'feedback') {
-  const response = await fetch(`/api/admin/export?type=${type}`, {
+export async function fetchExportBlob(type: 'bookings' | 'feedback' | 'orders', params: QueryParams = {}) {
+  const response = await fetch(`/api/admin/export${queryString({ ...params, type })}`, {
     headers: { Authorization: `Bearer ${token()}` }
   });
   if (!response.ok) throw new Error('导出失败');
