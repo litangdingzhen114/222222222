@@ -1,17 +1,17 @@
 .route-hero {
   min-height: 220rpx;
   padding: 34rpx;
-  border-radius: 32rpx;
+  border-radius: 16rpx;
   border: 2rpx solid #DCEDEA;
   border-left: 10rpx solid #0F6B67;
   background: #FBFFFC;
   color: #193C3A;
-  box-shadow: 0 12rpx 32rpx rgba(26, 74, 70, 0.07);
+  box-shadow: 0 6rpx 18rpx rgba(26, 74, 70, 0.05);
 }
 
 .route-hero-title {
-  font-size: 48rpx;
-  font-weight: 900;
+  font-size: 42rpx;
+  font-weight: 800;
 }
 
 .route-hero-subtitle {
@@ -38,7 +38,7 @@
   flex: 0 0 190rpx;
   height: 168rpx;
   overflow: hidden;
-  border-radius: 24rpx;
+  border-radius: 12rpx;
 }
 
 .route-cover::after {
@@ -73,7 +73,7 @@
 .route-name {
   color: #193C3A;
   font-size: 31rpx;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .route-sub {
@@ -92,7 +92,7 @@
 
 .route-meta text {
   padding: 8rpx 14rpx;
-  border-radius: 999rpx;
+  border-radius: 8rpx;
   background: #F6E8D2;
   color: #0F6B67;
   font-size: 21rpx;

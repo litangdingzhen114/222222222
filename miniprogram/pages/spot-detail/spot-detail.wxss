@@ -3,12 +3,12 @@
 }
 
 .spot-hero-swiper {
-  height: 420rpx;
+  height: 360rpx;
 }
 
 .spot-hero {
   position: relative;
-  height: 420rpx;
+  height: 360rpx;
 }
 
 .spot-hero-img,
@@ -23,13 +23,7 @@
 }
 
 .spot-hero::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 42%;
-  background: linear-gradient(180deg, rgba(58, 42, 26, 0), rgba(58, 42, 26, 0.34));
+  display: none;
 }
 
 .spot-hero-word {
@@ -37,7 +31,6 @@
 }
 
 .detail-content {
-  margin-top: -34rpx;
   padding: 0 24rpx;
 }
 
@@ -46,6 +39,10 @@
   position: relative;
   z-index: 2;
   padding: 26rpx;
+}
+
+.detail-card {
+  margin-top: 20rpx;
 }
 
 .intro-card {
@@ -60,8 +57,9 @@
 
 .detail-name {
   color: #193C3A;
-  font-size: 42rpx;
-  font-weight: 900;
+  font-size: 38rpx;
+  font-weight: 800;
+  line-height: 1.25;
 }
 
 .detail-distance {
@@ -79,7 +77,7 @@
 
 .detail-tags text {
   padding: 8rpx 16rpx;
-  border-radius: 999rpx;
+  border-radius: 8rpx;
   background: #F6E8D2;
   color: #0F6B67;
   font-size: 22rpx;
@@ -144,7 +142,7 @@
   flex-shrink: 0;
   width: 44rpx;
   height: 44rpx;
-  border-radius: 50%;
+  border-radius: 8rpx;
   background: #DCEDEA;
   color: #0F6B67;
   font-size: 23rpx;
@@ -161,7 +159,8 @@
 .tips-card {
   margin: 6rpx 0 24rpx;
   padding: 26rpx;
-  background: #F9F2E6;
+  border-left: 8rpx solid #C89C3F;
+  background: #FBFFFC;
 }
 
 .tips-title {
@@ -236,7 +235,7 @@
 .nearby-img {
   position: relative;
   height: 142rpx;
-  border-radius: 28rpx 28rpx 0 0;
+  border-radius: 16rpx 16rpx 0 0;
 }
 
 .nearby-img text {
@@ -271,7 +270,7 @@
   justify-content: center;
   width: 132rpx;
   height: 74rpx;
-  border-radius: 999rpx;
+  border-radius: 14rpx;
   background: #F6E8D2;
   color: #0F6B67;
   font-size: 25rpx;
@@ -288,7 +287,7 @@
   align-items: center;
   justify-content: center;
   height: 78rpx;
-  border-radius: 999rpx;
+  border-radius: 14rpx;
   background: #0F6B67;
   color: #FBFFFC;
   font-size: 28rpx;

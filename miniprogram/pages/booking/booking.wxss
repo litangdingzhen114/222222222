@@ -1,17 +1,17 @@
 .booking-hero {
   min-height: 250rpx;
   padding: 34rpx;
-  border-radius: 32rpx;
+  border-radius: 16rpx;
   border: 2rpx solid #DCEDEA;
   border-left: 10rpx solid #0F6B67;
   background: #FBFFFC;
   color: #193C3A;
-  box-shadow: 0 12rpx 32rpx rgba(26, 74, 70, 0.07);
+  box-shadow: 0 6rpx 18rpx rgba(26, 74, 70, 0.05);
 }
 
 .booking-title {
-  font-size: 44rpx;
-  font-weight: 900;
+  font-size: 40rpx;
+  font-weight: 800;
 }
 
 .booking-desc {
@@ -46,9 +46,9 @@
 .service-option {
   padding: 24rpx;
   border: 2rpx solid transparent;
-  border-radius: 22rpx;
+  border-radius: 14rpx;
   background: #FBFFFC;
-  box-shadow: 0 10rpx 26rpx rgba(26, 74, 70, 0.06);
+  box-shadow: 0 6rpx 18rpx rgba(26, 74, 70, 0.05);
 }
 
 .service-option.active {
@@ -72,7 +72,7 @@
 .service-option-head text:last-child {
   flex-shrink: 0;
   padding: 6rpx 14rpx;
-  border-radius: 999rpx;
+  border-radius: 8rpx;
   background: #DCEDEA;
   color: #0F6B67;
   font-size: 21rpx;
@@ -89,7 +89,7 @@
 
 .quick-plan-card {
   padding: 22rpx;
-  border-radius: 20rpx;
+  border-radius: 14rpx;
   background: #F9F2E6;
 }
 
@@ -147,7 +147,7 @@
   justify-content: center;
   width: 62rpx;
   height: 62rpx;
-  border-radius: 50%;
+  border-radius: 10rpx;
   background: #DCEDEA;
   color: #0F6B67;
   font-size: 34rpx;
@@ -166,7 +166,7 @@
   height: 80rpx;
   margin-top: 18rpx;
   padding: 0 20rpx;
-  border-radius: 20rpx;
+  border-radius: 10rpx;
   background: #EEF6F4;
   color: #193C3A;
   font-size: 27rpx;
@@ -177,7 +177,7 @@
   min-height: 150rpx;
   margin-top: 18rpx;
   padding: 20rpx;
-  border-radius: 20rpx;
+  border-radius: 10rpx;
   background: #EEF6F4;
   color: #193C3A;
   font-size: 27rpx;
@@ -194,7 +194,7 @@
   justify-content: center;
   height: 86rpx;
   margin-top: 30rpx;
-  border-radius: 999rpx;
+  border-radius: 14rpx;
   background: #0F6B67;
   color: #FBFFFC;
   font-size: 29rpx;
@@ -204,9 +204,9 @@
 .booking-tip-card {
   margin-top: 22rpx;
   padding: 24rpx;
-  border-radius: 22rpx;
+  border-radius: 14rpx;
   background: #FBFFFC;
-  box-shadow: 0 10rpx 26rpx rgba(26, 74, 70, 0.06);
+  box-shadow: 0 6rpx 18rpx rgba(26, 74, 70, 0.05);
 }
 
 .booking-tip-title {

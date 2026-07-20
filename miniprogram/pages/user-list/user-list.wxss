@@ -4,17 +4,17 @@
 
 .list-hero {
   padding: 32rpx;
-  border-radius: 28rpx;
+  border-radius: 16rpx;
   border: 2rpx solid #DCEDEA;
   border-left: 10rpx solid #0F6B67;
   background: #FBFFFC;
   color: #193C3A;
-  box-shadow: 0 12rpx 32rpx rgba(26, 74, 70, 0.07);
+  box-shadow: 0 6rpx 18rpx rgba(26, 74, 70, 0.05);
 }
 
 .list-title {
-  font-size: 42rpx;
-  font-weight: 900;
+  font-size: 38rpx;
+  font-weight: 800;
 }
 
 .list-sub {
@@ -33,9 +33,9 @@
 .content-item,
 .empty-card {
   padding: 26rpx;
-  border-radius: 20rpx;
+  border-radius: 14rpx;
   background: #FBFFFC;
-  box-shadow: 0 12rpx 32rpx rgba(26, 74, 70, 0.07);
+  box-shadow: 0 6rpx 18rpx rgba(26, 74, 70, 0.05);
 }
 
 .item-image {
@@ -51,7 +51,7 @@
   align-items: center;
   min-height: 38rpx;
   padding: 0 16rpx;
-  border-radius: 999rpx;
+  border-radius: 8rpx;
   background: #DCEDEA;
   color: #0F6B67;
   font-size: 21rpx;
@@ -100,7 +100,7 @@
   justify-content: center;
   height: 88rpx;
   margin-top: 28rpx;
-  border-radius: 999rpx;
+  border-radius: 14rpx;
   background: #0F6B67;
   color: #FBFFFC;
   font-size: 29rpx;

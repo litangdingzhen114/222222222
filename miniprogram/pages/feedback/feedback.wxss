@@ -1,7 +1,7 @@
 .feedback-hero {
   min-height: 210rpx;
   padding: 32rpx;
-  border-radius: 30rpx;
+  border-radius: 16rpx;
   border: 2rpx solid #DCEDEA;
   border-left: 10rpx solid #0F6B67;
   background: #FBFFFC;
@@ -9,8 +9,8 @@
 }
 
 .feedback-title {
-  font-size: 42rpx;
-  font-weight: 900;
+  font-size: 38rpx;
+  font-weight: 800;
 }
 
 .feedback-desc {
@@ -30,9 +30,9 @@
 .promise-card {
   min-height: 142rpx;
   padding: 18rpx;
-  border-radius: 20rpx;
+  border-radius: 14rpx;
   background: #FBFFFC;
-  box-shadow: 0 10rpx 26rpx rgba(26, 74, 70, 0.06);
+  box-shadow: 0 6rpx 18rpx rgba(26, 74, 70, 0.05);
 }
 
 .promise-title {
@@ -72,7 +72,7 @@
   align-items: center;
   justify-content: center;
   height: 72rpx;
-  border-radius: 999rpx;
+  border-radius: 10rpx;
   background: #EEF6F4;
   color: #607F7A;
   font-size: 25rpx;
@@ -93,7 +93,7 @@
 
 .example-row text {
   padding: 8rpx 14rpx;
-  border-radius: 999rpx;
+  border-radius: 8rpx;
   background: #F9F2E6;
   color: #5B422B;
   font-size: 22rpx;
@@ -104,7 +104,7 @@
   width: 100%;
   min-height: 260rpx;
   padding: 22rpx;
-  border-radius: 24rpx;
+  border-radius: 10rpx;
   background: #EEF6F4;
   color: #193C3A;
   font-size: 27rpx;
@@ -114,7 +114,7 @@
 .feedback-input {
   height: 82rpx;
   padding: 0 22rpx;
-  border-radius: 22rpx;
+  border-radius: 10rpx;
   background: #EEF6F4;
   color: #193C3A;
   font-size: 27rpx;
@@ -130,7 +130,7 @@
   justify-content: center;
   height: 86rpx;
   margin-top: 32rpx;
-  border-radius: 999rpx;
+  border-radius: 14rpx;
   background: #0F6B67;
   color: #FBFFFC;
   font-size: 29rpx;

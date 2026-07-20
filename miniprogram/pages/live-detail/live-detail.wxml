@@ -26,7 +26,6 @@
       <view class="status-dot"></view>
       <text>直播中</text>
     </view>
-    <view class="scan-line"></view>
     <view class="mock-play">▶</view>
     <view class="mock-caption">视频源暂不可用 · 当前显示封面</view>
     <text class="mock-word">{{live.icon}}</text>

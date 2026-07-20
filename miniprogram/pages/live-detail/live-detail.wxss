@@ -2,9 +2,9 @@
   position: relative;
   height: 420rpx;
   overflow: hidden;
-  border-radius: 32rpx;
+  border-radius: 16rpx;
   background: #0F4F4B;
-  box-shadow: 0 18rpx 44rpx rgba(26, 74, 70, 0.18);
+  box-shadow: 0 6rpx 18rpx rgba(26, 74, 70, 0.08);
 }
 
 .real-player {
@@ -22,7 +22,7 @@
   z-index: 20;
   height: 58rpx;
   padding: 0 18rpx;
-  border-radius: 999rpx;
+  border-radius: 10rpx;
   background: rgba(15, 79, 75, 0.78);
   color: #FBFFFC;
   line-height: 58rpx;
@@ -48,8 +48,8 @@
   position: relative;
   height: 420rpx;
   overflow: hidden;
-  border-radius: 32rpx;
-  box-shadow: 0 18rpx 44rpx rgba(26, 74, 70, 0.18);
+  border-radius: 16rpx;
+  box-shadow: 0 6rpx 18rpx rgba(26, 74, 70, 0.08);
 }
 
 .mock-cover {
@@ -68,7 +68,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  height: 60%;
+  height: 46%;
   background: linear-gradient(180deg, rgba(25, 60, 58, 0), rgba(25, 60, 58, 0.6));
 }
 
@@ -81,7 +81,7 @@
   align-items: center;
   gap: 8rpx;
   padding: 8rpx 16rpx;
-  border-radius: 999rpx;
+  border-radius: 10rpx;
   background: rgba(15, 79, 75, 0.66);
   color: #FBFFFC;
   font-size: 22rpx;
@@ -95,15 +95,6 @@
   background: #D94B35;
 }
 
-.scan-line {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 49%;
-  height: 4rpx;
-  background: rgba(251, 255, 252, 0.24);
-}
-
 .mock-play {
   position: absolute;
   left: 50%;
@@ -114,7 +105,7 @@
   justify-content: center;
   width: 108rpx;
   height: 108rpx;
-  border-radius: 50%;
+  border-radius: 16rpx;
   background: rgba(251, 255, 252, 0.84);
   color: #0F6B67;
   font-size: 42rpx;
@@ -142,8 +133,8 @@
 
 .live-name {
   color: #193C3A;
-  font-size: 38rpx;
-  font-weight: 900;
+  font-size: 34rpx;
+  font-weight: 800;
 }
 
 .online {
@@ -174,7 +165,7 @@
   position: relative;
   overflow: hidden;
   height: 146rpx;
-  border-radius: 28rpx 28rpx 0 0;
+  border-radius: 16rpx 16rpx 0 0;
 }
 
 .nearby-img::after {

@@ -5,12 +5,12 @@
 .feature-hero {
   min-height: 260rpx;
   padding: 32rpx;
-  border-radius: 28rpx;
+  border-radius: 16rpx;
   border: 2rpx solid #DCEDEA;
   border-left: 10rpx solid #0F6B67;
   background: #FBFFFC;
   color: #193C3A;
-  box-shadow: 0 12rpx 32rpx rgba(26, 74, 70, 0.07);
+  box-shadow: 0 6rpx 18rpx rgba(26, 74, 70, 0.05);
 }
 
 .hero-tag {
@@ -18,7 +18,7 @@
   align-items: center;
   min-height: 42rpx;
   padding: 0 18rpx;
-  border-radius: 999rpx;
+  border-radius: 8rpx;
   background: #E4F2EF;
   color: #0F6B67;
   font-size: 22rpx;
@@ -27,8 +27,8 @@
 
 .feature-title {
   margin-top: 24rpx;
-  font-size: 44rpx;
-  font-weight: 900;
+  font-size: 40rpx;
+  font-weight: 800;
   letter-spacing: 0;
 }
 
@@ -50,7 +50,7 @@
 .hero-chip {
   min-height: 44rpx;
   padding: 0 18rpx;
-  border-radius: 999rpx;
+  border-radius: 8rpx;
   background: #F6F1E7;
   color: #5B422B;
   font-size: 22rpx;
@@ -91,9 +91,9 @@
   min-height: 146rpx;
   padding: 22rpx;
   border: 2rpx solid #DCEDEA;
-  border-radius: 20rpx;
+  border-radius: 14rpx;
   background: #FBFFFC;
-  box-shadow: 0 10rpx 26rpx rgba(26, 74, 70, 0.06);
+  box-shadow: none;
 }
 
 .feature-highlight-title {
@@ -184,9 +184,9 @@
 .points-panel,
 .checkin-panel {
   padding: 26rpx;
-  border-radius: 20rpx;
+  border-radius: 14rpx;
   background: #FBFFFC;
-  box-shadow: 0 12rpx 32rpx rgba(26, 74, 70, 0.07);
+  box-shadow: 0 6rpx 18rpx rgba(26, 74, 70, 0.05);
 }
 
 .choice-card {
@@ -196,22 +196,18 @@
 
 .choice-card.active {
   border-color: #1D7C78;
-  background: #F3FBF9;
+  background: #FBFFFC;
 }
 
 .choice-card.active::after {
-  content: "已选";
+  content: "";
   position: absolute;
-  right: 22rpx;
-  top: 22rpx;
-  min-width: 58rpx;
-  height: 34rpx;
-  border-radius: 999rpx;
+  right: 20rpx;
+  top: 26rpx;
+  width: 18rpx;
+  height: 18rpx;
+  border-radius: 50%;
   background: #1D7C78;
-  color: #FBFFFC;
-  font-size: 20rpx;
-  line-height: 34rpx;
-  text-align: center;
 }
 
 .choice-title,
@@ -248,7 +244,7 @@
 .order-preview-card {
   margin-top: 22rpx;
   padding: 28rpx;
-  border-radius: 22rpx;
+  border-radius: 14rpx;
   background: #FBFFFC;
   border: 2rpx solid #DCEDEA;
 }
@@ -311,7 +307,7 @@
 .form-card {
   margin-top: 22rpx;
   padding: 28rpx;
-  border-radius: 22rpx;
+  border-radius: 14rpx;
 }
 
 .form-row {
@@ -350,7 +346,7 @@
   justify-content: center;
   width: 62rpx;
   height: 62rpx;
-  border-radius: 50%;
+  border-radius: 10rpx;
   background: #DCEDEA;
   color: #0F6B67;
   font-size: 34rpx;
@@ -370,7 +366,7 @@
   width: 100%;
   margin-top: 16rpx;
   padding: 0 20rpx;
-  border-radius: 18rpx;
+  border-radius: 10rpx;
   background: #EEF6F4;
   color: #193C3A;
   font-size: 27rpx;
@@ -407,12 +403,12 @@
   width: 100%;
   height: 88rpx;
   margin-top: 28rpx;
-  border-radius: 999rpx;
+  border-radius: 14rpx;
   background: #0F6B67;
   color: #FBFFFC;
   font-size: 29rpx;
   font-weight: 900;
-  box-shadow: 0 14rpx 30rpx rgba(29, 124, 120, 0.2);
+  box-shadow: none;
 }
 
 .primary-action[disabled] {
@@ -446,7 +442,7 @@
   width: 112rpx;
   height: 112rpx;
   margin-right: 20rpx;
-  border-radius: 18rpx;
+  border-radius: 10rpx;
   background: #F4D58E;
   color: #193C3A;
   font-size: 28rpx;
@@ -465,7 +461,7 @@
   flex-shrink: 0;
   width: 118rpx;
   height: 58rpx;
-  border-radius: 999rpx;
+  border-radius: 10rpx;
   background: #1D7C78;
   color: #FBFFFC;
   font-size: 24rpx;
@@ -559,7 +555,7 @@
   min-height: 72rpx;
   padding: 0 16rpx;
   border: 2rpx solid #BFD9D3;
-  border-radius: 18rpx;
+  border-radius: 10rpx;
   background: #FBFFFC;
   color: #315A4E;
   font-size: 25rpx;
@@ -581,7 +577,7 @@
   flex-shrink: 0;
   min-width: 86rpx;
   padding: 8rpx 14rpx;
-  border-radius: 999rpx;
+  border-radius: 8rpx;
   background: #E4F2EF;
   color: #0F6B67;
   font-size: 24rpx;
@@ -592,7 +588,7 @@
 .record-empty {
   padding: 34rpx 28rpx;
   border: 2rpx dashed #BFD9D3;
-  border-radius: 20rpx;
+  border-radius: 14rpx;
   background: rgba(251, 255, 252, 0.68);
   color: #607F7A;
   font-size: 24rpx;

@@ -1,12 +1,13 @@
 .route-detail-page {
   padding-bottom: 142rpx;
+  background: #EEF6F4;
 }
 
 .route-cover-large {
   position: relative;
-  min-height: 360rpx;
+  min-height: 320rpx;
   overflow: hidden;
-  border-radius: 0 0 40rpx 40rpx;
+  border-radius: 0;
 }
 
 .route-cover-large::after {
@@ -17,7 +18,7 @@
   top: 0;
   bottom: 0;
   z-index: 1;
-  background: linear-gradient(90deg, rgba(8, 43, 42, 0.78), rgba(8, 43, 42, 0.2));
+  background: rgba(8, 43, 42, 0.34);
 }
 
 .route-cover-photo {
@@ -34,13 +35,13 @@
   position: relative;
   z-index: 2;
   width: 610rpx;
-  padding: 72rpx 34rpx 0;
+  padding: 64rpx 34rpx 0;
   color: #FBFFFC;
 }
 
 .route-cover-title {
-  font-size: 48rpx;
-  font-weight: 900;
+  font-size: 42rpx;
+  font-weight: 800;
   line-height: 1.15;
 }
 
@@ -76,8 +77,8 @@
 
 .info-title {
   color: #0F6B67;
-  font-size: 34rpx;
-  font-weight: 900;
+  font-size: 30rpx;
+  font-weight: 800;
 }
 
 .info-desc {
@@ -98,7 +99,7 @@
   display: flex;
   justify-content: space-between;
   padding: 18rpx 20rpx;
-  border-radius: 20rpx;
+  border-radius: 12rpx;
   background: #EEF6F4;
 }
 
@@ -112,7 +113,7 @@
 .included-item {
   min-height: 78rpx;
   padding: 18rpx;
-  border-radius: 18rpx;
+  border-radius: 12rpx;
   background: #EEF6F4;
   color: #193C3A;
   font-size: 24rpx;
@@ -187,7 +188,7 @@
   width: 20rpx;
   height: 20rpx;
   margin-top: 8rpx;
-  border: 6rpx solid #BFD9D3;
+  border: 4rpx solid #BFD9D3;
   border-radius: 50%;
   background: #0F6B67;
 }
@@ -224,7 +225,7 @@
   justify-content: center;
   width: 170rpx;
   height: 78rpx;
-  border-radius: 999rpx;
+  border-radius: 14rpx;
   background: #F6E8D2;
   color: #0F6B67;
   font-size: 27rpx;
@@ -241,7 +242,7 @@
   align-items: center;
   justify-content: center;
   height: 78rpx;
-  border-radius: 999rpx;
+  border-radius: 14rpx;
   background: #0F6B67;
   color: #FBFFFC;
   font-size: 28rpx;

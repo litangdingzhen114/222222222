@@ -7,12 +7,12 @@
   align-items: center;
   min-height: 180rpx;
   padding: 30rpx;
-  border-radius: 28rpx;
+  border-radius: 16rpx;
   border: 2rpx solid #DCEDEA;
   border-left: 10rpx solid #0F6B67;
   background: #FBFFFC;
   color: #193C3A;
-  box-shadow: 0 12rpx 32rpx rgba(26, 74, 70, 0.07);
+  box-shadow: 0 6rpx 18rpx rgba(26, 74, 70, 0.05);
 }
 
 .avatar-preview {
@@ -32,7 +32,7 @@
 
 .preview-name {
   font-size: 34rpx;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .preview-sub {
@@ -45,7 +45,7 @@
 .form-card {
   margin-top: 24rpx;
   padding: 28rpx;
-  border-radius: 22rpx;
+  border-radius: 14rpx;
 }
 
 .field-block {
@@ -63,7 +63,7 @@
   width: 100%;
   margin-top: 14rpx;
   padding: 0 20rpx;
-  border-radius: 18rpx;
+  border-radius: 10rpx;
   background: #EEF6F4;
   color: #193C3A;
   font-size: 27rpx;
@@ -89,7 +89,7 @@
   justify-content: center;
   height: 88rpx;
   margin-top: 6rpx;
-  border-radius: 999rpx;
+  border-radius: 14rpx;
   background: #0F6B67;
   color: #FBFFFC;
   font-size: 29rpx;

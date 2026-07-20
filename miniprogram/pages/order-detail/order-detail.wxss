@@ -7,7 +7,8 @@
   padding: 26rpx;
   margin-bottom: 18rpx;
   border: 2rpx solid #e2efec;
-  box-shadow: 0 12rpx 32rpx rgba(26, 74, 70, 0.07);
+  border-radius: 16rpx;
+  box-shadow: 0 6rpx 18rpx rgba(26, 74, 70, 0.05);
 }
 
 .detail-head {
@@ -20,7 +21,7 @@
 .detail-title {
   max-width: 430rpx;
   color: #173c38;
-  font-size: 34rpx;
+  font-size: 32rpx;
   font-weight: 800;
   line-height: 1.35;
 }
@@ -34,7 +35,7 @@
 .detail-status {
   flex: 0 0 auto;
   padding: 8rpx 16rpx;
-  border-radius: 999rpx;
+  border-radius: 8rpx;
   color: #0f6b67;
   background: #e3f2ee;
   font-size: 24rpx;
@@ -85,7 +86,7 @@
 .status-hint {
   margin-top: 22rpx;
   padding: 18rpx 20rpx;
-  border-radius: 16rpx;
+  border-radius: 10rpx;
   font-size: 24rpx;
   font-weight: 700;
   line-height: 1.5;
@@ -130,9 +131,9 @@
 .progress-dot {
   position: relative;
   z-index: 1;
-  width: 30rpx;
-  height: 30rpx;
-  border: 6rpx solid #dcebea;
+  width: 24rpx;
+  height: 24rpx;
+  border: 4rpx solid #dcebea;
   border-radius: 50%;
   background: #fbfffc;
 }
@@ -187,7 +188,7 @@
   align-items: center;
   justify-content: center;
   margin-top: 20rpx;
-  border-radius: 999rpx;
+  border-radius: 14rpx;
   color: #ffffff;
   background: #0f6b67;
   font-size: 26rpx;
@@ -204,7 +205,7 @@
 .section-tip {
   margin-top: 18rpx;
   padding: 18rpx 20rpx;
-  border-radius: 16rpx;
+  border-radius: 10rpx;
   background: #f5faf8;
   color: #607b76;
   font-size: 24rpx;
@@ -213,12 +214,12 @@
 
 .verify-code {
   padding: 24rpx;
-  border-radius: 18rpx;
+  border-radius: 10rpx;
   color: #0f6b67;
   background: #e4f2ef;
   text-align: center;
-  font-size: 44rpx;
-  font-weight: 900;
+  font-size: 40rpx;
+  font-weight: 800;
   letter-spacing: 0;
 }
 

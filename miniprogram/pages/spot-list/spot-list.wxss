@@ -3,9 +3,9 @@
   align-items: center;
   height: 78rpx;
   padding: 0 24rpx;
-  border-radius: 999rpx;
+  border-radius: 12rpx;
   background: #FBFFFC;
-  box-shadow: 0 10rpx 24rpx rgba(112, 76, 34, 0.08);
+  box-shadow: 0 6rpx 18rpx rgba(112, 76, 34, 0.05);
 }
 
 .search-icon {
@@ -38,7 +38,7 @@
 
 .spot-tab {
   padding: 14rpx 26rpx;
-  border-radius: 999rpx;
+  border-radius: 10rpx;
   background: #FBFFFC;
   color: #607F7A;
   font-size: 25rpx;
@@ -99,7 +99,7 @@
 .spot-name {
   color: #193C3A;
   font-size: 31rpx;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .spot-meta {
@@ -129,7 +129,7 @@
 
 .spot-tags text {
   padding: 6rpx 12rpx;
-  border-radius: 999rpx;
+  border-radius: 8rpx;
   background: #F6E8D2;
   color: #0F6B67;
   font-size: 20rpx;
