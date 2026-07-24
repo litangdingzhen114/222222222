@@ -6,6 +6,7 @@ const root = path.resolve(__dirname, '..', '..');
 const serviceConfig = require('../config/service');
 const backendServer = fs.readFileSync(path.join(root, 'backend/server.js'), 'utf8');
 const adminApi = fs.readFileSync(path.join(root, 'backend/admin-src/src/api.ts'), 'utf8');
+const contentService = fs.readFileSync(path.join(root, 'miniprogram/services/content.js'), 'utf8');
 
 const publicContract = [
   ['home', 'GET'],
@@ -32,6 +33,14 @@ publicContract.forEach(([key, method]) => {
     `${method} ${endpoint} should be implemented by backend/server.js`
   );
 });
+
+['home', 'mapPoints', 'foods', 'spots', 'routes', 'products', 'lives'].forEach((key) => {
+  const endpoint = serviceConfig.v1Endpoints[key];
+  assert(endpoint, `missing v1 serviceConfig endpoint: ${key}`);
+  assert(endpoint.startsWith('/api/v1/'), `${key} should prefer formal v1 API: ${endpoint}`);
+});
+assert(contentService.includes('withContentFallback'), 'content service should prefer v1 and fall back safely');
+assert(contentService.includes('adaptMapPoints'), 'content service should adapt v1 map points to page data');
 
 [
   ['GET', '/api/admin/session'],

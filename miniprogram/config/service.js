@@ -23,6 +23,16 @@ module.exports = {
     orders: '/api/hailin/orders'
   },
 
+  v1Endpoints: {
+    home: '/api/v1/home',
+    mapPoints: '/api/v1/map-points?pageSize=100',
+    foods: '/api/v1/foods?pageSize=100',
+    spots: '/api/v1/scenic-spots?pageSize=100',
+    routes: '/api/v1/travel-routes?pageSize=100',
+    products: '/api/v1/products?pageSize=100',
+    lives: '/api/v1/cameras'
+  },
+
   live: {
     provider: 'backend',
     supportVideo: true,
