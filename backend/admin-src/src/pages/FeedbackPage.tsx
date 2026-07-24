@@ -15,7 +15,7 @@ export function FeedbackPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
   const [detail, setDetail] = useState<FeedbackRecord | null>(null);
-  const [bulkStatus, setBulkStatus] = useState('processing');
+  const [bulkStatus, setBulkStatus] = useState('PROCESSING');
   const [bulkNote, setBulkNote] = useState('');
   const { message } = App.useApp();
   const queryClient = useQueryClient();
@@ -48,7 +48,7 @@ export function FeedbackPage() {
       message.success('反馈状态已更新');
       setDetail(null);
       await queryClient.invalidateQueries({ queryKey: ['feedback'] });
-      await queryClient.invalidateQueries({ queryKey: ['summary'] });
+      await queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     },
     onError: (error) => message.error(error instanceof Error ? error.message : '状态更新失败')
   });
@@ -64,7 +64,7 @@ export function FeedbackPage() {
       setSelectedRowKeys([]);
       setBulkNote('');
       await queryClient.invalidateQueries({ queryKey: ['feedback'] });
-      await queryClient.invalidateQueries({ queryKey: ['summary'] });
+      await queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     },
     onError: (error) => message.error(error instanceof Error ? error.message : '批量处理失败')
   });
@@ -101,7 +101,7 @@ export function FeedbackPage() {
       width: 150,
       render: (value, record) => (
         <Select
-          value={value || 'new'}
+          value={value || 'PENDING'}
           options={nextStatusOptions('feedback', value, feedbackStatusOptions)}
           size="small"
           disabled={nextStatusOptions('feedback', value, feedbackStatusOptions).length <= 1}

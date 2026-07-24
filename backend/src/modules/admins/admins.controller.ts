@@ -25,6 +25,21 @@ export class AdminsController {
     return this.admins.overview(principal);
   }
 
+  @Get('me')
+  me(@CurrentUser() principal: AuthPrincipal) {
+    return this.admins.me(principal);
+  }
+
+  @Get('dashboard')
+  dashboard(@CurrentUser() principal: AuthPrincipal) {
+    return this.admins.dashboard(principal);
+  }
+
+  @Get('config-status')
+  configStatus(@CurrentUser() principal: AuthPrincipal) {
+    return this.admins.configStatus(principal);
+  }
+
   @Get('users')
   users(@CurrentUser() principal: AuthPrincipal, @Query() query: AdminResourceQueryDto) {
     return this.admins.users(principal, query);
@@ -80,6 +95,15 @@ export class AdminsController {
     @Query() query: AdminResourceQueryDto,
   ) {
     return this.admins.list(principal, resource, query);
+  }
+
+  @Get(':resource/:id')
+  detail(
+    @CurrentUser() principal: AuthPrincipal,
+    @Param('resource') resource: string,
+    @Param('id') id: string,
+  ) {
+    return this.admins.detail(principal, resource, id);
   }
 
   @Post(':resource')

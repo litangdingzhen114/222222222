@@ -21,11 +21,15 @@ const orderTypeText: Record<string, string> = {
 
 const nextStatusMap: Record<string, Record<string, string[]>> = {
   product: {
-    new: ['confirmed', 'cancelled'],
-    confirmed: ['pending_shipment', 'cancelled'],
-    pending_shipment: ['shipped', 'cancelled'],
-    shipped: ['received', 'completed'],
-    received: ['completed']
+    PENDING_PAYMENT: ['CANCELLED'],
+    PAID: ['PROCESSING', 'CANCELLED', 'REFUNDING'],
+    PROCESSING: ['SHIPPED', 'CANCELLED', 'REFUNDING'],
+    SHIPPED: ['COMPLETED', 'REFUNDING'],
+    COMPLETED: [],
+    CANCELLED: [],
+    REFUNDING: ['REFUNDED'],
+    REFUNDED: [],
+    CLOSED: []
   },
   service: {
     new: ['confirmed', 'cancelled'],
@@ -55,7 +59,7 @@ const nextStatusMap: Record<string, Record<string, string[]>> = {
 
 function nextOrderStatusOptions(record?: OrderRecord | null) {
   if (!record) return orderStatusOptions.filter((item) => item.value);
-  const current = record.status || 'new';
+  const current = record.status || 'PENDING_PAYMENT';
   const allowed = new Set([current, ...(nextStatusMap[record.type || 'service']?.[current] || [])]);
   return orderStatusOptions.filter((item) => item.value && allowed.has(item.value));
 }
@@ -86,7 +90,7 @@ function OrderDetailDrawer({
   useEffect(() => {
     if (!record) return;
     form.setFieldsValue({
-      status: record.status || 'new',
+      status: record.status || 'PENDING_PAYMENT',
       note: record.adminNote || '',
       carrier: record.logistics?.carrier || '',
       trackingNo: record.logistics?.trackingNo || '',
@@ -95,7 +99,7 @@ function OrderDetailDrawer({
   }, [form, record]);
 
   const status = Form.useWatch('status', form);
-  const showLogistics = record?.type === 'product' && status === 'shipped';
+  const showLogistics = record?.type === 'product' && status === 'SHIPPED';
   const showVerify = record?.type === 'ticket' && status === 'verified';
 
   return (
@@ -202,10 +206,10 @@ export function OrdersPage() {
   });
 
   const stats = query.data?.stats || {};
-  const pendingFulfillment = (stats.pendingShipment || 0) + (stats.pendingService || 0) + (stats.pendingVerify || 0);
+  const pendingFulfillment = (stats.PAID || 0) + (stats.PROCESSING || 0);
 
   const exportData = async () => {
-    const blob = await fetchExportBlob('orders', { status, orderType: type, q });
+    const blob = await fetchExportBlob('orders', { status, type, q });
     downloadBlob(blob, 'hailin-orders.csv');
     message.success('订单 CSV 已导出');
   };
@@ -260,7 +264,7 @@ export function OrdersPage() {
         </Col>
         <Col xs={12} lg={6}>
           <Card>
-            <Statistic title="待确认" value={stats.new || 0} suffix="单" />
+            <Statistic title="待支付" value={stats.PENDING_PAYMENT || 0} suffix="单" />
           </Card>
         </Col>
         <Col xs={12} lg={6}>
@@ -270,7 +274,7 @@ export function OrdersPage() {
         </Col>
         <Col xs={12} lg={6}>
           <Card>
-            <Statistic title="已完成" value={stats.completed || 0} suffix="单" />
+            <Statistic title="已完成" value={stats.COMPLETED || 0} suffix="单" />
           </Card>
         </Col>
       </Row>

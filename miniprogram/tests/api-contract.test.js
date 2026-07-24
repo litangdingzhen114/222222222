@@ -54,6 +54,21 @@ publicContract.forEach(([key, method]) => {
     backendServer.includes(`route === '${method} ${endpoint}'`),
     `${method} ${endpoint} should be implemented by backend/server.js`
   );
+});
+
+[
+  '/admin/auth/login',
+  '/auth/refresh',
+  '/admin/me',
+  '/admin/dashboard',
+  '/admin/config-status',
+  '/home',
+  '/cameras',
+  'reservation-orders',
+  'feedback',
+  'orders',
+  '/admin/audit-logs'
+].forEach((endpoint) => {
   assert(adminApi.includes(endpoint), `admin frontend should call ${endpoint}`);
 });
 
@@ -103,11 +118,12 @@ assert(
   backendServer.includes('POST \\/api\\/admin\\/resources\\/([^/]+)\\/reset'),
   'resource reset route should be implemented'
 );
-assert(adminApi.includes('/api/admin/${kind}/${id}/status'), 'admin frontend should call detail status route');
-assert(adminApi.includes('/api/admin/${kind}/bulk-status'), 'admin frontend should call bulk status route');
-assert(adminApi.includes('/api/admin/orders/${id}/fulfillment'), 'admin frontend should call order fulfillment route');
-assert(adminApi.includes('/api/admin/resources/${key}'), 'admin frontend should call resource detail route');
-assert(adminApi.includes('/api/admin/resources/${key}/reset'), 'admin frontend should call resource reset route');
+assert(adminApi.includes('updateAdminResource<RawReservationOrder>'), 'admin frontend should update reservation status through v1 resources');
+assert(adminApi.includes('updateAdminResource<RawFeedback>'), 'admin frontend should update feedback status through v1 resources');
+assert(adminApi.includes('payload.ids.map'), 'admin frontend should support bulk status updates');
+assert(adminApi.includes('/admin/orders/${encodeURIComponent(id)}/ship'), 'admin frontend should call order shipment route');
+assert(adminApi.includes('resourceEndpointMap'), 'admin frontend should route resource reads to v1 public resources');
+assert(adminApi.includes('resetResourceContent'), 'admin frontend should support resource reset flow');
 assert.strictEqual(serviceConfig.live.provider, 'backend');
 assert.strictEqual(serviceConfig.ai.provider, 'backend-proxy');
 

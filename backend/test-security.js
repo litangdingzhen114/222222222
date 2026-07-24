@@ -171,10 +171,10 @@ async function main() {
   const adminHtml = fs.readFileSync(path.join(__dirname, 'admin', 'index.html'), 'utf8');
   const systemPage = fs.readFileSync(path.join(__dirname, 'admin-src', 'src', 'pages', 'SystemPage.tsx'), 'utf8');
   assert(adminHtml.includes('/admin/assets/'), 'admin dashboard should be built as a routed app');
-  assert(systemPage.includes('httpsEnabled'), 'admin dashboard should render HTTPS safety state');
-  assert(systemPage.includes('corsRestricted'), 'admin dashboard should render CORS safety state');
-  assert(systemPage.includes('adminTokenConfigured'), 'admin dashboard should render admin token safety state');
-  assert(systemPage.includes('system.security'), 'admin dashboard should consume backend security summary');
+  assert(systemPage.includes('getConfigStatus'), 'admin dashboard should consume v1 config status');
+  assert(systemPage.includes('/api/v1'), 'admin dashboard should show the formal API prefix');
+  assert(systemPage.includes('不向前端返回第三方密钥'), 'admin dashboard should show credential safety state');
+  assert(systemPage.includes('等待正式凭证'), 'admin dashboard should render third-party credential status');
   await assertProductionRejectsMissingAdminToken();
   await assertProductionSecurityRuntime();
   console.log('production security checks ok');

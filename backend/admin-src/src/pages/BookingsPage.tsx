@@ -15,7 +15,7 @@ export function BookingsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
   const [detail, setDetail] = useState<BookingRecord | null>(null);
-  const [bulkStatus, setBulkStatus] = useState('confirmed');
+  const [bulkStatus, setBulkStatus] = useState('CONFIRMED');
   const [bulkNote, setBulkNote] = useState('');
   const { message } = App.useApp();
   const queryClient = useQueryClient();
@@ -48,7 +48,7 @@ export function BookingsPage() {
       message.success('预约状态已更新');
       setDetail(null);
       await queryClient.invalidateQueries({ queryKey: ['bookings'] });
-      await queryClient.invalidateQueries({ queryKey: ['summary'] });
+      await queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     },
     onError: (error) => message.error(error instanceof Error ? error.message : '状态更新失败')
   });
@@ -64,7 +64,7 @@ export function BookingsPage() {
       setSelectedRowKeys([]);
       setBulkNote('');
       await queryClient.invalidateQueries({ queryKey: ['bookings'] });
-      await queryClient.invalidateQueries({ queryKey: ['summary'] });
+      await queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     },
     onError: (error) => message.error(error instanceof Error ? error.message : '批量处理失败')
   });
@@ -97,7 +97,7 @@ export function BookingsPage() {
       width: 150,
       render: (value, record) => (
         <Select
-          value={value || 'new'}
+          value={value || 'PENDING_PAYMENT'}
           options={nextStatusOptions('bookings', value, bookingStatusOptions)}
           size="small"
           disabled={nextStatusOptions('bookings', value, bookingStatusOptions).length <= 1}

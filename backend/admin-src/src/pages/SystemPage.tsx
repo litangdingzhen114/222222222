@@ -1,81 +1,117 @@
-import { App, Button, Card, Col, Descriptions, Row, Space, Tag, Typography } from 'antd';
+import {
+  ApiOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  CloudServerOutlined,
+  ExclamationCircleOutlined,
+  SafetyCertificateOutlined
+} from '@ant-design/icons';
+import { Alert, Card, Col, Descriptions, List, Row, Space, Statistic, Tag, Typography } from 'antd';
 import { useQuery } from '@tanstack/react-query';
-import { fetchBackupBlob, fetchExportBlob, getSummary } from '../api';
-import { downloadBlob } from '../utils';
+import { getConfigStatus } from '../api';
+import type { ConfigStatusItem } from '../types';
+import type { ReactNode } from 'react';
 
 const { Text } = Typography;
 
-function boolTag(ok?: boolean, good = '正常', bad = '异常') {
-  return ok ? <Tag color="green">{good}</Tag> : <Tag color="red">{bad}</Tag>;
+const statusMeta: Record<
+  ConfigStatusItem['status'],
+  { color: string; label: string; icon: ReactNode }
+> = {
+  configured: { color: 'green', label: '已配置', icon: <CheckCircleOutlined /> },
+  development: { color: 'blue', label: '开发模式', icon: <ApiOutlined /> },
+  missing: { color: 'orange', label: '等待凭证', icon: <ExclamationCircleOutlined /> },
+  abnormal: { color: 'red', label: '异常', icon: <CloseCircleOutlined /> }
+};
+
+const modeLabel: Record<ConfigStatusItem['mode'], string> = {
+  official: '正式接入',
+  development: '开发适配',
+  degraded: '降级运行',
+  waiting_credentials: '等待正式凭证'
+};
+
+function configStatusTag(item: ConfigStatusItem) {
+  const meta = statusMeta[item.status];
+  return <Tag color={meta.color} icon={meta.icon}>{meta.label}</Tag>;
 }
 
 export function SystemPage() {
-  const { message } = App.useApp();
-  const { data, isLoading } = useQuery({ queryKey: ['summary'], queryFn: getSummary });
-  const system = data?.system || {};
-  const security = system.security || {};
-
-  const exportBookings = async () => {
-    const blob = await fetchExportBlob('bookings');
-    downloadBlob(blob, 'hailin-bookings.csv');
-    message.success('预约 CSV 已导出');
-  };
-
-  const exportFeedback = async () => {
-    const blob = await fetchExportBlob('feedback');
-    downloadBlob(blob, 'hailin-feedback.csv');
-    message.success('反馈 CSV 已导出');
-  };
-
-  const exportOrders = async () => {
-    const blob = await fetchExportBlob('orders');
-    downloadBlob(blob, 'hailin-orders.csv');
-    message.success('订单 CSV 已导出');
-  };
-
-  const exportBackup = async () => {
-    const blob = await fetchBackupBlob();
-    downloadBlob(blob, `hailin-backup-${new Date().toISOString().slice(0, 10)}.json`);
-    message.success('完整备份已下载');
-  };
+  const { data, isLoading } = useQuery({ queryKey: ['config-status'], queryFn: getConfigStatus });
+  const abnormalCount = data?.items.filter((item) => item.status === 'abnormal').length ?? 0;
+  const missingCount = data?.items.filter((item) => item.status === 'missing').length ?? 0;
+  const developmentCount = data?.items.filter((item) => item.status === 'development').length ?? 0;
 
   return (
     <Space direction="vertical" size={16} className="page-stack">
       <Row gutter={[16, 16]}>
-        <Col xs={24} xl={14}>
-          <Card title="运行状态" loading={isLoading}>
-            <Descriptions column={1} bordered>
-              <Descriptions.Item label="存储">{boolTag(system.storageWritable, '可写', '不可写')}</Descriptions.Item>
-              <Descriptions.Item label="运行环境">{system.environment || '-'}</Descriptions.Item>
-              <Descriptions.Item label="运行时长">{Math.floor((system.uptimeSeconds || 0) / 60)} 分钟</Descriptions.Item>
-              <Descriptions.Item label="后台账号">{system.adminUser || '-'}</Descriptions.Item>
-              <Descriptions.Item label="AI Provider">{system.aiProvider === 'kimi' ? 'Kimi' : '本地兜底'}</Descriptions.Item>
-              <Descriptions.Item label="AI Model">{system.aiModel || '-'}</Descriptions.Item>
-            </Descriptions>
+        <Col xs={12} lg={6}>
+          <Card loading={isLoading}>
+            <Statistic title="配置项" value={data?.items.length || 0} prefix={<CloudServerOutlined />} />
           </Card>
         </Col>
-        <Col xs={24} xl={10}>
-          <Card title="上线安全检查" loading={isLoading}>
-            <Descriptions column={1} size="small">
-              <Descriptions.Item label="正式域名">
-                {security.publicBaseUrl ? <Text code>{security.publicBaseUrl}</Text> : <Tag color="orange">未配置</Tag>}
-              </Descriptions.Item>
-              <Descriptions.Item label="HTTPS">{boolTag(security.httpsEnabled, '已启用', '未启用')}</Descriptions.Item>
-              <Descriptions.Item label="后台 Token">{boolTag(security.adminTokenConfigured, '已配置', '未配置')}</Descriptions.Item>
-              <Descriptions.Item label="CORS">{security.corsRestricted ? <Tag color="green">已限制</Tag> : <Tag color="orange">未限制</Tag>}</Descriptions.Item>
-              <Descriptions.Item label="允许来源">{security.allowedOrigins?.length ? security.allowedOrigins.join(', ') : '-'}</Descriptions.Item>
-            </Descriptions>
+        <Col xs={12} lg={6}>
+          <Card loading={isLoading}>
+            <Statistic title="等待凭证" value={missingCount} prefix={<ExclamationCircleOutlined />} />
+          </Card>
+        </Col>
+        <Col xs={12} lg={6}>
+          <Card loading={isLoading}>
+            <Statistic title="开发模式" value={developmentCount} prefix={<ApiOutlined />} />
+          </Card>
+        </Col>
+        <Col xs={12} lg={6}>
+          <Card loading={isLoading}>
+            <Statistic title="异常" value={abnormalCount} prefix={<CloseCircleOutlined />} />
           </Card>
         </Col>
       </Row>
 
-      <Card title="数据导出与备份">
-        <Space wrap>
-          <Button onClick={exportBookings}>导出预约 CSV</Button>
-          <Button onClick={exportFeedback}>导出反馈 CSV</Button>
-          <Button onClick={exportOrders}>导出订单 CSV</Button>
-          <Button type="primary" onClick={exportBackup}>下载完整备份 JSON</Button>
-        </Space>
+      <Card title="运行环境" loading={isLoading}>
+        <Descriptions column={{ xs: 1, md: 2 }} bordered>
+          <Descriptions.Item label="环境">{data?.environment || '-'}</Descriptions.Item>
+          <Descriptions.Item label="对外域名">
+            {data?.publicBaseUrl ? <Text code>{data.publicBaseUrl}</Text> : <Tag color="orange">未配置</Tag>}
+          </Descriptions.Item>
+          <Descriptions.Item label="接口前缀">
+            <Text code>/api/v1</Text>
+          </Descriptions.Item>
+          <Descriptions.Item label="密钥返回策略">
+            <Tag color="green" icon={<SafetyCertificateOutlined />}>不向前端返回第三方密钥</Tag>
+          </Descriptions.Item>
+        </Descriptions>
+      </Card>
+
+      {missingCount || developmentCount ? (
+        <Alert
+          showIcon
+          type="warning"
+          message="仍有第三方服务等待正式凭证配置"
+          description="当前接口适配器和环境变量结构已经预留；微信、微信支付、萤石云、高德、COS 或 LLM 未配置时，只能按开发或 fallback 模式运行。"
+        />
+      ) : null}
+
+      <Card title="第三方服务与基础设施">
+        <List
+          loading={isLoading}
+          locale={{ emptyText: '暂无配置状态' }}
+          dataSource={data?.items || []}
+          renderItem={(item) => (
+            <List.Item>
+              <List.Item.Meta
+                avatar={<CloudServerOutlined className="list-icon" />}
+                title={(
+                  <Space wrap>
+                    <Text strong>{item.name}</Text>
+                    {configStatusTag(item)}
+                    <Tag>{modeLabel[item.mode]}</Tag>
+                  </Space>
+                )}
+                description={item.message}
+              />
+            </List.Item>
+          )}
+        />
       </Card>
     </Space>
   );

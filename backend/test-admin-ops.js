@@ -67,12 +67,12 @@ async function main() {
   const systemPage = fs.readFileSync(path.join(__dirname, 'admin-src', 'src', 'pages', 'SystemPage.tsx'), 'utf8');
   const detailDrawer = fs.readFileSync(path.join(__dirname, 'admin-src', 'src', 'pages', 'RecordDetailDrawer.tsx'), 'utf8');
   assert(adminHtml.includes('/admin/assets/'), 'admin dashboard should be built as static assets');
-  assert(apiSource.includes('/api/admin/audit'), 'admin dashboard should load audit trail');
-  assert(apiSource.includes('/api/admin/backup'), 'admin dashboard should download JSON backup');
-  assert(apiSource.includes('/api/admin/home-content'), 'admin dashboard should manage home content');
-  assert(apiSource.includes('/api/admin/lives'), 'admin dashboard should manage live stream content');
-  assert(apiSource.includes('/api/admin/resources'), 'admin dashboard should manage resource content');
-  assert(apiSource.includes('/api/admin/orders'), 'admin dashboard should manage order fulfillment');
+  assert(apiSource.includes('/admin/audit-logs'), 'admin dashboard should load audit trail');
+  assert(apiSource.includes('fetchBackupBlob'), 'admin dashboard should download JSON backup');
+  assert(apiSource.includes("'/home'"), 'admin dashboard should load formal home content');
+  assert(apiSource.includes("'/cameras'"), 'admin dashboard should load live stream content');
+  assert(apiSource.includes('scenic-spots'), 'admin dashboard should manage scenic resources');
+  assert(apiSource.includes("('orders'"), 'admin dashboard should manage order fulfillment');
   assert(auditPage.includes('fetchBackupBlob'), 'admin dashboard should expose one-click backup');
   assert(homePage.includes('json-editor'), 'admin dashboard should render home content editor');
   assert(livePage.includes('saveLiveContent'), 'admin dashboard should save live stream points');
@@ -82,7 +82,7 @@ async function main() {
   assert(ordersPage.includes('updateOrderFulfillment'), 'admin dashboard should update order fulfillment');
   assert(ordersPage.includes('trackingNo'), 'admin dashboard should handle shipment tracking numbers');
   assert(ordersPage.includes("fetchExportBlob('orders'"), 'admin dashboard should export orders');
-  assert(systemPage.includes("fetchExportBlob('orders'"), 'system page should export orders');
+  assert(systemPage.includes('getConfigStatus'), 'system page should render formal config status');
   assert(bookingsPage.includes('rowSelection'), 'admin dashboard should support table row selection');
   assert(detailDrawer.includes('maskContact'), 'admin dashboard should mask contact info in tables');
 

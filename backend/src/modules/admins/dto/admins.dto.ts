@@ -1,7 +1,23 @@
 import { IsObject, IsOptional, IsString } from 'class-validator';
 import { PageQueryDto } from '../../../common/dto/page.dto';
 
-export class AdminResourceQueryDto extends PageQueryDto {}
+export class AdminResourceQueryDto extends PageQueryDto {
+  @IsString()
+  @IsOptional()
+  q?: string;
+
+  @IsString()
+  @IsOptional()
+  status?: string;
+
+  @IsString()
+  @IsOptional()
+  type?: string;
+
+  @IsString()
+  @IsOptional()
+  orderType?: string;
+}
 
 export class AdminResourceMutationDto {
   @IsObject()

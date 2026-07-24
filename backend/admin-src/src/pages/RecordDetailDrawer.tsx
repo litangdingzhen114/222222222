@@ -32,7 +32,7 @@ export function RecordDetailDrawer({
   useEffect(() => {
     if (record) {
       form.setFieldsValue({
-        status: record.status || 'new',
+        status: record.status || (kind === 'bookings' ? 'PENDING_PAYMENT' : 'PENDING'),
         note: record.adminNote || ''
       });
     }

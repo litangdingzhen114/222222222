@@ -1,34 +1,74 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
-import { TOKEN_KEY } from './api';
+import {
+  ACCESS_TOKEN_KEY,
+  clearTokens,
+  getAdminMe,
+  loginAdmin,
+  saveAdminProfile,
+  storedAdminProfile
+} from './api';
+import type { AdminProfile } from './types';
+
+type LoginPayload = {
+  username: string;
+  password: string;
+};
 
 type AuthContextValue = {
   token: string;
-  login: (token: string) => void;
+  admin: AdminProfile | null;
+  login: (payload: LoginPayload) => Promise<void>;
   logout: () => void;
+  refreshProfile: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY) || '');
+  const [token, setToken] = useState(() => localStorage.getItem(ACCESS_TOKEN_KEY) || '');
+  const [admin, setAdmin] = useState<AdminProfile | null>(() => storedAdminProfile());
 
-  const value = useMemo<AuthContextValue>(() => ({
-    token,
-    login(nextToken) {
-      localStorage.setItem(TOKEN_KEY, nextToken);
-      setToken(nextToken);
-    },
-    logout() {
-      localStorage.removeItem(TOKEN_KEY);
-      setToken('');
-    }
-  }), [token]);
+  const logout = () => {
+    clearTokens();
+    setToken('');
+    setAdmin(null);
+  };
+
+  const refreshProfile = async () => {
+    if (!localStorage.getItem(ACCESS_TOKEN_KEY)) return;
+    const result = await getAdminMe();
+    saveAdminProfile(result.admin);
+    setAdmin(result.admin);
+  };
+
+  const login = async (payload: LoginPayload) => {
+    const result = await loginAdmin(payload);
+    setToken(result.accessToken);
+    setAdmin(result.admin);
+  };
+
+  const value = useMemo<AuthContextValue>(
+    () => ({
+      token,
+      admin,
+      login,
+      logout,
+      refreshProfile
+    }),
+    [token, admin]
+  );
 
   useEffect(() => {
-    const onUnauthorized = () => value.logout();
+    const onUnauthorized = () => logout();
     window.addEventListener('hailin-admin-unauthorized', onUnauthorized);
     return () => window.removeEventListener('hailin-admin-unauthorized', onUnauthorized);
-  }, [value]);
+  }, []);
+
+  useEffect(() => {
+    if (token && !admin) {
+      refreshProfile().catch(() => logout());
+    }
+  }, [token, admin]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

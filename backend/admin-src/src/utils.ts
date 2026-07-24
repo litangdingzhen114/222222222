@@ -14,9 +14,20 @@ export function formatDate(value?: string) {
   return date.isValid() ? date.format('YYYY-MM-DD HH:mm') : value;
 }
 
+export function formatMoney(value?: number) {
+  const amount = Number(value || 0) / 100;
+  return amount.toLocaleString('zh-CN', {
+    style: 'currency',
+    currency: 'CNY',
+    minimumFractionDigits: 2
+  });
+}
+
 export function maskContact(value?: string) {
   const text = String(value || '').trim();
   if (!text) return '-';
+  const phone = text.match(/1\d{10}/)?.[0];
+  if (phone) return text.replace(phone, `${phone.slice(0, 3)}****${phone.slice(-4)}`);
   if (/^1\d{10}$/.test(text)) return `${text.slice(0, 3)}****${text.slice(-4)}`;
   if (text.includes('@')) {
     const [name, domain] = text.split('@');
@@ -36,13 +47,13 @@ export function statusText(status?: string, kind?: RecordKind) {
 }
 
 export function canTransitionStatus(kind: RecordKind, currentStatus: string | undefined, nextStatus: string) {
-  const current = currentStatus || 'new';
+  const current = currentStatus || (kind === 'bookings' ? 'PENDING_PAYMENT' : 'PENDING');
   if (current === nextStatus) return true;
   return (statusTransitions[kind][current] || []).includes(nextStatus);
 }
 
 export function nextStatusOptions(kind: RecordKind, currentStatus: string | undefined, options: StatusOption[]) {
-  const current = currentStatus || 'new';
+  const current = currentStatus || (kind === 'bookings' ? 'PENDING_PAYMENT' : 'PENDING');
   return options.filter((option) => {
     if (!option.value) return false;
     return option.value === current || canTransitionStatus(kind, current, option.value);
@@ -73,7 +84,23 @@ export function statusColor(status?: string) {
     cancelled: 'red',
     expired: 'red',
     resolved: 'green',
-    archived: 'default'
+    archived: 'default',
+    PENDING_PAYMENT: 'gold',
+    PAID: 'blue',
+    PROCESSING: 'geekblue',
+    SHIPPED: 'cyan',
+    COMPLETED: 'green',
+    CANCELLED: 'red',
+    REFUNDING: 'purple',
+    REFUNDED: 'green',
+    CLOSED: 'default',
+    UNPAID: 'gold',
+    PAYING: 'blue',
+    FAILED: 'red',
+    NOT_SHIPPED: 'gold',
+    RECEIVED: 'green',
+    PENDING: 'orange',
+    REPLIED: 'green'
   }[status || ''] || 'default';
 }
 

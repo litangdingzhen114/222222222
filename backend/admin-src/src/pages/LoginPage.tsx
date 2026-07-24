@@ -1,6 +1,5 @@
-import { LockOutlined } from '@ant-design/icons';
+import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { App, Button, Card, Form, Input, Typography } from 'antd';
-import { getSession } from '../api';
 import brandLogo from '../assets/hailin-logo.png';
 import loginVisual from '../assets/hailin-ricefish-hero-ai.jpg';
 import { useAuth } from '../auth';
@@ -8,7 +7,8 @@ import { useAuth } from '../auth';
 const { Title, Text } = Typography;
 
 type LoginValues = {
-  token: string;
+  username: string;
+  password: string;
 };
 
 export function LoginPage() {
@@ -18,14 +18,14 @@ export function LoginPage() {
   const showDevTokenTip = import.meta.env.DEV;
 
   const submit = async (values: LoginValues) => {
-    const token = values.token.trim();
-    login(token);
     try {
-      await getSession();
+      await login({
+        username: values.username.trim(),
+        password: values.password
+      });
       message.success('已进入后台');
     } catch (error) {
-      login('');
-      message.error(error instanceof Error ? error.message : 'Token 无效');
+      message.error(error instanceof Error ? error.message : '登录失败');
     }
   };
 
@@ -42,23 +42,31 @@ export function LoginPage() {
           </div>
           <Form form={form} layout="vertical" onFinish={submit} autoComplete="off">
             <Form.Item
-              label="管理 Token"
-              name="token"
-              rules={[{ required: true, message: '请输入 ADMIN_TOKEN' }]}
+              label="管理员账号"
+              name="username"
+              initialValue="hailin-admin"
+              rules={[{ required: true, message: '请输入管理员账号' }]}
+            >
+              <Input size="large" prefix={<UserOutlined />} placeholder="请输入管理员账号" />
+            </Form.Item>
+            <Form.Item
+              label="管理员密码"
+              name="password"
+              rules={[{ required: true, message: '请输入管理员密码' }]}
             >
               <Input.Password
                 size="large"
                 prefix={<LockOutlined />}
-                placeholder="输入 ADMIN_TOKEN"
+                placeholder="请输入管理员密码"
               />
             </Form.Item>
             <Button type="primary" htmlType="submit" size="large" block>
-              进入后台
+              登录后台
             </Button>
           </Form>
           {showDevTokenTip ? (
             <Text className="login-tip" type="secondary">
-              本地开发默认 Token：hailin-admin-dev-token
+              开发账号由 Prisma seed 初始化，密码来自 SEED_ADMIN_PASSWORD。
             </Text>
           ) : null}
         </Card>
