@@ -1,0 +1,59 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: hailin-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: hailin
+      POSTGRES_USER: hailin
+      POSTGRES_PASSWORD: hailin_dev_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - hailin-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hailin -d hailin"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: hailin-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - hailin-redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+    container_name: hailin-api
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://hailin:hailin_dev_password@postgres:5432/hailin?schema=public
+      REDIS_URL: redis://redis:6379/0
+      HOST: 0.0.0.0
+      PORT: 8787
+    ports:
+      - "8787:8787"
+    volumes:
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  hailin-postgres-data:
+  hailin-redis-data:

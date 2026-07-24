@@ -4,3 +4,8 @@ storage/*.corrupt-*
 storage/logs/
 .env
 *.log
+dist/
+coverage/
+uploads/
+*.pem
+*.key

@@ -9,11 +9,130 @@ const {
 const { loadMapPoints } = require('../../services/content');
 const { quickToast } = require('../../utils/mock');
 
+const pointTypeView = {
+  SCENIC_SPOT: {
+    type: '景点',
+    subType: '乡村景点',
+    actionText: '查看景点',
+    imageUrl: '/assets/scenes/ricefish-field.png'
+  },
+  PARKING: {
+    type: '公共服务',
+    subType: '便民服务',
+    actionText: '导航前往',
+    imageUrl: '/assets/scenes/village-gate.png'
+  },
+  TOILET: {
+    type: '公共服务',
+    subType: '便民服务',
+    actionText: '导航前往',
+    imageUrl: '/assets/scenes/creek-trail.png'
+  },
+  SERVICE_CENTER: {
+    type: '公共服务',
+    subType: '核心景区',
+    actionText: '服务咨询',
+    imageUrl: '/assets/scenes/village-gate.png'
+  },
+  HOMESTAY: {
+    type: '住宿',
+    subType: '乡村景点',
+    actionText: '民宿预约',
+    imageUrl: '/assets/scenes/overseas-yard.png'
+  },
+  FOOD: {
+    type: '美食',
+    subType: '核心景区',
+    actionText: '寻味美食',
+    imageUrl: '/assets/scenes/ricefish-banquet.png'
+  },
+  FARM: {
+    type: '体验',
+    subType: '乡村景点',
+    actionText: '预约体验',
+    imageUrl: '/assets/scenes/ricefish-field.png'
+  },
+  MEDICAL: {
+    type: '公共服务',
+    subType: '便民服务',
+    actionText: '导航前往',
+    imageUrl: '/assets/scenes/village-gate.png'
+  },
+  CAMERA: {
+    type: '体验',
+    subType: '网红打卡点',
+    actionText: '查看直播',
+    imageUrl: '/assets/scenes/ricefish-field.png'
+  },
+  OTHER: {
+    type: '公共服务',
+    subType: '便民服务',
+    actionText: '导航前往',
+    imageUrl: '/assets/scenes/village-gate.png'
+  }
+};
+
+function asNumber(value, fallback) {
+  const number = Number(value);
+  return isFinite(number) ? number : fallback;
+}
+
+function pointView(rawType) {
+  const key = String(rawType || 'OTHER');
+  return pointTypeView[key] || pointTypeView.OTHER;
+}
+
+function normalizeMapPoint(point, index) {
+  const view = pointView(point.type);
+  const markerId = typeof point.markerId === 'number' ? point.markerId : index + 1;
+  const latitude = asNumber(point.latitude, mapCenter.latitude);
+  const longitude = asNumber(point.longitude, mapCenter.longitude);
+  const isEnumType = Boolean(pointTypeView[String(point.type || '')]);
+  const relatedType = String(point.relatedEntityType || '');
+  const refType = point.refType || (relatedType === 'SCENIC_SPOT' ? 'spot' : '');
+  return {
+    id: point.id == null ? markerId : point.id,
+    markerId,
+    title: point.title || point.name || '海林点位',
+    type: isEnumType ? view.type : point.type || view.type,
+    subType: point.subType || view.subType,
+    distance: point.distance || '村内点位',
+    desc: point.desc || point.description || point.summary || point.address || '海林村公共导览点位',
+    imageUrl: point.imageUrl || point.coverImage || point.image || view.imageUrl,
+    openTime: point.openTime || point.businessHours || '以现场公示为准',
+    tips: point.tips || (point.address ? `地址：${point.address}` : '可点击导航前往该点位。'),
+    actionText: point.actionText || view.actionText,
+    latitude,
+    longitude,
+    refType,
+    refId: point.refId || point.relatedEntityId || '',
+    targetUrl: point.targetUrl || view.targetUrl || '',
+    phone: point.phone || ''
+  };
+}
+
+function normalizeMapPoints(payload) {
+  const rawPoints = Array.isArray(payload)
+    ? payload
+    : payload && Array.isArray(payload.list)
+      ? payload.list
+      : payload && Array.isArray(payload.items)
+        ? payload.items
+        : [];
+  return rawPoints.map(normalizeMapPoint);
+}
+
+function findRoutePoint(points, id) {
+  return points.find((point) => String(point.id) === String(id) || point.markerId === Number(id));
+}
+
+const initialMapPoints = normalizeMapPoints(fallbackMapPoints);
+
 function buildMarkers(points, activeId) {
   return points.map((point) => {
-    const isActive = point.id === activeId;
+    const isActive = String(point.id) === String(activeId);
     return {
-      id: point.id,
+      id: point.markerId,
       latitude: point.latitude,
       longitude: point.longitude,
       title: point.title,
@@ -40,7 +159,7 @@ function buildMarkers(points, activeId) {
 function buildPolyline(route, points) {
   if (!route) return [];
   const routePoints = route.pointIds
-    .map((id) => points.find((point) => point.id === id))
+    .map((id) => findRoutePoint(points, id))
     .filter(Boolean)
     .map((point) => ({
       latitude: point.latitude,
@@ -76,15 +195,15 @@ Page({
     searchFocus: false,
     center: mapCenter,
     scale: 16,
-    points: fallbackMapPoints,
-    filteredPoints: fallbackMapPoints,
-    markers: buildMarkers(fallbackMapPoints),
+    points: initialMapPoints,
+    filteredPoints: initialMapPoints,
+    markers: buildMarkers(initialMapPoints),
     polylines: [],
     activePoint: null,
     activeRoute: null,
     routePanelOpen: false,
     showUserLocation: false,
-    summaryText: `共 ${fallbackMapPoints.length} 个点位`
+    summaryText: `共 ${initialMapPoints.length} 个点位`
   },
 
   onReady() {
@@ -93,7 +212,9 @@ Page({
   },
 
   onLoad() {
-    loadMapPoints().then((points) => {
+    loadMapPoints().then((payload) => {
+      const points = normalizeMapPoints(payload);
+      if (!points.length) return;
       this.setData({ points });
       this.applyFilters({ points });
     });
@@ -151,7 +272,7 @@ Page({
         latitude: point.latitude,
         longitude: point.longitude
       })),
-      padding: [82, 48, this.data.activePoint ? 340 : 180, 48]
+      padding: [82, 48, this.data.activePoint ? 520 : 180, 48]
     });
   },
 
@@ -201,15 +322,24 @@ Page({
   },
 
   onMarkerTap(event) {
-    this.selectPointById(event.detail.markerId);
+    this.selectPointByMarkerId(event.detail.markerId);
   },
 
   onPointChipTap(event) {
-    this.selectPointById(Number(event.currentTarget.dataset.id));
+    this.selectPointById(event.currentTarget.dataset.id);
   },
 
   selectPointById(id) {
-    const point = this.data.points.find((item) => item.id === Number(id));
+    const point = this.data.points.find((item) => String(item.id) === String(id));
+    this.selectPoint(point);
+  },
+
+  selectPointByMarkerId(markerId) {
+    const point = this.data.points.find((item) => item.markerId === Number(markerId));
+    this.selectPoint(point);
+  },
+
+  selectPoint(point) {
     if (!point) return;
 
     const filteredPoints = this.data.filteredPoints.some((item) => item.id === point.id)
@@ -299,7 +429,7 @@ Page({
     if (!route) return;
 
     const routePoints = route.pointIds
-      .map((id) => this.data.points.find((point) => point.id === id))
+      .map((id) => findRoutePoint(this.data.points, id))
       .filter(Boolean);
     this.setData({
       activeRoute: route,
@@ -315,7 +445,7 @@ Page({
   focusRoute(route) {
     if (!route) return;
     const routePoints = route.pointIds
-      .map((id) => this.data.points.find((point) => point.id === id))
+      .map((id) => findRoutePoint(this.data.points, id))
       .filter(Boolean);
     this.focusPoints(routePoints);
   },

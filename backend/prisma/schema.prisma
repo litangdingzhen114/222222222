@@ -1,0 +1,951 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserGender {
+  UNKNOWN
+  MALE
+  FEMALE
+}
+
+enum UserStatus {
+  ACTIVE
+  DISABLED
+  DELETED
+}
+
+enum AdminRole {
+  CONTENT_OPERATOR
+  MALL_OPERATOR
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum AdminStatus {
+  ACTIVE
+  DISABLED
+}
+
+enum TokenSubjectType {
+  USER
+  ADMIN
+}
+
+enum ContentStatus {
+  DRAFT
+  PUBLISHED
+  OFFLINE
+}
+
+enum BannerLinkType {
+  NONE
+  ARTICLE
+  SCENIC_SPOT
+  ROUTE
+  PRODUCT
+  ACTIVITY
+  CAMERA
+  URL
+  MINI_PROGRAM_PAGE
+}
+
+enum ShortcutLinkType {
+  PAGE
+  SCENIC_SPOT
+  ROUTE
+  PRODUCT
+  ACTIVITY
+  CAMERA
+  ARTICLE
+  URL
+}
+
+enum ArticleType {
+  VILLAGE_INTRO
+  NOTICE
+  GUIDE
+  FAQ
+  NEWS
+  SERVICE
+}
+
+enum MapPointType {
+  SCENIC_SPOT
+  PARKING
+  TOILET
+  SERVICE_CENTER
+  HOMESTAY
+  FOOD
+  FARM
+  MEDICAL
+  CAMERA
+  OTHER
+}
+
+enum RelatedEntityType {
+  SCENIC_SPOT
+  ROUTE
+  HOMESTAY
+  FOOD
+  FARM
+  CAMERA
+  ACTIVITY
+  PRODUCT
+  ARTICLE
+  OTHER
+}
+
+enum ReservationType {
+  FARM_PICKING
+  HOMESTAY
+  EXPERIENCE
+}
+
+enum ReservationSlotStatus {
+  OPEN
+  CLOSED
+  FULL
+}
+
+enum ReservationOrderStatus {
+  PENDING_PAYMENT
+  PAID
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  REFUNDING
+  REFUNDED
+}
+
+enum ActivityStatus {
+  DRAFT
+  PUBLISHED
+  OFFLINE
+  CANCELLED
+  COMPLETED
+}
+
+enum ActivityRegistrationStatus {
+  PENDING_PAYMENT
+  REGISTERED
+  CANCELLED
+  REFUNDING
+  REFUNDED
+  CHECKED_IN
+}
+
+enum CameraStatus {
+  ONLINE
+  OFFLINE
+  DISABLED
+}
+
+enum ProductStatus {
+  DRAFT
+  ON_SALE
+  OFF_SALE
+  SOLD_OUT
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT
+  PAID
+  PROCESSING
+  SHIPPED
+  COMPLETED
+  CANCELLED
+  REFUNDING
+  REFUNDED
+  CLOSED
+}
+
+enum PaymentStatus {
+  UNPAID
+  PAYING
+  PAID
+  FAILED
+  CLOSED
+  REFUNDING
+  REFUNDED
+}
+
+enum ShippingStatus {
+  NOT_SHIPPED
+  SHIPPED
+  RECEIVED
+}
+
+enum PaymentOrderType {
+  MALL_ORDER
+  RESERVATION_ORDER
+  ACTIVITY_REGISTRATION
+}
+
+enum PaymentChannel {
+  WECHAT
+}
+
+enum PaymentRecordStatus {
+  CREATED
+  PAYING
+  PAID
+  FAILED
+  CLOSED
+  REFUNDING
+  REFUNDED
+}
+
+enum FavoriteTargetType {
+  SCENIC_SPOT
+  ROUTE
+  PRODUCT
+  ACTIVITY
+  CAMERA
+  ARTICLE
+  HOMESTAY
+  FOOD
+  FARM
+}
+
+enum HistoryTargetType {
+  SCENIC_SPOT
+  ROUTE
+  PRODUCT
+  ACTIVITY
+  CAMERA
+  ARTICLE
+  HOMESTAY
+  FOOD
+  FARM
+}
+
+enum FeedbackType {
+  SUGGESTION
+  COMPLAINT
+  HELP
+  BUG
+  OTHER
+}
+
+enum FeedbackStatus {
+  PENDING
+  PROCESSING
+  REPLIED
+  CLOSED
+}
+
+enum NotificationType {
+  SYSTEM
+  ORDER
+  RESERVATION
+  ACTIVITY
+}
+
+enum NotificationStatus {
+  UNREAD
+  READ
+}
+
+enum UploadStorageDriver {
+  LOCAL
+  TENCENT_COS
+}
+
+enum IdempotencyStatus {
+  PROCESSING
+  SUCCEEDED
+  FAILED
+}
+
+model User {
+  id                String                 @id @default(cuid())
+  openid            String                 @unique
+  unionid           String?
+  sessionKeyHash    String?
+  nickname          String?
+  avatarUrl         String?
+  phone             String?
+  gender            UserGender             @default(UNKNOWN)
+  status            UserStatus             @default(ACTIVE)
+  lastLoginAt       DateTime?
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
+  deletedAt         DateTime?
+  addresses         Address[]
+  activityRecords   ActivityRegistration[]
+  browsingHistory   BrowsingHistory[]
+  cartItems         CartItem[]
+  favorites         Favorite[]
+  feedback          Feedback[]
+  notifications     Notification[]
+  orders            Order[]
+  payments          PaymentRecord[]
+  reservationOrders ReservationOrder[]
+  refreshTokens     RefreshToken[]
+
+  @@index([phone])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model AdminUser {
+  id            String         @id @default(cuid())
+  username      String         @unique
+  passwordHash  String
+  displayName   String
+  role          AdminRole
+  status        AdminStatus    @default(ACTIVE)
+  lastLoginAt   DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  auditLogs     AuditLog[]
+  refreshTokens RefreshToken[]
+
+  @@index([role])
+  @@index([status])
+}
+
+model RefreshToken {
+  id           String           @id @default(cuid())
+  subjectType  TokenSubjectType
+  tokenHash    String           @unique
+  expiresAt    DateTime
+  revokedAt    DateTime?
+  replacedById String?
+  userId       String?
+  adminId      String?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  admin        AdminUser?       @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  user         User?            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([subjectType, userId])
+  @@index([subjectType, adminId])
+  @@index([expiresAt])
+}
+
+model Banner {
+  id        String         @id @default(cuid())
+  title     String
+  imageUrl  String
+  linkType  BannerLinkType @default(NONE)
+  linkValue String?
+  sort      Int            @default(0)
+  status    ContentStatus  @default(DRAFT)
+  startAt   DateTime?
+  endAt     DateTime?
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  deletedAt DateTime?
+
+  @@index([status, sort])
+  @@index([startAt, endAt])
+}
+
+model HomeShortcut {
+  id        String           @id @default(cuid())
+  title     String
+  icon      String
+  linkType  ShortcutLinkType @default(PAGE)
+  linkValue String
+  sort      Int              @default(0)
+  status    ContentStatus    @default(PUBLISHED)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  deletedAt DateTime?
+
+  @@index([status, sort])
+}
+
+model ScenicSpot {
+  id                String            @id @default(cuid())
+  name              String
+  subtitle          String?
+  coverImage        String
+  images            String[]          @default([])
+  summary           String
+  content           String
+  address           String?
+  longitude         Decimal?          @db.Decimal(10, 7)
+  latitude          Decimal?          @db.Decimal(10, 7)
+  openingHours      String?
+  phone             String?
+  ticketInfo        String?
+  suggestedDuration String?
+  tags              String[]          @default([])
+  isRecommended     Boolean           @default(false)
+  sort              Int               @default(0)
+  status            ContentStatus     @default(DRAFT)
+  viewCount         Int               @default(0)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  deletedAt         DateTime?
+  routeSpots        TravelRouteSpot[]
+
+  @@index([status, sort])
+  @@index([isRecommended])
+  @@index([longitude, latitude])
+}
+
+model TravelRoute {
+  id             String            @id @default(cuid())
+  name           String
+  coverImage     String
+  summary        String
+  content        String
+  duration       String?
+  distance       String?
+  suitableFor    String?
+  transportation String?
+  tags           String[]          @default([])
+  isRecommended  Boolean           @default(false)
+  sort           Int               @default(0)
+  status         ContentStatus     @default(DRAFT)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  deletedAt      DateTime?
+  spots          TravelRouteSpot[]
+
+  @@index([status, sort])
+  @@index([isRecommended])
+}
+
+model TravelRouteSpot {
+  id           String      @id @default(cuid())
+  routeId      String
+  scenicSpotId String
+  sort         Int         @default(0)
+  stayDuration String?
+  route        TravelRoute @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  scenicSpot   ScenicSpot  @relation(fields: [scenicSpotId], references: [id], onDelete: Restrict)
+
+  @@unique([routeId, scenicSpotId])
+  @@index([routeId, sort])
+}
+
+model MapPoint {
+  id                String             @id @default(cuid())
+  name              String
+  type              MapPointType
+  icon              String?
+  imageUrl          String?
+  longitude         Decimal            @db.Decimal(10, 7)
+  latitude          Decimal            @db.Decimal(10, 7)
+  address           String?
+  phone             String?
+  description       String?
+  businessHours     String?
+  status            ContentStatus      @default(PUBLISHED)
+  relatedEntityType RelatedEntityType?
+  relatedEntityId   String?
+  sort              Int                @default(0)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  deletedAt         DateTime?
+
+  @@index([type, status])
+  @@index([longitude, latitude])
+  @@index([relatedEntityType, relatedEntityId])
+}
+
+model Article {
+  id         String        @id @default(cuid())
+  title      String
+  type       ArticleType
+  coverImage String?
+  summary    String?
+  content    String
+  tags       String[]      @default([])
+  sort       Int           @default(0)
+  status     ContentStatus @default(DRAFT)
+  viewCount  Int           @default(0)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  deletedAt  DateTime?
+
+  @@index([type, status, sort])
+}
+
+model Homestay {
+  id            String        @id @default(cuid())
+  name          String
+  coverImage    String
+  images        String[]      @default([])
+  description   String
+  address       String?
+  longitude     Decimal?      @db.Decimal(10, 7)
+  latitude      Decimal?      @db.Decimal(10, 7)
+  phone         String?
+  businessHours String?
+  priceFrom     Int?
+  tags          String[]      @default([])
+  status        ContentStatus @default(DRAFT)
+  sort          Int           @default(0)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  deletedAt     DateTime?
+
+  @@index([status, sort])
+}
+
+model Food {
+  id            String        @id @default(cuid())
+  name          String
+  coverImage    String
+  images        String[]      @default([])
+  description   String
+  address       String?
+  longitude     Decimal?      @db.Decimal(10, 7)
+  latitude      Decimal?      @db.Decimal(10, 7)
+  phone         String?
+  businessHours String?
+  avgPrice      Int?
+  tags          String[]      @default([])
+  status        ContentStatus @default(DRAFT)
+  sort          Int           @default(0)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  deletedAt     DateTime?
+
+  @@index([status, sort])
+}
+
+model Farm {
+  id               String            @id @default(cuid())
+  name             String
+  coverImage       String
+  images           String[]          @default([])
+  description      String
+  address          String?
+  longitude        Decimal?          @db.Decimal(10, 7)
+  latitude         Decimal?          @db.Decimal(10, 7)
+  phone            String?
+  businessHours    String?
+  status           ContentStatus     @default(DRAFT)
+  sort             Int               @default(0)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  deletedAt        DateTime?
+  reservationItems ReservationItem[]
+
+  @@index([status, sort])
+}
+
+model ReservationItem {
+  id            String             @id @default(cuid())
+  type          ReservationType
+  title         String
+  coverImage    String
+  farmId        String?
+  price         Int
+  unit          String
+  capacity      Int
+  bookingNotice String?
+  refundRule    String?
+  startDate     DateTime           @db.Date
+  endDate       DateTime           @db.Date
+  status        ContentStatus      @default(DRAFT)
+  sort          Int                @default(0)
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  deletedAt     DateTime?
+  farm          Farm?              @relation(fields: [farmId], references: [id], onDelete: SetNull)
+  orders        ReservationOrder[]
+  slots         ReservationSlot[]
+
+  @@index([type, status, sort])
+  @@index([farmId])
+}
+
+model ReservationSlot {
+  id                String                @id @default(cuid())
+  reservationItemId String
+  date              DateTime              @db.Date
+  startTime         String
+  endTime           String
+  capacity          Int
+  bookedCount       Int                   @default(0)
+  status            ReservationSlotStatus @default(OPEN)
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
+  item              ReservationItem       @relation(fields: [reservationItemId], references: [id], onDelete: Cascade)
+  orders            ReservationOrder[]
+
+  @@unique([reservationItemId, date, startTime, endTime])
+  @@index([date, status])
+}
+
+model ReservationOrder {
+  id                String                 @id @default(cuid())
+  orderNo           String                 @unique
+  userId            String
+  reservationItemId String
+  reservationSlotId String
+  contactName       String
+  contactPhone      String
+  quantity          Int
+  amount            Int
+  status            ReservationOrderStatus @default(PENDING_PAYMENT)
+  remark            String?
+  paidAt            DateTime?
+  cancelledAt       DateTime?
+  verifiedAt        DateTime?
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
+  item              ReservationItem        @relation(fields: [reservationItemId], references: [id], onDelete: Restrict)
+  slot              ReservationSlot        @relation(fields: [reservationSlotId], references: [id], onDelete: Restrict)
+  user              User                   @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([userId, createdAt])
+  @@index([status])
+  @@index([reservationSlotId])
+}
+
+model Activity {
+  id                  String                 @id @default(cuid())
+  title               String
+  coverImage          String
+  images              String[]               @default([])
+  summary             String
+  content             String
+  location            String
+  longitude           Decimal?               @db.Decimal(10, 7)
+  latitude            Decimal?               @db.Decimal(10, 7)
+  startAt             DateTime
+  endAt               DateTime
+  registrationStartAt DateTime
+  registrationEndAt   DateTime
+  capacity            Int
+  registeredCount     Int                    @default(0)
+  fee                 Int                    @default(0)
+  status              ActivityStatus         @default(DRAFT)
+  sort                Int                    @default(0)
+  createdAt           DateTime               @default(now())
+  updatedAt           DateTime               @updatedAt
+  deletedAt           DateTime?
+  registrations       ActivityRegistration[]
+
+  @@index([status, startAt])
+}
+
+model ActivityRegistration {
+  id               String                     @id @default(cuid())
+  activityId       String
+  userId           String
+  contactName      String
+  contactPhone     String
+  participantCount Int
+  amount           Int
+  status           ActivityRegistrationStatus @default(REGISTERED)
+  remark           String?
+  createdAt        DateTime                   @default(now())
+  updatedAt        DateTime                   @updatedAt
+  activity         Activity                   @relation(fields: [activityId], references: [id], onDelete: Restrict)
+  user             User                       @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@unique([activityId, userId])
+  @@index([userId, createdAt])
+  @@index([status])
+}
+
+model Camera {
+  id            String       @id @default(cuid())
+  name          String
+  coverImage    String
+  deviceSerial  String
+  channelNo     Int          @default(1)
+  ezvizDeviceId String?
+  location      String?
+  longitude     Decimal?     @db.Decimal(10, 7)
+  latitude      Decimal?     @db.Decimal(10, 7)
+  description   String?
+  status        CameraStatus @default(DISABLED)
+  sort          Int          @default(0)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  deletedAt     DateTime?
+
+  @@unique([deviceSerial, channelNo])
+  @@index([status, sort])
+}
+
+model ProductCategory {
+  id        String            @id @default(cuid())
+  name      String
+  icon      String?
+  parentId  String?
+  sort      Int               @default(0)
+  status    ContentStatus     @default(PUBLISHED)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  deletedAt DateTime?
+  children  ProductCategory[] @relation("CategoryTree")
+  parent    ProductCategory?  @relation("CategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
+  products  Product[]
+
+  @@index([parentId, sort])
+  @@index([status])
+}
+
+model FreightTemplate {
+  id            String    @id @default(cuid())
+  name          String
+  firstFee      Int       @default(0)
+  additionalFee Int       @default(0)
+  freeThreshold Int?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  products      Product[]
+}
+
+model Product {
+  id                String           @id @default(cuid())
+  name              String
+  subtitle          String?
+  coverImage        String
+  images            String[]         @default([])
+  detail            String
+  categoryId        String
+  price             Int
+  originalPrice     Int?
+  stock             Int
+  sales             Int              @default(0)
+  unit              String
+  specification     String?
+  freightTemplateId String?
+  status            ProductStatus    @default(DRAFT)
+  sort              Int              @default(0)
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  deletedAt         DateTime?
+  cartItems         CartItem[]
+  category          ProductCategory  @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  freightTemplate   FreightTemplate? @relation(fields: [freightTemplateId], references: [id], onDelete: SetNull)
+  orderItems        OrderItem[]
+
+  @@index([categoryId, status])
+  @@index([status, sort])
+  @@index([stock])
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  quantity  Int
+  selected  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@index([userId, selected])
+}
+
+model Address {
+  id          String   @id @default(cuid())
+  userId      String
+  contactName String
+  phone       String
+  province    String
+  city        String
+  district    String
+  detail      String
+  postalCode  String?
+  isDefault   Boolean  @default(false)
+  longitude   Decimal? @db.Decimal(10, 7)
+  latitude    Decimal? @db.Decimal(10, 7)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isDefault])
+}
+
+model Order {
+  id               String         @id @default(cuid())
+  orderNo          String         @unique
+  userId           String
+  addressId        String?
+  addressSnapshot  Json
+  productAmount    Int
+  freightAmount    Int            @default(0)
+  discountAmount   Int            @default(0)
+  payableAmount    Int
+  paidAmount       Int            @default(0)
+  status           OrderStatus    @default(PENDING_PAYMENT)
+  paymentStatus    PaymentStatus  @default(UNPAID)
+  shippingStatus   ShippingStatus @default(NOT_SHIPPED)
+  remark           String?
+  logisticsCompany String?
+  logisticsNo      String?
+  idempotencyKey   String?
+  paidAt           DateTime?
+  shippedAt        DateTime?
+  completedAt      DateTime?
+  cancelledAt      DateTime?
+  closedAt         DateTime?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  items            OrderItem[]
+  user             User           @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([userId, createdAt])
+  @@index([status])
+  @@index([paymentStatus])
+  @@index([idempotencyKey])
+}
+
+model OrderItem {
+  id            String  @id @default(cuid())
+  orderId       String
+  productId     String
+  productName   String
+  productImage  String
+  specification String?
+  unitPrice     Int
+  quantity      Int
+  totalAmount   Int
+  order         Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product       Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+model PaymentRecord {
+  id            String              @id @default(cuid())
+  paymentNo     String              @unique
+  orderType     PaymentOrderType
+  orderId       String
+  userId        String
+  amount        Int
+  channel       PaymentChannel
+  transactionId String?
+  status        PaymentRecordStatus @default(CREATED)
+  requestData   Json?
+  callbackData  Json?
+  paidAt        DateTime?
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  user          User                @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([orderType, orderId])
+  @@index([userId, createdAt])
+  @@index([transactionId])
+  @@index([status])
+}
+
+model Favorite {
+  id         String             @id @default(cuid())
+  userId     String
+  targetType FavoriteTargetType
+  targetId   String
+  createdAt  DateTime           @default(now())
+  user       User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, targetType, targetId])
+  @@index([targetType, targetId])
+}
+
+model BrowsingHistory {
+  id         String            @id @default(cuid())
+  userId     String
+  targetType HistoryTargetType
+  targetId   String
+  viewedAt   DateTime          @default(now())
+  user       User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, viewedAt])
+  @@index([targetType, targetId])
+}
+
+model Feedback {
+  id         String         @id @default(cuid())
+  userId     String?
+  type       FeedbackType
+  content    String
+  images     String[]       @default([])
+  contact    String?
+  status     FeedbackStatus @default(PENDING)
+  adminReply String?
+  repliedAt  DateTime?
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+  user       User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt])
+  @@index([userId])
+}
+
+model Notification {
+  id        String             @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  content   String
+  status    NotificationStatus @default(UNREAD)
+  payload   Json?
+  createdAt DateTime           @default(now())
+  readAt    DateTime?
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status, createdAt])
+}
+
+model AuditLog {
+  id         String     @id @default(cuid())
+  adminId    String?
+  action     String
+  resource   String
+  resourceId String?
+  before     Json?
+  after      Json?
+  ip         String?
+  userAgent  String?
+  requestId  String?
+  createdAt  DateTime   @default(now())
+  admin      AdminUser? @relation(fields: [adminId], references: [id], onDelete: SetNull)
+
+  @@index([adminId, createdAt])
+  @@index([resource, resourceId])
+  @@index([action])
+}
+
+model UploadFile {
+  id           String              @id @default(cuid())
+  filename     String
+  originalName String
+  mimeType     String
+  extension    String
+  size         Int
+  driver       UploadStorageDriver
+  url          String
+  path         String
+  uploaderType TokenSubjectType?
+  uploaderId   String?
+  createdAt    DateTime            @default(now())
+
+  @@index([uploaderType, uploaderId])
+}
+
+model IdempotencyRecord {
+  id          String            @id @default(cuid())
+  scope       String
+  key         String
+  requestHash String
+  status      IdempotencyStatus @default(PROCESSING)
+  response    Json?
+  expiresAt   DateTime
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@unique([scope, key])
+  @@index([expiresAt])
+}

@@ -103,13 +103,20 @@
 
       <cover-view wx:if="{{activePoint}}" class="poi-sheet">
         <cover-view class="poi-close" bindtap="onCloseSheet">×</cover-view>
-        <cover-view class="poi-name">{{activePoint.title}}</cover-view>
-        <cover-view class="poi-meta">{{activePoint.type}} · {{activePoint.subType}} · {{activePoint.distance}}</cover-view>
-        <cover-view class="poi-desc">{{activePoint.desc}}</cover-view>
-        <cover-view class="poi-info-row">
-          <cover-view class="poi-info">开放 {{activePoint.openTime}}</cover-view>
+        <cover-view class="poi-image-wrap">
+          <cover-image wx:if="{{activePoint.imageUrl}}" class="poi-image" src="{{activePoint.imageUrl}}" mode="aspectFill"></cover-image>
+          <cover-view wx:else class="poi-image-fallback">海林点位</cover-view>
+          <cover-view class="poi-image-label">{{activePoint.subType}}</cover-view>
         </cover-view>
-        <cover-view class="poi-tip">{{activePoint.tips}}</cover-view>
+        <cover-view class="poi-content">
+          <cover-view class="poi-name">{{activePoint.title}}</cover-view>
+          <cover-view class="poi-meta">{{activePoint.type}} · {{activePoint.distance}}</cover-view>
+          <cover-view class="poi-desc">{{activePoint.desc}}</cover-view>
+          <cover-view class="poi-info-row">
+            <cover-view class="poi-info">开放 {{activePoint.openTime}}</cover-view>
+          </cover-view>
+          <cover-view class="poi-tip">{{activePoint.tips}}</cover-view>
+        </cover-view>
         <cover-view class="poi-actions">
           <cover-view class="poi-btn outline" bindtap="onViewDetail">详情</cover-view>
           <cover-view class="poi-btn outline" bindtap="onGoHere">导航</cover-view>

@@ -28,6 +28,8 @@ assert(mapPoints.some((point) => String(point.targetUrl || '').startsWith('/page
 assert(mapWxml.includes('search-input'), 'map page should expose search input');
 assert(mapWxml.includes('route-panel'), 'map page should expose route recommendation panel');
 assert(mapWxml.includes('quick-point-scroll'), 'map page should expose filtered point quick list');
+assert(mapWxml.includes('poi-image'), 'map point sheet should show a location image');
+assert(mapJs.includes('normalizeMapPoints'), 'map page should normalize backend map point payloads');
 
 const categoryIds = new Set(mapFeatures.categories.map((item) => item.id));
 assert(categoryIds.has('全部'), 'categories should include all');
@@ -47,6 +49,7 @@ mapPoints.forEach((point) => {
   assert(point.openTime, `${point.title} should expose open time`);
   assert(point.tips, `${point.title} should expose travel tips`);
   assert(point.actionText, `${point.title} should expose primary action text`);
+  assert(point.imageUrl, `${point.title} should expose display image`);
 
   if (point.refType === 'spot') {
     assert(spotIds.has(point.refId), `${point.title} referenced spot should exist`);
