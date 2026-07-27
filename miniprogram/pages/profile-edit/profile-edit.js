@@ -5,6 +5,7 @@ Page({
   data: {
     nickname: '',
     avatarText: '',
+    avatarUrl: '',
     contact: '',
     intro: ''
   },
@@ -22,6 +23,7 @@ Page({
     this.setData({
       nickname: profile.nickname,
       avatarText: profile.avatarText,
+      avatarUrl: profile.avatarUrl,
       contact: profile.contact,
       intro: profile.intro
     });
@@ -34,20 +36,16 @@ Page({
 
   onSave() {
     const nickname = this.data.nickname.trim();
-    const avatarText = this.data.avatarText.trim();
 
     if (!nickname) {
       quickToast('请填写昵称');
       return;
     }
-    if (!avatarText) {
-      quickToast('请填写头像文字');
-      return;
-    }
 
     saveProfile({
       nickname,
-      avatarText,
+      avatarText: this.data.avatarText.trim(),
+      avatarUrl: this.data.avatarUrl,
       contact: this.data.contact.trim(),
       intro: this.data.intro.trim()
     });

@@ -7,7 +7,10 @@
 
   <view class="mine-content">
     <view class="profile-card card">
-      <view class="avatar">{{user.avatarText}}</view>
+      <view class="avatar">
+        <image wx:if="{{user.avatarUrl}}" class="avatar-img" src="{{user.avatarUrl}}" mode="aspectFit"></image>
+        <text wx:else>{{user.avatarText || '客'}}</text>
+      </view>
       <view class="profile-info">
         <view class="nickname">{{user.nickname}}</view>
         <view class="profile-sub">{{user.intro || '欢迎来到青田海口镇海林村文旅服务平台'}}</view>

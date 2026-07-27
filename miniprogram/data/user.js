@@ -1,10 +1,11 @@
 module.exports = {
-  nickname: '海林村访客',
-  avatarText: '瓯',
+  nickname: '微信游客',
+  avatarText: '',
+  avatarUrl: '/assets/tabbar/mine-active.png',
   stats: [
-    { id: 'notes', label: '游记', value: 3 },
-    { id: 'favorites', label: '收藏', value: 12 },
-    { id: 'likes', label: '点赞', value: 28 }
+    { id: 'notes', label: '游记', value: 0 },
+    { id: 'favorites', label: '收藏', value: 0 },
+    { id: 'likes', label: '点赞', value: 0 }
   ],
   orders: [
     { id: 'mall', title: '共富集市', icon: '市', iconPath: '/assets/icons/commerce.png' },

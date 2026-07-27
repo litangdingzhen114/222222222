@@ -8,6 +8,7 @@ const {
 
 const STORAGE_KEY = 'hailin_user_center';
 const CLIENT_ID_KEY = 'hailin_client_id';
+const STORAGE_SCHEMA_VERSION = 2;
 const memoryStore = {};
 
 function clone(value) {
@@ -59,12 +60,13 @@ function formatDateTime(date) {
 
 function createDefaultState() {
   return {
+    schemaVersion: STORAGE_SCHEMA_VERSION,
     profile: clone(defaultProfile),
     notes: clone(defaultLists.notes),
     favorites: clone(defaultLists.favorites),
     likes: clone(defaultLists.likes),
     coupons: clone(coupons),
-    points: 128,
+    points: 0,
     completedTasks: {},
     checkinDate: '',
     checkinHistory: [],
@@ -77,13 +79,16 @@ function createDefaultState() {
 function normalizeState(rawState) {
   const defaults = createDefaultState();
   const raw = rawState && typeof rawState === 'object' ? rawState : {};
+  if (raw.schemaVersion !== STORAGE_SCHEMA_VERSION) return defaults;
 
   return {
     ...defaults,
     ...raw,
     profile: {
       ...defaults.profile,
-      ...(raw.profile || {})
+      ...(raw.profile || {}),
+      avatarText: String((raw.profile && raw.profile.avatarText) || '').trim().slice(0, 2),
+      avatarUrl: String((raw.profile && raw.profile.avatarUrl) || defaults.profile.avatarUrl || '').trim()
     },
     notes: Array.isArray(raw.notes) ? raw.notes : defaults.notes,
     favorites: Array.isArray(raw.favorites) ? raw.favorites : defaults.favorites,
@@ -98,7 +103,12 @@ function normalizeState(rawState) {
 }
 
 function loadUserCenter() {
-  return normalizeState(readStorage());
+  const raw = readStorage();
+  const state = normalizeState(raw);
+  if (!raw || raw.schemaVersion !== STORAGE_SCHEMA_VERSION) {
+    writeStorage(state);
+  }
+  return state;
 }
 
 function randomText() {
@@ -131,6 +141,12 @@ function resetUserCenter() {
     delete memoryStore[CLIENT_ID_KEY];
   }
   const state = createDefaultState();
+  writeStorage(state);
+  return state;
+}
+
+function migrateUserCenter() {
+  const state = normalizeState(readStorage());
   writeStorage(state);
   return state;
 }
@@ -182,6 +198,7 @@ function getMergedUser(user = baseUser) {
     ...user,
     nickname: state.profile.nickname,
     avatarText: state.profile.avatarText,
+    avatarUrl: state.profile.avatarUrl,
     contact: state.profile.contact,
     intro: state.profile.intro,
     stats: user.stats.map((item) => ({
@@ -197,7 +214,8 @@ function saveProfile(profile) {
     ...state.profile,
     ...profile,
     nickname: String(profile.nickname || state.profile.nickname).trim() || defaultProfile.nickname,
-    avatarText: String(profile.avatarText || state.profile.avatarText).trim().slice(0, 2) || defaultProfile.avatarText
+    avatarText: String(profile.avatarText || state.profile.avatarText || '').trim().slice(0, 2),
+    avatarUrl: String(profile.avatarUrl || state.profile.avatarUrl || defaultProfile.avatarUrl || '').trim()
   };
   if (!state.completedTasks.profile) {
     state.completedTasks.profile = true;
@@ -357,6 +375,7 @@ module.exports = {
   getStats,
   isFavorite,
   loadUserCenter,
+  migrateUserCenter,
   publishNote,
   recordVerification,
   resetUserCenter,

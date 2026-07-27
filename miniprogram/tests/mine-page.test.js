@@ -55,11 +55,15 @@ user.rights.forEach((item) => {
 });
 
 const mineJs = fs.readFileSync(path.join(root, 'miniprogram/pages/mine/mine.js'), 'utf8');
+const mineWxml = fs.readFileSync(path.join(root, 'miniprogram/pages/mine/mine.wxml'), 'utf8');
+const profileEditWxml = fs.readFileSync(path.join(root, 'miniprogram/pages/profile-edit/profile-edit.wxml'), 'utf8');
 assert(!mineJs.includes('建设中'), 'mine page should not show placeholder construction toasts');
 assert(mineJs.includes('/pages/profile-edit/profile-edit'), 'profile edit should navigate to edit page');
 assert(mineJs.includes('/pages/user-list/user-list'), 'stats should navigate to list page');
 assert(mineJs.includes('/pages/mine-feature/mine-feature'), 'orders and rights should navigate to feature page');
 assert(mineJs.includes('/pages/publish/publish'), 'publish should navigate to publish page');
+assert(mineWxml.includes('avatar-img'), 'mine page should render image avatar before text fallback');
+assert(!profileEditWxml.includes('例如：瓯、海、青'), 'profile edit should not expose demo avatar text copy');
 
 const spotIds = new Set(spots.map((item) => item.id));
 const routeIds = new Set(routes.map((item) => item.id));
@@ -86,9 +90,32 @@ allListItems.forEach((item) => {
 });
 
 let state = userCenter.resetUserCenter();
-assert.strictEqual(userCenter.getStats(state).notes, 3, 'default notes should match profile count');
-assert.strictEqual(userCenter.getStats(state).favorites, 12, 'default favorites should match profile count');
-assert.strictEqual(userCenter.getStats(state).likes, 28, 'default likes should match profile count');
+assert.strictEqual(state.profile.avatarText, '', 'default visitor avatar text should be empty');
+assert(state.profile.avatarUrl, 'default visitor should use an image avatar');
+assert.strictEqual(state.points, 0, 'default visitor points should start at zero');
+assert.strictEqual(userCenter.getStats(state).notes, 0, 'default notes should be empty for production');
+assert.strictEqual(userCenter.getStats(state).favorites, 0, 'default favorites should be empty for production');
+assert.strictEqual(userCenter.getStats(state).likes, 0, 'default likes should be empty for production');
+
+state = userCenter.saveUserCenter({
+  profile: {
+    nickname: '海林村访客',
+    avatarText: '瓯',
+    intro: '喜欢瓯江、稻鱼田和青田石的小程序游客'
+  },
+  notes: [{ id: 'legacy-note' }],
+  favorites: [{ id: 'legacy-fav' }],
+  likes: [{ id: 'legacy-like' }],
+  coupons: [{ id: 'legacy-coupon', status: '可领取' }],
+  points: 128
+});
+assert.strictEqual(state.profile.nickname, '微信游客', 'legacy demo profile should be migrated to clean visitor');
+assert.strictEqual(state.profile.avatarText, '', 'legacy text avatar should be removed');
+assert.strictEqual(userCenter.getStats(state).notes, 0, 'legacy demo notes should be cleared');
+assert.strictEqual(userCenter.getStats(state).favorites, 0, 'legacy demo favorites should be cleared');
+assert.strictEqual(userCenter.getStats(state).likes, 0, 'legacy demo likes should be cleared');
+assert.strictEqual(state.coupons.length, 0, 'legacy demo coupons should be cleared');
+assert.strictEqual(state.points, 0, 'legacy demo points should be cleared');
 
 state = userCenter.saveProfile({
   nickname: '测试游客',
@@ -106,7 +133,7 @@ const note = userCenter.publishNote({
   imagePath: ''
 });
 assert(note.id, 'published note should have id');
-assert.strictEqual(userCenter.getStats().notes, 4, 'publishing should increase note count');
+assert.strictEqual(userCenter.getStats().notes, 1, 'publishing should increase note count from zero');
 
 const checkin = userCenter.checkIn('2026-07-07');
 const repeatCheckin = userCenter.checkIn('2026-07-07');
@@ -144,7 +171,18 @@ const unfavoriteResult = userCenter.toggleFavorite({
 });
 assert.strictEqual(unfavoriteResult.favorite, false, 'favorite should be removable');
 
-assert.strictEqual(userCenter.claimCoupon('coupon-ricefish').ok, true, 'claiming coupon should succeed');
-assert.strictEqual(userCenter.useCoupon('coupon-ricefish').ok, true, 'using claimed coupon should succeed');
+state = userCenter.loadUserCenter();
+state.coupons = [
+  {
+    id: 'coupon-test',
+    title: '测试权益券',
+    amount: '10元',
+    desc: '由后台或活动发放后才显示',
+    status: '可领取'
+  }
+];
+userCenter.saveUserCenter(state);
+assert.strictEqual(userCenter.claimCoupon('coupon-test').ok, true, 'claiming issued coupon should succeed');
+assert.strictEqual(userCenter.useCoupon('coupon-test').ok, true, 'using claimed coupon should succeed');
 
 console.log('mine page feature coverage ok');

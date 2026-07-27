@@ -72,6 +72,11 @@
   box-shadow: 0 12rpx 26rpx rgba(112, 76, 34, 0.08);
 }
 
+.avatar-img {
+  width: 76rpx;
+  height: 76rpx;
+}
+
 .profile-info {
   flex: 1;
   min-width: 0;

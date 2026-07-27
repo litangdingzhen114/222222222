@@ -30,6 +30,11 @@
   font-weight: 900;
 }
 
+.avatar-preview-img {
+  width: 64rpx;
+  height: 64rpx;
+}
+
 .preview-name {
   font-size: 34rpx;
   font-weight: 800;

@@ -1,8 +1,11 @@
 <view class="page page-pad profile-edit-page">
   <view class="profile-preview">
-    <view class="avatar-preview">{{avatarText}}</view>
+    <view class="avatar-preview">
+      <image wx:if="{{avatarUrl}}" class="avatar-preview-img" src="{{avatarUrl}}" mode="aspectFit"></image>
+      <text wx:else>{{avatarText || '客'}}</text>
+    </view>
     <view>
-      <view class="preview-name">{{nickname || '海林村访客'}}</view>
+      <view class="preview-name">{{nickname || '微信游客'}}</view>
       <view class="preview-sub">{{intro || '写一句你和海林村的关系'}}</view>
     </view>
   </view>
@@ -11,11 +14,6 @@
     <view class="field-block">
       <view class="field-label">昵称</view>
       <input class="form-input" maxlength="16" placeholder="请输入昵称" placeholder-class="form-placeholder" value="{{nickname}}" data-field="nickname" bindinput="onInput" />
-    </view>
-
-    <view class="field-block">
-      <view class="field-label">头像文字</view>
-      <input class="form-input" maxlength="2" placeholder="例如：瓯、海、青" placeholder-class="form-placeholder" value="{{avatarText}}" data-field="avatarText" bindinput="onInput" />
     </view>
 
     <view class="field-block">

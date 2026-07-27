@@ -13,7 +13,7 @@
       <text>可用权益</text>
       <text class="section-meta">{{coupons.length}} 张</text>
     </view>
-    <view class="coupon-list">
+    <view wx:if="{{coupons.length}}" class="coupon-list">
       <view wx:for="{{coupons}}" wx:key="id" class="coupon-card {{item.status === '已使用' ? 'disabled' : ''}}">
         <view class="coupon-main">
           <view class="coupon-amount">{{item.amount}}</view>
@@ -27,6 +27,7 @@
         <view wx:else class="coupon-status">已使用</view>
       </view>
     </view>
+    <view wx:else class="record-empty">暂无可用优惠券，活动报名、订单权益或后台发放后会显示在这里。</view>
   </block>
 
   <block wx:elif="{{feature.type === 'points'}}">

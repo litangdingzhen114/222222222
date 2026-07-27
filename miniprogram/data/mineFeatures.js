@@ -1,121 +1,18 @@
 const defaultProfile = {
-  nickname: '海林村访客',
-  avatarText: '瓯',
+  nickname: '微信游客',
+  avatarText: '',
+  avatarUrl: '/assets/tabbar/mine-active.png',
   contact: '',
-  intro: '喜欢瓯江、稻鱼田和青田石的小程序游客'
+  intro: ''
 };
-
-function expandItems(items, count, prefix) {
-  return Array.from({ length: count }, (_, index) => {
-    const seed = items[index % items.length];
-    return {
-      ...seed,
-      id: `${prefix}-${index + 1}`
-    };
-  });
-}
 
 const defaultLists = {
-  notes: [
-    {
-      id: 'note-1',
-      title: '稻鱼田边的半日慢游',
-      summary: '从海林村口走到稻鱼共生田，沿途有溪水、晒谷场和村民手作摊。',
-      topic: '稻鱼体验',
-      createdAt: '2026-07-06 18:20'
-    },
-    {
-      id: 'note-2',
-      title: '青田石纹手作很适合亲子',
-      summary: '老师带着看石纹、磨边和拓印，半小时就能带走一枚纪念章。',
-      topic: '青田石韵',
-      createdAt: '2026-07-05 15:12'
-    },
-    {
-      id: 'note-3',
-      title: '溪谷步道傍晚最舒服',
-      summary: '晚风从瓯江方向吹过来，步道旁的茶点摊刚好开张。',
-      topic: '溪谷漫步',
-      createdAt: '2026-07-03 19:03'
-    }
-  ],
-  favorites: expandItems(
-    [
-      {
-        title: '稻鱼田埂',
-        summary: '适合拍摄稻鱼共生田和田园晨雾',
-        targetUrl: '/pages/spot-detail/spot-detail?id=rice-view'
-      },
-      {
-        title: '村口会客点',
-        summary: '海林村游客集散和讲解集合点',
-        targetUrl: '/pages/spot-detail/spot-detail?id=ancient-tree'
-      },
-      {
-        title: '溪谷步道',
-        summary: '亲水慢行、茶点和露营活动常用线',
-        targetUrl: '/pages/spot-detail/spot-detail?id=creek-trail'
-      },
-      {
-        title: '青田石手作',
-        summary: '非遗研学和文创拓印体验',
-        targetUrl: '/pages/spot-detail/spot-detail?id=workshop'
-      }
-    ],
-    12,
-    'fav'
-  ),
-  likes: expandItems(
-    [
-      {
-        title: '稻鱼共生丰收视频',
-        summary: '村民收鱼、晒谷和田园讲解片段',
-        targetUrl: '/pages/live-list/live-list'
-      },
-      {
-        title: '侨乡老物件故事',
-        summary: '海林村侨乡记忆和家书展陈',
-        targetUrl: '/pages/spot-list/spot-list'
-      },
-      {
-        title: '瓯江边的早市',
-        summary: '共富集市里的农品、点心和手作',
-        targetUrl: '/pages/food/food'
-      },
-      {
-        title: '青田石纹拍照位',
-        summary: '适合游客打卡和跟拍的小景点',
-        targetUrl: '/pages/map/map'
-      }
-    ],
-    28,
-    'like'
-  )
+  notes: [],
+  favorites: [],
+  likes: []
 };
 
-const coupons = [
-  {
-    id: 'coupon-ricefish',
-    title: '稻鱼宴满减券',
-    amount: '30元',
-    desc: '满198元可用，适用于海林村稻鱼宴预约',
-    status: '可领取'
-  },
-  {
-    id: 'coupon-stone',
-    title: '青田石手作体验券',
-    amount: '8折',
-    desc: '适用于青田石拓印、香囊和钥匙扣体验',
-    status: '可领取'
-  },
-  {
-    id: 'coupon-route',
-    title: '讲解跟拍抵扣券',
-    amount: '20元',
-    desc: '村情馆、田埂和溪谷步道讲解均可抵扣',
-    status: '已领取'
-  }
-];
+const coupons = [];
 
 const pointTasks = [
   { id: 'profile', title: '完善个人资料', points: 10, desc: '填写昵称、联系方式和个人简介' },

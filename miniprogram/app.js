@@ -1,4 +1,4 @@
-const { getClientId } = require('./utils/userCenter');
+const { getClientId, migrateUserCenter } = require('./utils/userCenter');
 const { ensureSession } = require('./services/session');
 
 App({
@@ -9,6 +9,7 @@ App({
 
   onLaunch() {
     wx.setStorageSync('hailin_app_ready', true);
+    migrateUserCenter();
     getClientId();
     ensureSession().catch((error) => {
       console.warn('hailin session init failed', error);
