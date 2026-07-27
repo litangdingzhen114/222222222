@@ -7,6 +7,8 @@ const serviceConfig = require('../config/service');
 const backendServer = fs.readFileSync(path.join(root, 'backend/server.js'), 'utf8');
 const adminApi = fs.readFileSync(path.join(root, 'backend/admin-src/src/api.ts'), 'utf8');
 const contentService = fs.readFileSync(path.join(root, 'miniprogram/services/content.js'), 'utf8');
+const appSource = fs.readFileSync(path.join(root, 'miniprogram/app.js'), 'utf8');
+const sessionService = fs.readFileSync(path.join(root, 'miniprogram/services/session.js'), 'utf8');
 
 const publicContract = [
   ['home', 'GET'],
@@ -42,6 +44,9 @@ publicContract.forEach(([key, method]) => {
 assert(contentService.includes('withContentFallback'), 'content service should prefer v1 and fall back safely');
 assert(contentService.includes('adaptMapPoints'), 'content service should adapt v1 map points to page data');
 assert(contentService.includes('/api/v1/cameras/${cameraId}/play-url'), 'content service should request dynamic camera play urls');
+assert(appSource.includes('ensureSession'), 'app launch should initialize user session');
+assert(sessionService.includes('/api/v1/auth/wechat-login'), 'session service should call v1 wechat login');
+assert(!sessionService.includes('session_key'), 'session service must not handle wechat session_key on the client');
 
 [
   ['GET', '/api/admin/session'],

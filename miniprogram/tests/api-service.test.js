@@ -8,14 +8,14 @@ function loadApi(wxMock) {
   return require('../services/api');
 }
 
-function createWxMock(platform, storageValue) {
+function createWxMock(platform, storageValue, tokenValue = '') {
   let lastRequest = null;
   return {
     getSystemInfoSync() {
       return { platform };
     },
     getStorageSync(key) {
-      assert.strictEqual(key, 'hailin-api-base-url');
+      if (key === 'hailin-access-token') return tokenValue;
       return storageValue || '';
     },
     request(options) {
@@ -41,6 +41,12 @@ function createWxMock(platform, storageValue) {
   assert.strictEqual(api.mediaUrl('/media/hailin-live.mp4'), 'http://127.0.0.1:8787/media/hailin-live.mp4');
   assert.deepStrictEqual(await api.request('/api/check'), { ok: true });
   assert.strictEqual(devWx.lastRequest().url, 'http://127.0.0.1:8787/api/check');
+  assert.strictEqual(devWx.lastRequest().header.Authorization, undefined);
+
+  const tokenWx = createWxMock('devtools', '', 'access-token-for-test');
+  api = loadApi(tokenWx);
+  assert.deepStrictEqual(await api.request('/api/secure'), { ok: true });
+  assert.strictEqual(tokenWx.lastRequest().header.Authorization, 'Bearer access-token-for-test');
 
   const overrideWx = createWxMock('devtools', 'http://192.168.1.8:8787');
   api = loadApi(overrideWx);

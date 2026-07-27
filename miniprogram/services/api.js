@@ -1,6 +1,9 @@
 const serviceConfig = require('../config/service');
 
 const API_BASE_OVERRIDE_KEY = 'hailin-api-base-url';
+const ACCESS_TOKEN_KEY = 'hailin-access-token';
+const REFRESH_TOKEN_KEY = 'hailin-refresh-token';
+const USER_PROFILE_KEY = 'hailin-user-profile';
 
 function safeWxCall(methodName, fallback) {
   try {
@@ -26,6 +29,37 @@ function storageApiBaseUrl() {
     return String(wx.getStorageSync(API_BASE_OVERRIDE_KEY) || '').trim();
   } catch (error) {
     return '';
+  }
+}
+
+function storageGet(key) {
+  try {
+    if (typeof wx === 'undefined' || !wx || typeof wx.getStorageSync !== 'function') {
+      return '';
+    }
+    return wx.getStorageSync(key) || '';
+  } catch (error) {
+    return '';
+  }
+}
+
+function storageSet(key, value) {
+  try {
+    if (typeof wx !== 'undefined' && wx && typeof wx.setStorageSync === 'function') {
+      wx.setStorageSync(key, value);
+    }
+  } catch (error) {
+    // Storage failures should not break public content fallback.
+  }
+}
+
+function storageRemove(key) {
+  try {
+    if (typeof wx !== 'undefined' && wx && typeof wx.removeStorageSync === 'function') {
+      wx.removeStorageSync(key);
+    }
+  } catch (error) {
+    // Ignore storage cleanup failures in devtools mocks.
   }
 }
 
@@ -67,6 +101,12 @@ function request(endpoint, options = {}) {
   const method = options.method || 'GET';
   const data = options.data || {};
   const url = joinUrl(resolveApiBaseUrl(), endpoint);
+  const token = getAccessToken();
+  const header = {
+    'content-type': 'application/json',
+    ...(options.header || {})
+  };
+  if (token) header.Authorization = `Bearer ${token}`;
 
   return new Promise((resolve, reject) => {
     wx.request({
@@ -74,9 +114,7 @@ function request(endpoint, options = {}) {
       method,
       data,
       timeout: serviceConfig.requestTimeout,
-      header: {
-        'content-type': 'application/json'
-      },
+      header,
       success(result) {
         if (result.statusCode >= 200 && result.statusCode < 300) {
           resolve(normalizePayload(result));
@@ -91,6 +129,27 @@ function request(endpoint, options = {}) {
   });
 }
 
+function getAccessToken() {
+  return String(storageGet(ACCESS_TOKEN_KEY) || '').trim();
+}
+
+function getRefreshToken() {
+  return String(storageGet(REFRESH_TOKEN_KEY) || '').trim();
+}
+
+function saveAuthSession(session) {
+  if (!session) return;
+  if (session.accessToken) storageSet(ACCESS_TOKEN_KEY, session.accessToken);
+  if (session.refreshToken) storageSet(REFRESH_TOKEN_KEY, session.refreshToken);
+  if (session.user) storageSet(USER_PROFILE_KEY, session.user);
+}
+
+function clearAuthSession() {
+  storageRemove(ACCESS_TOKEN_KEY);
+  storageRemove(REFRESH_TOKEN_KEY);
+  storageRemove(USER_PROFILE_KEY);
+}
+
 function serviceModeText() {
   const baseUrl = resolveApiBaseUrl();
   if (!baseUrl) return '本地内容兜底';
@@ -102,6 +161,10 @@ module.exports = {
   resolveApiBaseUrl,
   mediaUrl,
   request,
+  getAccessToken,
+  getRefreshToken,
+  saveAuthSession,
+  clearAuthSession,
   serviceModeText,
   serviceConfig
 };
