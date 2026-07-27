@@ -6,6 +6,6 @@ storage/logs/
 *.log
 dist/
 coverage/
-uploads/
+/uploads/
 *.pem
 *.key
