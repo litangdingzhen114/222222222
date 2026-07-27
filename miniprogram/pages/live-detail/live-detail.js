@@ -1,21 +1,8 @@
 const { loadLives, loadLivePlayUrl } = require('../../services/content');
-const { mediaUrl } = require('../../services/api');
 const recommend = require('../../data/recommend');
 const { findById, quickToast } = require('../../utils/mock');
 
-const PACKAGE_LIVE_VIDEO = '/assets/videos/hailin-live.mp4';
-const PACKAGE_LIVE_VIDEO_FALLBACK = '../../assets/videos/hailin-live.mp4';
-const PACKAGE_LIVE_VIDEO_CANDIDATES = [
-  '/assets/videos/hailin-live.mp4',
-  'assets/videos/hailin-live.mp4',
-  '../../assets/videos/hailin-live.mp4'
-];
-const USER_LIVE_VIDEO = typeof wx !== 'undefined' && wx && wx.env && wx.env.USER_DATA_PATH ? `${wx.env.USER_DATA_PATH}/hailin-live.mp4` : '';
-const VIDEO_SOURCE_CANDIDATES = [
-  USER_LIVE_VIDEO,
-  PACKAGE_LIVE_VIDEO,
-  PACKAGE_LIVE_VIDEO_FALLBACK
-].filter(Boolean);
+const VIDEO_SOURCE_CANDIDATES = [];
 function uniqueVideoSources(sources) {
   return sources
     .map((source) => String(source || '').trim())
@@ -74,11 +61,7 @@ Page({
   prepareVideo(live) {
     const remoteSource = preferredLiveVideoUrl(live);
     this.videoSourceCandidates = uniqueVideoSources([
-      remoteSource,
-      USER_LIVE_VIDEO,
-      PACKAGE_LIVE_VIDEO,
-      PACKAGE_LIVE_VIDEO_FALLBACK,
-      mediaUrl('/media/hailin-live.mp4')
+      remoteSource
     ]);
 
     if (remoteSource) {
@@ -86,7 +69,7 @@ Page({
       return;
     }
 
-    this.prepareLocalVideo();
+    this.setData({ videoUrl: '' });
   },
 
   refreshPlayUrl(live) {
@@ -102,47 +85,6 @@ Page({
       .catch((error) => {
         console.warn('load live play url failed', error);
       });
-  },
-
-  prepareLocalVideo() {
-    const fs = wx.getFileSystemManager();
-    if (!USER_LIVE_VIDEO) {
-      this.useVideoSource(PACKAGE_LIVE_VIDEO);
-      return;
-    }
-
-    fs.stat({
-      filePath: USER_LIVE_VIDEO,
-      success: (res) => {
-        if (res.stats && res.stats.size > 1024) {
-          this.useVideoSource(USER_LIVE_VIDEO);
-          return;
-        }
-        this.copyPackageVideo(fs);
-      },
-      fail: () => {
-        this.copyPackageVideo(fs);
-      }
-    });
-  },
-
-  copyPackageVideo(fs) {
-    this.readPackageVideo(fs, 0, (data) => {
-      fs.writeFile({
-        filePath: USER_LIVE_VIDEO,
-        data,
-        success: () => {
-          this.useVideoSource(USER_LIVE_VIDEO);
-        },
-        fail: (error) => {
-          console.warn('write live video failed', error);
-          this.useVideoSource(PACKAGE_LIVE_VIDEO);
-        }
-      });
-    }, (error) => {
-      console.warn('read package live video failed', error);
-      this.useVideoSource(PACKAGE_LIVE_VIDEO);
-    });
   },
 
   useVideoSource(source) {
@@ -165,24 +107,6 @@ Page({
     this.videoSourceIndex = candidates.length;
     this.setData({ videoUrl: '' });
     quickToast('视频源暂不可用，已切换为封面预览');
-  },
-
-  readPackageVideo(fs, index, onSuccess, onFail, lastError) {
-    const filePath = PACKAGE_LIVE_VIDEO_CANDIDATES[index];
-    if (!filePath) {
-      onFail(lastError);
-      return;
-    }
-
-    fs.readFile({
-      filePath,
-      success: (res) => {
-        onSuccess(res.data);
-      },
-      fail: (error) => {
-        this.readPackageVideo(fs, index + 1, onSuccess, onFail, error);
-      }
-    });
   },
 
   onFullscreen() {

@@ -1,7 +1,20 @@
 {
   "description": "一部手机游海林村 - 原生微信小程序",
   "packOptions": {
-    "ignore": [],
+    "ignore": [
+      {
+        "type": "folder",
+        "value": "assets/videos"
+      },
+      {
+        "type": "folder",
+        "value": "assets/scenes"
+      },
+      {
+        "type": "folder",
+        "value": "tests"
+      }
+    ],
     "include": []
   },
   "setting": {
@@ -13,7 +26,7 @@
     "newFeature": true,
     "compileWorklet": false,
     "uglifyFileName": false,
-    "uploadWithSourceMap": true,
+    "uploadWithSourceMap": false,
     "packNpmManually": false,
     "packNpmRelationList": [],
     "minifyWXSS": true,
@@ -31,7 +44,7 @@
   },
   "compileType": "miniprogram",
   "libVersion": "3.15.1",
-  "appid": "touristappid",
+  "appid": "wx52a65b53d37711ff",
   "projectname": "一部手机游海林村",
   "miniprogramRoot": "miniprogram/",
   "condition": {
