@@ -77,7 +77,10 @@ async function main() {
   assert(homePage.includes('json-editor'), 'admin dashboard should render home content editor');
   assert(livePage.includes('saveLiveContent'), 'admin dashboard should save live stream points');
   assert(livePage.includes('Switch'), 'admin dashboard should toggle live stream points');
-  assert(resourcePage.includes('saveResourceContent'), 'admin dashboard should save resource content');
+  assert(resourcePage.includes('createAdminResource'), 'admin dashboard should create resource content through v1 admin API');
+  assert(resourcePage.includes('updateAdminResource'), 'admin dashboard should update resource content through v1 admin API');
+  assert(resourcePage.includes('publishAdminResource'), 'admin dashboard should publish resource content through v1 admin API');
+  assert(resourcePage.includes('Drawer'), 'admin dashboard should edit resources in a form drawer');
   assert(resourcePage.includes('map-points'), 'admin dashboard should manage map points');
   assert(ordersPage.includes('updateOrderFulfillment'), 'admin dashboard should update order fulfillment');
   assert(ordersPage.includes('trackingNo'), 'admin dashboard should handle shipment tracking numbers');

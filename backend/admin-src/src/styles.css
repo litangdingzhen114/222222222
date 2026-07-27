@@ -301,6 +301,22 @@ body {
   margin-bottom: 14px;
 }
 
+.resource-cover {
+  width: 64px;
+  height: 48px;
+  flex: 0 0 64px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.resource-cover-empty {
+  display: grid;
+  place-items: center;
+  border: 1px solid #dbe7e5;
+  color: #7c918d;
+  background: #f4faf8;
+}
+
 .resource-json-editor {
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
   font-size: 12px;
