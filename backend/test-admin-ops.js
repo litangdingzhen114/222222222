@@ -291,7 +291,7 @@ async function main() {
       notice: 'Admin edited home notice',
       weather: 'Admin edited weather',
       banners: homeContent.body.data.content.banners.map((item, index) => (
-        index === 0 ? { ...item, title: 'Admin edited banner', imageUrl: '' } : item
+        index === 0 ? { ...item, title: 'Admin edited banner', imageUrl: '/assets/scenes/village-gate.png' } : item
       ))
     };
     const savedHome = await requestJson(`http://${HOST}:${PORT}/api/admin/home-content`, {
@@ -302,6 +302,7 @@ async function main() {
     assert.strictEqual(savedHome.status, 200);
     assert.strictEqual(savedHome.body.data.content.notice, 'Admin edited home notice');
     assert(savedHome.body.data.content.banners[0].imageUrl, 'home save should restore missing banner image');
+    assert.strictEqual(savedHome.body.data.content.banners[0].imageUrl, '/assets/photos/ai-village-gate.jpg');
     assert.strictEqual(savedHome.body.data.meta.source, 'storage');
 
     const publicHome = await requestJson(`http://${HOST}:${PORT}/api/hailin/home`);
@@ -310,6 +311,7 @@ async function main() {
     assert.strictEqual(publicHome.body.data.weather, 'Admin edited weather');
     assert.strictEqual(publicHome.body.data.banners[0].title, 'Admin edited banner');
     assert(publicHome.body.data.banners[0].imageUrl, 'public home should always expose banner image');
+    assert(!JSON.stringify(publicHome.body.data).includes('/assets/scenes/'), 'public home should not expose old scene placeholder images');
     assert(publicHome.body.data.itineraries.length >= 3);
     assert(publicHome.body.data.serviceCards.length >= 4);
 

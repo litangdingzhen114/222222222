@@ -161,7 +161,7 @@ module.exports = {
 
   corridor: [
     { id: 'gate', title: '村口会客点', imageClass: 'ph-oujiang', icon: '瓯', imageUrl: '/assets/photos/ai-village-gate.jpg' },
-    { id: 'museum', title: '海林村情馆', imageClass: 'ph-village', icon: '馆', imageUrl: '/assets/scenes/village-gate.png' },
+    { id: 'museum', title: '海林村情馆', imageClass: 'ph-village', icon: '馆', imageUrl: '/assets/photos/ai-village-gate.jpg' },
     { id: 'ricefish', title: '稻鱼田埂', imageClass: 'ph-ricefish', icon: '鱼', imageUrl: '/assets/photos/ricefish-paddy.jpg' },
     { id: 'creek', title: '溪谷步道', imageClass: 'ph-creek', icon: '溪', imageUrl: '/assets/photos/qingtian-tashan.jpg' },
     { id: 'yard', title: '侨乡小院', imageClass: 'ph-overseas', icon: '侨', imageUrl: '/assets/photos/ai-overseas-cafe.jpg' },
@@ -176,6 +176,6 @@ module.exports = {
     { id: 'afternoon', title: '稻鱼田里的午后研学课，孩子能带走观察卡', user: '稻香日记', imageClass: 'ph-rice', icon: '田', imageUrl: '/assets/photos/ricefish-terrace.jpg' },
     { id: 'tea', title: '溪边茶点和青田小食体验，适合行程最后一站', user: '溪边茶客', imageClass: 'ph-creek', icon: '茶', imageUrl: '/assets/photos/qingtian-tashan.jpg' },
     { id: 'stone-class', title: '青田石纹拓印课：半小时完成一份纪念小物', user: '手作老师', imageClass: 'ph-stone', icon: '拓', imageUrl: '/assets/photos/ai-stone-souvenir.jpg' },
-    { id: 'service', title: '到村先看服务卡：停车、公厕、讲解和慢直播都能查', user: '海林村游客中心', imageClass: 'ph-village', icon: '服', imageUrl: '/assets/scenes/village-gate.png' }
+    { id: 'service', title: '到村先看服务卡：停车、公厕、讲解和慢直播都能查', user: '海林村游客中心', imageClass: 'ph-village', icon: '服', imageUrl: '/assets/photos/ai-village-gate.jpg' }
   ]
 };

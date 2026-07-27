@@ -1,7 +1,7 @@
 <view class="food-card card" bindtap="handleTap">
   <view class="food-cover image-ph {{item.imageClass}}">
     <image wx:if="{{item.imageUrl}}" class="food-cover-img" src="{{item.imageUrl}}" mode="aspectFill"></image>
-    <text class="food-cover-icon">{{item.icon}}</text>
+    <text wx:if="{{!item.imageUrl}}" class="food-cover-icon">{{item.icon}}</text>
   </view>
   <view class="food-main">
     <view class="food-head">

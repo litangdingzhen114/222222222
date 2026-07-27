@@ -60,7 +60,7 @@ function firstImage(item) {
 
 const defaultImages = {
   banner: '/assets/photos/ai-village-gate.jpg',
-  mapPoint: '/assets/scenes/village-gate.png',
+  mapPoint: '/assets/photos/ai-village-gate.jpg',
   food: '/assets/photos/ricefish-drying.jpg',
   spot: '/assets/photos/ai-village-gate.jpg',
   route: '/assets/photos/qingtian-city.jpg',
@@ -68,10 +68,21 @@ const defaultImages = {
   live: '/assets/photos/ai-village-gate.jpg'
 };
 
+const legacySceneImages = {
+  '/assets/scenes/village-gate.png': '/assets/photos/ai-village-gate.jpg',
+  '/assets/scenes/ricefish-field.png': '/assets/photos/ricefish-paddy.jpg',
+  '/assets/scenes/creek-trail.png': '/assets/photos/qingtian-tashan.jpg',
+  '/assets/scenes/tofu-workshop.png': '/assets/photos/ai-tofu-workshop.jpg',
+  '/assets/scenes/overseas-yard.png': '/assets/photos/ai-overseas-cafe.jpg',
+  '/assets/scenes/overseas-cafe.png': '/assets/photos/ai-overseas-cafe.jpg',
+  '/assets/scenes/ricefish-banquet.png': '/assets/photos/ricefish-drying.jpg',
+  '/assets/scenes/creek-tea.png': '/assets/photos/qingtian-tashan.jpg'
+};
+
 function cleanImage(value) {
   const image = String(value || '').trim();
   if (!image || image === 'null' || image === 'undefined') return '';
-  return image;
+  return legacySceneImages[image] || image;
 }
 
 function fallbackItemAt(fallbackValue, index) {

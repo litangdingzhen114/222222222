@@ -8,7 +8,7 @@
     <view wx:for="{{routes}}" wx:key="id" class="route-card card" data-id="{{item.id}}" bindtap="onRouteTap">
       <view class="route-cover {{item.imageClass}}">
         <image wx:if="{{item.imageUrl}}" class="route-cover-img" src="{{item.imageUrl}}" mode="aspectFill"></image>
-        <text>线</text>
+        <text wx:if="{{!item.imageUrl}}">线</text>
       </view>
       <view class="route-main">
         <view class="route-name">{{item.name}}</view>

@@ -42,7 +42,7 @@
     <view wx:for="{{nearby}}" wx:key="id" class="nearby-card card">
       <view class="nearby-img {{item.imageClass}}">
         <image wx:if="{{item.imageUrl}}" class="nearby-photo" src="{{item.imageUrl}}" mode="aspectFill"></image>
-        <text>{{item.icon}}</text>
+        <text wx:if="{{!item.imageUrl}}">{{item.icon}}</text>
       </view>
       <view class="nearby-title">{{item.title}}</view>
     </view>

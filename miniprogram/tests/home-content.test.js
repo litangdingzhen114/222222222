@@ -58,6 +58,10 @@ const homeJs = fs.readFileSync(path.join(root, 'miniprogram/pages/home/home.js')
 const homeWxml = fs.readFileSync(path.join(root, 'miniprogram/pages/home/home.wxml'), 'utf8');
 const homeWxss = fs.readFileSync(path.join(root, 'miniprogram/pages/home/home.wxss'), 'utf8');
 const backendServer = fs.readFileSync(path.join(root, 'backend/server.js'), 'utf8');
+const homeDataSnapshot = JSON.stringify({
+  banners,
+  recommend
+});
 
 assert(homeJs.includes('itineraries'), 'home page should load itinerary data');
 assert(homeJs.includes('serviceCards'), 'home page should load service card data');
@@ -68,6 +72,7 @@ assert(homeWxss.includes('itinerary-card'), 'home page should style itinerary ca
 assert(homeWxss.includes('service-card'), 'home page should style service cards');
 assert(backendServer.includes('itineraries: recommend.itineraries'), 'backend home defaults should include itineraries');
 assert(backendServer.includes('serviceCards: recommend.serviceCards'), 'backend home defaults should include service cards');
+assert(!homeDataSnapshot.includes('/assets/scenes/'), 'home cards should use photo assets instead of old scene placeholders');
 
 function loadContentServiceWithWx(wxMock) {
   const apiPath = require.resolve('../services/api');
@@ -102,14 +107,14 @@ async function assertLegacyFallbackKeepsImages() {
                 id: 'legacy-banner',
                 title: '旧接口 banner',
                 subtitle: '旧接口回退时也必须补图',
-                imageUrl: ''
+                imageUrl: '/assets/scenes/village-gate.png'
               }
             ],
             scenicSpots: [
               {
                 id: 'legacy-spot',
                 title: '旧接口景点',
-                imageUrl: '',
+                imageUrl: '/assets/scenes/ricefish-field.png',
                 images: []
               }
             ],
@@ -118,7 +123,7 @@ async function assertLegacyFallbackKeepsImages() {
                 id: 'legacy-route',
                 name: '旧接口路线',
                 duration: '约 2 小时',
-                imageUrl: ''
+                imageUrl: '/assets/scenes/creek-trail.png'
               }
             ],
             products: [
@@ -126,7 +131,7 @@ async function assertLegacyFallbackKeepsImages() {
                 id: 'legacy-product',
                 name: '旧接口商品',
                 price: 1200,
-                imageUrl: ''
+                imageUrl: '/assets/scenes/village-gate.png'
               }
             ],
             notice: '旧接口公告'
@@ -144,6 +149,7 @@ async function assertLegacyFallbackKeepsImages() {
     assert(calls.some((url) => url.includes('/api/v1/home')), 'home should try v1 API first');
     assert(calls.some((url) => url.includes('/api/hailin/home')), 'home should fall back to legacy API');
     assert.strictEqual(home.banners[0].imageUrl, '/assets/photos/ai-village-gate.jpg');
+    assert(!JSON.stringify(home).includes('/assets/scenes/'), 'legacy scene placeholders should be converted to photo assets');
     assert(home.hotRecommends[0].imageUrl, 'legacy scenic recommendations should retain an image');
     assert(home.itineraries[0].imageUrl, 'legacy routes should retain an image');
     assert(home.products[0].imageUrl, 'legacy products should retain an image');

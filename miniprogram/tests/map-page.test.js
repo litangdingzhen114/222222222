@@ -50,6 +50,7 @@ mapPoints.forEach((point) => {
   assert(point.tips, `${point.title} should expose travel tips`);
   assert(point.actionText, `${point.title} should expose primary action text`);
   assert(point.imageUrl, `${point.title} should expose display image`);
+  assert(!point.imageUrl.includes('/assets/scenes/'), `${point.title} should use a photo asset instead of an old scene placeholder`);
 
   if (point.refType === 'spot') {
     assert(spotIds.has(point.refId), `${point.title} referenced spot should exist`);

@@ -891,18 +891,33 @@ function sanitizeJsonValue(value, depth = 0) {
 
 const MEDIA_FIELDS = ['imageUrl', 'coverUrl', 'coverImage', 'iconPath'];
 const MEDIA_LIST_FIELDS = ['images', 'imageUrls'];
+const LEGACY_SCENE_IMAGES = {
+  '/assets/scenes/village-gate.png': '/assets/photos/ai-village-gate.jpg',
+  '/assets/scenes/ricefish-field.png': '/assets/photos/ricefish-paddy.jpg',
+  '/assets/scenes/creek-trail.png': '/assets/photos/qingtian-tashan.jpg',
+  '/assets/scenes/tofu-workshop.png': '/assets/photos/ai-tofu-workshop.jpg',
+  '/assets/scenes/overseas-yard.png': '/assets/photos/ai-overseas-cafe.jpg',
+  '/assets/scenes/overseas-cafe.png': '/assets/photos/ai-overseas-cafe.jpg',
+  '/assets/scenes/ricefish-banquet.png': '/assets/photos/ricefish-drying.jpg',
+  '/assets/scenes/creek-tea.png': '/assets/photos/qingtian-tashan.jpg'
+};
 
 function hasTextValue(value) {
   return typeof value === 'string' && value.trim().length > 0;
 }
 
+function normalizeMediaValue(value) {
+  const media = cleanText(value, 500);
+  return LEGACY_SCENE_IMAGES[media] || media;
+}
+
 function firstMediaValue(item) {
   if (!item || typeof item !== 'object') return '';
   for (const field of MEDIA_FIELDS) {
-    if (hasTextValue(item[field])) return cleanText(item[field], 500);
+    if (hasTextValue(item[field])) return normalizeMediaValue(item[field]);
   }
   for (const field of MEDIA_LIST_FIELDS) {
-    if (Array.isArray(item[field]) && hasTextValue(item[field][0])) return cleanText(item[field][0], 500);
+    if (Array.isArray(item[field]) && hasTextValue(item[field][0])) return normalizeMediaValue(item[field][0]);
   }
   return '';
 }
@@ -917,14 +932,18 @@ function fillMediaFields(item, fallback) {
   const result = { ...item };
 
   for (const field of MEDIA_FIELDS) {
-    if (!hasTextValue(result[field]) && hasTextValue(fallbackItem[field])) {
-      result[field] = cleanText(fallbackItem[field], 500);
+    if (hasTextValue(result[field])) {
+      result[field] = normalizeMediaValue(result[field]);
+    } else if (hasTextValue(fallbackItem[field])) {
+      result[field] = normalizeMediaValue(fallbackItem[field]);
     }
   }
 
   for (const field of MEDIA_LIST_FIELDS) {
-    if ((!Array.isArray(result[field]) || !result[field].length) && Array.isArray(fallbackItem[field]) && fallbackItem[field].length) {
-      result[field] = fallbackItem[field].filter(Boolean).map((value) => cleanText(value, 500)).filter(Boolean);
+    if (Array.isArray(result[field]) && result[field].length) {
+      result[field] = result[field].filter(Boolean).map(normalizeMediaValue).filter(Boolean);
+    } else if (Array.isArray(fallbackItem[field]) && fallbackItem[field].length) {
+      result[field] = fallbackItem[field].filter(Boolean).map(normalizeMediaValue).filter(Boolean);
     }
   }
 
@@ -1409,7 +1428,7 @@ function normalizedAdminResourceItem(resourceKey, item, index = 0) {
       ...base,
       name: cleanText(item.name || item.title, 120) || '海林点位',
       type: mapPointTypeValue(item.type),
-      imageUrl: image || '/assets/scenes/village-gate.png',
+      imageUrl: image || '/assets/photos/ai-village-gate.jpg',
       longitude: Number(item.longitude || 120.2184),
       latitude: Number(item.latitude || 28.2136),
       description: cleanText(item.description || item.desc || item.tips, 800),

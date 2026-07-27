@@ -3,7 +3,7 @@
     <swiper-item wx:for="{{heroImages}}" wx:key="key">
       <view class="spot-hero {{item.imageClass}}">
         <image wx:if="{{item.url}}" class="spot-hero-img" src="{{item.url}}" mode="aspectFill"></image>
-        <text class="spot-hero-word">{{spot.icon}}</text>
+        <text wx:if="{{!item.url}}" class="spot-hero-word">{{spot.icon}}</text>
       </view>
     </swiper-item>
   </swiper>
@@ -75,7 +75,7 @@
       <view wx:for="{{nearby}}" wx:key="id" class="nearby-card card" data-id="{{item.id}}" bindtap="onNearbyTap">
         <view class="nearby-img {{item.images[0]}}">
           <image wx:if="{{item.coverUrl}}" class="nearby-photo" src="{{item.coverUrl}}" mode="aspectFill"></image>
-          <text>{{item.icon}}</text>
+          <text wx:if="{{!item.coverUrl}}">{{item.icon}}</text>
         </view>
         <view class="nearby-title">{{item.name}}</view>
       </view>
