@@ -28,9 +28,13 @@ export class WechatMiniProgramAdapter {
     const appId = this.config.get<string>('WECHAT_APP_ID', '');
     const appSecret = this.config.get<string>('WECHAT_APP_SECRET', '');
     const mockEnabled = this.config.get<boolean>('WECHAT_MOCK_ENABLED', false);
+    const fallbackEnabled =
+      mockEnabled &&
+      (this.config.get<string>('NODE_ENV') !== 'production' ||
+        this.config.get<boolean>('ENABLE_PRODUCTION_FALLBACKS', false));
 
     if (!appId || !appSecret) {
-      if (mockEnabled && this.config.get<string>('NODE_ENV') !== 'production') {
+      if (fallbackEnabled) {
         const fingerprint = sha256(code).slice(0, 24);
         return {
           openid: `dev_openid_${fingerprint}`,

@@ -9,6 +9,7 @@ export const envValidationSchema = Joi.object({
   TRUST_PROXY: Joi.boolean().truthy('true').falsy('false').default(false),
   SWAGGER_ENABLED: Joi.boolean().truthy('true').falsy('false').default(true),
   LOG_LEVEL: Joi.string().default('info'),
+  ENABLE_PRODUCTION_FALLBACKS: Joi.boolean().truthy('true').falsy('false').default(false),
   DATABASE_URL: Joi.string().required(),
   REDIS_URL: Joi.string().default('redis://127.0.0.1:6379/0'),
   REDIS_REQUIRED: Joi.boolean().truthy('true').falsy('false').default(false),

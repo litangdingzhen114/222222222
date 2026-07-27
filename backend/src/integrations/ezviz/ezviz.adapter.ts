@@ -33,8 +33,12 @@ export class EzvizAdapter {
     const appKey = this.config.get<string>('EZVIZ_APP_KEY', '');
     const appSecret = this.config.get<string>('EZVIZ_APP_SECRET', '');
     const mockEnabled = this.config.get<boolean>('EZVIZ_MOCK_ENABLED', false);
+    const fallbackEnabled =
+      mockEnabled &&
+      (this.config.get<string>('NODE_ENV') !== 'production' ||
+        this.config.get<boolean>('ENABLE_PRODUCTION_FALLBACKS', false));
     if (!appKey || !appSecret) {
-      if (mockEnabled && this.config.get<string>('NODE_ENV') !== 'production') {
+      if (fallbackEnabled) {
         return {
           playUrl: `/dev-assets/live/${camera.deviceSerial}-${camera.channelNo}.m3u8`,
           expireAt: new Date(Date.now() + 10 * 60 * 1000),
