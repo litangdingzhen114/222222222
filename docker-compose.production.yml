@@ -64,7 +64,7 @@ services:
       NPM_CONFIG_REGISTRY: ${NPM_CONFIG_REGISTRY:-https://registry.npmjs.org/}
     volumes:
       - ./:/work
-    command: ["sh", "-c", "npm ci && npm run prisma:deploy && npm run prisma:seed"]
+    command: ["sh", "-c", "npm ci --include=dev && npm run prisma:deploy && npm run prisma:seed"]
     depends_on:
       postgres:
         condition: service_healthy
