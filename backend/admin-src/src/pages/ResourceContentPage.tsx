@@ -375,9 +375,16 @@ function renderField(field: ResourceField) {
     return <Switch />;
   }
   if (field.kind === 'select') {
-    return <Select allowClear options={field.options || []} />;
+    return <Select allowClear showSearch optionFilterProp="label" options={field.options || []} placeholder={field.placeholder} />;
   }
   return <Input maxLength={260} showCount placeholder={field.placeholder} />;
+}
+
+function productCategoryOptions(page?: ApiPage<ResourceContentItem>) {
+  return (page?.list || []).map((item) => ({
+    label: textValue(item.name, String(item.id)),
+    value: String(item.id)
+  }));
 }
 
 export function ResourceContentPage() {
@@ -393,6 +400,11 @@ export function ResourceContentPage() {
   const query = useQuery({
     queryKey: ['admin-resource', config.adminResource, page, keyword],
     queryFn: () => listAdminResource<ResourceContentItem>(config.adminResource, { page, pageSize: 10, keyword })
+  });
+  const categoryQuery = useQuery({
+    queryKey: ['admin-resource', 'product-categories', 'all'],
+    queryFn: () => listAdminResource<ResourceContentItem>('product-categories', { page: 1, pageSize: 100 }),
+    enabled: activeKey === 'products'
   });
 
   useEffect(() => {
@@ -531,6 +543,17 @@ export function ResourceContentPage() {
       )
     }
   ];
+  const fields = config.fields.map((field) => {
+    if (activeKey === 'products' && field.name === 'categoryId') {
+      return {
+        ...field,
+        kind: 'select' as const,
+        options: productCategoryOptions(categoryQuery.data),
+        placeholder: categoryQuery.isLoading ? '正在加载分类' : '请选择商品分类'
+      };
+    }
+    return field;
+  });
 
   return (
     <Space direction="vertical" size={16} className="page-stack">
@@ -591,7 +614,7 @@ export function ResourceContentPage() {
       >
         <Form form={form} layout="vertical">
           <Row gutter={16}>
-            {config.fields.map((field) => (
+            {fields.map((field) => (
               <Col key={field.name} xs={24} md={field.kind === 'textarea' || field.kind === 'tags' ? 24 : 12}>
                 <Form.Item
                   label={field.label}

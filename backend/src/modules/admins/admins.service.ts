@@ -405,13 +405,50 @@ export class AdminsService {
     const config = this.resource(resource);
     this.assertAdmin(principal, config.area);
     const { skip, take, page, pageSize } = getPagination(query);
-    const where: Record<string, unknown> = {};
-    if (config.softDelete) where.deletedAt = null;
+    const where = this.resourceWhere(resource, config, query);
     const [list, total] = await Promise.all([
       config.delegate.findMany({ where, skip, take, orderBy: { createdAt: 'desc' } }),
       config.delegate.count({ where }),
     ]);
     return toPageResult(list, total, page, pageSize);
+  }
+
+  private resourceWhere(
+    resource: string,
+    config: ResourceConfig,
+    query: AdminResourceQueryDto,
+  ): Record<string, unknown> {
+    const where: Record<string, unknown> = {};
+    const keyword = this.queryKeyword(query);
+    const searchableFields = this.resourceSearchFields(resource);
+    if (config.softDelete) where.deletedAt = null;
+    if (query.status) where.status = query.status;
+    if (keyword && searchableFields.length) {
+      where.OR = searchableFields.map((field) => ({
+        [field]: { contains: keyword, mode: 'insensitive' },
+      }));
+    }
+    return where;
+  }
+
+  private resourceSearchFields(resource: string) {
+    const map: Record<string, string[]> = {
+      banners: ['title'],
+      shortcuts: ['title', 'linkValue'],
+      articles: ['title', 'summary', 'content'],
+      'scenic-spots': ['name', 'subtitle', 'summary', 'content', 'address'],
+      'travel-routes': ['name', 'summary', 'content', 'suitableFor'],
+      'map-points': ['name', 'address', 'description'],
+      homestays: ['name', 'description', 'address'],
+      foods: ['name', 'description', 'address'],
+      farms: ['name', 'description', 'address'],
+      'reservation-items': ['title', 'bookingNotice', 'refundRule'],
+      activities: ['title', 'summary', 'content', 'location'],
+      cameras: ['name', 'deviceSerial', 'location', 'description'],
+      'product-categories': ['name'],
+      products: ['name', 'subtitle', 'detail', 'specification'],
+    };
+    return map[resource] || [];
   }
 
   private async listOrders(query: AdminResourceQueryDto) {
