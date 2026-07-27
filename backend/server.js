@@ -208,7 +208,7 @@ function clientIp(req) {
 function corsHeaders(req) {
   const origin = req.headers.origin;
   const headers = {
-    'Access-Control-Allow-Methods': 'GET,POST,PUT,PATCH,OPTIONS',
+    'Access-Control-Allow-Methods': 'GET,POST,PUT,PATCH,DELETE,OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Admin-Token',
     'Access-Control-Max-Age': '86400'
   };
@@ -990,6 +990,12 @@ function defaultLiveItems() {
 function sanitizeLiveItem(input, fallback = {}, index = 0) {
   const raw = input && typeof input === 'object' ? input : {};
   const id = cleanText(raw.id, 80) || cleanText(fallback.id, 80) || `live-${index + 1}`;
+  const longitude = raw.longitude === undefined || raw.longitude === null || raw.longitude === ''
+    ? fallback.longitude
+    : Number(raw.longitude);
+  const latitude = raw.latitude === undefined || raw.latitude === null || raw.latitude === ''
+    ? fallback.latitude
+    : Number(raw.latitude);
   return {
     id,
     title: cleanText(raw.title, 100) || cleanText(fallback.title, 100) || '海林慢直播',
@@ -1002,7 +1008,15 @@ function sanitizeLiveItem(input, fallback = {}, index = 0) {
     hlsUrl: cleanText(raw.hlsUrl, 500),
     enabled: raw.enabled !== false,
     sortOrder: normalizePositiveInt(raw.sortOrder, Number(fallback.sortOrder) || index + 1, 0, 9999),
-    statusText: cleanText(raw.statusText, 40) || cleanText(fallback.statusText, 40) || '直播中'
+    statusText: cleanText(raw.statusText, 40) || cleanText(fallback.statusText, 40) || '直播中',
+    deviceSerial: cleanText(raw.deviceSerial, 120) || cleanText(fallback.deviceSerial, 120) || id,
+    channelNo: normalizePositiveInt(raw.channelNo, Number(fallback.channelNo) || 1, 1, 64),
+    ezvizDeviceId: cleanText(raw.ezvizDeviceId, 120) || cleanText(fallback.ezvizDeviceId, 120),
+    location: cleanText(raw.location, 160) || cleanText(fallback.location, 160),
+    longitude: Number.isFinite(longitude) ? longitude : undefined,
+    latitude: Number.isFinite(latitude) ? latitude : undefined,
+    createdAt: cleanText(raw.createdAt, 40) || cleanText(fallback.createdAt, 40),
+    updatedAt: cleanText(raw.updatedAt, 40) || cleanText(fallback.updatedAt, 40)
   };
 }
 
@@ -1232,6 +1246,91 @@ function contentResourcePage(resourceKey, query) {
 
 function livePagePayload(req, query) {
   return pageFromItems(livePayload(req), query);
+}
+
+function cameraStatusFromLiveItem(item) {
+  if (item.enabled === false) return 'DISABLED';
+  if (cleanText(item.status, 40)) return cleanText(item.status, 40);
+  if (String(item.statusText || '').includes('离线')) return 'OFFLINE';
+  return 'ONLINE';
+}
+
+function cameraFromLiveItem(item, index = 0) {
+  const status = cameraStatusFromLiveItem(item);
+  return {
+    id: item.id,
+    name: item.title,
+    coverImage: item.coverUrl || '/assets/photos/ai-village-gate.jpg',
+    deviceSerial: item.deviceSerial || item.id,
+    channelNo: item.channelNo || 1,
+    ezvizDeviceId: item.ezvizDeviceId || '',
+    location: item.location || item.title,
+    longitude: item.longitude,
+    latitude: item.latitude,
+    description: item.desc || '',
+    status,
+    sort: item.sortOrder ?? index + 1,
+    createdAt: item.createdAt || '',
+    updatedAt: item.updatedAt || readLiveContentEnvelope().meta.updatedAt || ''
+  };
+}
+
+function liveItemFromCamera(data, fallback = {}, index = 0) {
+  const status = cleanText(data.status || fallback.status, 40) || cameraStatusFromLiveItem(fallback);
+  const id = cleanText(data.id, 80) || cleanText(fallback.id, 80) || `camera-${crypto.randomBytes(4).toString('hex')}`;
+  return sanitizeLiveItem({
+    ...fallback,
+    id,
+    title: cleanText(data.name, 100) || cleanText(fallback.title, 100) || '海林慢直播',
+    coverUrl: cleanText(data.coverImage, 500) || cleanText(fallback.coverUrl, 500),
+    desc: cleanText(data.description, 500) || cleanText(fallback.desc, 500),
+    enabled: status !== 'DISABLED',
+    status,
+    statusText: status === 'OFFLINE' ? '离线' : status === 'DISABLED' ? '已停用' : '直播中',
+    sortOrder: normalizePositiveInt(data.sort, Number(fallback.sortOrder) || index + 1, 0, 9999),
+    deviceSerial: cleanText(data.deviceSerial, 120) || cleanText(fallback.deviceSerial, 120) || id,
+    channelNo: normalizePositiveInt(data.channelNo, Number(fallback.channelNo) || 1, 1, 64),
+    ezvizDeviceId: cleanText(data.ezvizDeviceId, 120) || cleanText(fallback.ezvizDeviceId, 120),
+    location: cleanText(data.location, 160) || cleanText(fallback.location, 160),
+    longitude: data.longitude ?? fallback.longitude,
+    latitude: data.latitude ?? fallback.latitude,
+    updatedAt: new Date().toISOString(),
+    createdAt: fallback.createdAt || new Date().toISOString()
+  }, fallback, index);
+}
+
+function listAdminCameras(query) {
+  const envelope = readLiveContentEnvelope();
+  const cameras = envelope.items.map((item, index) => cameraFromLiveItem(item, index));
+  return pageFromItems(cameras, query, 10);
+}
+
+function createAdminCamera(req, body) {
+  const envelope = readLiveContentEnvelope();
+  const data = body.data || body;
+  const items = [...envelope.items, liveItemFromCamera(data, {}, envelope.items.length)];
+  saveLiveContent(req, items);
+  return cameraFromLiveItem(items[items.length - 1], items.length - 1);
+}
+
+function updateAdminCamera(req, id, body) {
+  const envelope = readLiveContentEnvelope();
+  const data = body.data || body;
+  const index = envelope.items.findIndex((item) => item.id === id);
+  if (index === -1) throw new HttpError(404, 'Camera not found');
+  const items = envelope.items.slice();
+  items[index] = liveItemFromCamera({ ...data, id }, items[index], index);
+  saveLiveContent(req, items);
+  return cameraFromLiveItem(items[index], index);
+}
+
+function deleteAdminCamera(req, id) {
+  const envelope = readLiveContentEnvelope();
+  const items = envelope.items.filter((item) => item.id !== id);
+  if (items.length === envelope.items.length) throw new HttpError(404, 'Camera not found');
+  saveLiveContent(req, items);
+  appendAudit(req, 'camera.deleted', 'camera', id, {});
+  return { ok: true };
 }
 
 function localGuideReply(question) {
@@ -2121,6 +2220,33 @@ async function handleAdminRequest(req, res, url, route) {
   }
   if (route === 'GET /api/admin/lives') {
     sendJson(req, res, 200, { data: readLiveContentEnvelope() });
+    return;
+  }
+  if (route === 'GET /api/admin/cameras') {
+    sendJson(req, res, 200, { data: listAdminCameras(url.searchParams) });
+    return;
+  }
+  if (route === 'POST /api/admin/cameras') {
+    const body = await readBody(req);
+    const camera = createAdminCamera(req, body);
+    appendAudit(req, 'camera.created', 'camera', camera.id, { name: camera.name });
+    sendJson(req, res, 201, { data: camera });
+    return;
+  }
+  const cameraUpdate = route.match(/^PATCH \/api\/admin\/cameras\/([^/]+)$/);
+  if (cameraUpdate) {
+    const body = await readBody(req);
+    const camera = updateAdminCamera(req, decodeURIComponent(cameraUpdate[1]), body);
+    appendAudit(req, 'camera.updated', 'camera', camera.id, {
+      name: camera.name,
+      status: camera.status
+    });
+    sendJson(req, res, 200, { data: camera });
+    return;
+  }
+  const cameraDelete = route.match(/^DELETE \/api\/admin\/cameras\/([^/]+)$/);
+  if (cameraDelete) {
+    sendJson(req, res, 200, { data: deleteAdminCamera(req, decodeURIComponent(cameraDelete[1])) });
     return;
   }
   if (route === 'GET /api/admin/resources') {
