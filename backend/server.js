@@ -1214,6 +1214,26 @@ function livePayload(req) {
     }));
 }
 
+function pageFromItems(items, query, defaultPageSize = 20) {
+  const page = normalizePositiveInt(query.get('page'), 1, 1, 1000);
+  const pageSize = normalizePositiveInt(query.get('pageSize'), defaultPageSize, 1, 100);
+  const keyword = cleanText(query.get('keyword') || query.get('q'), 120);
+  const type = cleanText(query.get('type'), 80);
+  const filtered = items
+    .filter((item) => !keyword || matchesQuery(item, keyword))
+    .filter((item) => !type || item.type === type || item.category === type || item.categoryId === type);
+  const start = (page - 1) * pageSize;
+  return pagedResult(filtered.slice(start, start + pageSize), page, pageSize, filtered.length);
+}
+
+function contentResourcePage(resourceKey, query) {
+  return pageFromItems(managedContentItems(resourceKey), query);
+}
+
+function livePagePayload(req, query) {
+  return pageFromItems(livePayload(req), query);
+}
+
 function localGuideReply(question) {
   const text = String(question || '');
   if (text.includes('路线') || text.includes('怎么玩')) {
@@ -1349,6 +1369,63 @@ function todayCount(records) {
   return records.filter((item) => String(item.createdAt || '').startsWith(today)).length;
 }
 
+function recordCreatedToday(record) {
+  const today = new Date().toISOString().slice(0, 10);
+  return String(record.createdAt || '').startsWith(today);
+}
+
+function adminProfile() {
+  return {
+    id: 'legacy-admin',
+    username: ADMIN_USER,
+    displayName: '海林村管理员',
+    role: 'SUPER_ADMIN',
+    status: 'ACTIVE',
+    createdAt: '2026-01-01T00:00:00.000Z',
+    lastLoginAt: new Date().toISOString()
+  };
+}
+
+function adminTokenBundle() {
+  return {
+    accessToken: ADMIN_TOKEN,
+    refreshToken: ADMIN_TOKEN,
+    expiresIn: 60 * 60 * 24 * 30
+  };
+}
+
+function adminLoginPayload() {
+  return {
+    ...adminTokenBundle(),
+    admin: adminProfile()
+  };
+}
+
+function normalizeApiPathname(pathname) {
+  return pathname.replace(/^\/api\/v1(?=\/|$)/, '/api');
+}
+
+function pagedResult(items, page, pageSize, total, extra = {}) {
+  return {
+    items,
+    list: items,
+    page,
+    pageSize,
+    total,
+    totalPages: Math.ceil(total / pageSize),
+    ...extra
+  };
+}
+
+function mapPageItems(page, mapper) {
+  const items = page.items.map(mapper);
+  return {
+    ...page,
+    items,
+    list: items
+  };
+}
+
 function storageWritable() {
   try {
     ensureStorage();
@@ -1406,6 +1483,120 @@ function adminSummary() {
   };
 }
 
+function parseMoneyToCents(value) {
+  if (typeof value === 'number' && Number.isFinite(value)) return Math.round(value * 100);
+  const text = String(value || '');
+  const match = text.match(/(\d+(?:\.\d{1,2})?)/);
+  if (!match) return 0;
+  return Math.round(Number(match[1]) * 100);
+}
+
+function productsLowStockCount(items) {
+  return items.filter((item) => {
+    const stock = Number(item.stock ?? item.inventory ?? 999);
+    return Number.isFinite(stock) && stock <= 5;
+  }).length;
+}
+
+function adminOverview() {
+  const bookings = readRecords('bookings.json');
+  const feedback = readRecords('feedback.json');
+  const orders = readRecords('orders.json');
+  const productItems = managedContentItems('products');
+  return {
+    users: 0,
+    orders: orders.length,
+    reservations: bookings.length,
+    activities: 0,
+    feedbackPending: feedback.filter((item) => ['new', 'processing', 'PENDING', 'PROCESSING'].includes(item.status)).length,
+    productLowStock: productsLowStockCount(productItems)
+  };
+}
+
+function trendRows(orders) {
+  const rows = [];
+  for (let offset = 6; offset >= 0; offset -= 1) {
+    const date = new Date(Date.now() - offset * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    const dayOrders = orders.filter((item) => String(item.createdAt || '').startsWith(date));
+    rows.push({
+      date,
+      newUsers: 0,
+      orderCount: dayOrders.length,
+      orderAmount: dayOrders.reduce((sum, item) => sum + parseMoneyToCents(item.price), 0)
+    });
+  }
+  return rows;
+}
+
+function adminDashboard() {
+  const bookings = readRecords('bookings.json');
+  const feedback = readRecords('feedback.json');
+  const orders = readRecords('orders.json');
+  const scenicItems = managedContentItems('spots');
+  const productItems = managedContentItems('products');
+  const todayOrders = orders.filter(recordCreatedToday);
+  const orderStatusCounts = countByStatus(orders, ORDER_STATUSES);
+  const orderStatusDistribution = Object.entries(orderStatusCounts)
+    .filter(([status]) => status !== 'total')
+    .map(([status, count]) => ({ status, count }));
+
+  return {
+    metrics: {
+      users: 0,
+      todayUsers: 0,
+      scenicSpots: scenicItems.length,
+      activities: 0,
+      pendingReservations: bookings.filter((item) => ['new', 'confirmed', 'processing'].includes(item.status)).length,
+      pendingShipments: orders.filter((item) => item.status === 'pending_shipment').length,
+      todayOrderAmount: todayOrders.reduce((sum, item) => sum + parseMoneyToCents(item.price), 0),
+      todayOrderCount: todayOrders.length,
+      totalOrderAmount: orders.reduce((sum, item) => sum + parseMoneyToCents(item.price), 0),
+      totalOrderCount: orders.length,
+      productLowStock: productsLowStockCount(productItems),
+      feedbackPending: feedback.filter((item) => ['new', 'processing'].includes(item.status)).length
+    },
+    charts: {
+      trend: trendRows(orders),
+      orderStatusDistribution,
+      popularSpots: scenicItems.slice(0, 5).map((item, index) => ({
+        id: String(item.id || `spot-${index + 1}`),
+        name: cleanText(item.name || item.title, 80) || `景点 ${index + 1}`,
+        value: Number(item.viewCount || item.views || 0)
+      })),
+      hotProducts: productItems.slice(0, 5).map((item, index) => ({
+        id: String(item.id || `product-${index + 1}`),
+        name: cleanText(item.name || item.title, 80) || `商品 ${index + 1}`,
+        sales: normalizePositiveInt(item.sales, 0, 0, 999999),
+        stock: normalizePositiveInt(item.stock ?? item.inventory, 0, 0, 999999)
+      }))
+    }
+  };
+}
+
+function configStatusItem(key, name, ok, mode, missingMessage, configuredMessage) {
+  return {
+    key,
+    name,
+    status: ok ? 'configured' : 'missing',
+    mode: ok ? mode : 'waiting_credentials',
+    message: ok ? configuredMessage : missingMessage
+  };
+}
+
+function adminConfigStatus() {
+  return {
+    environment: NODE_ENV,
+    publicBaseUrl: PUBLIC_BASE_URL || undefined,
+    items: [
+      configStatusItem('adminToken', '管理后台登录密钥', Boolean(ADMIN_TOKEN), 'official', '等待配置 ADMIN_TOKEN', '已配置强登录密钥'),
+      configStatusItem('publicBaseUrl', '公网访问地址', httpsEnabled(), 'official', '等待配置 HTTPS 的 PUBLIC_BASE_URL', PUBLIC_BASE_URL || '已配置'),
+      configStatusItem('cors', 'CORS 白名单', Boolean(ALLOWED_ORIGINS.length), 'official', '建议配置 ALLOWED_ORIGINS', ALLOWED_ORIGINS.join(', ') || '已限制'),
+      configStatusItem('ai', 'AI 导游模型', Boolean(KIMI_API_KEY), 'official', '未配置模型密钥，当前使用本地规则 fallback', `${KIMI_MODEL} 已配置`),
+      configStatusItem('storage', '本地数据存储', storageWritable(), 'development', '存储目录不可写', '存储目录可写')
+    ]
+  };
+}
+
 function matchesQuery(record, search) {
   if (!search) return true;
   const lower = search.toLowerCase();
@@ -1422,12 +1613,112 @@ function listAdminRecords(fileName, query) {
     .filter((record) => matchesQuery(record, search));
   const start = (page - 1) * pageSize;
 
-  return {
-    items: all.slice(start, start + pageSize),
-    page,
-    pageSize,
-    total: all.length
+  return pagedResult(all.slice(start, start + pageSize), page, pageSize, all.length);
+}
+
+function legacyReservationStatus(status) {
+  const map = {
+    new: 'PENDING_PAYMENT',
+    confirmed: 'CONFIRMED',
+    processing: 'PAID',
+    completed: 'COMPLETED',
+    cancelled: 'CANCELLED'
   };
+  return map[status] || status || 'PENDING_PAYMENT';
+}
+
+function reservationStatusToLegacy(status) {
+  const map = {
+    PENDING_PAYMENT: 'new',
+    PAID: 'processing',
+    CONFIRMED: 'confirmed',
+    COMPLETED: 'completed',
+    CANCELLED: 'cancelled',
+    REFUNDING: 'processing',
+    REFUNDED: 'completed'
+  };
+  return map[status] || status || 'new';
+}
+
+function bookingAsReservationOrder(record) {
+  const date = cleanText(record.date, 40);
+  return {
+    id: record.id,
+    orderNo: record.orderNo || record.id,
+    userId: record.clientId || '',
+    user: { id: record.clientId || '', nickname: cleanText(record.nickname, 80), phone: cleanText(record.phone, 40) },
+    item: {
+      id: record.service || record.id,
+      title: record.service || '预约项目',
+      type: 'FARM',
+      unit: '人'
+    },
+    slot: {
+      id: date || record.id,
+      date,
+      startTime: '',
+      endTime: ''
+    },
+    contactName: record.contact || '',
+    contactPhone: record.phone || '',
+    quantity: record.people || 1,
+    amount: parseMoneyToCents(record.price),
+    status: legacyReservationStatus(record.status),
+    remark: record.remark || record.adminNote || '',
+    paidAt: record.paidAt || '',
+    cancelledAt: record.cancelledAt || '',
+    verifiedAt: record.completedAt || '',
+    createdAt: record.createdAt,
+    updatedAt: record.updatedAt
+  };
+}
+
+function listReservationOrders(query) {
+  return mapPageItems(listAdminRecords('bookings.json', query), bookingAsReservationOrder);
+}
+
+function legacyFeedbackStatus(status) {
+  const map = {
+    new: 'PENDING',
+    processing: 'PROCESSING',
+    resolved: 'REPLIED',
+    archived: 'CLOSED'
+  };
+  return map[status] || status || 'PENDING';
+}
+
+function feedbackStatusToLegacy(status) {
+  const map = {
+    PENDING: 'new',
+    PROCESSING: 'processing',
+    REPLIED: 'resolved',
+    CLOSED: 'archived'
+  };
+  return map[status] || status || 'new';
+}
+
+function feedbackAsApiRecord(record) {
+  return {
+    id: record.id,
+    user: {
+      id: record.clientId || '',
+      nickname: record.nickname || '游客',
+      phone: record.phone || ''
+    },
+    type: record.source || 'mini-program',
+    content: record.content || '',
+    images: Array.isArray(record.images) ? record.images : [],
+    contact: record.contact || '',
+    status: legacyFeedbackStatus(record.status),
+    adminReply: record.adminNote || record.adminReply || '',
+    repliedAt: record.resolvedAt || record.lastHandledAt || '',
+    createdAt: record.createdAt,
+    updatedAt: record.updatedAt
+  };
+}
+
+function listFeedbackRecords(query) {
+  return mapPageItems(listAdminRecords('feedback.json', query), feedbackAsApiRecord);
 }
 
 function filterOrders(query, admin = false) {
@@ -1445,6 +1736,88 @@ function filterOrders(query, admin = false) {
     .filter((record) => !status || record.status === status)
     .filter((record) => !type || record.type === type)
     .filter((record) => matchesQuery(record, search));
+}
+
+function legacyOrderStatus(status) {
+  const map = {
+    new: 'PENDING_PAYMENT',
+    confirmed: 'PAID',
+    pending_shipment: 'PROCESSING',
+    shipped: 'SHIPPED',
+    received: 'COMPLETED',
+    pending_service: 'PROCESSING',
+    in_service: 'PROCESSING',
+    pending_verify: 'PROCESSING',
+    verified: 'COMPLETED',
+    completed: 'COMPLETED',
+    cancelled: 'CANCELLED',
+    expired: 'CLOSED'
+  };
+  return map[status] || status || 'PENDING_PAYMENT';
+}
+
+function orderStatusToLegacy(status, type = 'product') {
+  const map = {
+    PENDING_PAYMENT: 'new',
+    PAID: 'confirmed',
+    PROCESSING: type === 'product' ? 'pending_shipment' : 'pending_service',
+    SHIPPED: 'shipped',
+    COMPLETED: 'completed',
+    CANCELLED: 'cancelled',
+    REFUNDING: 'confirmed',
+    REFUNDED: 'completed',
+    CLOSED: 'expired'
+  };
+  return map[status] || status || 'new';
+}
+
+function orderAsApiRecord(record) {
+  const amount = parseMoneyToCents(record.price);
+  const quantity = Number(record.people || record.quantity || 1);
+  const logistics = record.logistics || {};
+  return {
+    id: record.id,
+    orderNo: record.orderNo,
+    userId: record.clientId || '',
+    user: {
+      id: record.clientId || '',
+      nickname: record.nickname || '游客',
+      phone: record.phone || ''
+    },
+    addressSnapshot: {
+      contactName: record.contact || '',
+      phone: record.phone || '',
+      detail: record.address || ''
+    },
+    productAmount: amount,
+    freightAmount: 0,
+    discountAmount: 0,
+    payableAmount: amount,
+    paidAmount: legacyOrderStatus(record.status) === 'PENDING_PAYMENT' ? 0 : amount,
+    status: legacyOrderStatus(record.status),
+    paymentStatus: record.paymentStatus || (legacyOrderStatus(record.status) === 'PENDING_PAYMENT' ? 'UNPAID' : 'PAID'),
+    shippingStatus: record.status === 'shipped' ? 'SHIPPED' : record.status === 'received' ? 'RECEIVED' : 'NOT_SHIPPED',
+    remark: record.remark || record.adminNote || '',
+    logisticsCompany: logistics.carrier || '',
+    logisticsNo: logistics.trackingNo || '',
+    paidAt: record.paidAt || '',
+    shippedAt: logistics.shippedAt || record.shippedAt || '',
+    completedAt: record.completedAt || '',
+    cancelledAt: record.cancelledAt || record.expiredAt || '',
+    closedAt: record.expiredAt || '',
+    createdAt: record.createdAt,
+    updatedAt: record.updatedAt,
+    items: [
+      {
+        productName: record.item || record.service || record.orderNo,
+        productImage: record.coverImage || '',
+        specification: record.service || record.type || '',
+        unitPrice: amount,
+        quantity,
+        totalAmount: amount
+      }
+    ]
+  };
 }
 
 function orderListStats(records) {
@@ -1484,13 +1857,13 @@ function listOrders(query, admin = false) {
   const all = filterOrders(query, admin);
   const start = (page - 1) * pageSize;
 
-  return {
-    items: all.slice(start, start + pageSize),
-    page,
-    pageSize,
-    total: all.length,
+  return pagedResult(all.slice(start, start + pageSize), page, pageSize, all.length, {
     stats: orderListStats(all)
-  };
+  });
+}
+
+function listApiOrders(query, admin = false) {
+  return mapPageItems(listOrders(query, admin), orderAsApiRecord);
 }
 
 function findPublicOrder(id, query) {
@@ -1514,12 +1887,7 @@ function listAuditRecords(query) {
     .filter((record) => matchesQuery(record, search));
   const start = (page - 1) * pageSize;
 
-  return {
-    items: all.slice(start, start + pageSize),
-    page,
-    pageSize,
-    total: all.length
-  };
+  return pagedResult(all.slice(start, start + pageSize), page, pageSize, all.length);
 }
 
 function backupPayload() {
@@ -1679,15 +2047,72 @@ function serveVideo(req, res) {
   fs.createReadStream(videoPath, { start, end }).pipe(res);
 }
 
+async function handleAdminLogin(req, res) {
+  if (!ADMIN_TOKEN) {
+    sendError(req, res, 503, 'Admin token is not configured');
+    return;
+  }
+
+  const body = await readBody(req);
+  const username = cleanText(body.username, 120);
+  const password = cleanText(body.password, 1000);
+  if (username !== ADMIN_USER || !safeCompareToken(password, ADMIN_TOKEN)) {
+    logEvent({
+      level: 'warn',
+      message: 'admin_login_failed',
+      username,
+      ip: clientIp(req)
+    });
+    sendError(req, res, 401, 'Invalid username or password');
+    return;
+  }
+
+  appendAudit(req, 'admin.login', 'admin', ADMIN_USER, {
+    source: 'admin-ui'
+  });
+  sendJson(req, res, 200, { data: adminLoginPayload(), message: 'success' });
+}
+
+async function handleTokenRefresh(req, res) {
+  if (!ADMIN_TOKEN) {
+    sendError(req, res, 503, 'Admin token is not configured');
+    return;
+  }
+
+  const body = await readBody(req);
+  const token = cleanText(body.refreshToken, 1000);
+  if (!safeCompareToken(token, ADMIN_TOKEN)) {
+    sendError(req, res, 401, 'Refresh token is invalid');
+    return;
+  }
+  sendJson(req, res, 200, { data: adminTokenBundle(), message: 'success' });
+}
+
 async function handleAdminRequest(req, res, url, route) {
   if (!requireAdmin(req, res)) return;
 
+  if (route === 'GET /api/admin/me') {
+    sendJson(req, res, 200, { data: { admin: adminProfile() } });
+    return;
+  }
   if (route === 'GET /api/admin/session') {
-    sendJson(req, res, 200, { data: { user: ADMIN_USER, environment: NODE_ENV } });
+    sendJson(req, res, 200, { data: { user: ADMIN_USER, admin: adminProfile(), environment: NODE_ENV } });
     return;
   }
   if (route === 'GET /api/admin/summary') {
     sendJson(req, res, 200, { data: adminSummary() });
+    return;
+  }
+  if (route === 'GET /api/admin/overview') {
+    sendJson(req, res, 200, { data: adminOverview() });
+    return;
+  }
+  if (route === 'GET /api/admin/dashboard') {
+    sendJson(req, res, 200, { data: adminDashboard() });
+    return;
+  }
+  if (route === 'GET /api/admin/config-status') {
+    sendJson(req, res, 200, { data: adminConfigStatus() });
     return;
   }
   if (route === 'GET /api/admin/home-content') {
@@ -1743,15 +2168,23 @@ async function handleAdminRequest(req, res, url, route) {
     sendJson(req, res, 200, { data: listAdminRecords('bookings.json', url.searchParams) });
     return;
   }
+  if (route === 'GET /api/admin/reservation-orders') {
+    sendJson(req, res, 200, { data: listReservationOrders(url.searchParams) });
+    return;
+  }
   if (route === 'GET /api/admin/feedback') {
-    sendJson(req, res, 200, { data: listAdminRecords('feedback.json', url.searchParams) });
+    sendJson(req, res, 200, { data: listFeedbackRecords(url.searchParams) });
     return;
   }
   if (route === 'GET /api/admin/orders') {
-    sendJson(req, res, 200, { data: listOrders(url.searchParams, true) });
+    sendJson(req, res, 200, { data: listApiOrders(url.searchParams, true) });
     return;
   }
   if (route === 'GET /api/admin/audit') {
+    sendJson(req, res, 200, { data: listAuditRecords(url.searchParams) });
+    return;
+  }
+  if (route === 'GET /api/admin/audit-logs') {
     sendJson(req, res, 200, { data: listAuditRecords(url.searchParams) });
     return;
   }
@@ -1819,6 +2252,20 @@ async function handleAdminRequest(req, res, url, route) {
     return;
   }
 
+  const reservationUpdate = route.match(/^PATCH \/api\/admin\/reservation-orders\/([^/]+)$/);
+  if (reservationUpdate) {
+    const body = await readBody(req);
+    const data = body.data || body;
+    const legacyStatus = reservationStatusToLegacy(cleanText(data.status));
+    const record = updateRecordStatus('bookings.json', reservationUpdate[1], 'booking', BOOKING_STATUSES, legacyStatus, data.remark || data.note, req);
+    appendAudit(req, 'reservation-order.updated', 'booking', record.id, {
+      status: record.status,
+      note: cleanText(data.remark || data.note, 500)
+    });
+    sendJson(req, res, 200, { data: bookingAsReservationOrder(record) });
+    return;
+  }
+
   const bookingStatus = route.match(/^PATCH \/api\/admin\/bookings\/([^/]+)\/status$/);
   if (bookingStatus) {
     const body = await readBody(req);
@@ -1829,6 +2276,31 @@ async function handleAdminRequest(req, res, url, route) {
       note: record.adminNote
     });
     sendJson(req, res, 200, { data: record });
+    return;
+  }
+
+  const feedbackReply = route.match(/^POST \/api\/admin\/feedback\/([^/]+)\/reply$/);
+  if (feedbackReply) {
+    const body = await readBody(req);
+    const record = updateRecordStatus('feedback.json', feedbackReply[1], 'feedback', FEEDBACK_STATUSES, 'resolved', body.adminReply || body.note || '已回复', req);
+    appendAudit(req, 'feedback.replied', 'feedback', record.id, {
+      note: record.adminNote
+    });
+    sendJson(req, res, 200, { data: feedbackAsApiRecord(record) });
+    return;
+  }
+
+  const feedbackUpdate = route.match(/^PATCH \/api\/admin\/feedback\/([^/]+)$/);
+  if (feedbackUpdate) {
+    const body = await readBody(req);
+    const data = body.data || body;
+    const legacyStatus = feedbackStatusToLegacy(cleanText(data.status));
+    const record = updateRecordStatus('feedback.json', feedbackUpdate[1], 'feedback', FEEDBACK_STATUSES, legacyStatus, data.adminReply || data.note, req);
+    appendAudit(req, 'feedback.updated', 'feedback', record.id, {
+      status: record.status,
+      note: record.adminNote
+    });
+    sendJson(req, res, 200, { data: feedbackAsApiRecord(record) });
     return;
   }
 
@@ -1849,7 +2321,60 @@ async function handleAdminRequest(req, res, url, route) {
   if (orderRead) {
     const order = readRecords('orders.json').find((item) => item.id === orderRead[1] || item.orderNo === orderRead[1]);
     if (!order) throw new HttpError(404, 'Order not found');
-    sendJson(req, res, 200, { data: order });
+    sendJson(req, res, 200, { data: orderAsApiRecord(order) });
+    return;
+  }
+
+  const orderShip = route.match(/^POST \/api\/admin\/orders\/([^/]+)\/ship$/);
+  if (orderShip) {
+    const body = await readBody(req);
+    const order = updateOrderFulfillment(orderShip[1], {
+      status: 'shipped',
+      carrier: body.logisticsCompany,
+      trackingNo: body.logisticsNo,
+      note: body.note || '后台填写发货信息'
+    }, req);
+    appendAudit(req, 'order.shipped', 'order', order.id, {
+      orderNo: order.orderNo,
+      carrier: cleanText(body.logisticsCompany, 80),
+      trackingNo: cleanText(body.logisticsNo, 120)
+    });
+    sendJson(req, res, 200, { data: orderAsApiRecord(order) });
+    return;
+  }
+
+  const orderRefunding = route.match(/^POST \/api\/admin\/orders\/([^/]+)\/refunding$/);
+  if (orderRefunding) {
+    const order = updateOrderFulfillment(orderRefunding[1], { status: 'confirmed', note: '标记退款中' }, req);
+    appendAudit(req, 'order.refunding', 'order', order.id, { orderNo: order.orderNo });
+    sendJson(req, res, 200, { data: { ...orderAsApiRecord(order), status: 'REFUNDING' } });
+    return;
+  }
+
+  const orderRefunded = route.match(/^POST \/api\/admin\/orders\/([^/]+)\/refunded$/);
+  if (orderRefunded) {
+    const order = updateOrderFulfillment(orderRefunded[1], { status: 'completed', note: '标记已退款' }, req);
+    appendAudit(req, 'order.refunded', 'order', order.id, { orderNo: order.orderNo });
+    sendJson(req, res, 200, { data: { ...orderAsApiRecord(order), status: 'REFUNDED' } });
+    return;
+  }
+
+  const orderUpdate = route.match(/^PATCH \/api\/admin\/orders\/([^/]+)$/);
+  if (orderUpdate) {
+    const body = await readBody(req);
+    const data = body.data || body;
+    const legacyStatus = orderStatusToLegacy(cleanText(data.status), cleanText(data.type));
+    const order = updateOrderFulfillment(orderUpdate[1], {
+      status: legacyStatus,
+      carrier: data.logisticsCompany,
+      trackingNo: data.logisticsNo,
+      note: data.remark || data.note
+    }, req);
+    appendAudit(req, 'order.updated', 'order', order.id, {
+      orderNo: order.orderNo,
+      status: order.status
+    });
+    sendJson(req, res, 200, { data: orderAsApiRecord(order) });
     return;
   }
 
@@ -1874,7 +2399,8 @@ async function handleRequest(req, res) {
   req.requestId = crypto.randomUUID();
   const startedAt = Date.now();
   const url = new URL(req.url, `http://${req.headers.host || `${HOST}:${PORT}`}`);
-  const route = `${req.method} ${url.pathname}`;
+  const apiPathname = normalizeApiPathname(url.pathname);
+  const route = `${req.method} ${apiPathname}`;
 
   res.on('finish', () => {
     logEvent({
@@ -1903,7 +2429,17 @@ async function handleRequest(req, res) {
       return;
     }
 
-    if (url.pathname.startsWith('/api/admin')) {
+    if (route === 'POST /api/admin/auth/login') {
+      await handleAdminLogin(req, res);
+      return;
+    }
+
+    if (route === 'POST /api/auth/refresh') {
+      await handleTokenRefresh(req, res);
+      return;
+    }
+
+    if (apiPathname.startsWith('/api/admin')) {
       await handleAdminRequest(req, res, url, route);
       return;
     }
@@ -1921,32 +2457,74 @@ async function handleRequest(req, res) {
       });
       return;
     }
+    if (route === 'GET /api/home') {
+      sendJson(req, res, 200, { data: managedHomePayload() });
+      return;
+    }
     if (route === 'GET /api/hailin/home') {
       sendJson(req, res, 200, { data: managedHomePayload() });
+      return;
+    }
+    if (route === 'GET /api/map-points') {
+      sendJson(req, res, 200, { data: contentResourcePage('map-points', url.searchParams) });
       return;
     }
     if (route === 'GET /api/hailin/map-points') {
       sendJson(req, res, 200, { data: managedContentItems('map-points') });
       return;
     }
+    if (route === 'GET /api/foods') {
+      sendJson(req, res, 200, { data: contentResourcePage('foods', url.searchParams) });
+      return;
+    }
     if (route === 'GET /api/hailin/foods') {
       sendJson(req, res, 200, { data: managedContentItems('foods') });
+      return;
+    }
+    if (route === 'GET /api/scenic-spots') {
+      sendJson(req, res, 200, { data: contentResourcePage('spots', url.searchParams) });
       return;
     }
     if (route === 'GET /api/hailin/spots') {
       sendJson(req, res, 200, { data: managedContentItems('spots') });
       return;
     }
+    if (route === 'GET /api/travel-routes') {
+      sendJson(req, res, 200, { data: contentResourcePage('routes', url.searchParams) });
+      return;
+    }
     if (route === 'GET /api/hailin/routes') {
       sendJson(req, res, 200, { data: managedContentItems('routes') });
+      return;
+    }
+    if (route === 'GET /api/products') {
+      sendJson(req, res, 200, { data: contentResourcePage('products', url.searchParams) });
       return;
     }
     if (route === 'GET /api/hailin/products') {
       sendJson(req, res, 200, { data: managedContentItems('products') });
       return;
     }
+    if (route === 'GET /api/cameras') {
+      sendJson(req, res, 200, { data: livePagePayload(req, url.searchParams) });
+      return;
+    }
     if (route === 'GET /api/hailin/lives') {
       sendJson(req, res, 200, { data: livePayload(req) });
+      return;
+    }
+    const cameraPlayUrl = route.match(/^POST \/api\/cameras\/([^/]+)\/play-url$/);
+    if (cameraPlayUrl) {
+      const camera = livePayload(req).find((item) => item.id === decodeURIComponent(cameraPlayUrl[1]));
+      if (!camera) throw new HttpError(404, 'Camera not found');
+      if (camera.enabled === false) throw new HttpError(409, 'Camera is disabled');
+      sendJson(req, res, 200, {
+        data: {
+          playUrl: camera.hlsUrl || camera.liveUrl,
+          expireAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+          mode: camera.hlsUrl ? 'official' : 'development'
+        }
+      });
       return;
     }
     if (route === 'GET /media/hailin-live.mp4') {
