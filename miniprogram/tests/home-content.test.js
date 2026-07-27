@@ -69,4 +69,96 @@ assert(homeWxss.includes('service-card'), 'home page should style service cards'
 assert(backendServer.includes('itineraries: recommend.itineraries'), 'backend home defaults should include itineraries');
 assert(backendServer.includes('serviceCards: recommend.serviceCards'), 'backend home defaults should include service cards');
 
-console.log('home content coverage ok');
+function loadContentServiceWithWx(wxMock) {
+  const apiPath = require.resolve('../services/api');
+  const contentPath = require.resolve('../services/content');
+  delete require.cache[apiPath];
+  delete require.cache[contentPath];
+  global.wx = wxMock;
+  return require('../services/content');
+}
+
+async function assertLegacyFallbackKeepsImages() {
+  const calls = [];
+  const wxMock = {
+    getSystemInfoSync() {
+      return { platform: 'devtools' };
+    },
+    getStorageSync() {
+      return '';
+    },
+    request(options) {
+      calls.push(options.url);
+      if (options.url.includes('/api/v1/home')) {
+        options.fail(new Error('v1 unavailable'));
+        return;
+      }
+      if (options.url.includes('/api/hailin/home')) {
+        options.success({
+          statusCode: 200,
+          data: {
+            banners: [
+              {
+                id: 'legacy-banner',
+                title: '旧接口 banner',
+                subtitle: '旧接口回退时也必须补图',
+                imageUrl: ''
+              }
+            ],
+            scenicSpots: [
+              {
+                id: 'legacy-spot',
+                title: '旧接口景点',
+                imageUrl: '',
+                images: []
+              }
+            ],
+            routes: [
+              {
+                id: 'legacy-route',
+                name: '旧接口路线',
+                duration: '约 2 小时',
+                imageUrl: ''
+              }
+            ],
+            products: [
+              {
+                id: 'legacy-product',
+                name: '旧接口商品',
+                price: 1200,
+                imageUrl: ''
+              }
+            ],
+            notice: '旧接口公告'
+          }
+        });
+        return;
+      }
+      options.fail(new Error(`unexpected request: ${options.url}`));
+    }
+  };
+
+  try {
+    const content = loadContentServiceWithWx(wxMock);
+    const home = await content.loadHomeData();
+    assert(calls.some((url) => url.includes('/api/v1/home')), 'home should try v1 API first');
+    assert(calls.some((url) => url.includes('/api/hailin/home')), 'home should fall back to legacy API');
+    assert.strictEqual(home.banners[0].imageUrl, '/assets/photos/ai-village-gate.jpg');
+    assert(home.hotRecommends[0].imageUrl, 'legacy scenic recommendations should retain an image');
+    assert(home.itineraries[0].imageUrl, 'legacy routes should retain an image');
+    assert(home.products[0].imageUrl, 'legacy products should retain an image');
+  } finally {
+    delete global.wx;
+    delete require.cache[require.resolve('../services/api')];
+    delete require.cache[require.resolve('../services/content')];
+  }
+}
+
+(async () => {
+  await assertLegacyFallbackKeepsImages();
+  console.log('home content coverage ok');
+})().catch((error) => {
+  delete global.wx;
+  console.error(error);
+  process.exit(1);
+});

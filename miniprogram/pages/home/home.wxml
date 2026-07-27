@@ -15,18 +15,11 @@
     <swiper class="banner-swiper" autoplay="{{true}}" circular="{{true}}" interval="4200" duration="500" indicator-dots="{{true}}" indicator-color="rgba(255,253,248,0.48)" indicator-active-color="#FBFFFC">
       <swiper-item wx:for="{{banners}}" wx:key="id">
         <view class="banner-card {{item.imageClass}}">
-          <image wx:if="{{item.imageUrl}}" class="banner-photo" src="{{item.imageUrl}}" mode="aspectFill"></image>
+          <image class="banner-photo" src="{{item.imageUrl}}" mode="aspectFill" binderror="onHomeImageError" data-list="banners" data-index="{{index}}" data-field="imageUrl"></image>
           <view class="banner-copy">
             <view class="banner-tag">{{item.tag}}</view>
             <view class="banner-title">{{item.title}}</view>
             <view class="banner-subtitle">{{item.subtitle}}</view>
-          </view>
-          <view wx:if="{{!item.imageUrl}}" class="banner-art">
-            <view class="art-sun"></view>
-            <view class="art-mountain one"></view>
-            <view class="art-mountain two"></view>
-            <view class="art-house"></view>
-            <text class="art-word">{{item.icon}}</text>
           </view>
         </view>
       </swiper-item>
@@ -80,7 +73,7 @@
           data-open-type="{{item.openType}}"
           bindtap="onItineraryTap"
         >
-          <image wx:if="{{item.imageUrl}}" class="itinerary-photo" src="{{item.imageUrl}}" mode="aspectFill"></image>
+          <image class="itinerary-photo" src="{{item.imageUrl}}" mode="aspectFill" binderror="onHomeImageError" data-list="itineraries" data-index="{{index}}" data-field="imageUrl"></image>
           <view class="itinerary-mask"></view>
           <view class="itinerary-copy">
             <view class="itinerary-label">{{item.label}}</view>
@@ -129,7 +122,7 @@
         data-open-type="{{item.openType}}"
         bindtap="onRecommendTap"
       >
-        <image wx:if="{{item.imageUrl}}" class="hot-photo" src="{{item.imageUrl}}" mode="aspectFill"></image>
+        <image class="hot-photo" src="{{item.imageUrl}}" mode="aspectFill" binderror="onHomeImageError" data-list="hotRecommends" data-index="{{index}}" data-field="imageUrl"></image>
         <view class="hot-copy">
           <view class="hot-title">{{item.title}}</view>
           <view class="hot-subtitle">{{item.subtitle}}</view>
@@ -178,7 +171,7 @@
       <view class="corridor-row">
         <view wx:for="{{corridor}}" wx:key="id" class="corridor-card">
           <view class="corridor-img {{item.imageClass}}">
-            <image wx:if="{{item.imageUrl}}" class="corridor-photo" src="{{item.imageUrl}}" mode="aspectFill"></image>
+            <image class="corridor-photo" src="{{item.imageUrl}}" mode="aspectFill" binderror="onHomeImageError" data-list="corridor" data-index="{{index}}" data-field="imageUrl"></image>
             <text>{{item.icon}}</text>
           </view>
           <view class="corridor-title">{{item.title}}</view>
@@ -191,7 +184,7 @@
       <view class="feed-col">
         <view wx:for="{{feedsLeft}}" wx:key="id" class="feed-card card" bindtap="onFeedTap">
           <view class="feed-img {{item.imageClass}}">
-            <image wx:if="{{item.imageUrl}}" class="feed-photo" src="{{item.imageUrl}}" mode="aspectFill"></image>
+            <image class="feed-photo" src="{{item.imageUrl}}" mode="aspectFill" binderror="onHomeImageError" data-list="feedsLeft" data-index="{{index}}" data-field="imageUrl"></image>
             <text>{{item.icon}}</text>
           </view>
           <view class="feed-title">{{item.title}}</view>
@@ -201,7 +194,7 @@
       <view class="feed-col">
         <view wx:for="{{feedsRight}}" wx:key="id" class="feed-card card" bindtap="onFeedTap">
           <view class="feed-img {{item.imageClass}}">
-            <image wx:if="{{item.imageUrl}}" class="feed-photo" src="{{item.imageUrl}}" mode="aspectFill"></image>
+            <image class="feed-photo" src="{{item.imageUrl}}" mode="aspectFill" binderror="onHomeImageError" data-list="feedsRight" data-index="{{index}}" data-field="imageUrl"></image>
             <text>{{item.icon}}</text>
           </view>
           <view class="feed-title">{{item.title}}</view>

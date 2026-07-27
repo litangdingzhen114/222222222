@@ -29,10 +29,18 @@ function withContentFallback(key, fallbackValue, mapper) {
     const mapped = typeof mapper === 'function' ? mapper(remoteValue, fallbackValue) : remoteValue;
     return mapped || fallbackValue;
   };
-  if (!v1Endpoint) return withFallback(legacyEndpoint, fallbackValue);
+  if (!v1Endpoint) {
+    return request(legacyEndpoint)
+      .then(normalize)
+      .catch(() => fallbackValue);
+  }
   return request(v1Endpoint)
     .then(normalize)
-    .catch(() => withFallback(legacyEndpoint, fallbackValue));
+    .catch(() =>
+      request(legacyEndpoint)
+        .then(normalize)
+        .catch(() => fallbackValue)
+    );
 }
 
 function moneyText(cents) {
@@ -42,12 +50,53 @@ function moneyText(cents) {
 
 function firstImage(item) {
   if (!item) return '';
-  if (item.coverImage) return item.coverImage;
-  if (item.coverUrl) return item.coverUrl;
-  if (item.imageUrl) return item.imageUrl;
-  if (Array.isArray(item.images) && item.images.length) return item.images[0];
-  if (Array.isArray(item.imageUrls) && item.imageUrls.length) return item.imageUrls[0];
+  if (cleanImage(item.coverImage)) return cleanImage(item.coverImage);
+  if (cleanImage(item.coverUrl)) return cleanImage(item.coverUrl);
+  if (cleanImage(item.imageUrl)) return cleanImage(item.imageUrl);
+  if (Array.isArray(item.images) && item.images.length) return cleanImage(item.images[0]);
+  if (Array.isArray(item.imageUrls) && item.imageUrls.length) return cleanImage(item.imageUrls[0]);
   return '';
+}
+
+const defaultImages = {
+  banner: '/assets/photos/ai-village-gate.jpg',
+  mapPoint: '/assets/scenes/village-gate.png',
+  food: '/assets/photos/ricefish-drying.jpg',
+  spot: '/assets/photos/ai-village-gate.jpg',
+  route: '/assets/photos/qingtian-city.jpg',
+  product: '/assets/photos/ai-fish-keychain.jpg',
+  live: '/assets/photos/ai-village-gate.jpg'
+};
+
+function cleanImage(value) {
+  const image = String(value || '').trim();
+  if (!image || image === 'null' || image === 'undefined') return '';
+  return image;
+}
+
+function fallbackItemAt(fallbackValue, index) {
+  if (!Array.isArray(fallbackValue) || !fallbackValue.length) return {};
+  return fallbackValue[index % fallbackValue.length] || {};
+}
+
+function displayImage(item, fallbackItem, type) {
+  return firstImage(item) || firstImage(fallbackItem) || defaultImages[type] || defaultImages.banner;
+}
+
+function displayImages(item, fallbackItem, type) {
+  const imageSet = new Set();
+  [item?.images, item?.imageUrls, fallbackItem?.imageUrls, fallbackItem?.images].forEach((list) => {
+    if (!Array.isArray(list)) return;
+    list.forEach((image) => {
+      const clean = cleanImage(image);
+      if (clean) imageSet.add(clean);
+    });
+  });
+  [firstImage(item), firstImage(fallbackItem), defaultImages[type]].forEach((image) => {
+    const clean = cleanImage(image);
+    if (clean) imageSet.add(clean);
+  });
+  return Array.from(imageSet);
 }
 
 const mapPointTypeText = {
@@ -67,12 +116,12 @@ function adaptBanners(list, fallbackValue) {
   const fallback = fallbackValue || [];
   return normalizePageList(list).map((item, index) => ({
     id: item.id || `banner-${index}`,
-    title: item.title || fallback[index % fallback.length]?.title || '海林村欢迎你',
-    subtitle: item.subtitle || item.summary || fallback[index % fallback.length]?.subtitle || '',
-    tag: item.tag || fallback[index % fallback.length]?.tag || serviceConfig.locationText,
-    imageClass: fallback[index % fallback.length]?.imageClass || 'banner-oujiang',
-    icon: fallback[index % fallback.length]?.icon || '海',
-    imageUrl: firstImage(item) || fallback[index % fallback.length]?.imageUrl
+    title: item.title || fallbackItemAt(fallback, index).title || '海林村欢迎你',
+    subtitle: item.subtitle || item.summary || fallbackItemAt(fallback, index).subtitle || '',
+    tag: item.tag || fallbackItemAt(fallback, index).tag || serviceConfig.locationText,
+    imageClass: fallbackItemAt(fallback, index).imageClass || 'banner-oujiang',
+    icon: fallbackItemAt(fallback, index).icon || '海',
+    imageUrl: displayImage(item, fallbackItemAt(fallback, index), 'banner')
   }));
 }
 
@@ -89,7 +138,7 @@ function adaptMapPoints(remoteValue, fallbackValue) {
       subType: item.address || item.relatedEntityType || fallbackItem.subType || '',
       distance: fallbackItem.distance || '',
       desc: item.description || fallbackItem.desc || '',
-      imageUrl: firstImage(item) || fallbackItem.imageUrl || '/assets/scenes/village-gate.png',
+      imageUrl: displayImage(item, fallbackItem, 'mapPoint'),
       openTime: item.businessHours || fallbackItem.openTime || '',
       tips: item.description || fallbackItem.tips || '',
       actionText: item.relatedEntityId ? '查看详情' : fallbackItem.actionText || '查看点位',
@@ -115,7 +164,7 @@ function adaptFoods(remoteValue, fallbackValue) {
       tags: item.tags || fallbackItem.tags || [],
       imageClass: fallbackItem.imageClass || 'ph-ricefish',
       icon: fallbackItem.icon || '食',
-      imageUrl: firstImage(item) || fallbackItem.imageUrl
+      imageUrl: displayImage(item, fallbackItem, 'food')
     };
   });
 }
@@ -124,19 +173,26 @@ function adaptSpots(remoteValue, fallbackValue) {
   const fallback = fallbackValue || [];
   return normalizePageList(remoteValue).map((item, index) => {
     const fallbackItem = fallback.find((spot) => spot.id === item.id) || fallback[index % Math.max(fallback.length, 1)] || {};
+    const coverUrl = displayImage(item, fallbackItem, 'spot');
     return {
       ...fallbackItem,
       id: item.id || fallbackItem.id || `spot-${index}`,
-      name: item.name || fallbackItem.name || '海林景点',
+      name: item.name || item.title || fallbackItem.name || fallbackItem.title || '海林景点',
       category: item.tags?.[0] || fallbackItem.category || '乡村景点',
       tags: item.tags || fallbackItem.tags || [],
       openTime: item.openingHours || fallbackItem.openTime || '',
       duration: item.suggestedDuration || fallbackItem.duration || '',
       distance: fallbackItem.distance || '',
-      desc: item.summary || item.content || fallbackItem.desc || '',
-      coverUrl: firstImage(item) || fallbackItem.coverUrl,
-      imageUrls: item.images?.length ? item.images : fallbackItem.imageUrls,
-      icon: fallbackItem.icon || '景'
+      desc: item.summary || item.content || item.subtitle || fallbackItem.desc || fallbackItem.subtitle || '',
+      title: item.title || item.name || fallbackItem.title || fallbackItem.name || '海林景点',
+      subtitle: item.subtitle || item.summary || fallbackItem.subtitle || fallbackItem.desc || '',
+      buttonText: item.buttonText || fallbackItem.buttonText || '查看详情',
+      imageClass: item.imageClass || fallbackItem.imageClass,
+      coverUrl,
+      imageUrls: displayImages(item, fallbackItem, 'spot'),
+      icon: item.icon || fallbackItem.icon || '景',
+      url: item.url || fallbackItem.url,
+      openType: item.openType || fallbackItem.openType
     };
   });
 }
@@ -145,17 +201,25 @@ function adaptRoutes(remoteValue, fallbackValue) {
   const fallback = fallbackValue || [];
   return normalizePageList(remoteValue).map((item, index) => {
     const fallbackItem = fallback.find((route) => route.id === item.id) || fallback[index % Math.max(fallback.length, 1)] || {};
+    const routeTitle = item.title || item.name || fallbackItem.title || fallbackItem.name || '海林路线';
+    const timeline = Array.isArray(item.timeline) && item.timeline.length ? item.timeline : fallbackItem.timeline || [];
     return {
       ...fallbackItem,
       id: item.id || fallbackItem.id || `route-${index}`,
       name: item.name || fallbackItem.name || '海林路线',
+      title: routeTitle,
       subtitle: item.summary || fallbackItem.subtitle || '',
       reason: item.content || item.summary || fallbackItem.reason || '',
       duration: item.duration || fallbackItem.duration || '',
+      time: item.duration || fallbackItem.time || fallbackItem.duration || '',
+      route: item.route || timeline.map((step) => step.title).filter(Boolean).join(' - ') || fallbackItem.route || '',
+      highlights: item.highlights || fallbackItem.highlights || [],
+      label: item.label || fallbackItem.label || '推荐路线',
       audience: item.suitableFor || fallbackItem.audience || '',
       cost: fallbackItem.cost || '',
-      imageUrl: firstImage(item) || fallbackItem.imageUrl,
-      timeline: fallbackItem.timeline || []
+      imageUrl: displayImage(item, fallbackItem, 'route'),
+      timeline,
+      url: item.url || fallbackItem.url || `/pages/route-detail/route-detail?id=${encodeURIComponent(item.id || fallbackItem.id || `route-${index}`)}`
     };
   });
 }
@@ -175,7 +239,7 @@ function adaptProducts(remoteValue, fallbackValue) {
       specification: item.specification || fallbackItem.specification || '',
       imageClass: fallbackItem.imageClass || 'ph-product-fish',
       icon: fallbackItem.icon || '物',
-      imageUrl: firstImage(item) || fallbackItem.imageUrl
+      imageUrl: displayImage(item, fallbackItem, 'product')
     };
   });
 }
@@ -191,7 +255,7 @@ function adaptLives(remoteValue, fallbackValue) {
       desc: item.description || fallbackItem.desc || '',
       imageClass: fallbackItem.imageClass || 'ph-oujiang',
       icon: fallbackItem.icon || '播',
-      coverUrl: firstImage(item) || fallbackItem.coverUrl,
+      coverUrl: displayImage(item, fallbackItem, 'live'),
       liveUrl: item.playUrl || fallbackItem.liveUrl || '',
       hlsUrl: fallbackItem.hlsUrl || '',
       enabled: item.status === 'ONLINE' || fallbackItem.enabled !== false,
@@ -201,28 +265,32 @@ function adaptLives(remoteValue, fallbackValue) {
 }
 
 function adaptHome(remoteValue, fallbackValue) {
-  if (!remoteValue || !Array.isArray(remoteValue.banners)) return fallbackValue;
-  const scenicItems = adaptSpots(remoteValue.scenicSpots || [], spots).slice(0, 4);
-  const routeItems = adaptRoutes(remoteValue.routes || [], routes).slice(0, 2);
-  const productItems = adaptProducts(remoteValue.products || [], products).slice(0, 3);
-  const notices = normalizePageList(remoteValue.notices);
+  const source = remoteValue && remoteValue.content ? remoteValue.content : remoteValue;
+  if (!source || !Array.isArray(source.banners)) return fallbackValue;
+  const scenicItems = adaptSpots(source.scenicSpots || source.hotRecommends || [], spots).slice(0, 4);
+  const routeItems = adaptRoutes(source.routes || source.itineraries || [], recommend.itineraries).slice(0, 2);
+  const productItems = adaptProducts(source.products || [], products).slice(0, 3);
+  const notices = normalizePageList(source.notices);
   return {
     ...fallbackValue,
-    banners: adaptBanners(remoteValue.banners, fallbackValue.banners),
+    banners: adaptBanners(source.banners, fallbackValue.banners),
     products: productItems.length ? productItems : fallbackValue.products,
     hotRecommends: scenicItems.length
       ? scenicItems.map((item) => ({
           id: item.id,
-          title: item.name,
-          subtitle: item.desc,
-          buttonText: '查看详情',
+          title: item.title || item.name,
+          subtitle: item.subtitle || item.desc,
+          buttonText: item.buttonText || '查看详情',
           icon: item.icon || '景',
+          imageClass: item.imageClass,
           imageUrl: item.coverUrl,
-          url: `/pages/spot-detail/spot-detail?id=${encodeURIComponent(item.id)}`
+          url: item.url || `/pages/spot-detail/spot-detail?id=${encodeURIComponent(item.id)}`,
+          openType: item.openType
         }))
       : fallbackValue.hotRecommends,
     itineraries: routeItems.length ? routeItems : fallbackValue.itineraries,
-    notice: notices[0]?.title || fallbackValue.notice,
+    notice: source.notice || notices[0]?.title || fallbackValue.notice,
+    weather: source.weather || fallbackValue.weather,
     serviceMode: serviceModeText(),
     locationText: serviceConfig.locationText
   };

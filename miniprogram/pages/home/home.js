@@ -1,6 +1,42 @@
 const { loadHomeData } = require('../../services/content');
 const { featureComing, quickToast } = require('../../utils/mock');
 
+const HOME_IMAGE_FALLBACKS = {
+  banners: '/assets/photos/ai-village-gate.jpg',
+  itineraries: '/assets/photos/qingtian-city.jpg',
+  hotRecommends: '/assets/photos/ai-village-gate.jpg',
+  products: '/assets/photos/ai-fish-keychain.jpg',
+  rankings: '/assets/photos/ai-village-gate.jpg',
+  corridor: '/assets/photos/ai-village-gate.jpg',
+  feedsLeft: '/assets/photos/ai-village-gate.jpg',
+  feedsRight: '/assets/photos/ricefish-paddy.jpg'
+};
+
+function ensureImageList(list, field, fallback) {
+  return (Array.isArray(list) ? list : []).map((item) => ({
+    ...item,
+    [field]: item && item[field] ? item[field] : fallback
+  }));
+}
+
+function normalizeHomeImages(data) {
+  const source = data || {};
+  const feeds = ensureImageList(source.feeds, 'imageUrl', HOME_IMAGE_FALLBACKS.feedsLeft);
+  return {
+    ...source,
+    banners: ensureImageList(source.banners, 'imageUrl', HOME_IMAGE_FALLBACKS.banners),
+    itineraries: ensureImageList(source.itineraries, 'imageUrl', HOME_IMAGE_FALLBACKS.itineraries),
+    hotRecommends: ensureImageList(source.hotRecommends, 'imageUrl', HOME_IMAGE_FALLBACKS.hotRecommends),
+    products: ensureImageList(source.products, 'imageUrl', HOME_IMAGE_FALLBACKS.products),
+    corridor: ensureImageList(source.corridor, 'imageUrl', HOME_IMAGE_FALLBACKS.corridor),
+    rankings: (Array.isArray(source.rankings) ? source.rankings : []).map((section) => ({
+      ...section,
+      items: ensureImageList(section.items, 'imageUrl', HOME_IMAGE_FALLBACKS.rankings)
+    })),
+    feeds
+  };
+}
+
 Page({
   data: {
     banners: [],
@@ -26,23 +62,34 @@ Page({
 
   loadPageData() {
     loadHomeData().then((data) => {
-      const feeds = data.feeds || [];
+      const safeData = normalizeHomeImages(data);
+      const feeds = safeData.feeds || [];
       this.setData({
-        banners: data.banners || [],
-        gridPages: data.gridPages || [],
-        products: data.products || [],
-        hotRecommends: data.hotRecommends || [],
-        itineraries: data.itineraries || [],
-        serviceCards: data.serviceCards || [],
-        rankings: data.rankings || [],
-        corridor: data.corridor || [],
+        banners: safeData.banners || [],
+        gridPages: safeData.gridPages || [],
+        products: safeData.products || [],
+        hotRecommends: safeData.hotRecommends || [],
+        itineraries: safeData.itineraries || [],
+        serviceCards: safeData.serviceCards || [],
+        rankings: safeData.rankings || [],
+        corridor: safeData.corridor || [],
         feedsLeft: feeds.filter((_, index) => index % 2 === 0),
         feedsRight: feeds.filter((_, index) => index % 2 === 1),
-        notice: data.notice || '',
-        weather: data.weather || '',
-        serviceMode: data.serviceMode || '',
-        locationText: data.locationText || ''
+        notice: safeData.notice || '',
+        weather: safeData.weather || '',
+        serviceMode: safeData.serviceMode || '',
+        locationText: safeData.locationText || ''
       });
+    });
+  },
+
+  onHomeImageError(event) {
+    const { list, index, field } = event.currentTarget.dataset;
+    const itemIndex = Number(index);
+    if (!list || !field || Number.isNaN(itemIndex)) return;
+    const fallback = HOME_IMAGE_FALLBACKS[list] || HOME_IMAGE_FALLBACKS.banners;
+    this.setData({
+      [`${list}[${itemIndex}].${field}`]: fallback
     });
   },
 
