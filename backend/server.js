@@ -889,11 +889,63 @@ function sanitizeJsonValue(value, depth = 0) {
   return undefined;
 }
 
+const MEDIA_FIELDS = ['imageUrl', 'coverUrl', 'coverImage', 'iconPath'];
+const MEDIA_LIST_FIELDS = ['images', 'imageUrls'];
+
+function hasTextValue(value) {
+  return typeof value === 'string' && value.trim().length > 0;
+}
+
+function firstMediaValue(item) {
+  if (!item || typeof item !== 'object') return '';
+  for (const field of MEDIA_FIELDS) {
+    if (hasTextValue(item[field])) return cleanText(item[field], 500);
+  }
+  for (const field of MEDIA_LIST_FIELDS) {
+    if (Array.isArray(item[field]) && hasTextValue(item[field][0])) return cleanText(item[field][0], 500);
+  }
+  return '';
+}
+
+function hasAnyMedia(item) {
+  return Boolean(firstMediaValue(item));
+}
+
+function fillMediaFields(item, fallback) {
+  if (!item || typeof item !== 'object' || Array.isArray(item)) return item;
+  const fallbackItem = fallback && typeof fallback === 'object' && !Array.isArray(fallback) ? fallback : {};
+  const result = { ...item };
+
+  for (const field of MEDIA_FIELDS) {
+    if (!hasTextValue(result[field]) && hasTextValue(fallbackItem[field])) {
+      result[field] = cleanText(fallbackItem[field], 500);
+    }
+  }
+
+  for (const field of MEDIA_LIST_FIELDS) {
+    if ((!Array.isArray(result[field]) || !result[field].length) && Array.isArray(fallbackItem[field]) && fallbackItem[field].length) {
+      result[field] = fallbackItem[field].filter(Boolean).map((value) => cleanText(value, 500)).filter(Boolean);
+    }
+  }
+
+  if (!hasAnyMedia(result)) {
+    const fallbackMedia = firstMediaValue(fallbackItem);
+    if (fallbackMedia) result.imageUrl = fallbackMedia;
+  }
+
+  if (Array.isArray(result.items) && Array.isArray(fallbackItem.items)) {
+    result.items = result.items.map((child, index) => fillMediaFields(child, fallbackItem.items[index]));
+  }
+
+  return result;
+}
+
 function sanitizeContentList(value, fallback, limit) {
   if (!Array.isArray(value)) return deepClone(fallback);
+  const fallbackItems = Array.isArray(fallback) ? fallback : [];
   return value
     .slice(0, limit)
-    .map((item) => sanitizeJsonValue(item))
+    .map((item, index) => fillMediaFields(sanitizeJsonValue(item), fallbackItems[index] || fallbackItems[index % Math.max(fallbackItems.length, 1)]))
     .filter((item) => item && typeof item === 'object' && Object.keys(item).length);
 }
 
@@ -1129,7 +1181,7 @@ function sanitizeResourceItem(rawItem, fallbackItem, index, resourceKey) {
   if (item.id == null || item.id === '') {
     item.id = fallbackId || `${resourceKey}-${index + 1}`;
   }
-  return item;
+  return fillMediaFields(item, fallback);
 }
 
 function sanitizeResourceItems(resourceKey, rawItems, fallbackOnInvalid = true) {
@@ -1142,7 +1194,7 @@ function sanitizeResourceItems(resourceKey, rawItems, fallbackOnInvalid = true) 
   const fallbackItems = Array.isArray(config.defaults) ? config.defaults : [];
   return rawItems
     .slice(0, config.limit)
-    .map((item, index) => sanitizeResourceItem(item, fallbackItems[index], index, config.key))
+    .map((item, index) => sanitizeResourceItem(item, fallbackItems[index] || fallbackItems[index % Math.max(fallbackItems.length, 1)], index, config.key))
     .filter((item) => item && typeof item === 'object' && item.id != null);
 }
 

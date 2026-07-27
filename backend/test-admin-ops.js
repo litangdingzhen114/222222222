@@ -291,7 +291,7 @@ async function main() {
       notice: 'Admin edited home notice',
       weather: 'Admin edited weather',
       banners: homeContent.body.data.content.banners.map((item, index) => (
-        index === 0 ? { ...item, title: 'Admin edited banner' } : item
+        index === 0 ? { ...item, title: 'Admin edited banner', imageUrl: '' } : item
       ))
     };
     const savedHome = await requestJson(`http://${HOST}:${PORT}/api/admin/home-content`, {
@@ -301,6 +301,7 @@ async function main() {
     });
     assert.strictEqual(savedHome.status, 200);
     assert.strictEqual(savedHome.body.data.content.notice, 'Admin edited home notice');
+    assert(savedHome.body.data.content.banners[0].imageUrl, 'home save should restore missing banner image');
     assert.strictEqual(savedHome.body.data.meta.source, 'storage');
 
     const publicHome = await requestJson(`http://${HOST}:${PORT}/api/hailin/home`);
@@ -308,6 +309,7 @@ async function main() {
     assert.strictEqual(publicHome.body.data.notice, 'Admin edited home notice');
     assert.strictEqual(publicHome.body.data.weather, 'Admin edited weather');
     assert.strictEqual(publicHome.body.data.banners[0].title, 'Admin edited banner');
+    assert(publicHome.body.data.banners[0].imageUrl, 'public home should always expose banner image');
     assert(publicHome.body.data.itineraries.length >= 3);
     assert(publicHome.body.data.serviceCards.length >= 4);
 
@@ -368,7 +370,7 @@ async function main() {
     assert.strictEqual(spotContent.body.data.meta.source, 'defaults');
 
     const editedSpots = spotContent.body.data.items.map((item, index) => (
-      index === 0 ? { ...item, name: 'Admin edited spot', desc: '后台编辑后的景点内容' } : item
+      index === 0 ? { ...item, name: 'Admin edited spot', desc: '后台编辑后的景点内容', imageUrl: '', coverUrl: '', coverImage: '', images: [], imageUrls: [] } : item
     ));
     const savedSpots = await requestJson(`http://${HOST}:${PORT}/api/admin/resources/spots`, {
       method: 'PUT',
@@ -378,10 +380,18 @@ async function main() {
     assert.strictEqual(savedSpots.status, 200);
     assert.strictEqual(savedSpots.body.data.meta.source, 'storage');
     assert.strictEqual(savedSpots.body.data.items[0].name, 'Admin edited spot');
+    assert(
+      savedSpots.body.data.items[0].imageUrl ||
+      savedSpots.body.data.items[0].coverUrl ||
+      savedSpots.body.data.items[0].coverImage ||
+      (Array.isArray(savedSpots.body.data.items[0].imageUrls) && savedSpots.body.data.items[0].imageUrls.length),
+      'resource save should restore missing image fields'
+    );
 
     const publicSpots = await requestJson(`http://${HOST}:${PORT}/api/hailin/spots`);
     assert.strictEqual(publicSpots.status, 200);
     assert.strictEqual(publicSpots.body.data[0].name, 'Admin edited spot');
+    assert(Array.isArray(publicSpots.body.data[0].imageUrls) && publicSpots.body.data[0].imageUrls.length, 'public spot should retain image urls');
 
     const resourceSummary = await requestJson(`http://${HOST}:${PORT}/api/admin/summary`, {
       headers: authHeaders
