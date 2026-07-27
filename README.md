@@ -70,14 +70,26 @@ npm test
 
 ## Vercel 部署
 
-仓库已经包含 `api/index.js` 和 `vercel.json`，可以作为 Vercel Project 从 GitHub 导入。Vercel 会把 `/health`、`/api/*`、`/admin/*`、`/media/*` 转发给同一个 Node.js Function。
+仓库 `litangdingzhen114/222222222` 已经包含根目录 `api/index.js` 和 `vercel.json`，可以作为 Vercel Project 从 GitHub 导入。Vercel 会把 `/health`、`/api/*`、`/admin/*`、`/media/*` 转发给同一个 Node.js Function。
+
+Vercel 项目设置建议：
+
+```text
+Framework Preset: Other
+Root Directory: 留空或仓库根目录
+Install Command: npm install
+Build Command: npm run build
+Output Directory: 留空
+```
+
+不要把 Root Directory 设置成 `backend`。当前 Vercel 入口文件在仓库根目录 `api/index.js`，如果只部署 `backend` 子目录，Vercel 会绕开根目录 `vercel.json`，生产域名可能出现 `DEPLOYMENT_NOT_FOUND` 或路由 404。
 
 生产环境变量至少需要：
 
 ```text
 NODE_ENV=production
-PUBLIC_BASE_URL=https://api.sunmaosun.com
-ALLOWED_ORIGINS=https://api.sunmaosun.com
+PUBLIC_BASE_URL=https://hailin.store
+ALLOWED_ORIGINS=https://hailin.store
 ADMIN_TOKEN=replace-with-a-strong-random-token-at-least-24-characters
 KIMI_API_KEY=replace-with-your-kimi-key
 ```
