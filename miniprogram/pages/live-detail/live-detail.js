@@ -1,4 +1,4 @@
-const { loadLives } = require('../../services/content');
+const { loadLives, loadLivePlayUrl } = require('../../services/content');
 const { mediaUrl } = require('../../services/api');
 const recommend = require('../../data/recommend');
 const { findById, quickToast } = require('../../utils/mock');
@@ -49,6 +49,7 @@ Page({
       });
       if (live) {
         this.prepareVideo(live);
+        this.refreshPlayUrl(live);
       }
     });
   },
@@ -86,6 +87,21 @@ Page({
     }
 
     this.prepareLocalVideo();
+  },
+
+  refreshPlayUrl(live) {
+    loadLivePlayUrl(live.id)
+      .then((payload) => {
+        const playUrl = String((payload && payload.playUrl) || '').trim();
+        if (!playUrl) return;
+        this.prepareVideo({
+          ...live,
+          hlsUrl: playUrl
+        });
+      })
+      .catch((error) => {
+        console.warn('load live play url failed', error);
+      });
   },
 
   prepareLocalVideo() {

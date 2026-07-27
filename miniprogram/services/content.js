@@ -267,6 +267,28 @@ function loadLives() {
   return withContentFallback('lives', lives, adaptLives);
 }
 
+function normalizePlayUrl(payload) {
+  if (!payload) return '';
+  const url = String(payload.playUrl || payload.hlsUrl || payload.liveUrl || '').trim();
+  if (!url) return '';
+  if (/^https?:\/\//i.test(url)) return url;
+  if (url.startsWith('/')) {
+    const { mediaUrl } = require('./api');
+    return mediaUrl(url);
+  }
+  return url;
+}
+
+function loadLivePlayUrl(id) {
+  const cameraId = encodeURIComponent(id || '');
+  if (!cameraId) return Promise.reject(new Error('missing camera id'));
+  return request(`/api/v1/cameras/${cameraId}/play-url`, { method: 'POST' })
+    .then((payload) => ({
+      ...payload,
+      playUrl: normalizePlayUrl(payload)
+    }));
+}
+
 function submitBooking(payload) {
   return request(serviceConfig.endpoints.booking, {
     method: 'POST',
@@ -313,6 +335,7 @@ module.exports = {
   loadRoutes,
   loadProducts,
   loadLives,
+  loadLivePlayUrl,
   submitBooking,
   submitFeedback,
   submitOrder,

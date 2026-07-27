@@ -1,6 +1,9 @@
 const assert = require('assert');
+const fs = require('fs');
+const path = require('path');
 
 const pagePath = require.resolve('../pages/live-detail/live-detail');
+const pageSource = fs.readFileSync(path.join(__dirname, '..', 'pages', 'live-detail', 'live-detail.js'), 'utf8');
 
 let pageConfig = null;
 const toastTitles = [];
@@ -51,6 +54,8 @@ function createContext(videoUrl, videoSourceIndex, videoSourceCandidates) {
 }
 
 assert(pageConfig, 'live detail page should register config');
+assert(pageSource.includes('loadLivePlayUrl'), 'live detail should request backend play url');
+assert(pageSource.includes('refreshPlayUrl'), 'live detail should refresh dynamic play url before fallback ends');
 
 let context = createContext('', -1);
 pageConfig.prepareVideo.call(context, {

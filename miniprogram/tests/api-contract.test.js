@@ -41,6 +41,7 @@ publicContract.forEach(([key, method]) => {
 });
 assert(contentService.includes('withContentFallback'), 'content service should prefer v1 and fall back safely');
 assert(contentService.includes('adaptMapPoints'), 'content service should adapt v1 map points to page data');
+assert(contentService.includes('/api/v1/cameras/${cameraId}/play-url'), 'content service should request dynamic camera play urls');
 
 [
   ['GET', '/api/admin/session'],
