@@ -54,7 +54,7 @@ function createWxMock(platform, storageValue, tokenValue = '') {
 
   const deviceWx = createWxMock('ios', '');
   api = loadApi(deviceWx);
-  assert.strictEqual(api.resolveApiBaseUrl(), 'https://www.hailin.store');
+  assert.strictEqual(api.resolveApiBaseUrl(), 'https://api.hailin.store');
 
   delete global.wx;
   console.log('api service environment selection ok');
