@@ -29,6 +29,8 @@ services:
   api:
     build:
       context: ./backend
+      args:
+        NPM_CONFIG_REGISTRY: ${NPM_CONFIG_REGISTRY:-https://registry.npmjs.org/}
     restart: unless-stopped
     env_file:
       - ./backend/.env
@@ -59,6 +61,7 @@ services:
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-hailin}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-hailin}?schema=public
       REDIS_URL: redis://redis:6379/0
+      NPM_CONFIG_REGISTRY: ${NPM_CONFIG_REGISTRY:-https://registry.npmjs.org/}
     volumes:
       - ./:/work
     command: ["sh", "-c", "npm ci && npm run prisma:deploy && npm run prisma:seed"]
