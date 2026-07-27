@@ -75,8 +75,10 @@ async function main() {
   assert(apiSource.includes("('orders'"), 'admin dashboard should manage order fulfillment');
   assert(auditPage.includes('fetchBackupBlob'), 'admin dashboard should expose one-click backup');
   assert(homePage.includes('json-editor'), 'admin dashboard should render home content editor');
-  assert(livePage.includes('saveLiveContent'), 'admin dashboard should save live stream points');
-  assert(livePage.includes('Switch'), 'admin dashboard should toggle live stream points');
+  assert(livePage.includes("listAdminResource<CameraRecord>('cameras'"), 'admin dashboard should load camera devices');
+  assert(livePage.includes('createAdminResource'), 'admin dashboard should create camera devices');
+  assert(livePage.includes('updateAdminResource'), 'admin dashboard should update camera devices');
+  assert(livePage.includes('testCameraPlayUrl'), 'admin dashboard should test dynamic camera play urls');
   assert(resourcePage.includes('createAdminResource'), 'admin dashboard should create resource content through v1 admin API');
   assert(resourcePage.includes('updateAdminResource'), 'admin dashboard should update resource content through v1 admin API');
   assert(resourcePage.includes('publishAdminResource'), 'admin dashboard should publish resource content through v1 admin API');

@@ -454,6 +454,13 @@ export function getConfigStatus() {
   return apiRequest<ConfigStatus>('/admin/config-status');
 }
 
+export function testCameraPlayUrl(id: string) {
+  return apiRequest<{ playUrl: string; expireAt: string; mode: 'official' | 'development' }>(
+    `/cameras/${encodeURIComponent(id)}/play-url`,
+    { method: 'POST' }
+  );
+}
+
 export function listAdminResource<T>(resource: string, params: QueryParams = {}) {
   return apiRequest<ApiPage<T>>(`/admin/${resource}${queryString(params)}`);
 }

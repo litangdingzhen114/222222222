@@ -1,166 +1,226 @@
-import { DeleteOutlined, EditOutlined, PlusOutlined, PlayCircleOutlined } from '@ant-design/icons';
+import {
+  DeleteOutlined,
+  EditOutlined,
+  LinkOutlined,
+  PlusOutlined,
+  PlayCircleOutlined,
+  ReloadOutlined
+} from '@ant-design/icons';
 import {
   App,
   Button,
   Card,
   Col,
-  Descriptions,
   Drawer,
   Form,
+  Image,
   Input,
   InputNumber,
   Popconfirm,
   Row,
+  Select,
   Space,
   Statistic,
-  Switch,
   Table,
-  Tag
+  Tag,
+  Typography
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
-import { getLiveContent, resetLiveContent, saveLiveContent } from '../api';
-import type { LiveItem } from '../types';
-import { formatDate } from '../utils';
+import {
+  createAdminResource,
+  deleteAdminResource,
+  listAdminResource,
+  testCameraPlayUrl,
+  updateAdminResource
+} from '../api';
+import { formatDate, statusColor } from '../utils';
+
+const { Text } = Typography;
+
+type CameraRecord = {
+  id: string;
+  name: string;
+  coverImage: string;
+  deviceSerial: string;
+  channelNo: number;
+  ezvizDeviceId?: string | null;
+  location?: string | null;
+  longitude?: number | string | null;
+  latitude?: number | string | null;
+  description?: string | null;
+  status: 'ONLINE' | 'OFFLINE' | 'DISABLED';
+  sort?: number;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+type CameraFormValues = Omit<CameraRecord, 'id' | 'createdAt' | 'updatedAt'>;
 
 type EditingState = {
   mode: 'create' | 'edit';
-  item: LiveItem;
+  record: Partial<CameraRecord>;
 };
 
-function sourceTag(item: LiveItem) {
-  if (item.hlsUrl) return <Tag color="purple">HLS</Tag>;
-  if (item.liveUrl) return <Tag color="blue">自定义视频</Tag>;
-  return <Tag>后端示例视频</Tag>;
+const statusOptions = [
+  { label: '在线', value: 'ONLINE' },
+  { label: '离线', value: 'OFFLINE' },
+  { label: '停用', value: 'DISABLED' }
+];
+
+const statusLabels = Object.fromEntries(statusOptions.map((item) => [item.value, item.label]));
+
+function emptyCamera(): CameraFormValues {
+  return {
+    name: '新增直播点位',
+    coverImage: '/assets/photos/ai-village-gate.jpg',
+    deviceSerial: '',
+    channelNo: 1,
+    ezvizDeviceId: '',
+    location: '',
+    longitude: undefined,
+    latitude: undefined,
+    description: '',
+    status: 'DISABLED',
+    sort: 99
+  };
 }
 
-function emptyLiveItem(): LiveItem {
+function normalizeCamera(values: CameraFormValues) {
   return {
-    id: `live-${Date.now()}`,
-    title: '',
-    viewers: 0,
-    desc: '',
-    imageClass: '',
-    icon: '播',
-    coverUrl: '',
-    liveUrl: '',
-    hlsUrl: '',
-    enabled: true,
-    sortOrder: 99,
-    statusText: '直播中'
+    ...values,
+    channelNo: Number(values.channelNo || 1),
+    sort: Number(values.sort || 0),
+    longitude: values.longitude === undefined || values.longitude === null || values.longitude === '' ? undefined : Number(values.longitude),
+    latitude: values.latitude === undefined || values.latitude === null || values.latitude === '' ? undefined : Number(values.latitude)
   };
 }
 
 export function LiveContentPage() {
   const { message, modal } = App.useApp();
   const queryClient = useQueryClient();
-  const [items, setItems] = useState<LiveItem[]>([]);
+  const [page, setPage] = useState(1);
+  const [keyword, setKeyword] = useState('');
   const [editing, setEditing] = useState<EditingState | null>(null);
-  const [form] = Form.useForm<LiveItem>();
+  const [form] = Form.useForm<CameraFormValues>();
 
-  const query = useQuery({ queryKey: ['lives-content'], queryFn: getLiveContent });
+  const query = useQuery({
+    queryKey: ['admin-resource', 'cameras', page, keyword],
+    queryFn: () => listAdminResource<CameraRecord>('cameras', { page, pageSize: 10, keyword })
+  });
 
   useEffect(() => {
-    if (query.data?.items) setItems(query.data.items);
-  }, [query.data]);
-
-  useEffect(() => {
-    if (editing) form.setFieldsValue(editing.item);
+    if (editing) form.setFieldsValue(editing.record as CameraFormValues);
+    else form.resetFields();
   }, [editing, form]);
 
-  const stats = query.data?.meta.stats || {};
-  const sortedItems = useMemo(() => [...items].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)), [items]);
+  const stats = useMemo(() => {
+    const list = query.data?.list || [];
+    return {
+      total: query.data?.total || 0,
+      online: list.filter((item) => item.status === 'ONLINE').length,
+      offline: list.filter((item) => item.status === 'OFFLINE').length,
+      disabled: list.filter((item) => item.status === 'DISABLED').length
+    };
+  }, [query.data]);
+
+  const invalidate = async () => {
+    await queryClient.invalidateQueries({ queryKey: ['admin-resource', 'cameras'] });
+    await queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+  };
 
   const saveMutation = useMutation({
-    mutationFn: () => saveLiveContent(sortedItems),
-    onSuccess: async (payload) => {
-      setItems(payload.items);
-      message.success('慢直播配置已保存');
-      await queryClient.invalidateQueries({ queryKey: ['lives-content'] });
-      await queryClient.invalidateQueries({ queryKey: ['summary'] });
+    mutationFn: async () => {
+      const values = normalizeCamera(await form.validateFields());
+      if (editing?.mode === 'edit') {
+        return updateAdminResource<CameraRecord>('cameras', String(editing.record.id), values);
+      }
+      return createAdminResource<CameraRecord>('cameras', values);
+    },
+    onSuccess: async () => {
+      message.success('直播设备已保存');
+      setEditing(null);
+      await invalidate();
     },
     onError: (error) => message.error(error instanceof Error ? error.message : '保存失败')
   });
 
-  const resetMutation = useMutation({
-    mutationFn: resetLiveContent,
-    onSuccess: async (payload) => {
-      setItems(payload.items);
-      message.success('已恢复默认直播点位');
-      await queryClient.invalidateQueries({ queryKey: ['lives-content'] });
-      await queryClient.invalidateQueries({ queryKey: ['summary'] });
-    }
+  const statusMutation = useMutation({
+    mutationFn: ({ record, status }: { record: CameraRecord; status: CameraRecord['status'] }) =>
+      updateAdminResource<CameraRecord>('cameras', record.id, { status }),
+    onSuccess: async (_, variables) => {
+      message.success(`${variables.record.name} 已更新为${statusLabels[variables.status]}`);
+      await invalidate();
+    },
+    onError: (error) => message.error(error instanceof Error ? error.message : '状态更新失败')
   });
 
-  const openCreate = () => setEditing({ mode: 'create', item: emptyLiveItem() });
-  const openEdit = (item: LiveItem) => setEditing({ mode: 'edit', item });
+  const deleteMutation = useMutation({
+    mutationFn: (record: CameraRecord) => deleteAdminResource('cameras', record.id),
+    onSuccess: async () => {
+      message.success('直播设备已删除');
+      await invalidate();
+    },
+    onError: (error) => message.error(error instanceof Error ? error.message : '删除失败')
+  });
 
-  const submitDrawer = async () => {
-    const values = await form.validateFields();
-    if (editing?.mode === 'edit') {
-      setItems((current) => current.map((item) => item.id === editing.item.id ? values : item));
-    } else {
-      setItems((current) => [...current, values]);
-    }
-    setEditing(null);
-    message.success('已更新本地编辑，记得保存配置');
-  };
+  const playUrlMutation = useMutation({
+    mutationFn: (record: CameraRecord) => testCameraPlayUrl(record.id),
+    onSuccess: (payload) => {
+      modal.info({
+        title: payload.mode === 'official' ? '正式播放地址' : '开发模式播放地址',
+        content: (
+          <Space direction="vertical" className="page-stack">
+            <Text copyable>{payload.playUrl}</Text>
+            <Text type="secondary">过期时间：{formatDate(payload.expireAt)}</Text>
+          </Space>
+        )
+      });
+    },
+    onError: (error) => message.error(error instanceof Error ? error.message : '播放地址获取失败')
+  });
 
-  const removeItem = (id: string) => {
-    setItems((current) => current.filter((item) => item.id !== id));
-    message.success('已移除点位，记得保存配置');
-  };
-
-  const updateEnabled = (id: string, enabled: boolean) => {
-    setItems((current) => current.map((item) => item.id === id ? { ...item, enabled } : item));
-  };
-
-  const confirmReset = () => {
-    modal.confirm({
-      title: '恢复默认慢直播点位？',
-      content: '当前后台保存的慢直播配置会被默认点位覆盖。',
-      okText: '恢复默认',
-      cancelText: '取消',
-      onOk: () => resetMutation.mutateAsync()
-    });
-  };
-
-  const columns: ColumnsType<LiveItem> = [
+  const columns: ColumnsType<CameraRecord> = [
     {
-      title: '点位',
-      dataIndex: 'title',
+      title: '直播点位',
       render: (_, record) => (
-        <Space direction="vertical" size={0}>
-          <strong>{record.title || '-'}</strong>
-          <span className="table-subtle">{record.id}</span>
+        <Space align="start">
+          <Image src={record.coverImage} width={72} height={52} className="resource-cover" preview={false} />
+          <Space direction="vertical" size={2}>
+            <Text strong>{record.name}</Text>
+            <Text type="secondary" className="table-subtle">{record.location || record.description || '-'}</Text>
+            <Text type="secondary" className="table-subtle">{record.deviceSerial} · 通道 {record.channelNo}</Text>
+          </Space>
         </Space>
       )
     },
-    { title: '排序', dataIndex: 'sortOrder', width: 80 },
-    { title: '观看人数', dataIndex: 'viewers', width: 110 },
-    {
-      title: '播放源',
-      width: 140,
-      render: (_, record) => sourceTag(record)
-    },
+    { title: '排序', dataIndex: 'sort', width: 80 },
     {
       title: '状态',
-      width: 150,
-      render: (_, record) => (
-        <Space>
-          <Switch checked={record.enabled !== false} onChange={(checked) => updateEnabled(record.id, checked)} />
-          <Tag color={record.enabled !== false ? 'green' : 'default'}>{record.enabled !== false ? record.statusText || '直播中' : '已停用'}</Tag>
-        </Space>
-      )
+      dataIndex: 'status',
+      width: 120,
+      render: (value) => <Tag color={statusColor(value)}>{statusLabels[value] || value}</Tag>
+    },
+    {
+      title: '更新时间',
+      dataIndex: 'updatedAt',
+      width: 170,
+      render: (value) => formatDate(value)
     },
     {
       title: '操作',
-      width: 170,
+      width: 300,
       render: (_, record) => (
-        <Space>
-          <Button icon={<EditOutlined />} onClick={() => openEdit(record)}>编辑</Button>
-          <Popconfirm title="移除这个点位？" okText="移除" cancelText="取消" onConfirm={() => removeItem(record.id)}>
+        <Space wrap>
+          <Button icon={<EditOutlined />} onClick={() => setEditing({ mode: 'edit', record })}>编辑</Button>
+          <Button icon={<LinkOutlined />} loading={playUrlMutation.isPending} onClick={() => playUrlMutation.mutate(record)}>测试播放</Button>
+          {record.status === 'DISABLED' ? (
+            <Button type="primary" onClick={() => statusMutation.mutate({ record, status: 'ONLINE' })}>启用</Button>
+          ) : (
+            <Button onClick={() => statusMutation.mutate({ record, status: 'DISABLED' })}>停用</Button>
+          )}
+          <Popconfirm title="删除这个直播设备？" okText="删除" cancelText="取消" onConfirm={() => deleteMutation.mutate(record)}>
             <Button danger icon={<DeleteOutlined />} />
           </Popconfirm>
         </Space>
@@ -171,107 +231,107 @@ export function LiveContentPage() {
   return (
     <Space direction="vertical" size={16} className="page-stack">
       <Row gutter={[16, 16]}>
-        <Col xs={12} lg={6}><Card><Statistic title="点位总数" value={stats.total || items.length} prefix={<PlayCircleOutlined />} /></Card></Col>
-        <Col xs={12} lg={6}><Card><Statistic title="启用点位" value={stats.enabled || items.filter((item) => item.enabled !== false).length} /></Card></Col>
-        <Col xs={12} lg={6}><Card><Statistic title="自定义源" value={stats.customSources || items.filter((item) => item.liveUrl || item.hlsUrl).length} /></Card></Col>
-        <Col xs={12} lg={6}><Card><Statistic title="默认示例源" value={items.filter((item) => !item.liveUrl && !item.hlsUrl).length} /></Card></Col>
+        <Col xs={12} lg={6}><Card><Statistic title="设备总数" value={stats.total} prefix={<PlayCircleOutlined />} /></Card></Col>
+        <Col xs={12} lg={6}><Card><Statistic title="在线" value={stats.online} /></Card></Col>
+        <Col xs={12} lg={6}><Card><Statistic title="离线" value={stats.offline} /></Card></Col>
+        <Col xs={12} lg={6}><Card><Statistic title="停用" value={stats.disabled} /></Card></Col>
       </Row>
 
       <Card>
-        <Descriptions column={{ xs: 1, md: 3 }} size="small">
-          <Descriptions.Item label="来源"><Tag color={query.data?.meta.source === 'storage' ? 'green' : 'default'}>{query.data?.meta.source === 'storage' ? '后台已保存' : '默认点位'}</Tag></Descriptions.Item>
-          <Descriptions.Item label="更新时间">{formatDate(query.data?.meta.updatedAt)}</Descriptions.Item>
-          <Descriptions.Item label="更新人">{query.data?.meta.updatedBy || '-'}</Descriptions.Item>
-        </Descriptions>
+        <Space wrap className="toolbar">
+          <Input.Search
+            allowClear
+            placeholder="搜索点位、设备序列号或位置"
+            className="search-box"
+            onSearch={(value) => {
+              setKeyword(value.trim());
+              setPage(1);
+            }}
+          />
+          <Button icon={<ReloadOutlined />} onClick={() => invalidate()}>刷新</Button>
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => setEditing({ mode: 'create', record: emptyCamera() })}>新增设备</Button>
+        </Space>
       </Card>
 
-      <Card
-        title="慢直播点位"
-        extra={(
-          <Space>
-            <Button icon={<PlusOutlined />} onClick={openCreate}>新增点位</Button>
-            <Button onClick={confirmReset}>恢复默认</Button>
-            <Button type="primary" loading={saveMutation.isPending} onClick={() => saveMutation.mutate()}>保存配置</Button>
-          </Space>
-        )}
-      >
+      <Card title="慢直播设备">
         <Table
           rowKey="id"
           loading={query.isLoading}
-          dataSource={sortedItems}
+          dataSource={query.data?.list || []}
           columns={columns}
-          pagination={false}
+          pagination={{
+            current: page,
+            pageSize: 10,
+            total: query.data?.total || 0,
+            showSizeChanger: false,
+            onChange: setPage
+          }}
         />
       </Card>
 
       <Drawer
-        title={editing?.mode === 'edit' ? '编辑直播点位' : '新增直播点位'}
-        width={620}
+        title={editing?.mode === 'edit' ? '编辑直播设备' : '新增直播设备'}
+        width={700}
         open={Boolean(editing)}
         destroyOnClose
         onClose={() => setEditing(null)}
-        extra={<Button type="primary" onClick={submitDrawer}>应用编辑</Button>}
+        extra={<Button type="primary" loading={saveMutation.isPending} onClick={() => saveMutation.mutate()}>保存</Button>}
       >
         <Form form={form} layout="vertical">
-          <Row gutter={14}>
+          <Row gutter={16}>
             <Col xs={24} md={12}>
-              <Form.Item label="点位 ID" name="id" rules={[{ required: true, message: '请输入点位 ID' }]}>
-                <Input disabled={editing?.mode === 'edit'} />
+              <Form.Item label="点位名称" name="name" rules={[{ required: true, message: '请输入点位名称' }]}>
+                <Input maxLength={80} showCount />
               </Form.Item>
             </Col>
             <Col xs={24} md={12}>
-              <Form.Item label="标题" name="title" rules={[{ required: true, message: '请输入标题' }]}>
-                <Input maxLength={100} showCount />
-              </Form.Item>
-            </Col>
-            <Col xs={24} md={12}>
-              <Form.Item label="观看人数" name="viewers">
-                <InputNumber min={0} max={999999} className="full-input" />
-              </Form.Item>
-            </Col>
-            <Col xs={24} md={12}>
-              <Form.Item label="排序" name="sortOrder">
-                <InputNumber min={0} max={9999} className="full-input" />
-              </Form.Item>
-            </Col>
-            <Col xs={24} md={12}>
-              <Form.Item label="图标字" name="icon">
-                <Input maxLength={8} showCount />
-              </Form.Item>
-            </Col>
-            <Col xs={24} md={12}>
-              <Form.Item label="状态文案" name="statusText">
-                <Input maxLength={40} showCount />
+              <Form.Item label="状态" name="status" rules={[{ required: true, message: '请选择状态' }]}>
+                <Select options={statusOptions} />
               </Form.Item>
             </Col>
             <Col xs={24}>
-              <Form.Item label="说明" name="desc">
-                <Input.TextArea rows={3} maxLength={500} showCount />
+              <Form.Item label="封面图" name="coverImage" rules={[{ required: true, message: '请输入封面图路径' }]}>
+                <Input placeholder="/assets/photos/ai-village-gate.jpg" />
               </Form.Item>
             </Col>
             <Col xs={24} md={12}>
-              <Form.Item label="封面路径" name="coverUrl">
-                <Input placeholder="/assets/photos/..." />
+              <Form.Item label="萤石设备序列号" name="deviceSerial" rules={[{ required: true, message: '请输入设备序列号' }]}>
+                <Input maxLength={80} showCount />
               </Form.Item>
             </Col>
             <Col xs={24} md={12}>
-              <Form.Item label="封面样式类" name="imageClass">
-                <Input placeholder="ph-oujiang" />
+              <Form.Item label="通道号" name="channelNo" rules={[{ required: true, message: '请输入通道号' }]}>
+                <InputNumber min={1} max={64} precision={0} className="full-input" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={12}>
+              <Form.Item label="萤石设备 ID" name="ezvizDeviceId">
+                <Input maxLength={120} showCount />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={12}>
+              <Form.Item label="位置" name="location">
+                <Input maxLength={120} showCount />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={12}>
+              <Form.Item label="经度" name="longitude">
+                <InputNumber precision={7} className="full-input" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={12}>
+              <Form.Item label="纬度" name="latitude">
+                <InputNumber precision={7} className="full-input" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={12}>
+              <Form.Item label="排序" name="sort">
+                <InputNumber min={0} max={9999} precision={0} className="full-input" />
               </Form.Item>
             </Col>
             <Col xs={24}>
-              <Form.Item label="视频地址 MP4/FLV" name="liveUrl">
-                <Input placeholder="留空则使用后端示例视频 /media/hailin-live.mp4" />
-              </Form.Item>
-            </Col>
-            <Col xs={24}>
-              <Form.Item label="HLS 地址" name="hlsUrl">
-                <Input placeholder="https://.../index.m3u8" />
-              </Form.Item>
-            </Col>
-            <Col xs={24}>
-              <Form.Item label="启用" name="enabled" valuePropName="checked">
-                <Switch />
+              <Form.Item label="说明" name="description">
+                <Input.TextArea rows={4} maxLength={600} showCount />
               </Form.Item>
             </Col>
           </Row>
