@@ -5,6 +5,7 @@ const crypto = require('crypto');
 
 const ROOT = path.resolve(__dirname, '..');
 const ADMIN_DIR = path.join(__dirname, 'admin');
+const ASSETS_DIR = path.join(ROOT, 'miniprogram', 'assets');
 
 function loadEnvFile(filePath) {
   if (!fs.existsSync(filePath)) return;
@@ -67,6 +68,13 @@ const foods = require('../miniprogram/data/foods');
 const lives = require('../miniprogram/data/lives');
 const spots = require('../miniprogram/data/spots');
 const routes = require('../miniprogram/data/routes');
+
+const productCategories = [
+  { id: 'souvenir', name: '文创好礼', icon: '石', sort: 1, status: 'PUBLISHED' },
+  { id: 'farm', name: '山乡农品', icon: '田', sort: 2, status: 'PUBLISHED' },
+  { id: 'food', name: '乡味美食', icon: '鱼', sort: 3, status: 'PUBLISHED' },
+  { id: 'course', name: '研学体验', icon: '研', sort: 4, status: 'PUBLISHED' }
+];
 
 const LOCATION_TEXT = '浙江省丽水市青田县海口镇海林村';
 const REGION_KEYWORDS = ['瓯江', '青田石', '田鱼', '侨乡', '山水村落'];
@@ -182,7 +190,21 @@ const CONTENT_RESOURCES = {
     fileName: 'products-content.json',
     defaults: products,
     limit: 80
+  },
+  'product-categories': {
+    label: '商品分类',
+    fileName: 'product-categories-content.json',
+    defaults: productCategories,
+    limit: 40
   }
+};
+const ADMIN_RESOURCE_ENDPOINTS = {
+  'scenic-spots': 'spots',
+  'travel-routes': 'routes',
+  foods: 'foods',
+  'map-points': 'map-points',
+  products: 'products',
+  'product-categories': 'product-categories'
 };
 const rateBuckets = new Map();
 
@@ -1127,7 +1149,7 @@ function sanitizeResourceItems(resourceKey, rawItems, fallbackOnInvalid = true) 
 function contentResourceStats(items) {
   return {
     total: items.length,
-    withImage: items.filter((item) => item.imageUrl || item.coverUrl || (Array.isArray(item.imageUrls) && item.imageUrls.length)).length,
+    withImage: items.filter((item) => item.imageUrl || item.coverUrl || item.coverImage || (Array.isArray(item.imageUrls) && item.imageUrls.length) || (Array.isArray(item.images) && item.images.length)).length,
     withTarget: items.filter((item) => item.targetUrl || item.bookingUrl || item.refId).length,
     hidden: items.filter((item) => item.enabled === false || item.status === 'disabled').length
   };
@@ -1212,9 +1234,247 @@ function resetContentResource(req, resourceKey) {
   return defaultContentResourceEnvelope(config.key);
 }
 
-function managedContentItems(resourceKey) {
+function adminResourceKey(endpoint) {
+  const cleanEndpoint = cleanText(endpoint, 120);
+  const resourceKey = ADMIN_RESOURCE_ENDPOINTS[cleanEndpoint];
+  if (!resourceKey) throw new HttpError(404, 'Admin resource not found');
+  return resourceKey;
+}
+
+function firstResourceImage(item) {
+  if (!item || typeof item !== 'object') return '';
+  if (item.coverImage) return cleanText(item.coverImage, 500);
+  if (item.coverUrl) return cleanText(item.coverUrl, 500);
+  if (item.imageUrl) return cleanText(item.imageUrl, 500);
+  if (Array.isArray(item.images) && item.images[0]) return cleanText(item.images[0], 500);
+  if (Array.isArray(item.imageUrls) && item.imageUrls[0]) return cleanText(item.imageUrls[0], 500);
+  return '';
+}
+
+function arrayValue(value) {
+  if (Array.isArray(value)) return value.filter(Boolean).map((item) => cleanText(item, 500)).filter(Boolean);
+  if (typeof value === 'string' && value.trim()) {
+    return value.split(/[，,]/).map((item) => cleanText(item, 500)).filter(Boolean);
+  }
+  return [];
+}
+
+function moneyValueToCents(value) {
+  if (typeof value === 'number' && Number.isFinite(value)) return Math.max(0, Math.round(value));
+  const text = cleanText(value, 40);
+  if (!text) return 0;
+  const parsed = Number(text.replace(/[^\d.]/g, ''));
+  if (!Number.isFinite(parsed)) return 0;
+  return Math.max(0, Math.round(parsed * 100));
+}
+
+function statusForResource(resourceKey, item, fallbackStatus) {
+  const status = cleanText(item.status, 40);
+  if (status) return status;
+  if (resourceKey === 'products') return fallbackStatus || 'ON_SALE';
+  return fallbackStatus || 'PUBLISHED';
+}
+
+function mapPointTypeValue(value) {
+  const text = cleanText(value, 40);
+  const map = {
+    景点: 'SCENIC_SPOT',
+    停车: 'PARKING',
+    停车场: 'PARKING',
+    厕所: 'TOILET',
+    公厕: 'TOILET',
+    服务: 'SERVICE_CENTER',
+    服务中心: 'SERVICE_CENTER',
+    住宿: 'HOMESTAY',
+    民宿: 'HOMESTAY',
+    美食: 'FOOD',
+    餐饮: 'FOOD',
+    采摘: 'FARM',
+    农场: 'FARM',
+    医疗: 'MEDICAL',
+    直播: 'CAMERA',
+    其他: 'OTHER'
+  };
+  return map[text] || text || 'OTHER';
+}
+
+function normalizedAdminResourceItem(resourceKey, item, index = 0) {
+  const image = firstResourceImage(item);
+  const base = {
+    ...item,
+    id: cleanText(item.id, 120) || `${resourceKey}-${index + 1}`,
+    sort: normalizePositiveInt(item.sort ?? item.sortOrder, index + 1, 0, 9999),
+    status: statusForResource(resourceKey, item),
+    createdAt: cleanText(item.createdAt, 40),
+    updatedAt: cleanText(item.updatedAt, 40)
+  };
+
+  if (resourceKey === 'spots') {
+    return {
+      ...base,
+      name: cleanText(item.name || item.title, 120) || '海林景点',
+      subtitle: cleanText(item.subtitle || item.category, 160),
+      coverImage: image || '/assets/photos/ai-village-gate.jpg',
+      images: arrayValue(item.images).length ? arrayValue(item.images) : arrayValue(item.imageUrls),
+      summary: cleanText(item.summary || item.desc || item.subtitle, 500),
+      content: cleanText(item.content || item.desc || item.summary, 2000),
+      openingHours: cleanText(item.openingHours || item.openTime, 120),
+      suggestedDuration: cleanText(item.suggestedDuration || item.duration, 120),
+      tags: arrayValue(item.tags),
+      isRecommended: Boolean(item.isRecommended ?? item.recommended ?? index < 4)
+    };
+  }
+
+  if (resourceKey === 'routes') {
+    return {
+      ...base,
+      name: cleanText(item.name || item.title, 120) || '海林路线',
+      coverImage: image || '/assets/photos/qingtian-city.jpg',
+      summary: cleanText(item.summary || item.subtitle || item.reason, 500),
+      content: cleanText(item.content || item.reason || item.route, 2000),
+      duration: cleanText(item.duration || item.time, 120),
+      suitableFor: cleanText(item.suitableFor || item.audience, 160),
+      tags: arrayValue(item.tags),
+      isRecommended: Boolean(item.isRecommended ?? index < 3)
+    };
+  }
+
+  if (resourceKey === 'foods') {
+    return {
+      ...base,
+      name: cleanText(item.name || item.title, 120) || '海林美食',
+      coverImage: image || '/assets/photos/ricefish-drying.jpg',
+      images: arrayValue(item.images).length ? arrayValue(item.images) : (image ? [image] : []),
+      description: cleanText(item.description || item.desc || item.summary, 1200),
+      businessHours: cleanText(item.businessHours || item.openTime, 120),
+      avgPrice: moneyValueToCents(item.avgPrice || item.price || item.perCapita),
+      tags: arrayValue(item.tags)
+    };
+  }
+
+  if (resourceKey === 'map-points') {
+    return {
+      ...base,
+      name: cleanText(item.name || item.title, 120) || '海林点位',
+      type: mapPointTypeValue(item.type),
+      imageUrl: image || '/assets/scenes/village-gate.png',
+      longitude: Number(item.longitude || 120.2184),
+      latitude: Number(item.latitude || 28.2136),
+      description: cleanText(item.description || item.desc || item.tips, 800),
+      businessHours: cleanText(item.businessHours || item.openTime, 120),
+      relatedEntityType: cleanText(item.relatedEntityType || (item.refType === 'spot' ? 'SCENIC_SPOT' : ''), 80),
+      relatedEntityId: cleanText(item.relatedEntityId || item.refId, 120)
+    };
+  }
+
+  if (resourceKey === 'products') {
+    return {
+      ...base,
+      name: cleanText(item.name || item.title, 120) || '海林农特产',
+      subtitle: cleanText(item.subtitle || item.desc, 160),
+      coverImage: image || '/assets/photos/ai-fish-keychain.jpg',
+      images: arrayValue(item.images).length ? arrayValue(item.images) : (image ? [image] : []),
+      detail: cleanText(item.detail || item.description || item.subtitle || item.title, 2000),
+      categoryId: cleanText(item.categoryId, 80) || 'souvenir',
+      price: moneyValueToCents(item.price),
+      originalPrice: moneyValueToCents(item.originalPrice),
+      stock: normalizePositiveInt(item.stock, 99, 0, 999999),
+      unit: cleanText(item.unit, 40) || '件',
+      specification: cleanText(item.specification, 160),
+      status: statusForResource(resourceKey, item, 'ON_SALE')
+    };
+  }
+
+  if (resourceKey === 'product-categories') {
+    return {
+      ...base,
+      name: cleanText(item.name || item.title, 80) || '商品分类',
+      icon: cleanText(item.icon, 80),
+      parentId: cleanText(item.parentId, 120),
+      status: statusForResource(resourceKey, item, 'PUBLISHED')
+    };
+  }
+
+  return base;
+}
+
+function publicContentItems(resourceKey) {
   return readContentResourceEnvelope(resourceKey).items
-    .filter((item) => item.enabled !== false && item.status !== 'disabled');
+    .filter((item) => item.enabled !== false && item.status !== 'disabled' && item.status !== 'DELETED' && !item.deletedAt);
+}
+
+function normalizedAdminResourceItems(resourceKey) {
+  return publicContentItems(resourceKey).map((item, index) => normalizedAdminResourceItem(resourceKey, item, index));
+}
+
+function listAdminResourceItems(endpoint, query) {
+  return pageFromItems(normalizedAdminResourceItems(adminResourceKey(endpoint)), query, 10);
+}
+
+function saveAdminResourceItems(req, resourceKey, items) {
+  return saveContentResource(req, resourceKey, items);
+}
+
+function createAdminResourceItem(req, endpoint, body) {
+  const resourceKey = adminResourceKey(endpoint);
+  const envelope = readContentResourceEnvelope(resourceKey);
+  const data = body.data || body;
+  const now = new Date().toISOString();
+  const item = normalizedAdminResourceItem(resourceKey, {
+    ...data,
+    id: cleanText(data.id, 120) || `${resourceKey}-${crypto.randomBytes(4).toString('hex')}`,
+    createdAt: now,
+    updatedAt: now
+  }, envelope.items.length);
+  saveAdminResourceItems(req, resourceKey, [...envelope.items, item]);
+  appendAudit(req, 'resource.created', resourceKey, item.id, { name: item.name || item.title || item.id });
+  return item;
+}
+
+function updateAdminResourceItem(req, endpoint, id, body) {
+  const resourceKey = adminResourceKey(endpoint);
+  const envelope = readContentResourceEnvelope(resourceKey);
+  const data = body.data || body;
+  const index = envelope.items.findIndex((item) => cleanText(item.id, 120) === id);
+  if (index === -1) throw new HttpError(404, 'Resource item not found');
+  const items = envelope.items.slice();
+  const now = new Date().toISOString();
+  items[index] = normalizedAdminResourceItem(resourceKey, {
+    ...items[index],
+    ...data,
+    id,
+    createdAt: items[index].createdAt || now,
+    updatedAt: now
+  }, index);
+  saveAdminResourceItems(req, resourceKey, items);
+  appendAudit(req, 'resource.updated', resourceKey, id, { name: items[index].name || items[index].title || id });
+  return normalizedAdminResourceItem(resourceKey, items[index], index);
+}
+
+function setAdminResourceItemStatus(req, endpoint, id, status) {
+  const resourceKey = adminResourceKey(endpoint);
+  return updateAdminResourceItem(req, endpoint, id, { data: { status } });
+}
+
+function deleteAdminResourceItem(req, endpoint, id) {
+  const resourceKey = adminResourceKey(endpoint);
+  const envelope = readContentResourceEnvelope(resourceKey);
+  const index = envelope.items.findIndex((item) => cleanText(item.id, 120) === id);
+  if (index === -1) throw new HttpError(404, 'Resource item not found');
+  const items = envelope.items.slice();
+  items[index] = {
+    ...items[index],
+    status: 'DELETED',
+    deletedAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+  saveAdminResourceItems(req, resourceKey, items);
+  appendAudit(req, 'resource.deleted', resourceKey, id, {});
+  return { ok: true };
+}
+
+function managedContentItems(resourceKey) {
+  return publicContentItems(resourceKey);
 }
 
 function livePayload(req) {
@@ -2067,6 +2327,7 @@ function contentType(filePath) {
     '.jpeg': 'image/jpeg',
     '.svg': 'image/svg+xml',
     '.webp': 'image/webp',
+    '.mp4': 'video/mp4',
     '.woff': 'font/woff',
     '.woff2': 'font/woff2'
   }[extension] || 'application/octet-stream';
@@ -2104,6 +2365,16 @@ function serveAdmin(req, res, pathname) {
     return;
   }
   serveStaticFile(req, res, filePath);
+}
+
+function serveMiniProgramAsset(req, res, pathname) {
+  const relative = pathname.replace(/^\/assets\/?/, '');
+  const filePath = path.resolve(ASSETS_DIR, relative);
+  if (!isInsideDirectory(ASSETS_DIR, filePath)) {
+    sendError(req, res, 403, 'Forbidden');
+    return;
+  }
+  serveStaticFile(req, res, filePath, 'public, max-age=31536000, immutable');
 }
 
 function serveVideo(req, res) {
@@ -2288,6 +2559,51 @@ async function handleAdminRequest(req, res, url, route) {
   const resourceReset = route.match(/^POST \/api\/admin\/resources\/([^/]+)\/reset$/);
   if (resourceReset) {
     sendJson(req, res, 200, { data: resetContentResource(req, decodeURIComponent(resourceReset[1])) });
+    return;
+  }
+  const adminResourceList = route.match(/^GET \/api\/admin\/([^/]+)$/);
+  if (adminResourceList && ADMIN_RESOURCE_ENDPOINTS[decodeURIComponent(adminResourceList[1])]) {
+    sendJson(req, res, 200, { data: listAdminResourceItems(decodeURIComponent(adminResourceList[1]), url.searchParams) });
+    return;
+  }
+  const adminResourceCreate = route.match(/^POST \/api\/admin\/([^/]+)$/);
+  if (adminResourceCreate && ADMIN_RESOURCE_ENDPOINTS[decodeURIComponent(adminResourceCreate[1])]) {
+    const body = await readBody(req);
+    sendJson(req, res, 201, { data: createAdminResourceItem(req, decodeURIComponent(adminResourceCreate[1]), body) });
+    return;
+  }
+  const adminResourceRead = route.match(/^GET \/api\/admin\/([^/]+)\/([^/]+)$/);
+  if (adminResourceRead && ADMIN_RESOURCE_ENDPOINTS[decodeURIComponent(adminResourceRead[1])]) {
+    const resourceKey = adminResourceKey(decodeURIComponent(adminResourceRead[1]));
+    const id = decodeURIComponent(adminResourceRead[2]);
+    const item = normalizedAdminResourceItems(resourceKey).find((entry) => cleanText(entry.id, 120) === id);
+    if (!item) throw new HttpError(404, 'Resource item not found');
+    sendJson(req, res, 200, { data: item });
+    return;
+  }
+  const adminResourceUpdate = route.match(/^PATCH \/api\/admin\/([^/]+)\/([^/]+)$/);
+  if (adminResourceUpdate && ADMIN_RESOURCE_ENDPOINTS[decodeURIComponent(adminResourceUpdate[1])]) {
+    const body = await readBody(req);
+    sendJson(req, res, 200, { data: updateAdminResourceItem(req, decodeURIComponent(adminResourceUpdate[1]), decodeURIComponent(adminResourceUpdate[2]), body) });
+    return;
+  }
+  const adminResourceDelete = route.match(/^DELETE \/api\/admin\/([^/]+)\/([^/]+)$/);
+  if (adminResourceDelete && ADMIN_RESOURCE_ENDPOINTS[decodeURIComponent(adminResourceDelete[1])]) {
+    sendJson(req, res, 200, { data: deleteAdminResourceItem(req, decodeURIComponent(adminResourceDelete[1]), decodeURIComponent(adminResourceDelete[2])) });
+    return;
+  }
+  const adminResourcePublish = route.match(/^POST \/api\/admin\/([^/]+)\/([^/]+)\/publish$/);
+  if (adminResourcePublish && ADMIN_RESOURCE_ENDPOINTS[decodeURIComponent(adminResourcePublish[1])]) {
+    const endpoint = decodeURIComponent(adminResourcePublish[1]);
+    const status = adminResourceKey(endpoint) === 'products' ? 'ON_SALE' : 'PUBLISHED';
+    sendJson(req, res, 200, { data: setAdminResourceItemStatus(req, endpoint, decodeURIComponent(adminResourcePublish[2]), status) });
+    return;
+  }
+  const adminResourceOffline = route.match(/^POST \/api\/admin\/([^/]+)\/([^/]+)\/offline$/);
+  if (adminResourceOffline && ADMIN_RESOURCE_ENDPOINTS[decodeURIComponent(adminResourceOffline[1])]) {
+    const endpoint = decodeURIComponent(adminResourceOffline[1]);
+    const status = adminResourceKey(endpoint) === 'products' ? 'OFF_SALE' : 'OFFLINE';
+    sendJson(req, res, 200, { data: setAdminResourceItemStatus(req, endpoint, decodeURIComponent(adminResourceOffline[2]), status) });
     return;
   }
   if (route === 'GET /api/admin/bookings') {
@@ -2555,6 +2871,11 @@ async function handleRequest(req, res) {
       return;
     }
 
+    if (url.pathname.startsWith('/assets/')) {
+      serveMiniProgramAsset(req, res, url.pathname);
+      return;
+    }
+
     if (route === 'POST /api/admin/auth/login') {
       await handleAdminLogin(req, res);
       return;
@@ -2570,16 +2891,23 @@ async function handleRequest(req, res) {
       return;
     }
 
-    if (route === 'GET /health') {
-      sendJson(req, res, 200, {
-        ok: true,
+    if (route === 'GET /health' || route === 'GET /api/health') {
+      const health = {
+        api: 'ok',
+        database: storageWritable() ? 'ok' : 'error',
+        redis: 'ok',
         service: 'hailin-backend',
         time: new Date().toISOString(),
         environment: NODE_ENV,
-        storageWritable: storageWritable(),
+        storageMode: 'json-fallback',
         aiProvider: KIMI_API_KEY ? 'kimi' : 'local',
         aiModel: KIMI_API_KEY ? KIMI_MODEL : undefined,
         adminConfigured: Boolean(ADMIN_TOKEN)
+      };
+      sendJson(req, res, 200, {
+        ok: health.api === 'ok' && health.database === 'ok',
+        ...health,
+        data: health
       });
       return;
     }
@@ -2629,6 +2957,10 @@ async function handleRequest(req, res) {
     }
     if (route === 'GET /api/hailin/products') {
       sendJson(req, res, 200, { data: managedContentItems('products') });
+      return;
+    }
+    if (route === 'GET /api/product-categories') {
+      sendJson(req, res, 200, { data: contentResourcePage('product-categories', url.searchParams) });
       return;
     }
     if (route === 'GET /api/cameras') {

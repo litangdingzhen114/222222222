@@ -5,7 +5,7 @@
 ## 项目结构
 
 - `miniprogram/`：微信小程序端
-- `backend/`：零依赖 Node.js 后端与后台管理页
+- `backend/`：NestJS 正式后端、Vercel 轻量适配层与后台管理页
 - `backend/admin/`：后台管理页静态资源
 - `docs/`：上线、接口和运维说明
 
@@ -41,10 +41,10 @@ npm run admin:build
 
 ## 线上域名规划
 
-- 原有 Vercel 网站继续使用 `https://www.sunmaosun.com`
-- 海林村后端 API 和后台使用 `https://api.sunmaosun.com`
-- 小程序合法 request 域名配置 `https://api.sunmaosun.com`
-- 后台管理入口为 `https://api.sunmaosun.com/admin/`
+- 当前 Vercel 演示和后台使用 `https://www.hailin.store`
+- 阿里云生产 API 建议使用 `https://api.hailin.store`
+- 小程序合法 request 域名先配置 `https://www.hailin.store`，正式独立后端上线后追加 `https://api.hailin.store`
+- 后台管理入口为 `https://www.hailin.store/admin/`
 
 ## 生产环境变量
 
@@ -52,8 +52,8 @@ npm run admin:build
 
 ```text
 NODE_ENV=production
-PUBLIC_BASE_URL=https://api.sunmaosun.com
-ALLOWED_ORIGINS=https://api.sunmaosun.com
+PUBLIC_BASE_URL=https://www.hailin.store
+ALLOWED_ORIGINS=https://www.hailin.store,https://hailin.store
 ADMIN_TOKEN=replace-with-a-strong-random-token-at-least-24-characters
 KIMI_API_KEY=replace-with-your-kimi-key
 ```
@@ -70,7 +70,7 @@ npm test
 
 ## Vercel 部署
 
-仓库 `litangdingzhen114/222222222` 已经包含根目录 `api/index.js` 和 `vercel.json`，可以作为 Vercel Project 从 GitHub 导入。Vercel 会把 `/health`、`/api/*`、`/admin/*`、`/media/*` 转发给同一个 Node.js Function。
+仓库 `litangdingzhen114/222222222` 已经包含根目录 `api/index.js` 和 `vercel.json`，可以作为 Vercel Project 从 GitHub 导入。Vercel 会把 `/health`、`/api/*`、`/admin/*`、`/media/*`、`/assets/*` 转发给同一个 Node.js Function。
 
 Vercel 项目设置建议：
 
@@ -88,8 +88,8 @@ Output Directory: 留空
 
 ```text
 NODE_ENV=production
-PUBLIC_BASE_URL=https://hailin.store
-ALLOWED_ORIGINS=https://hailin.store
+PUBLIC_BASE_URL=https://www.hailin.store
+ALLOWED_ORIGINS=https://www.hailin.store,https://hailin.store
 ADMIN_TOKEN=replace-with-a-strong-random-token-at-least-24-characters
 KIMI_API_KEY=replace-with-your-kimi-key
 ```

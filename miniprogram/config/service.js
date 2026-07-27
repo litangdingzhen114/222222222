@@ -5,7 +5,7 @@ module.exports = {
 
   // 上线后端域名。真机和正式版必须使用 HTTPS，并配置到微信 request 合法域名。
   // 小程序端不保存 AI key、直播密钥或管理后台 token，统一由后端代理。
-  apiBaseUrl: 'https://api.sunmaosun.com',
+  apiBaseUrl: 'https://www.hailin.store',
   devApiBaseUrl: 'http://127.0.0.1:8787',
   requestTimeout: 3000,
 
@@ -29,6 +29,7 @@ module.exports = {
     foods: '/api/v1/foods?pageSize=100',
     spots: '/api/v1/scenic-spots?pageSize=100',
     routes: '/api/v1/travel-routes?pageSize=100',
+    productCategories: '/api/v1/product-categories?pageSize=100',
     products: '/api/v1/products?pageSize=100',
     lives: '/api/v1/cameras'
   },

@@ -139,6 +139,61 @@ async function main() {
 
     const authHeaders = { Authorization: `Bearer ${ADMIN_TOKEN}` };
 
+    const sharedAsset = await request(`http://${HOST}:${PORT}/assets/photos/ai-village-gate.jpg`);
+    assert.strictEqual(sharedAsset.status, 200);
+    assert.match(sharedAsset.headers.get('content-type'), /image\/jpeg/);
+
+    const adminSpotList = await requestJson(`http://${HOST}:${PORT}/api/admin/scenic-spots?pageSize=5`, {
+      headers: authHeaders
+    });
+    assert.strictEqual(adminSpotList.status, 200);
+    assert(Array.isArray(adminSpotList.body.data.list));
+    assert(adminSpotList.body.data.list[0].coverImage, 'admin scenic list should normalize cover image');
+
+    const categoryList = await requestJson(`http://${HOST}:${PORT}/api/admin/product-categories?pageSize=20`, {
+      headers: authHeaders
+    });
+    assert.strictEqual(categoryList.status, 200);
+    assert(categoryList.body.data.list.some((item) => item.id === 'souvenir'), 'default product categories should be available');
+
+    const createdCategory = await requestJson(`http://${HOST}:${PORT}/api/admin/product-categories`, {
+      method: 'POST',
+      headers: authHeaders,
+      body: JSON.stringify({
+        data: {
+          id: 'test-seasonal',
+          name: '测试时令农品',
+          icon: '鲜',
+          sort: 9,
+          status: 'DRAFT'
+        }
+      })
+    });
+    assert.strictEqual(createdCategory.status, 201);
+    assert.strictEqual(createdCategory.body.data.id, 'test-seasonal');
+
+    const updatedCategory = await requestJson(`http://${HOST}:${PORT}/api/admin/product-categories/test-seasonal`, {
+      method: 'PATCH',
+      headers: authHeaders,
+      body: JSON.stringify({ data: { name: '测试时令鲜品' } })
+    });
+    assert.strictEqual(updatedCategory.status, 200);
+    assert.strictEqual(updatedCategory.body.data.name, '测试时令鲜品');
+
+    const publishedCategory = await requestJson(`http://${HOST}:${PORT}/api/admin/product-categories/test-seasonal/publish`, {
+      method: 'POST',
+      headers: authHeaders
+    });
+    assert.strictEqual(publishedCategory.status, 200);
+    assert.strictEqual(publishedCategory.body.data.status, 'PUBLISHED');
+
+    const offlineCategory = await requestJson(`http://${HOST}:${PORT}/api/admin/product-categories/test-seasonal/offline`, {
+      method: 'POST',
+      headers: authHeaders
+    });
+    assert.strictEqual(offlineCategory.status, 200);
+    assert.strictEqual(offlineCategory.body.data.status, 'OFFLINE');
+
     const productOrder = await requestJson(`http://${HOST}:${PORT}/api/hailin/orders`, {
       method: 'POST',
       body: JSON.stringify({
@@ -390,7 +445,7 @@ async function main() {
     });
     assert.strictEqual(invalidFeedbackTransition.status, 409);
 
-    const audit = await requestJson(`http://${HOST}:${PORT}/api/admin/audit?pageSize=20`, {
+    const audit = await requestJson(`http://${HOST}:${PORT}/api/admin/audit?pageSize=100`, {
       headers: authHeaders
     });
     assert.strictEqual(audit.status, 200);

@@ -133,7 +133,7 @@ class ApiError extends Error {
 let refreshPromise: Promise<TokenBundle> | null = null;
 
 function rawBaseUrl() {
-  return String(import.meta.env.VITE_API_BASE_URL || '/api/v1').replace(/\/+$/, '');
+  return String(import.meta.env.VITE_API_BASE_URL || import.meta.env.NEXT_PUBLIC_API_BASE_URL || '/api/v1').replace(/\/+$/, '');
 }
 
 export function apiBaseUrl() {
@@ -568,6 +568,7 @@ export function listResourceContent() {
     { key: 'routes', label: '路线', limit: 100, meta: { source: 'api-v1' } },
     { key: 'foods', label: '美食', limit: 100, meta: { source: 'api-v1' } },
     { key: 'map-points', label: '地图点位', limit: 100, meta: { source: 'api-v1' } },
+    { key: 'product-categories', label: '商品分类', limit: 100, meta: { source: 'api-v1' } },
     { key: 'products', label: '商品', limit: 100, meta: { source: 'api-v1' } }
   ];
   return Promise.resolve({ items: resources });
@@ -578,6 +579,7 @@ const resourceEndpointMap: Record<ResourceKey, string> = {
   routes: 'travel-routes',
   foods: 'foods',
   'map-points': 'map-points',
+  'product-categories': 'product-categories',
   products: 'products'
 };
 

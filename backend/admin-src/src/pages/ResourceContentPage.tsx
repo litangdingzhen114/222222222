@@ -295,6 +295,32 @@ const configs: ResourceConfig[] = [
       { name: 'sort', label: '排序', kind: 'number', min: 0 },
       { name: 'status', label: '状态', kind: 'select', options: productStatusOptions, required: true }
     ]
+  },
+  {
+    key: 'product-categories',
+    label: '商品分类',
+    adminResource: 'product-categories',
+    titleField: 'name',
+    subtitleField: 'id',
+    imageField: 'coverImage',
+    statusOptions: contentStatusOptions,
+    publishStatus: 'PUBLISHED',
+    offlineStatus: 'OFFLINE',
+    createDefaults: {
+      id: '',
+      name: '新增分类',
+      icon: '田',
+      sort: 99,
+      status: 'DRAFT'
+    },
+    fields: [
+      { name: 'id', label: '分类 ID', kind: 'text', required: true, placeholder: '例如 farm-products' },
+      { name: 'name', label: '分类名称', kind: 'text', required: true },
+      { name: 'icon', label: '分类图标/字', kind: 'text' },
+      { name: 'parentId', label: '父级 ID', kind: 'text' },
+      { name: 'sort', label: '排序', kind: 'number', min: 0 },
+      { name: 'status', label: '状态', kind: 'select', options: contentStatusOptions, required: true }
+    ]
   }
 ];
 

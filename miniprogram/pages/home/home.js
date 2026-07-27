@@ -89,7 +89,9 @@ Page({
   },
 
   onProductTap(event) {
-    wx.navigateTo({ url: '/pages/mine-feature/mine-feature?id=mall' });
+    const product = this.data.products.find((item) => item.id === event.detail.id) || {};
+    const item = product.title || product.name || '';
+    wx.navigateTo({ url: `/pages/mine-feature/mine-feature?id=mall&item=${encodeURIComponent(item)}` });
   },
 
   onRankingTap(event) {

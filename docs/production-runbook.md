@@ -2,12 +2,12 @@
 
 ## 上线前配置
 
-1. 准备 HTTPS API 域名：`https://api.sunmaosun.com`。
+1. 准备 HTTPS API 域名：当前 Vercel 演示使用 `https://www.hailin.store`，阿里云生产 API 建议使用 `https://api.hailin.store`。
 2. 在微信公众平台配置 request 合法域名。
 3. 在服务器创建 `backend/.env`。
 4. 设置强随机 `ADMIN_TOKEN`，不要使用开发默认 Token。
 5. 设置 `KIMI_API_KEY` 或 `MOONSHOT_API_KEY`。
-6. 确认 `miniprogram/config/service.js` 的 `apiBaseUrl` 为 `https://api.sunmaosun.com`。
+6. 确认 `miniprogram/config/service.js` 的 `apiBaseUrl` 指向当前可用 HTTPS 后端。
 
 ## 推荐环境变量
 
@@ -15,9 +15,9 @@
 NODE_ENV=production
 HOST=0.0.0.0
 PORT=8787
-PUBLIC_BASE_URL=https://api.sunmaosun.com
+PUBLIC_BASE_URL=https://api.hailin.store
 STORAGE_DIR=backend/storage
-ALLOWED_ORIGINS=https://api.sunmaosun.com
+ALLOWED_ORIGINS=https://www.hailin.store,https://hailin.store
 ADMIN_USER=hailin-admin
 ADMIN_TOKEN=换成强随机Token
 KIMI_API_KEY=你的KimiKey
@@ -50,8 +50,8 @@ Vercel 环境变量：
 
 ```text
 NODE_ENV=production
-PUBLIC_BASE_URL=https://hailin.store
-ALLOWED_ORIGINS=https://hailin.store
+PUBLIC_BASE_URL=https://www.hailin.store
+ALLOWED_ORIGINS=https://www.hailin.store,https://hailin.store
 ADMIN_TOKEN=换成强随机Token
 KIMI_API_KEY=你的KimiKey
 KIMI_MODEL=kimi-k2.6
@@ -62,13 +62,13 @@ Vercel Function 默认使用 `/tmp/hailin-storage` 作为临时文件存储，�
 后台入口：
 
 ```text
-https://hailin.store/admin/
+https://www.hailin.store/admin/
 ```
 
 健康检查：
 
 ```text
-https://api.sunmaosun.com/health
+https://www.hailin.store/health
 ```
 
 ## 运维关注

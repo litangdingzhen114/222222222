@@ -167,7 +167,12 @@ function adaptProducts(remoteValue, fallbackValue) {
     return {
       id: item.id || fallbackItem.id || `product-${index}`,
       title: item.name || item.title || fallbackItem.title || '海林农特产',
+      subtitle: item.subtitle || fallbackItem.subtitle || '',
       price: moneyText(item.price) || fallbackItem.price || '',
+      categoryId: item.categoryId || fallbackItem.categoryId || '',
+      stock: item.stock ?? fallbackItem.stock,
+      unit: item.unit || fallbackItem.unit || '件',
+      specification: item.specification || fallbackItem.specification || '',
       imageClass: fallbackItem.imageClass || 'ph-product-fish',
       icon: fallbackItem.icon || '物',
       imageUrl: firstImage(item) || fallbackItem.imageUrl

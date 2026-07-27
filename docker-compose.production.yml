@@ -1,0 +1,88 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-hailin}
+      POSTGRES_USER: ${POSTGRES_USER:-hailin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env.production}
+    volumes:
+      - hailin-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - hailin-redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 8787
+      DATABASE_URL: postgresql://${POSTGRES_USER:-hailin}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-hailin}?schema=public
+      REDIS_URL: redis://redis:6379/0
+      TRUST_PROXY: "true"
+    expose:
+      - "8787"
+    volumes:
+      - hailin-uploads:/app/uploads
+      - hailin-logs:/app/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  migrator:
+    image: node:20-alpine
+    profiles: ["tools"]
+    working_dir: /work/backend
+    env_file:
+      - ./backend/.env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-hailin}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-hailin}?schema=public
+      REDIS_URL: redis://redis:6379/0
+    volumes:
+      - ./:/work
+    command: ["sh", "-c", "npm ci && npm run prisma:deploy && npm run prisma:seed"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./backend/nginx/hailin.production.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/conf:/etc/letsencrypt
+    depends_on:
+      - api
+
+volumes:
+  hailin-postgres-data:
+  hailin-redis-data:
+  hailin-uploads:
+  hailin-logs:

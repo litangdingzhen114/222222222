@@ -7,7 +7,7 @@
 文件：`miniprogram/config/service.js`
 
 ```js
-apiBaseUrl: 'https://api.sunmaosun.com'
+apiBaseUrl: 'https://www.hailin.store'
 ```
 
 本地开发可以使用：
@@ -72,7 +72,7 @@ Kimi 官方文档：https://platform.moonshot.cn/docs
 访问：
 
 ```text
-https://api.sunmaosun.com/admin/
+https://www.hailin.store/admin/
 ```
 
 登录使用后端环境变量 `ADMIN_TOKEN`。后台支持：

@@ -278,7 +278,7 @@ export type LiveContentEnvelope = {
   };
 };
 
-export type ResourceKey = 'spots' | 'routes' | 'foods' | 'map-points' | 'products';
+export type ResourceKey = 'spots' | 'routes' | 'foods' | 'map-points' | 'product-categories' | 'products';
 
 export type ResourceContentItem = Record<string, unknown> & {
   id?: string | number;
