@@ -3,6 +3,7 @@ import { readFileSync } from 'fs';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AppException, ErrorCode } from '../../common/exceptions/app.exception';
+import { IntegrationConfigService } from '../../modules/integration-config/integration-config.service';
 
 export interface WechatPayCreateParams {
   paymentNo: string;
@@ -31,41 +32,40 @@ export interface WechatPayNotifyPayload {
 
 @Injectable()
 export class WechatPayAdapter {
-  constructor(private readonly config: ConfigService) {}
+  constructor(
+    private readonly config: ConfigService,
+    private readonly integrationConfig: IntegrationConfigService,
+  ) {}
 
-  isConfigured() {
-    return Boolean(
-      this.config.get<string>('WECHAT_PAY_APP_ID') &&
-      this.config.get<string>('WECHAT_PAY_MCH_ID') &&
-      this.config.get<string>('WECHAT_PAY_API_V3_KEY') &&
-      this.config.get<string>('WECHAT_PAY_SERIAL_NO') &&
-      this.config.get<string>('WECHAT_PAY_PRIVATE_KEY_PATH') &&
-      this.config.get<string>('WECHAT_PAY_NOTIFY_URL'),
-    );
+  async isConfigured() {
+    return this.integrationConfig.hasAll([
+      'WECHAT_PAY_APP_ID',
+      'WECHAT_PAY_MCH_ID',
+      'WECHAT_PAY_API_V3_KEY',
+      'WECHAT_PAY_SERIAL_NO',
+      'WECHAT_PAY_PRIVATE_KEY_PATH',
+      'WECHAT_PAY_NOTIFY_URL',
+    ]);
   }
 
-  createJsapiPayment(params: WechatPayCreateParams): Promise<WechatPayCreateResult> {
+  async createJsapiPayment(params: WechatPayCreateParams): Promise<WechatPayCreateResult> {
     void params;
-    if (!this.isConfigured()) {
-      return Promise.reject(
-        new AppException(
-          ErrorCode.PAYMENT_PROVIDER_NOT_CONFIGURED,
-          '微信支付凭证未配置，等待正式凭证配置',
-          503,
-        ),
+    if (!(await this.isConfigured())) {
+      throw new AppException(
+        ErrorCode.PAYMENT_PROVIDER_NOT_CONFIGURED,
+        '微信支付凭证未配置，等待正式凭证配置',
+        503,
       );
     }
-    return Promise.reject(
-      new AppException(
-        ErrorCode.PAYMENT_PROVIDER_NOT_CONFIGURED,
-        '微信支付正式下单需要商户号、私钥和平台证书完成联调',
-        503,
-      ),
+    throw new AppException(
+      ErrorCode.PAYMENT_PROVIDER_NOT_CONFIGURED,
+      '微信支付正式下单需要商户号、私钥和平台证书完成联调',
+      503,
     );
   }
 
-  verifyNotify(headers: Record<string, string | string[] | undefined>, rawBody: string) {
-    if (!this.isConfigured()) {
+  async verifyNotify(headers: Record<string, string | string[] | undefined>, rawBody: string) {
+    if (!(await this.isConfigured())) {
       throw new AppException(
         ErrorCode.PAYMENT_PROVIDER_NOT_CONFIGURED,
         '微信支付回调验签凭证未配置，等待正式凭证配置',
@@ -75,9 +75,11 @@ export class WechatPayAdapter {
     const signature = this.getHeader(headers, 'wechatpay-signature');
     const timestamp = this.getHeader(headers, 'wechatpay-timestamp');
     const nonce = this.getHeader(headers, 'wechatpay-nonce');
-    const platformCert = readFileSync(
-      this.config.getOrThrow<string>('WECHAT_PAY_PLATFORM_CERT_PATH'),
+    const platformCertPath = await this.integrationConfig.getValue(
+      'WECHAT_PAY_PLATFORM_CERT_PATH',
+      this.config.get<string>('WECHAT_PAY_PLATFORM_CERT_PATH', ''),
     );
+    const platformCert = readFileSync(platformCertPath);
     const message = `${timestamp}\n${nonce}\n${rawBody}\n`;
     const verifier = createVerify('RSA-SHA256');
     verifier.update(message);

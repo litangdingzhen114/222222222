@@ -304,6 +304,7 @@ model AdminUser {
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   auditLogs     AuditLog[]
+  integrationConfigs IntegrationConfig[] @relation("IntegrationConfigUpdatedBy")
   refreshTokens RefreshToken[]
 
   @@index([role])
@@ -916,6 +917,23 @@ model AuditLog {
   @@index([adminId, createdAt])
   @@index([resource, resourceId])
   @@index([action])
+}
+
+model IntegrationConfig {
+  id           String     @id @default(cuid())
+  service      String
+  key          String
+  value        String?
+  isSecret     Boolean    @default(true)
+  valuePreview String?
+  updatedById  String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  updatedBy    AdminUser? @relation("IntegrationConfigUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+
+  @@unique([service, key])
+  @@index([service])
+  @@index([updatedById])
 }
 
 model UploadFile {

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { IntegrationConfigService } from '../../modules/integration-config/integration-config.service';
 
 export interface LlmChatInput {
   question: string;
@@ -13,18 +14,27 @@ export interface LlmChatResult {
 
 @Injectable()
 export class LlmProvider {
-  constructor(private readonly config: ConfigService) {}
+  constructor(
+    private readonly config: ConfigService,
+    private readonly integrationConfig: IntegrationConfigService,
+  ) {}
 
   async chat(input: LlmChatInput): Promise<LlmChatResult> {
-    const apiKey = this.config.get<string>('LLM_API_KEY', '');
+    const apiKey = await this.integrationConfig.getValue('LLM_API_KEY');
     if (!apiKey) {
       return {
         mode: 'fallback',
         answer: this.buildFallbackAnswer(input.question, input.context),
       };
     }
-    const baseUrl = this.config.getOrThrow<string>('LLM_BASE_URL');
-    const model = this.config.getOrThrow<string>('LLM_MODEL');
+    const baseUrl = await this.integrationConfig.getValue(
+      'LLM_BASE_URL',
+      this.config.getOrThrow<string>('LLM_BASE_URL'),
+    );
+    const model = await this.integrationConfig.getValue(
+      'LLM_MODEL',
+      this.config.getOrThrow<string>('LLM_MODEL'),
+    );
     const response = await fetch(`${baseUrl}/chat/completions`, {
       method: 'POST',
       headers: {

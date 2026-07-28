@@ -15,6 +15,7 @@ export const envValidationSchema = Joi.object({
   REDIS_REQUIRED: Joi.boolean().truthy('true').falsy('false').default(false),
   JWT_ACCESS_SECRET: Joi.string().min(32).required(),
   JWT_REFRESH_SECRET: Joi.string().min(32).required(),
+  THIRD_PARTY_CONFIG_ENCRYPTION_KEY: Joi.string().allow('').default(''),
   JWT_ACCESS_EXPIRES_IN: Joi.string().default('15m'),
   JWT_REFRESH_EXPIRES_IN: Joi.string().default('30d'),
   SEED_ADMIN_USERNAME: Joi.string().default('hailin-admin'),

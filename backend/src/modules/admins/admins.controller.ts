@@ -11,6 +11,7 @@ import {
   AdminResourceQueryDto,
   ReplyFeedbackDto,
   ShipOrderDto,
+  UpdateIntegrationConfigDto,
 } from './dto/admins.dto';
 
 @ApiBearerAuth()
@@ -38,6 +39,29 @@ export class AdminsController {
   @Get('config-status')
   configStatus(@CurrentUser() principal: AuthPrincipal) {
     return this.admins.configStatus(principal);
+  }
+
+  @Get('integration-configs')
+  integrationConfigs(@CurrentUser() principal: AuthPrincipal) {
+    return this.admins.integrationConfigs(principal);
+  }
+
+  @Patch('integration-configs/:service')
+  updateIntegrationConfig(
+    @CurrentUser() principal: AuthPrincipal,
+    @Param('service') service: string,
+    @Body() dto: UpdateIntegrationConfigDto,
+    @Req() request: RequestWithContext,
+  ) {
+    return this.admins.updateIntegrationConfig(principal, service, dto, request.requestId);
+  }
+
+  @Post('integration-configs/:service/test')
+  testIntegrationConfig(
+    @CurrentUser() principal: AuthPrincipal,
+    @Param('service') service: string,
+  ) {
+    return this.admins.testIntegrationConfig(principal, service);
   }
 
   @Get('users')

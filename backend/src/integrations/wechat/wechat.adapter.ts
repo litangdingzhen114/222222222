@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AppException, ErrorCode } from '../../common/exceptions/app.exception';
 import { sha256 } from '../../common/utils/crypto.util';
+import { IntegrationConfigService } from '../../modules/integration-config/integration-config.service';
 
 export interface WechatSession {
   openid: string;
@@ -22,11 +23,14 @@ interface WechatCode2SessionResponse {
 export class WechatMiniProgramAdapter {
   private readonly logger = new Logger(WechatMiniProgramAdapter.name);
 
-  constructor(private readonly config: ConfigService) {}
+  constructor(
+    private readonly config: ConfigService,
+    private readonly integrationConfig: IntegrationConfigService,
+  ) {}
 
   async code2Session(code: string): Promise<WechatSession> {
-    const appId = this.config.get<string>('WECHAT_APP_ID', '');
-    const appSecret = this.config.get<string>('WECHAT_APP_SECRET', '');
+    const appId = await this.integrationConfig.getValue('WECHAT_APP_ID');
+    const appSecret = await this.integrationConfig.getValue('WECHAT_APP_SECRET');
     const mockEnabled = this.config.get<boolean>('WECHAT_MOCK_ENABLED', false);
     const fallbackEnabled =
       mockEnabled &&
@@ -49,7 +53,10 @@ export class WechatMiniProgramAdapter {
       );
     }
 
-    const baseUrl = this.config.getOrThrow<string>('WECHAT_API_BASE_URL');
+    const baseUrl = await this.integrationConfig.getValue(
+      'WECHAT_API_BASE_URL',
+      this.config.getOrThrow<string>('WECHAT_API_BASE_URL'),
+    );
     const url = new URL('/sns/jscode2session', baseUrl);
     url.searchParams.set('appid', appId);
     url.searchParams.set('secret', appSecret);

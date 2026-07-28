@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { Camera } from '@prisma/client';
 import { AppException, ErrorCode } from '../../common/exceptions/app.exception';
 import { RedisService } from '../../database/redis.service';
+import { IntegrationConfigService } from '../../modules/integration-config/integration-config.service';
 
 export interface CameraPlayUrl {
   playUrl: string;
@@ -27,11 +28,12 @@ export class EzvizAdapter {
   constructor(
     private readonly config: ConfigService,
     private readonly redis: RedisService,
+    private readonly integrationConfig: IntegrationConfigService,
   ) {}
 
   async getPlayUrl(camera: Camera): Promise<CameraPlayUrl> {
-    const appKey = this.config.get<string>('EZVIZ_APP_KEY', '');
-    const appSecret = this.config.get<string>('EZVIZ_APP_SECRET', '');
+    const appKey = await this.integrationConfig.getValue('EZVIZ_APP_KEY');
+    const appSecret = await this.integrationConfig.getValue('EZVIZ_APP_SECRET');
     const mockEnabled = this.config.get<boolean>('EZVIZ_MOCK_ENABLED', false);
     const fallbackEnabled =
       mockEnabled &&
@@ -52,7 +54,11 @@ export class EzvizAdapter {
       );
     }
 
-    const token = await this.getAccessToken(appKey, appSecret);
+    const baseUrl = await this.integrationConfig.getValue(
+      'EZVIZ_API_BASE_URL',
+      this.config.getOrThrow<string>('EZVIZ_API_BASE_URL'),
+    );
+    const token = await this.getAccessToken(appKey, appSecret, baseUrl);
     const body = new URLSearchParams({
       accessToken: token,
       deviceSerial: camera.deviceSerial,
@@ -61,7 +67,7 @@ export class EzvizAdapter {
       quality: '1',
       expireTime: '600',
     });
-    const json = await this.post<EzvizLiveResponse>('/live/address/get', body);
+    const json = await this.post<EzvizLiveResponse>(baseUrl, '/live/address/get', body);
     if (json.code !== '200' || !json.data?.url) {
       throw new AppException(
         ErrorCode.THIRD_PARTY_ERROR,
@@ -76,12 +82,12 @@ export class EzvizAdapter {
     };
   }
 
-  private async getAccessToken(appKey: string, appSecret: string) {
-    const cacheKey = 'ezviz:access-token';
+  private async getAccessToken(appKey: string, appSecret: string, baseUrl: string) {
+    const cacheKey = `ezviz:access-token:${appKey}`;
     const cached = await this.redis.get(cacheKey);
     if (cached) return cached;
     const body = new URLSearchParams({ appKey, appSecret });
-    const json = await this.post<EzvizTokenResponse>('/token/get', body);
+    const json = await this.post<EzvizTokenResponse>(baseUrl, '/token/get', body);
     if (json.code !== '200' || !json.data?.accessToken) {
       throw new AppException(
         ErrorCode.THIRD_PARTY_ERROR,
@@ -94,8 +100,7 @@ export class EzvizAdapter {
     return json.data.accessToken;
   }
 
-  private async post<T>(path: string, body: URLSearchParams) {
-    const baseUrl = this.config.getOrThrow<string>('EZVIZ_API_BASE_URL');
+  private async post<T>(baseUrl: string, path: string, body: URLSearchParams) {
     const response = await fetch(`${baseUrl}${path}`, {
       method: 'POST',
       headers: { 'content-type': 'application/x-www-form-urlencoded' },

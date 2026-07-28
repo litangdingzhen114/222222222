@@ -43,7 +43,7 @@ export const bookingStatusOptions: StatusOption[] = [
   { value: 'COMPLETED', label: '已完成' },
   { value: 'CANCELLED', label: '已取消' },
   { value: 'REFUNDING', label: '退款中' },
-  { value: 'REFUNDED', label: '已退款' }
+  { value: 'REFUNDED', label: '已退款' },
 ];
 
 export const feedbackStatusOptions: StatusOption[] = [
@@ -51,7 +51,7 @@ export const feedbackStatusOptions: StatusOption[] = [
   { value: 'PENDING', label: '待处理' },
   { value: 'PROCESSING', label: '处理中' },
   { value: 'REPLIED', label: '已回复' },
-  { value: 'CLOSED', label: '已关闭' }
+  { value: 'CLOSED', label: '已关闭' },
 ];
 
 export const orderStatusOptions: StatusOption[] = [
@@ -64,12 +64,12 @@ export const orderStatusOptions: StatusOption[] = [
   { value: 'CANCELLED', label: '已取消' },
   { value: 'REFUNDING', label: '退款中' },
   { value: 'REFUNDED', label: '已退款' },
-  { value: 'CLOSED', label: '已关闭' }
+  { value: 'CLOSED', label: '已关闭' },
 ];
 
 export const orderTypeOptions: StatusOption[] = [
   { value: '', label: '全部类型' },
-  { value: 'product', label: '商城订单' }
+  { value: 'product', label: '商城订单' },
 ];
 
 export const statusLabels: Record<string, string> = {
@@ -103,7 +103,7 @@ export const statusLabels: Record<string, string> = {
   NOT_SHIPPED: '未发货',
   RECEIVED: '已收货',
   PENDING: '待处理',
-  REPLIED: '已回复'
+  REPLIED: '已回复',
 };
 
 export const statusTransitions: Record<RecordKind, Record<string, string[]>> = {
@@ -114,14 +114,14 @@ export const statusTransitions: Record<RecordKind, Record<string, string[]>> = {
     COMPLETED: [],
     CANCELLED: [],
     REFUNDING: ['REFUNDED'],
-    REFUNDED: []
+    REFUNDED: [],
   },
   feedback: {
     PENDING: ['PROCESSING', 'REPLIED', 'CLOSED'],
     PROCESSING: ['REPLIED', 'CLOSED'],
     REPLIED: ['CLOSED'],
-    CLOSED: []
-  }
+    CLOSED: [],
+  },
 };
 
 export type ListResponse<T> = {
@@ -278,7 +278,8 @@ export type LiveContentEnvelope = {
   };
 };
 
-export type ResourceKey = 'spots' | 'routes' | 'foods' | 'map-points' | 'product-categories' | 'products';
+export type ResourceKey =
+  'spots' | 'routes' | 'foods' | 'map-points' | 'product-categories' | 'products';
 
 export type ResourceContentItem = Record<string, unknown> & {
   id?: string | number;
@@ -374,6 +375,40 @@ export type ConfigStatus = {
   environment: string;
   publicBaseUrl?: string;
   items: ConfigStatusItem[];
+};
+
+export type IntegrationConfigField = {
+  key: string;
+  label: string;
+  secret: boolean;
+  required: boolean;
+  configured: boolean;
+  source: 'database' | 'env' | 'none';
+  valuePreview?: string;
+  displayValue?: string;
+  placeholder?: string;
+  help?: string;
+};
+
+export type IntegrationConfigGroup = {
+  service: string;
+  name: string;
+  description: string;
+  updatedAt?: string;
+  updatedBy?: string;
+  fields: IntegrationConfigField[];
+};
+
+export type IntegrationConfigsResponse = {
+  groups: IntegrationConfigGroup[];
+};
+
+export type IntegrationConfigTestResult = {
+  service: string;
+  ok: boolean;
+  mode: 'official' | 'structural' | 'not_configured' | 'failed';
+  message: string;
+  checkedAt: string;
 };
 
 export type LegacySystemSummary = {

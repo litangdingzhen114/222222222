@@ -5,6 +5,7 @@ import { extname } from 'path';
 import { PrismaService } from '../../database/prisma.service';
 import { LocalStorageAdapter } from '../../integrations/storage/local-storage.adapter';
 import { TencentCosStorageAdapter } from '../../integrations/storage/tencent-cos-storage.adapter';
+import { IntegrationConfigService } from '../integration-config/integration-config.service';
 import { AuthPrincipal } from '../auth/auth.types';
 
 const ALLOWED_MIME = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'video/mp4']);
@@ -17,6 +18,7 @@ export class UploadsService {
     private readonly config: ConfigService,
     private readonly local: LocalStorageAdapter,
     private readonly cos: TencentCosStorageAdapter,
+    private readonly integrationConfig: IntegrationConfigService,
   ) {}
 
   async upload(files: Express.Multer.File[], principal: AuthPrincipal) {
@@ -28,8 +30,11 @@ export class UploadsService {
     if (files.length > maxFiles) {
       throw new BadRequestException(`最多上传 ${maxFiles} 个文件`);
     }
-    const driverName =
-      this.config.get<string>('STORAGE_DRIVER', 'local') === 'cos' ? 'cos' : 'local';
+    const configuredDriver = await this.integrationConfig.getValue(
+      'STORAGE_DRIVER',
+      this.config.get<string>('STORAGE_DRIVER', 'local'),
+    );
+    const driverName = configuredDriver.toLowerCase() === 'cos' ? 'cos' : 'local';
     const adapter = driverName === 'cos' ? this.cos : this.local;
     const driver =
       driverName === 'cos' ? UploadStorageDriver.TENCENT_COS : UploadStorageDriver.LOCAL;

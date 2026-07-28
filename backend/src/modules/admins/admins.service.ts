@@ -15,11 +15,13 @@ import { toInputJson } from '../../common/utils/json.util';
 import { PrismaService } from '../../database/prisma.service';
 import { RedisService } from '../../database/redis.service';
 import { AuthPrincipal } from '../auth/auth.types';
+import { IntegrationConfigService } from '../integration-config/integration-config.service';
 import {
   AdminResourceMutationDto,
   AdminResourceQueryDto,
   ReplyFeedbackDto,
   ShipOrderDto,
+  UpdateIntegrationConfigDto,
 } from './dto/admins.dto';
 
 interface CrudDelegate {
@@ -43,6 +45,7 @@ export class AdminsService {
     private readonly prisma: PrismaService,
     private readonly config: ConfigService,
     private readonly redis: RedisService,
+    private readonly integrationConfig: IntegrationConfigService,
   ) {}
 
   async overview(principal: AuthPrincipal) {
@@ -193,12 +196,30 @@ export class AdminsService {
     };
   }
 
-  configStatus(principal: AuthPrincipal) {
+  async configStatus(principal: AuthPrincipal) {
     this.assertAdmin(principal, 'admin');
     const nodeEnv = this.config.get<string>('NODE_ENV', 'development');
     const isProduction = nodeEnv === 'production';
-    const storageDriver = this.config.get<string>('STORAGE_DRIVER', 'local');
-    const cosConfigured = this.hasAll([
+    const storageDriver = await this.integrationConfig.getValue(
+      'STORAGE_DRIVER',
+      this.config.get<string>('STORAGE_DRIVER', 'local'),
+    );
+    const [wechatConfigured, wechatPayConfigured, ezvizConfigured, amapConfigured, llmConfigured] =
+      await Promise.all([
+        this.integrationConfig.hasAll(['WECHAT_APP_ID', 'WECHAT_APP_SECRET']),
+        this.integrationConfig.hasAll([
+          'WECHAT_PAY_APP_ID',
+          'WECHAT_PAY_MCH_ID',
+          'WECHAT_PAY_API_V3_KEY',
+          'WECHAT_PAY_SERIAL_NO',
+          'WECHAT_PAY_PRIVATE_KEY_PATH',
+          'WECHAT_PAY_NOTIFY_URL',
+        ]),
+        this.integrationConfig.hasAll(['EZVIZ_APP_KEY', 'EZVIZ_APP_SECRET']),
+        this.integrationConfig.hasAll(['AMAP_KEY']),
+        this.integrationConfig.hasAll(['LLM_API_KEY']),
+      ]);
+    const cosConfigured = await this.integrationConfig.hasAll([
       'TENCENT_COS_SECRET_ID',
       'TENCENT_COS_SECRET_KEY',
       'TENCENT_COS_BUCKET',
@@ -225,7 +246,7 @@ export class AdminsService {
         key: 'wechat',
         name: '微信登录',
         ...this.thirdPartyStatus(
-          this.hasAll(['WECHAT_APP_ID', 'WECHAT_APP_SECRET']),
+          wechatConfigured,
           this.config.get<boolean>('WECHAT_MOCK_ENABLED', false),
           isProduction,
           '等待配置 WECHAT_APP_ID 和 WECHAT_APP_SECRET。',
@@ -235,14 +256,7 @@ export class AdminsService {
         key: 'wechatPay',
         name: '微信支付',
         ...this.thirdPartyStatus(
-          this.hasAll([
-            'WECHAT_PAY_APP_ID',
-            'WECHAT_PAY_MCH_ID',
-            'WECHAT_PAY_API_V3_KEY',
-            'WECHAT_PAY_SERIAL_NO',
-            'WECHAT_PAY_PRIVATE_KEY_PATH',
-            'WECHAT_PAY_NOTIFY_URL',
-          ]),
+          wechatPayConfigured,
           false,
           isProduction,
           '等待配置微信支付商户号、API v3 key、证书路径和回调地址。',
@@ -252,7 +266,7 @@ export class AdminsService {
         key: 'ezviz',
         name: '萤石云',
         ...this.thirdPartyStatus(
-          this.hasAll(['EZVIZ_APP_KEY', 'EZVIZ_APP_SECRET']),
+          ezvizConfigured,
           this.config.get<boolean>('EZVIZ_MOCK_ENABLED', false),
           isProduction,
           '等待配置 EZVIZ_APP_KEY 和 EZVIZ_APP_SECRET。',
@@ -262,7 +276,7 @@ export class AdminsService {
         key: 'amap',
         name: '高德地图',
         ...this.thirdPartyStatus(
-          this.hasAll(['AMAP_KEY']),
+          amapConfigured,
           false,
           isProduction,
           '等待配置 AMAP_KEY；普通地图展示仍可使用后端点位数据。',
@@ -284,7 +298,7 @@ export class AdminsService {
         key: 'llm',
         name: 'LLM',
         ...this.thirdPartyStatus(
-          this.hasAll(['LLM_API_KEY']),
+          llmConfigured,
           !isProduction,
           isProduction,
           '等待配置 LLM_API_KEY；未配置时 AI 导游使用数据库检索 fallback。',
@@ -296,6 +310,31 @@ export class AdminsService {
       publicBaseUrl: this.config.get<string>('PUBLIC_BASE_URL', ''),
       items,
     };
+  }
+
+  async integrationConfigs(principal: AuthPrincipal) {
+    this.assertAdmin(principal, 'admin');
+    return { groups: await this.integrationConfig.listGroups() };
+  }
+
+  async updateIntegrationConfig(
+    principal: AuthPrincipal,
+    service: string,
+    dto: UpdateIntegrationConfigDto,
+    requestId?: string,
+  ) {
+    return this.integrationConfig.updateGroup(
+      service,
+      dto.values || {},
+      dto.clearKeys || [],
+      principal,
+      requestId,
+    );
+  }
+
+  async testIntegrationConfig(principal: AuthPrincipal, service: string) {
+    this.assertAdmin(principal, 'admin');
+    return this.integrationConfig.testGroup(service);
   }
 
   async users(principal: AuthPrincipal, query: AdminResourceQueryDto) {
@@ -887,10 +926,6 @@ export class AdminsService {
       .trim()
       .toUpperCase() as FeedbackStatus;
     return Object.values(FeedbackStatus).includes(normalized) ? normalized : undefined;
-  }
-
-  private hasAll(keys: string[]) {
-    return keys.every((key) => Boolean(String(this.config.get<string>(key, '')).trim()));
   }
 
   private thirdPartyStatus(

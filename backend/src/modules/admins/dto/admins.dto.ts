@@ -1,4 +1,4 @@
-import { IsObject, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsObject, IsOptional, IsString } from 'class-validator';
 import { PageQueryDto } from '../../../common/dto/page.dto';
 
 export class AdminResourceQueryDto extends PageQueryDto {
@@ -44,4 +44,14 @@ export class RefundStatusDto {
 export class ReplyFeedbackDto {
   @IsString()
   adminReply!: string;
+}
+
+export class UpdateIntegrationConfigDto {
+  @IsObject()
+  values!: Record<string, unknown>;
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  clearKeys?: string[];
 }

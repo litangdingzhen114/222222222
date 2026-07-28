@@ -76,7 +76,7 @@ export class PaymentsService {
     rawBody: string,
     body: unknown,
   ) {
-    const valid = this.wechatPay.verifyNotify(headers, rawBody);
+    const valid = await this.wechatPay.verifyNotify(headers, rawBody);
     if (!valid) return { code: 'FAIL', message: 'signature invalid' };
     const payload = this.wechatPay.decryptNotifyResource(body);
     if (payload.tradeState !== 'SUCCESS') return { code: 'SUCCESS', message: 'success' };

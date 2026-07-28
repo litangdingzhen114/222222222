@@ -9,6 +9,9 @@ import type {
   FeedbackRecord,
   HomeContent,
   HomeContentEnvelope,
+  IntegrationConfigGroup,
+  IntegrationConfigTestResult,
+  IntegrationConfigsResponse,
   ListResponse,
   LiveContentEnvelope,
   LiveItem,
@@ -17,7 +20,7 @@ import type {
   ResourceContentEnvelope,
   ResourceContentSummary,
   ResourceKey,
-  TokenBundle
+  TokenBundle,
 } from './types';
 
 export const ACCESS_TOKEN_KEY = 'hailin-admin-access-token';
@@ -134,7 +137,11 @@ let refreshPromise: Promise<TokenBundle> | null = null;
 
 function rawBaseUrl() {
   const fallbackBaseUrl = import.meta.env.PROD ? 'https://api.hailin.store/api/v1' : '/api/v1';
-  return String(import.meta.env.VITE_API_BASE_URL || import.meta.env.NEXT_PUBLIC_API_BASE_URL || fallbackBaseUrl).replace(/\/+$/, '');
+  return String(
+    import.meta.env.VITE_API_BASE_URL ||
+      import.meta.env.NEXT_PUBLIC_API_BASE_URL ||
+      fallbackBaseUrl,
+  ).replace(/\/+$/, '');
 }
 
 export function apiBaseUrl() {
@@ -222,7 +229,7 @@ async function refreshTokens() {
   refreshPromise = fetch(buildUrl('/auth/refresh'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ refreshToken: token })
+    body: JSON.stringify({ refreshToken: token }),
   })
     .then(async (response) => {
       const payload = await parsePayload<TokenBundle>(response);
@@ -240,7 +247,7 @@ async function refreshTokens() {
 export async function apiRequest<T>(
   path: string,
   init: RequestInit = {},
-  options: { retryOnUnauthorized?: boolean } = {}
+  options: { retryOnUnauthorized?: boolean } = {},
 ): Promise<T> {
   const retryOnUnauthorized = options.retryOnUnauthorized !== false;
   const headers = new Headers(init.headers);
@@ -254,7 +261,7 @@ export async function apiRequest<T>(
   const response = await fetch(buildUrl(path), {
     ...init,
     headers,
-    signal: init.signal ?? AbortSignal.timeout(15000)
+    signal: init.signal ?? AbortSignal.timeout(15000),
   });
   const payload = await parsePayload<T>(response);
 
@@ -287,14 +294,14 @@ export async function apiRequest<T>(
 function toLegacyList<T, U = T>(
   page: ApiPage<T>,
   mapper?: (item: T) => U,
-  stats?: Record<string, number>
+  stats?: Record<string, number>,
 ): ListResponse<U> {
   return {
     items: mapper ? page.list.map(mapper) : (page.list as unknown as U[]),
     page: page.page,
     pageSize: page.pageSize,
     total: page.total,
-    stats
+    stats,
   };
 }
 
@@ -339,7 +346,10 @@ function statusStats<T extends { status?: string }>(items: T[]) {
 function mapOrder(record: RawOrder): OrderRecord {
   const snapshot = asObject(record.addressSnapshot);
   const items = record.items || [];
-  const itemName = items.map((item) => item.productName).filter(Boolean).join('、');
+  const itemName = items
+    .map((item) => item.productName)
+    .filter(Boolean)
+    .join('、');
   const quantity = items.reduce((sum, item) => sum + (item.quantity || 0), 0);
   const contactName = firstText(snapshot.contactName, snapshot.name);
   const contactPhone = firstText(snapshot.phone, record.user?.phone);
@@ -362,13 +372,13 @@ function mapOrder(record: RawOrder): OrderRecord {
     logistics: {
       carrier: record.logisticsCompany || '',
       trackingNo: record.logisticsNo || '',
-      shippedAt: record.shippedAt || ''
+      shippedAt: record.shippedAt || '',
     },
     lastHandledAt: record.updatedAt,
     completedAt: record.completedAt || undefined,
     cancelledAt: record.cancelledAt || record.closedAt || undefined,
     createdAt: record.createdAt,
-    updatedAt: record.updatedAt
+    updatedAt: record.updatedAt,
   };
 }
 
@@ -387,7 +397,7 @@ function mapReservationOrder(record: RawReservationOrder): BookingRecord {
     completedAt: record.verifiedAt || undefined,
     cancelledAt: record.cancelledAt || undefined,
     createdAt: record.createdAt,
-    updatedAt: record.updatedAt
+    updatedAt: record.updatedAt,
   };
 }
 
@@ -404,7 +414,7 @@ function mapFeedback(record: RawFeedback): FeedbackRecord {
     resolvedAt: record.repliedAt || undefined,
     archivedAt: record.status === 'CLOSED' ? record.updatedAt : undefined,
     createdAt: record.createdAt,
-    updatedAt: record.updatedAt
+    updatedAt: record.updatedAt,
   };
 }
 
@@ -416,7 +426,7 @@ function csvValue(value: unknown) {
 function csvBlob(headers: string[], rows: Array<Record<string, unknown>>) {
   const lines = [
     headers.join(','),
-    ...rows.map((row) => headers.map((header) => csvValue(row[header])).join(','))
+    ...rows.map((row) => headers.map((header) => csvValue(row[header])).join(',')),
   ];
   return new Blob([`\ufeff${lines.join('\n')}`], { type: 'text/csv;charset=utf-8' });
 }
@@ -424,7 +434,7 @@ function csvBlob(headers: string[], rows: Array<Record<string, unknown>>) {
 export async function loginAdmin(payload: { username: string; password: string }) {
   const result = await apiRequest<LoginResponse>('/admin/auth/login', {
     method: 'POST',
-    body: JSON.stringify(payload)
+    body: JSON.stringify(payload),
   });
   saveTokens(result);
   saveAdminProfile(result.admin);
@@ -455,10 +465,34 @@ export function getConfigStatus() {
   return apiRequest<ConfigStatus>('/admin/config-status');
 }
 
+export function getIntegrationConfigs() {
+  return apiRequest<IntegrationConfigsResponse>('/admin/integration-configs');
+}
+
+export function updateIntegrationConfig(
+  service: string,
+  payload: { values: Record<string, unknown>; clearKeys?: string[] },
+) {
+  return apiRequest<IntegrationConfigGroup>(
+    `/admin/integration-configs/${encodeURIComponent(service)}`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+    },
+  );
+}
+
+export function testIntegrationConfig(service: string) {
+  return apiRequest<IntegrationConfigTestResult>(
+    `/admin/integration-configs/${encodeURIComponent(service)}/test`,
+    { method: 'POST' },
+  );
+}
+
 export function testCameraPlayUrl(id: string) {
   return apiRequest<{ playUrl: string; expireAt: string; mode: 'official' | 'development' }>(
     `/cameras/${encodeURIComponent(id)}/play-url`,
-    { method: 'POST' }
+    { method: 'POST' },
   );
 }
 
@@ -473,20 +507,24 @@ export function getAdminResource<T>(resource: string, id: string) {
 export function createAdminResource<T>(resource: string, data: Record<string, unknown>) {
   return apiRequest<T>(`/admin/${resource}`, {
     method: 'POST',
-    body: JSON.stringify({ data })
+    body: JSON.stringify({ data }),
   });
 }
 
-export function updateAdminResource<T>(resource: string, id: string, data: Record<string, unknown>) {
+export function updateAdminResource<T>(
+  resource: string,
+  id: string,
+  data: Record<string, unknown>,
+) {
   return apiRequest<T>(`/admin/${resource}/${encodeURIComponent(id)}`, {
     method: 'PATCH',
-    body: JSON.stringify({ data })
+    body: JSON.stringify({ data }),
   });
 }
 
 export function deleteAdminResource(resource: string, id: string) {
   return apiRequest<{ ok: boolean }>(`/admin/${resource}/${encodeURIComponent(id)}`, {
-    method: 'DELETE'
+    method: 'DELETE',
   });
 }
 
@@ -503,37 +541,37 @@ export function shipOrder(
   payload: {
     logisticsCompany: string;
     logisticsNo: string;
-  }
+  },
 ) {
   return apiRequest<OrderRecord>(`/admin/orders/${encodeURIComponent(id)}/ship`, {
     method: 'POST',
-    body: JSON.stringify(payload)
+    body: JSON.stringify(payload),
   });
 }
 
 export function markOrderRefunding(id: string) {
   return apiRequest<OrderRecord>(`/admin/orders/${encodeURIComponent(id)}/refunding`, {
-    method: 'POST'
+    method: 'POST',
   });
 }
 
 export function markOrderRefunded(id: string) {
   return apiRequest<OrderRecord>(`/admin/orders/${encodeURIComponent(id)}/refunded`, {
-    method: 'POST'
+    method: 'POST',
   });
 }
 
 export function replyFeedback(id: string, adminReply: string) {
   return apiRequest<FeedbackRecord>(`/admin/feedback/${encodeURIComponent(id)}/reply`, {
     method: 'POST',
-    body: JSON.stringify({ adminReply })
+    body: JSON.stringify({ adminReply }),
   });
 }
 
 export function getHomeContent() {
   return apiRequest<HomeContent>('/home').then((content) => ({
     content: content as unknown as HomeContent,
-    meta: { source: 'api-v1' }
+    meta: { source: 'api-v1' },
   }));
 }
 
@@ -550,8 +588,8 @@ export function getLiveContent() {
     items: page.list,
     meta: {
       source: 'api-v1',
-      stats: { total: page.total, enabled: page.list.length, customSources: 0 }
-    }
+      stats: { total: page.total, enabled: page.list.length, customSources: 0 },
+    },
   }));
 }
 
@@ -570,7 +608,7 @@ export function listResourceContent() {
     { key: 'foods', label: '美食', limit: 100, meta: { source: 'api-v1' } },
     { key: 'map-points', label: '地图点位', limit: 100, meta: { source: 'api-v1' } },
     { key: 'product-categories', label: '商品分类', limit: 100, meta: { source: 'api-v1' } },
-    { key: 'products', label: '商品', limit: 100, meta: { source: 'api-v1' } }
+    { key: 'products', label: '商品', limit: 100, meta: { source: 'api-v1' } },
   ];
   return Promise.resolve({ items: resources });
 }
@@ -581,7 +619,7 @@ const resourceEndpointMap: Record<ResourceKey, string> = {
   foods: 'foods',
   'map-points': 'map-points',
   'product-categories': 'product-categories',
-  products: 'products'
+  products: 'products',
 };
 
 export function getResourceContent(key: ResourceKey) {
@@ -591,7 +629,7 @@ export function getResourceContent(key: ResourceKey) {
     label: key,
     limit: 100,
     meta: { source: 'api-v1', stats: { total: page.total } },
-    items: page.list
+    items: page.list,
   }));
 }
 
@@ -605,58 +643,60 @@ export function resetResourceContent(key: ResourceKey) {
 
 export function listBookings(params: QueryParams) {
   return listAdminResource<RawReservationOrder>('reservation-orders', params).then((page) =>
-    toLegacyList(page, mapReservationOrder, statusStats(page.list))
+    toLegacyList(page, mapReservationOrder, statusStats(page.list)),
   );
 }
 
 export function listFeedback(params: QueryParams) {
   return listAdminResource<RawFeedback>('feedback', params).then((page) =>
-    toLegacyList(page, mapFeedback, statusStats(page.list))
+    toLegacyList(page, mapFeedback, statusStats(page.list)),
   );
 }
 
 export function listOrders(params: QueryParams) {
   return listAdminResource<RawOrder>('orders', params).then((page) =>
-    toLegacyList(page, mapOrder, statusStats(page.list))
+    toLegacyList(page, mapOrder, statusStats(page.list)),
   );
 }
 
 export function listAudit(params: QueryParams) {
   return apiRequest<ApiPage<AuditRecord>>(`/admin/audit-logs${queryString(params)}`).then(
-    toLegacyList
+    toLegacyList,
   );
 }
 
 export function updateRecordStatus(
   kind: 'bookings' | 'feedback',
   id: string,
-  payload: { status: string; note?: string }
+  payload: { status: string; note?: string },
 ) {
   if (kind === 'bookings') {
     const data: Record<string, unknown> = { status: payload.status };
     if (payload.status === 'COMPLETED') data.verifiedAt = new Date().toISOString();
     if (payload.status === 'CANCELLED') data.cancelledAt = new Date().toISOString();
     return updateAdminResource<RawReservationOrder>('reservation-orders', id, data).then(
-      mapReservationOrder
+      mapReservationOrder,
     );
   }
   if (payload.status === 'REPLIED') {
     return replyFeedback(id, payload.note || '已处理').then((record) =>
-      mapFeedback(record as unknown as RawFeedback)
+      mapFeedback(record as unknown as RawFeedback),
     );
   }
   return updateAdminResource<RawFeedback>('feedback', id, {
     status: payload.status,
-    ...(payload.note ? { adminReply: payload.note } : {})
+    ...(payload.note ? { adminReply: payload.note } : {}),
   }).then(mapFeedback);
 }
 
 export async function updateBulkStatus(
   kind: 'bookings' | 'feedback',
-  payload: { ids: string[]; status: string; note?: string }
+  payload: { ids: string[]; status: string; note?: string },
 ) {
   await Promise.all(
-    payload.ids.map((id) => updateRecordStatus(kind, id, { status: payload.status, note: payload.note }))
+    payload.ids.map((id) =>
+      updateRecordStatus(kind, id, { status: payload.status, note: payload.note }),
+    ),
   );
   return { updated: payload.ids.length };
 }
@@ -668,25 +708,25 @@ export function updateOrderFulfillment(
     note?: string;
     carrier?: string;
     trackingNo?: string;
-  }
+  },
 ) {
   if (payload.status === 'SHIPPED') {
     return shipOrder(id, {
       logisticsCompany: payload.carrier || '',
-      logisticsNo: payload.trackingNo || ''
+      logisticsNo: payload.trackingNo || '',
     }).then((record) => mapOrder(record as unknown as RawOrder));
   }
   return updateAdminResource<RawOrder>('orders', id, {
     status: payload.status,
     ...(payload.status === 'COMPLETED' ? { completedAt: new Date().toISOString() } : {}),
     ...(payload.status === 'CANCELLED' ? { cancelledAt: new Date().toISOString() } : {}),
-    ...(payload.note ? { remark: payload.note } : {})
+    ...(payload.note ? { remark: payload.note } : {}),
   }).then(mapOrder);
 }
 
 export async function fetchExportBlob(
   collection: 'bookings' | 'feedback' | 'orders',
-  params: QueryParams = {}
+  params: QueryParams = {},
 ) {
   if (collection === 'orders') {
     const result = await listOrders({ ...params, page: 1, pageSize: 100 });
@@ -699,8 +739,8 @@ export async function fetchExportBlob(
         paymentStatus: item.paymentStatus,
         price: item.price,
         contact: item.contact,
-        createdAt: item.createdAt
-      }))
+        createdAt: item.createdAt,
+      })),
     );
   }
   if (collection === 'bookings') {
@@ -713,8 +753,8 @@ export async function fetchExportBlob(
         people: item.people,
         status: item.status,
         contact: item.contact,
-        createdAt: item.createdAt
-      }))
+        createdAt: item.createdAt,
+      })),
     );
   }
   const result = await listFeedback({ ...params, page: 1, pageSize: 100 });
@@ -725,14 +765,17 @@ export async function fetchExportBlob(
       content: item.content,
       status: item.status,
       contact: item.contact,
-      createdAt: item.createdAt
-    }))
+      createdAt: item.createdAt,
+    })),
   );
 }
 
 export async function fetchBackupBlob() {
   const [dashboard, config] = await Promise.all([getDashboard(), getConfigStatus()]);
-  return new Blob([JSON.stringify({ exportedAt: new Date().toISOString(), dashboard, config }, null, 2)], {
-    type: 'application/json'
-  });
+  return new Blob(
+    [JSON.stringify({ exportedAt: new Date().toISOString(), dashboard, config }, null, 2)],
+    {
+      type: 'application/json',
+    },
+  );
 }
