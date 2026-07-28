@@ -133,7 +133,8 @@ class ApiError extends Error {
 let refreshPromise: Promise<TokenBundle> | null = null;
 
 function rawBaseUrl() {
-  return String(import.meta.env.VITE_API_BASE_URL || import.meta.env.NEXT_PUBLIC_API_BASE_URL || '/api/v1').replace(/\/+$/, '');
+  const fallbackBaseUrl = import.meta.env.PROD ? 'https://api.hailin.store/api/v1' : '/api/v1';
+  return String(import.meta.env.VITE_API_BASE_URL || import.meta.env.NEXT_PUBLIC_API_BASE_URL || fallbackBaseUrl).replace(/\/+$/, '');
 }
 
 export function apiBaseUrl() {
