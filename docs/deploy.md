@@ -142,4 +142,4 @@ docker compose -f docker-compose.production.yml start api
 
 ## 8. 当前上线策略
 
-Vercel 继续用于 `www.hailin.store/admin/` 的展示和轻量管理；长期运营数据应切到 NestJS + PostgreSQL + Redis 闭环。缺少第三方正式凭证时，微信登录、微信支付、萤石云、地图、COS 和 AI 都走明确的开发 fallback，不伪造正式接入成功。
+Vercel 继续用于 `www.hailin.store/admin/` 的展示和轻量管理；长期运营数据应切到 NestJS + PostgreSQL + Redis 闭环。生产环境默认关闭微信登录和萤石云 mock；缺少正式凭证时，对应接口应返回等待配置或服务暂不可用，不伪造正式接入成功。只有本地预览或临时审核包可以显式开启开发 fallback。

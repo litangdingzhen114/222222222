@@ -11,7 +11,7 @@ function buildLocalReply(question) {
     return '慢直播建议接入村口广场、溪谷步道、稻鱼田和侨乡会客厅四类点位。当前页面支持后端返回 liveUrl 或 hlsUrl 后直接播放。';
   }
   if (question.includes('AI') || question.includes('智能')) {
-    return '真实 AI 建议放在后端代理：小程序把问题发给后端，后端再调用大模型，并返回导览建议、引用内容和风险提示。';
+    return '我会优先根据海林村现有景点、路线、餐饮和服务点信息回答，避免给出没有来源的价格和开放时间。';
   }
   if (question.includes('停车') || question.includes('导航')) {
     return '建议从“全域旅游地图”查看游客中心、停车场和公共服务点。真实上线后可由后端返回腾讯地图导航参数。';
@@ -19,7 +19,7 @@ function buildLocalReply(question) {
   if (question.includes('住宿') || question.includes('民宿')) {
     return '可以围绕溪谷慢住、侨乡会客和山村夜游包装民宿内容。真实预订建议接后台房态和订单系统。';
   }
-  return '我是海林村 AI 导游小林。可以问我路线、美食、慢直播、停车、民宿和青田地域文化。当前没有配置后端时，我会用本地知识兜底回复。';
+  return '我是海林村导览助手小林。可以问我路线、美食、慢直播、停车、民宿和青田地域文化。';
 }
 
 function askGuide(question, history) {

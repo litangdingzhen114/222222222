@@ -152,8 +152,8 @@ function clearAuthSession() {
 
 function serviceModeText() {
   const baseUrl = resolveApiBaseUrl();
-  if (!baseUrl) return '本地内容兜底';
-  return baseUrl === serviceConfig.devApiBaseUrl ? '本地后端已连接' : '真实服务已连接';
+  if (!baseUrl) return '内容预览模式';
+  return baseUrl === serviceConfig.devApiBaseUrl ? '开发服务已连接' : '服务已连接';
 }
 
 module.exports = {

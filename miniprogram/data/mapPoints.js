@@ -147,7 +147,7 @@ module.exports = [
     type: '购物',
     subType: '核心景区',
     distance: '0.1公里',
-    desc: '提供咨询、讲解预约、文创选购和便民服务，可接真实后端。',
+    desc: '提供咨询、讲解预约、文创选购和便民服务，服务信息由后台统一维护。',
     imageUrl: '/assets/photos/ai-village-gate.jpg',
     openTime: '08:30-18:00',
     tips: '可咨询路线、讲解、停车、活动票券和便民服务。',

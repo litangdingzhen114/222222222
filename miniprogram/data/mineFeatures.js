@@ -305,11 +305,7 @@ const featureMap = {
     heroTag: '到场核销',
     subtitle: '输入订单核销码，完成票券、讲解、场地或研学预约核销。',
     chips: ['订单码', '票券码', '到场确认'],
-    codes: [
-      { code: 'HL2026', service: '海林村活动票券' },
-      { code: 'HAILIN', service: '讲解跟拍预约' },
-      { code: '123456', service: '游客演示订单' }
-    ]
+    codes: []
   },
   coupon: {
     id: 'coupon',
@@ -335,7 +331,7 @@ const featureMap = {
     title: '签到',
     heroTag: '每日到访',
     subtitle: '每天签到领取积分，连续到访可兑换稻鱼宴和手作体验优惠。',
-    chips: ['每日一次', '+5积分', '本地记录']
+    chips: ['每日一次', '+5积分', '到访记录']
   },
   cooperation: {
     id: 'cooperation',

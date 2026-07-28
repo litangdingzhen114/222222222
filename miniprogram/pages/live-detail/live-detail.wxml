@@ -24,10 +24,10 @@
     <image wx:if="{{live.coverUrl}}" class="mock-cover" src="{{live.coverUrl}}" mode="aspectFill"></image>
     <view class="live-status">
       <view class="status-dot"></view>
-      <text>直播中</text>
+      <text>点位预览</text>
     </view>
     <view class="mock-play">▶</view>
-    <view class="mock-caption">视频源暂不可用 · 当前显示封面</view>
+    <view class="mock-caption">直播画面维护中 · 当前展示点位封面</view>
     <text class="mock-word">{{live.icon}}</text>
   </view>
 

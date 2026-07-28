@@ -111,7 +111,7 @@ Page({
         quickToast('订单已提交至后台');
       })
       .catch(() => {
-        quickToast('已记录预约，后台未配置时本地兜底');
+        quickToast('提交失败，请稍后重试');
       });
   }
 });

@@ -41,7 +41,7 @@ Page({
         quickToast('反馈已提交至后台');
       })
       .catch(() => {
-        quickToast('反馈已记录，后台未配置时本地兜底');
+        quickToast('提交失败，请稍后重试');
       });
   }
 });

@@ -223,7 +223,7 @@ Page({
         quickToast('订单已提交至后台');
       })
       .catch(() => {
-        quickToast('已本地记录，后端接通后同步');
+        quickToast('已记录，请稍后在我的记录查看');
       })
       .then(() => {
         this.setData({ submitting: false, remark: '' });
@@ -331,7 +331,7 @@ Page({
         quickToast('合作意向已提交');
       })
       .catch(() => {
-        quickToast('已本地记录，后端接通后同步');
+        quickToast('已记录，请稍后在提交记录查看');
       })
       .then(() => {
         this.setData({ submitting: false, cooperationContent: '' });

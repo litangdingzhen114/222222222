@@ -68,7 +68,7 @@
       <view class="field-label">核销码</view>
       <input class="form-input code-input" placeholder="请输入订单或票券核销码" placeholder-class="form-placeholder" value="{{verifyCode}}" bindinput="onVerifyInput" />
       <button class="primary-action" bindtap="onVerifyCode">立即核销</button>
-      <view class="form-tip">演示码：HL2026 / HAILIN / 123456</view>
+      <view class="form-tip">核销码由工作人员在订单确认后提供。</view>
     </view>
 
     <view class="section-head">

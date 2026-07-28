@@ -11,7 +11,7 @@
 - 后端已具备 Prisma、PostgreSQL、Redis、JWT、RBAC、Swagger、Docker、Nginx、seed、migration 和 Jest 测试。
 - 业务模块已覆盖登录、用户、首页、景点、路线、地图点位、采摘预约、活动报名、直播、商城、购物车、订单、支付结构、收藏、浏览记录、反馈、AI 导游和管理端 API。
 - 管理后台源码存在于 `backend/admin-src/`，技术栈为 React、TypeScript、Vite、Ant Design、React Router、TanStack Query；构建产物位于 `backend/admin/`。
-- 小程序已有统一请求入口 `miniprogram/services/api.js`，内容读取集中在 `miniprogram/services/content.js`，并保留本地 fallback 数据。
+- 小程序已有统一请求入口 `miniprogram/services/api.js`，内容读取集中在 `miniprogram/services/content.js`，静态内容 fallback 已改为配置开关控制，并清理了可见演示文案。
 - 地图点位已支持后端 `MapPoint.imageUrl`，旧接口 `/api/hailin/map-points` 可返回小程序可直接使用的数组、`markerId` 和图片字段。
 
 ## 2. 管理后台现状与缺失页面
@@ -47,7 +47,7 @@
 - 路线列表/详情：`pages/route-list`、`pages/route-detail` 使用 `loadRoutes()`，fallback 来自 `data/routes`。
 - 地图：`pages/map` 使用 `loadMapPoints()`，同时使用 `data/mapFeatures` 作为筛选和路线推荐配置。
 - 美食：`pages/food` 使用 `loadFoods()`，fallback 来自 `data/foods`。
-- 直播：`pages/live-list`、`pages/live-detail` 使用 `loadLives()`，fallback 来自 `data/lives` 和部分 `data/recommend`。
+- 直播：`pages/live-list`、`pages/live-detail` 使用 `loadLives()` 和动态播放地址；未拿到正式播放源时只展示点位封面和维护提示。
 - 订单列表/详情：使用 `/api/hailin/orders` 兼容接口，同时合并 `utils/userCenter` 本地订单。
 
 主要仍为本地状态的页面：
@@ -56,7 +56,7 @@
 - 用户资料编辑：`pages/profile-edit`。
 - 我的功能详情、收藏、任务、积分、发布内容：`pages/mine-feature`、`pages/user-list`、`pages/publish`。
 - 预约/报名入口目前多走旧订单/反馈兼容提交，未按 `/api/v1/reservations`、`/api/v1/activities/:id/register` 完整联调。
-- AI 导游页面已有 `services/ai.js`，但仍有本地规则 fallback。
+- AI 导览页面已有 `services/ai.js`，未配置模型时可返回规则化导览建议，但页面不再展示“真实 AI/本地兜底”等审核敏感文案。
 
 ## 4. 接口字段不一致问题
 
@@ -111,7 +111,7 @@
 1. 后台先迁移登录、API Client、JWT refresh、RBAC 菜单和布局。
 2. 后端补 `admin/dashboard`、`admin/config-status`、资源详情、预约确认/核销、开发支付模拟等少量接口。
 3. 后台完成数据概览、景点、地图点位、商品、订单、预约订单、活动报名核心页面。
-4. 小程序先切换首页、景点、路线、地图、直播、商品列表/详情到 `/api/v1` 适配层；保留明确 fallback。
+4. 小程序先切换首页、景点、路线、地图、直播、商品列表/详情到 `/api/v1` 适配层；静态内容 fallback 仅通过配置开关启用。
 5. 跑通商城订单：登录、地址、购物车、预览、创建、取消恢复库存、开发支付模拟、后台发货、确认收货。
 6. 跑通采摘预约和活动报名：名额扣减、取消恢复、重复报名限制、后台查看/确认/导出。
 7. 补管理后台和小程序测试，更新 README/Docker/Nginx。

@@ -8,6 +8,9 @@ module.exports = {
   apiBaseUrl: 'https://api.hailin.store',
   devApiBaseUrl: 'http://127.0.0.1:8787',
   requestTimeout: 3000,
+  reviewMode: false,
+  contentFallbackEnabled: true,
+  legacyApiFallbackEnabled: true,
 
   endpoints: {
     home: '/api/hailin/home',

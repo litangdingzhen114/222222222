@@ -7,13 +7,13 @@
 文件：`miniprogram/config/service.js`
 
 ```js
-apiBaseUrl: 'https://www.hailin.store'
+apiBaseUrl: 'https://api.hailin.store'
 ```
 
 本地开发可以使用：
 
 ```js
-apiBaseUrl: 'http://127.0.0.1:8787'
+devApiBaseUrl: 'http://127.0.0.1:8787'
 ```
 
 真机预览时不要使用 `127.0.0.1`，需要换成电脑局域网 IP；正式上线必须使用 HTTPS 域名，并在微信公众平台配置合法 request 域名。
@@ -27,7 +27,7 @@ npm run backend
 健康检查：
 
 ```text
-GET /health
+GET /api/v1/health
 ```
 
 后台管理页：
@@ -38,15 +38,16 @@ GET /admin/
 
 ## 小程序接口
 
-- `GET /api/hailin/home`
-- `GET /api/hailin/map-points`
-- `GET /api/hailin/foods`
-- `GET /api/hailin/lives`
-- `POST /api/hailin/ai-guide`
-- `POST /api/hailin/bookings`
-- `POST /api/hailin/feedback`
+- `GET /api/v1/home`
+- `GET /api/v1/map-points`
+- `GET /api/v1/foods`
+- `GET /api/v1/cameras`
+- `POST /api/v1/cameras/:id/play-url`
+- `POST /api/v1/ai-guide/chat`
+- `POST /api/v1/orders`
+- `POST /api/v1/feedback`
 
-小程序会兼容 `{ data: ... }` 返回格式。
+小程序仍保留 `/api/hailin/*` 兼容接口，用于过渡部署，不作为新功能优先路径。
 
 ## AI 导游
 
@@ -63,7 +64,7 @@ GET /admin/
 }
 ```
 
-后端优先读取 `KIMI_API_KEY`，也兼容 `MOONSHOT_API_KEY`。配置后会代理调用 Kimi/Moonshot 的 `https://api.moonshot.cn/v1/chat/completions`；未配置 Key 或请求失败时，会返回本地兜底导游话术。
+后端通过统一 LLM Provider 调用模型服务。未配置正式 Key 时，接口会返回基于数据库内容的规则化导览建议，并明确标记为 fallback 模式；小程序端不展示“模型已正式接入”的误导文案。
 
 Kimi 官方文档：https://platform.moonshot.cn/docs
 
@@ -75,7 +76,7 @@ Kimi 官方文档：https://platform.moonshot.cn/docs
 https://www.hailin.store/admin/
 ```
 
-登录使用后端环境变量 `ADMIN_TOKEN`。后台支持：
+登录使用 `/api/v1/admin/auth/login` 返回的管理员 JWT。后台支持：
 
 - 看预约、反馈、AI、慢直播总览
 - 按状态筛选预约和反馈
@@ -106,16 +107,11 @@ POST /api/admin/home-content/reset
 
 ## 慢直播
 
-本地后端已提供：
-
-```text
-GET /media/hailin-live.mp4
-```
-
 小程序从以下接口读取慢直播点位：
 
 ```text
-GET /api/hailin/lives
+GET /api/v1/cameras
+POST /api/v1/cameras/:id/play-url
 ```
 
 后台可维护慢直播点位、封面、排序、启停状态和真实播放源：
@@ -126,18 +122,8 @@ PUT /api/admin/lives
 POST /api/admin/lives/reset
 ```
 
-未配置真实播放源时，后端会把启用点位的 `liveUrl` 兜底到 `/media/hailin-live.mp4`。后续接真实摄像头时，优先在后台填入 MP4/FLV 或 HLS 地址，不需要直接修改 `backend/server.js`。
+未配置萤石云正式凭证或设备不可用时，播放地址接口不会伪造真实直播；小程序显示点位封面和维护提示。接入真实摄像头后由后端适配器动态获取可播放地址，小程序端不保存萤石云密钥。
 
 ## 预约和反馈
 
-写入文件：
-
-- `backend/storage/bookings.json`
-- `backend/storage/feedback.json`
-- `backend/storage/audit.json`
-
-日志文件：
-
-- `backend/storage/logs/YYYY-MM-DD.log`
-
-正式多实例部署时建议迁移到数据库，避免多个进程同时写同一份 JSON 文件。
+预约、反馈、订单和操作日志由 NestJS + Prisma 写入 PostgreSQL；Redis 用于限流、幂等和第三方 token 缓存。旧 JSON 存储仅作为 Vercel 轻量后台兼容方案，不作为生产数据闭环。

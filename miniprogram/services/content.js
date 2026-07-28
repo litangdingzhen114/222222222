@@ -9,10 +9,19 @@ const spots = require('../data/spots');
 const routes = require('../data/routes');
 const { request, serviceConfig, serviceModeText } = require('./api');
 
+function isContentFallbackEnabled() {
+  return Boolean(serviceConfig.contentFallbackEnabled || serviceConfig.reviewMode);
+}
+
+function fallbackOrReject(fallbackValue, error) {
+  if (isContentFallbackEnabled()) return Promise.resolve(fallbackValue);
+  return Promise.reject(error || new Error('Content service unavailable'));
+}
+
 function withFallback(endpoint, fallbackValue) {
   return request(endpoint)
     .then((remoteValue) => remoteValue || fallbackValue)
-    .catch(() => fallbackValue);
+    .catch((error) => fallbackOrReject(fallbackValue, error));
 }
 
 function normalizePageList(remoteValue) {
@@ -27,20 +36,23 @@ function withContentFallback(key, fallbackValue, mapper) {
   const legacyEndpoint = serviceConfig.endpoints[key];
   const normalize = (remoteValue) => {
     const mapped = typeof mapper === 'function' ? mapper(remoteValue, fallbackValue) : remoteValue;
-    return mapped || fallbackValue;
+    return mapped || (isContentFallbackEnabled() ? fallbackValue : mapped);
   };
   if (!v1Endpoint) {
     return request(legacyEndpoint)
       .then(normalize)
-      .catch(() => fallbackValue);
+      .catch((error) => fallbackOrReject(fallbackValue, error));
   }
   return request(v1Endpoint)
     .then(normalize)
-    .catch(() =>
-      request(legacyEndpoint)
+    .catch((error) => {
+      if (serviceConfig.legacyApiFallbackEnabled === false || !legacyEndpoint) {
+        return fallbackOrReject(fallbackValue, error);
+      }
+      return request(legacyEndpoint)
         .then(normalize)
-        .catch(() => fallbackValue)
-    );
+        .catch((legacyError) => fallbackOrReject(fallbackValue, legacyError));
+    });
 }
 
 function moneyText(cents) {

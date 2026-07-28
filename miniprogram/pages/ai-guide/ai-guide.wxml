@@ -1,7 +1,7 @@
 <view class="ai-page">
   <view class="ai-head">
     <view class="ai-title">智能助手</view>
-    <view class="ai-subtitle">海林村 AI 导游小林 · 真实后端优先，本地知识兜底</view>
+    <view class="ai-subtitle">海林村导览助手小林 · 为您推荐路线、餐饮和公共服务</view>
   </view>
 
   <scroll-view class="chat-list" scroll-y scroll-into-view="{{lastMessageId}}">
@@ -14,7 +14,7 @@
       <view class="avatar">{{item.role === 'user' ? '客' : '林'}}</view>
       <view class="message-bubble">
         <view wx:if="{{item.role === 'assistant' && item.source}}" class="source-tag {{item.source}}">
-          {{item.source === 'backend' ? '真实 AI' : item.source === 'loading' ? '连接中' : '本地兜底'}}
+          {{item.source === 'backend' ? '在线回复' : item.source === 'loading' ? '连接中' : '导览建议'}}
         </view>
         <text>{{item.content}}</text>
       </view>
