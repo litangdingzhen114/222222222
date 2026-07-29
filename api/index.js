@@ -21,7 +21,7 @@ function sendStartupError(res, error) {
 module.exports = async function handler(req, res) {
   try {
     if (!bootstrapped) {
-      backend.bootstrap();
+      await backend.bootstrap();
       bootstrapped = true;
     }
     await backend.handleRequest(req, res);

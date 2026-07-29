@@ -51,10 +51,21 @@ const KIMI_BASE_URL = (process.env.KIMI_BASE_URL || 'https://api.moonshot.cn/v1'
   /\/+$/,
   '',
 );
-const KIMI_MODEL = process.env.KIMI_MODEL || 'kimi-k2.6';
+const KIMI_MODEL = process.env.KIMI_MODEL || process.env.LLM_MODEL || 'moonshot-v1-8k';
 const ADMIN_USER = process.env.ADMIN_USER || 'hailin-admin';
 const ADMIN_TOKEN =
   process.env.ADMIN_TOKEN || (NODE_ENV === 'production' ? '' : 'hailin-admin-dev-token');
+const CONFIG_STORE_KEY = process.env.CONFIG_STORE_KEY || 'hailin:integration-configs';
+const CONFIG_CACHE_TTL_MS = Number(process.env.CONFIG_CACHE_TTL_MS || 30 * 1000);
+const KV_REST_API_URL = (
+  process.env.KV_REST_API_URL ||
+  process.env.UPSTASH_REDIS_REST_URL ||
+  ''
+).replace(/\/+$/, '');
+const KV_REST_API_TOKEN =
+  process.env.KV_REST_API_TOKEN ||
+  process.env.UPSTASH_REDIS_REST_TOKEN ||
+  '';
 const CONFIGURED_ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || '')
   .split(',')
   .map((item) => item.trim())
@@ -180,7 +191,7 @@ const INTEGRATION_GROUPS = [
         placeholder: 'https://api.moonshot.cn/v1',
         envKeys: ['LLM_BASE_URL', 'KIMI_BASE_URL'],
       },
-      { key: 'LLM_MODEL', label: '模型名称', secret: false, placeholder: 'kimi-k2.6', envKeys: ['LLM_MODEL', 'KIMI_MODEL'] },
+      { key: 'LLM_MODEL', label: '模型名称', secret: false, placeholder: 'moonshot-v1-8k', envKeys: ['LLM_MODEL', 'KIMI_MODEL'] },
     ],
   },
 ];
@@ -333,6 +344,8 @@ const ADMIN_RESOURCE_ENDPOINTS = {
   'product-categories': 'product-categories',
 };
 const rateBuckets = new Map();
+let integrationConfigCache = null;
+let integrationConfigCacheLoadedAt = 0;
 
 class HttpError extends Error {
   constructor(statusCode, message, detail) {
@@ -584,18 +597,115 @@ function integrationFieldDefinition(service, key) {
   return group && group.fields.find((field) => field.key === key);
 }
 
-function readIntegrationConfigStore() {
-  const stored = readJsonObject(INTEGRATION_CONFIG_FILE);
+function normalizeIntegrationStore(stored) {
   if (!stored || !stored.services || typeof stored.services !== 'object') {
     return { services: {} };
   }
   return stored;
 }
 
-function writeIntegrationConfigStore(store) {
-  writeJsonObject(INTEGRATION_CONFIG_FILE, {
-    services: store.services || {},
+function hasKvConfigStore() {
+  return Boolean(KV_REST_API_URL && KV_REST_API_TOKEN);
+}
+
+function integrationConfigStorageMode() {
+  if (hasKvConfigStore()) return 'kv';
+  if (process.env.VERCEL) return 'volatile';
+  return 'file';
+}
+
+function integrationConfigStorageMessage() {
+  const mode = integrationConfigStorageMode();
+  if (mode === 'kv') return '已连接 Vercel KV / Upstash，后台保存的 Key 可持久保存。';
+  if (mode === 'file') return '当前使用服务器本地文件保存配置，适合本地或阿里云单机部署。';
+  return '当前运行在 Vercel 临时文件系统，后台填写的 Key 可能在冷启动后丢失；建议改用 Vercel 环境变量或接入 KV_REST_API_URL / KV_REST_API_TOKEN。';
+}
+
+async function kvCommand(args) {
+  const headers = {
+    Authorization: `Bearer ${KV_REST_API_TOKEN}`,
+    'Content-Type': 'application/json',
+  };
+  const response = await fetch(KV_REST_API_URL, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(args),
   });
+  const payload = await response.json().catch(() => ({}));
+  if (response.ok && !payload.error) return payload.result;
+
+  const pipelineResponse = await fetch(`${KV_REST_API_URL}/pipeline`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify([args]),
+  });
+  const pipelinePayload = await pipelineResponse.json().catch(() => ({}));
+  const first = Array.isArray(pipelinePayload) ? pipelinePayload[0] : null;
+  if (pipelineResponse.ok && first && !first.error) return first.result;
+
+  if (first?.error) {
+    throw new Error(first.error);
+  }
+  throw new Error(payload.error || `KV request failed: HTTP ${response.status}`);
+}
+
+function readIntegrationConfigStore() {
+  if (integrationConfigCache) return integrationConfigCache;
+  const stored = normalizeIntegrationStore(readJsonObject(INTEGRATION_CONFIG_FILE));
+  integrationConfigCache = stored;
+  integrationConfigCacheLoadedAt = Date.now();
+  return stored;
+}
+
+async function readIntegrationConfigStoreAsync(force = false) {
+  const now = Date.now();
+  if (
+    !force &&
+    integrationConfigCache &&
+    now - integrationConfigCacheLoadedAt < CONFIG_CACHE_TTL_MS
+  ) {
+    return integrationConfigCache;
+  }
+
+  if (hasKvConfigStore()) {
+    try {
+      const value = await kvCommand(['GET', CONFIG_STORE_KEY]);
+      const parsed = typeof value === 'string' ? JSON.parse(value) : value;
+      integrationConfigCache = normalizeIntegrationStore(parsed);
+      integrationConfigCacheLoadedAt = now;
+      return integrationConfigCache;
+    } catch (error) {
+      logEvent({
+        level: 'error',
+        message: 'integration_config_kv_read_failed',
+        detail: error.message,
+      });
+    }
+  }
+
+  const stored = normalizeIntegrationStore(readJsonObject(INTEGRATION_CONFIG_FILE));
+  integrationConfigCache = stored;
+  integrationConfigCacheLoadedAt = now;
+  return stored;
+}
+
+function writeIntegrationConfigStore(store) {
+  const normalized = normalizeIntegrationStore(store);
+  integrationConfigCache = normalized;
+  integrationConfigCacheLoadedAt = Date.now();
+  writeJsonObject(INTEGRATION_CONFIG_FILE, normalized);
+}
+
+async function writeIntegrationConfigStoreAsync(store) {
+  const normalized = normalizeIntegrationStore(store);
+  integrationConfigCache = normalized;
+  integrationConfigCacheLoadedAt = Date.now();
+
+  if (hasKvConfigStore()) {
+    await kvCommand(['SET', CONFIG_STORE_KEY, JSON.stringify(normalized)]);
+  }
+
+  writeJsonObject(INTEGRATION_CONFIG_FILE, normalized);
 }
 
 function fieldEnvKeys(field) {
@@ -616,9 +726,23 @@ function storedIntegrationValue(service, key) {
   return typeof value === 'string' ? value.trim() : '';
 }
 
+async function storedIntegrationValueAsync(service, key) {
+  const store = await readIntegrationConfigStoreAsync();
+  const value = store.services?.[service]?.values?.[key];
+  return typeof value === 'string' ? value.trim() : '';
+}
+
 function integrationValue(service, key, fallback = '') {
   const field = integrationFieldDefinition(service, key);
   const stored = storedIntegrationValue(service, key);
+  if (stored) return stored;
+  const envValue = field ? envConfigValue(field) : '';
+  return envValue || fallback;
+}
+
+async function integrationValueAsync(service, key, fallback = '') {
+  const field = integrationFieldDefinition(service, key);
+  const stored = await storedIntegrationValueAsync(service, key);
   if (stored) return stored;
   const envValue = field ? envConfigValue(field) : '';
   return envValue || fallback;
@@ -631,8 +755,7 @@ function secretPreview(value) {
   return `${text.slice(0, 4)}...${text.slice(-4)}`;
 }
 
-function publicIntegrationGroup(group) {
-  const store = readIntegrationConfigStore();
+function publicIntegrationGroupFromStore(group, store) {
   const record = store.services[group.service] || {};
   const storedValues = record.values || {};
   return {
@@ -663,18 +786,28 @@ function publicIntegrationGroup(group) {
   };
 }
 
-function publicIntegrationConfigs() {
+function publicIntegrationGroup(group) {
+  return publicIntegrationGroupFromStore(group, readIntegrationConfigStore());
+}
+
+async function publicIntegrationConfigs() {
+  const store = await readIntegrationConfigStoreAsync(true);
   return {
-    groups: INTEGRATION_GROUPS.map(publicIntegrationGroup),
+    persistence: {
+      mode: integrationConfigStorageMode(),
+      persistent: integrationConfigStorageMode() !== 'volatile',
+      message: integrationConfigStorageMessage(),
+    },
+    groups: INTEGRATION_GROUPS.map((group) => publicIntegrationGroupFromStore(group, store)),
   };
 }
 
-function updateIntegrationConfig(req, service, body) {
+async function updateIntegrationConfig(req, service, body) {
   const group = integrationGroupDefinition(service);
   if (!group) throw new HttpError(404, 'Integration service not found');
 
   const allowedKeys = new Set(group.fields.map((field) => field.key));
-  const store = readIntegrationConfigStore();
+  const store = await readIntegrationConfigStoreAsync(true);
   const current = store.services[service] || { values: {} };
   const nextValues = { ...(current.values || {}) };
   const changedKeys = new Set();
@@ -702,11 +835,12 @@ function updateIntegrationConfig(req, service, body) {
     updatedAt: now,
     updatedBy: ADMIN_USER,
   };
-  writeIntegrationConfigStore(store);
+  await writeIntegrationConfigStoreAsync(store);
   appendAudit(req, 'integration-config.updated', 'integration-config', service, {
     keys: [...changedKeys].sort(),
+    storageMode: integrationConfigStorageMode(),
   });
-  return publicIntegrationGroup(group);
+  return publicIntegrationGroupFromStore(group, store);
 }
 
 function runtimeKimiConfig() {
@@ -717,8 +851,19 @@ function runtimeKimiConfig() {
   };
 }
 
+async function runtimeKimiConfigAsync() {
+  return {
+    apiKey: await integrationValueAsync('llm', 'LLM_API_KEY', KIMI_API_KEY),
+    baseUrl: (await integrationValueAsync('llm', 'LLM_BASE_URL', KIMI_BASE_URL)).replace(
+      /\/+$/,
+      '',
+    ),
+    model: await integrationValueAsync('llm', 'LLM_MODEL', KIMI_MODEL),
+  };
+}
+
 async function testLlmIntegration() {
-  const config = runtimeKimiConfig();
+  const config = await runtimeKimiConfigAsync();
   if (!config.apiKey) {
     return {
       service: 'llm',
@@ -826,15 +971,20 @@ async function testIntegrationConfig(service) {
   if (service === 'amap') return testAmapIntegration();
 
   const missing = group.fields
-    .filter((field) => field.required)
-    .filter((field) => !integrationValue(service, field.key))
-    .map((field) => field.label);
+    .filter((field) => field.required);
+  const missingLabels = [];
+  for (const field of missing) {
+    if (!(await integrationValueAsync(service, field.key))) missingLabels.push(field.label);
+  }
 
   return {
     service,
-    ok: missing.length === 0,
-    mode: missing.length === 0 ? 'structural' : 'not_configured',
-    message: missing.length === 0 ? '配置项已具备，正式调用将在对应业务接口使用。' : `等待配置：${missing.join('、')}`,
+    ok: missingLabels.length === 0,
+    mode: missingLabels.length === 0 ? 'structural' : 'not_configured',
+    message:
+      missingLabels.length === 0
+        ? '配置项已具备，正式调用将在对应业务接口使用。'
+        : `等待配置：${missingLabels.join('、')}`,
     checkedAt: new Date().toISOString(),
   };
 }
@@ -2216,7 +2366,7 @@ function extractChatCompletionText(result) {
 }
 
 async function askKimi(body) {
-  const config = runtimeKimiConfig();
+  const config = await runtimeKimiConfigAsync();
   if (!config.apiKey) return null;
 
   const prompt = buildAiPrompt(body);
@@ -3175,13 +3325,13 @@ async function handleAdminRequest(req, res, url, route) {
     return;
   }
   if (route === 'GET /api/admin/integration-configs') {
-    sendJson(req, res, 200, { data: publicIntegrationConfigs() });
+    sendJson(req, res, 200, { data: await publicIntegrationConfigs() });
     return;
   }
   const integrationUpdate = route.match(/^PATCH \/api\/admin\/integration-configs\/([^/]+)$/);
   if (integrationUpdate) {
     const body = await readBody(req);
-    const group = updateIntegrationConfig(req, decodeURIComponent(integrationUpdate[1]), body);
+    const group = await updateIntegrationConfig(req, decodeURIComponent(integrationUpdate[1]), body);
     sendJson(req, res, 200, { data: group, message: '配置已保存' });
     return;
   }
@@ -3929,14 +4079,15 @@ async function handleRequest(req, res) {
   }
 }
 
-function bootstrap() {
+async function bootstrap() {
   validateStartupConfig();
   ensureStorage();
+  await readIntegrationConfigStoreAsync(true);
 }
 
-function startServer() {
+async function startServer() {
   try {
-    bootstrap();
+    await bootstrap();
   } catch (error) {
     console.error(`Startup configuration error: ${error.message}`);
     process.exit(1);
@@ -3962,7 +4113,10 @@ function startServer() {
 }
 
 if (require.main === module) {
-  startServer();
+  startServer().catch((error) => {
+    console.error(`Startup configuration error: ${error.message}`);
+    process.exit(1);
+  });
 }
 
 module.exports = {

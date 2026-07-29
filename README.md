@@ -56,6 +56,7 @@ PUBLIC_BASE_URL=https://www.hailin.store
 ALLOWED_ORIGINS=https://www.hailin.store,https://hailin.store
 ADMIN_TOKEN=replace-with-a-strong-random-token-at-least-24-characters
 KIMI_API_KEY=replace-with-your-kimi-key
+KIMI_MODEL=moonshot-v1-8k
 ```
 
 `KIMI_API_KEY` 只放在后端环境变量里，不放进小程序。
@@ -92,6 +93,7 @@ PUBLIC_BASE_URL=https://www.hailin.store
 ALLOWED_ORIGINS=https://www.hailin.store,https://hailin.store
 ADMIN_TOKEN=replace-with-a-strong-random-token-at-least-24-characters
 KIMI_API_KEY=replace-with-your-kimi-key
+KIMI_MODEL=moonshot-v1-8k
 ```
 
-在 Vercel 上没有显式设置 `STORAGE_DIR` 时，函数会使用 `/tmp/hailin-storage`。这只适合预览和轻量演示，数据可能随实例回收或重新部署丢失。正式运营前应迁移预约、反馈、审计和日志到数据库或托管存储。
+在 Vercel 上没有显式设置 `STORAGE_DIR` 时，函数会使用 `/tmp/hailin-storage`。这只适合预览和轻量演示，数据可能随实例回收或重新部署丢失。后台“系统设置”里填写的第三方 Key 也是同理：正式保存请优先使用 Vercel 环境变量，或接入 Vercel KV / Upstash，并配置 `KV_REST_API_URL`、`KV_REST_API_TOKEN`、`CONFIG_STORE_KEY`。正式运营前应迁移预约、反馈、审计和日志到数据库或托管存储。

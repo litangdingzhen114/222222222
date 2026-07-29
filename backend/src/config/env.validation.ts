@@ -52,7 +52,7 @@ export const envValidationSchema = Joi.object({
   LLM_PROVIDER: Joi.string().default('kimi'),
   LLM_API_KEY: Joi.string().allow('').default(''),
   LLM_BASE_URL: Joi.string().uri().default('https://api.moonshot.cn/v1'),
-  LLM_MODEL: Joi.string().default('kimi-k2.5'),
+  LLM_MODEL: Joi.string().default('moonshot-v1-8k'),
   LLM_TIMEOUT_MS: Joi.number().integer().min(1000).default(12000),
   MAX_PAGE_SIZE: Joi.number().integer().min(1).max(200).default(100),
   MAP_MAX_RADIUS_METERS: Joi.number().integer().min(100).default(20000),

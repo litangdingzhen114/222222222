@@ -21,7 +21,15 @@ ALLOWED_ORIGINS=https://www.hailin.store,https://hailin.store
 ADMIN_USER=hailin-admin
 ADMIN_TOKEN=换成强随机Token
 KIMI_API_KEY=你的KimiKey
-KIMI_MODEL=kimi-k2.6
+KIMI_MODEL=moonshot-v1-8k
+```
+
+如果希望在 Vercel 后台页面直接保存第三方 Key 并跨冷启动保留，请在 Vercel Storage 中接入 KV / Upstash，并增加：
+
+```text
+KV_REST_API_URL=你的KV REST URL
+KV_REST_API_TOKEN=你的KV写入Token
+CONFIG_STORE_KEY=hailin:integration-configs
 ```
 
 ## 运行
@@ -54,10 +62,10 @@ PUBLIC_BASE_URL=https://www.hailin.store
 ALLOWED_ORIGINS=https://www.hailin.store,https://hailin.store
 ADMIN_TOKEN=换成强随机Token
 KIMI_API_KEY=你的KimiKey
-KIMI_MODEL=kimi-k2.6
+KIMI_MODEL=moonshot-v1-8k
 ```
 
-Vercel Function 默认使用 `/tmp/hailin-storage` 作为临时文件存储，只适合预览。正式运营需要迁移到数据库/托管存储，否则预约、反馈和审计数据可能丢失。
+Vercel Function 默认使用 `/tmp/hailin-storage` 作为临时文件存储，只适合预览。后台页面会显示当前第三方 Key 的保存模式：`kv` 表示可持久，`volatile` 表示可能冷启动丢失。正式运营需要迁移到数据库/托管存储，否则预约、反馈、审计以及后台填写的 Key 都可能丢失。
 
 后台入口：
 

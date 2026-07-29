@@ -296,16 +296,29 @@ export function SystemPage() {
           showIcon
           type="warning"
           message="仍有第三方服务等待正式凭证配置"
-          description="可以在下方填写正式凭证。密钥会加密保存到后端数据库，页面只展示脱敏预览；没有凭证的服务仍会保持等待配置或 fallback 状态。"
+          description="可以在下方填写正式凭证。密钥不会回显明文，保存后只展示脱敏预览；没有凭证的服务仍会保持等待配置或 fallback 状态。"
         />
       ) : null}
 
       <Card title="API 凭证配置" loading={integrationLoading}>
+        {integrationData?.persistence ? (
+          <Alert
+            showIcon
+            type={integrationData.persistence.persistent ? 'success' : 'warning'}
+            message={
+              integrationData.persistence.persistent
+                ? '后台配置可持久保存'
+                : '当前后台配置不是持久存储'
+            }
+            description={integrationData.persistence.message}
+            style={{ marginBottom: 16 }}
+          />
+        ) : null}
         <Alert
           showIcon
           type="info"
           message="只有超级管理员可以保存第三方凭证"
-          description="后台保存的配置优先级高于服务器环境变量；清除后台配置后会自动回退到 .env。请不要在这里填写测试支付成功之类的假值。"
+          description="后台保存的配置优先级高于服务器环境变量；密钥输入框留空不会覆盖已配置的值，看到“已配置”标签就不用重复填写。请不要在这里填写测试支付成功之类的假值。"
           style={{ marginBottom: 16 }}
         />
         <Collapse

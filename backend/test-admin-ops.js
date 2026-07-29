@@ -154,7 +154,7 @@ async function main() {
       headers: authHeaders
     });
     assert.strictEqual(categoryList.status, 200);
-    assert(categoryList.body.data.list.some((item) => item.id === 'souvenir'), 'default product categories should be available');
+    assert(categoryList.body.data.list.some((item) => item.id === 'farm'), 'default farm product categories should be available');
 
     const createdCategory = await requestJson(`http://${HOST}:${PORT}/api/admin/product-categories`, {
       method: 'POST',

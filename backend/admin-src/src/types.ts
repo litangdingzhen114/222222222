@@ -404,6 +404,11 @@ export type IntegrationConfigGroup = {
 };
 
 export type IntegrationConfigsResponse = {
+  persistence?: {
+    mode: 'kv' | 'file' | 'volatile';
+    persistent: boolean;
+    message: string;
+  };
   groups: IntegrationConfigGroup[];
 };
 

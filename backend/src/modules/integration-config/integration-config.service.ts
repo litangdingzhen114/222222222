@@ -251,7 +251,7 @@ export class IntegrationConfigService {
           secret: false,
           placeholder: 'https://api.moonshot.cn/v1',
         },
-        { key: 'LLM_MODEL', label: '模型名称', secret: false, placeholder: 'kimi-k2.5' },
+        { key: 'LLM_MODEL', label: '模型名称', secret: false, placeholder: 'moonshot-v1-8k' },
       ],
     },
   ];
@@ -565,7 +565,7 @@ export class IntegrationConfigService {
     );
     const model = await this.getValue(
       'LLM_MODEL',
-      this.config.get<string>('LLM_MODEL', 'kimi-k2.5'),
+      this.config.get<string>('LLM_MODEL', 'moonshot-v1-8k'),
     );
     const result = await this.fetchJson<{ choices?: unknown; error?: { message?: string } }>(
       `${baseUrl}/chat/completions`,
