@@ -86,7 +86,11 @@ function storageRemove(key) {
 function resolveApiBaseUrl() {
   const overrideUrl = storageApiBaseUrl();
   if (overrideUrl) return overrideUrl;
-  if (isDevtools() && serviceConfig.devApiBaseUrl)
+  if (
+    isDevtools() &&
+    serviceConfig.useDevApiInDevtools &&
+    serviceConfig.devApiBaseUrl
+  )
     return serviceConfig.devApiBaseUrl;
   return serviceConfig.apiBaseUrl || "";
 }
@@ -172,11 +176,17 @@ function clearAuthSession() {
 }
 
 function serviceModeText() {
+  const overrideUrl = storageApiBaseUrl();
+  if (overrideUrl) {
+    return overrideUrl === serviceConfig.devApiBaseUrl
+      ? "本地后端已连接"
+      : "自定义服务已连接";
+  }
   const baseUrl = resolveApiBaseUrl();
   if (!baseUrl) return "内容预览模式";
   return baseUrl === serviceConfig.devApiBaseUrl
-    ? "开发服务已连接"
-    : "服务已连接";
+    ? "本地后端已连接"
+    : "线上服务已连接";
 }
 
 module.exports = {

@@ -7,6 +7,7 @@ module.exports = {
   // 小程序端不保存 AI key、直播密钥或管理后台 token，统一由后端代理。
   apiBaseUrl: "https://api.hailin.store",
   devApiBaseUrl: "http://127.0.0.1:8787",
+  useDevApiInDevtools: false,
   requestTimeout: 3000,
   reviewMode: false,
   contentFallbackEnabled: true,

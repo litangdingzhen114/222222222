@@ -36,16 +36,16 @@ function createWxMock(platform, storageValue, tokenValue = "") {
 (async () => {
   const devWx = createWxMock("devtools", "");
   let api = loadApi(devWx);
-  assert.strictEqual(api.resolveApiBaseUrl(), "http://127.0.0.1:8787");
-  assert.strictEqual(api.serviceModeText(), "开发服务已连接");
+  assert.strictEqual(api.resolveApiBaseUrl(), "https://api.hailin.store");
+  assert.strictEqual(api.serviceModeText(), "线上服务已连接");
   assert.strictEqual(
     api.mediaUrl("/media/hailin-live.mp4"),
-    "http://127.0.0.1:8787/media/hailin-live.mp4",
+    "https://api.hailin.store/media/hailin-live.mp4",
   );
   assert.deepStrictEqual(await api.request("/api/check"), { ok: true });
   assert.strictEqual(
     devWx.lastRequest().url,
-    "http://127.0.0.1:8787/api/check",
+    "https://api.hailin.store/api/check",
   );
   assert.strictEqual(devWx.lastRequest().timeout, 3000);
   assert.strictEqual(devWx.lastRequest().header.Authorization, undefined);
@@ -64,6 +64,7 @@ function createWxMock(platform, storageValue, tokenValue = "") {
   const overrideWx = createWxMock("devtools", "http://192.168.1.8:8787");
   api = loadApi(overrideWx);
   assert.strictEqual(api.resolveApiBaseUrl(), "http://192.168.1.8:8787");
+  assert.strictEqual(api.serviceModeText(), "自定义服务已连接");
 
   const deviceWx = createWxMock("ios", "");
   api = loadApi(deviceWx);
