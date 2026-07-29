@@ -73,8 +73,12 @@ async function main() {
     'Vercel should route admin pages to the backend function',
   );
   assert.ok(
-    rewriteSources.includes('/media/(.*)'),
-    'Vercel should route media requests to the backend function',
+    !rewriteSources.includes('/media/(.*)'),
+    'Vercel should serve live video media as static files instead of proxying through the function',
+  );
+  assert.ok(
+    fs.existsSync(path.join(ROOT, 'backend/admin-src/public/media/hailin-live.mp4')),
+    'Vercel should have a public live video asset copied by the admin build',
   );
   assert.ok(
     rewriteSources.includes('/assets/(.*)'),

@@ -3215,8 +3215,11 @@ function serveMiniProgramAsset(req, res, pathname) {
 }
 
 function serveVideo(req, res) {
-  const videoPath = path.join(ROOT, 'miniprogram', 'assets', 'videos', 'hailin-live.mp4');
-  if (!fs.existsSync(videoPath)) {
+  const videoPath = [
+    path.join(ADMIN_DIR, 'media', 'hailin-live.mp4'),
+    path.join(ROOT, 'miniprogram', 'assets', 'videos', 'hailin-live.mp4'),
+  ].find((candidate) => fs.existsSync(candidate));
+  if (!videoPath) {
     sendError(req, res, 404, 'Video not found');
     return;
   }

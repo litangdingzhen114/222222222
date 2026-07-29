@@ -40,7 +40,7 @@ npm run backend
 
 ## Vercel 部署
 
-可以把 GitHub 仓库 `https://github.com/litangdingzhen114/222222222` 导入 Vercel。仓库内的根目录 `api/index.js` 会作为 Node.js Function 入口，根目录 `vercel.json` 会把 `/health`、`/api/*`、`/admin/*`、`/media/*` 转发到后端函数。
+可以把 GitHub 仓库 `https://github.com/litangdingzhen114/222222222` 导入 Vercel。仓库内的根目录 `api/index.js` 会作为 Node.js Function 入口，根目录 `vercel.json` 会把 `/health`、`/api/*`、`/admin/*`、`/assets/*` 转发到后端函数；`/media/*` 慢直播演示视频由后台构建产物静态发布。
 
 Vercel 项目设置：
 

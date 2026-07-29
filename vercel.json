@@ -24,10 +24,6 @@
       "destination": "/api/index"
     },
     {
-      "source": "/media/(.*)",
-      "destination": "/api/index"
-    },
-    {
       "source": "/assets/(.*)",
       "destination": "/api/index"
     }

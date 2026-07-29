@@ -71,7 +71,7 @@ npm test
 
 ## Vercel 部署
 
-仓库 `litangdingzhen114/222222222` 已经包含根目录 `api/index.js` 和 `vercel.json`，可以作为 Vercel Project 从 GitHub 导入。Vercel 会把 `/health`、`/api/*`、`/admin/*`、`/media/*`、`/assets/*` 转发给同一个 Node.js Function。
+仓库 `litangdingzhen114/222222222` 已经包含根目录 `api/index.js` 和 `vercel.json`，可以作为 Vercel Project 从 GitHub 导入。Vercel 会把 `/health`、`/api/*`、`/admin/*`、`/assets/*` 转发给同一个 Node.js Function，`/media/*` 慢直播演示视频由后台构建产物静态发布。
 
 Vercel 项目设置建议：
 
