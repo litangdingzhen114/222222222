@@ -9,6 +9,7 @@ const HOST = '127.0.0.1';
 const BACKEND_PORT = 18878;
 const TEST_KEY = 'test-kimi-key';
 const TEST_MODEL = 'test-kimi-model';
+const TEST_ADMIN_TOKEN = 'test-admin-config-token-32-chars';
 
 function requestJson(url, options = {}) {
   return fetch(url, {
@@ -180,9 +181,83 @@ async function runLocalFallbackTest() {
   }
 }
 
+async function runStoredKimiConfigTest() {
+  const storedConfigPort = BACKEND_PORT + 2;
+  let requestCount = 0;
+  const kimiStub = http.createServer((req, res) => {
+    req.on('data', () => {});
+    req.on('end', () => {
+      requestCount += 1;
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        choices: [
+          { message: { content: 'Stored Kimi config reply' } }
+        ]
+      }));
+    });
+  });
+
+  await new Promise((resolve) => kimiStub.listen(0, HOST, resolve));
+  const kimiPort = kimiStub.address().port;
+  const backend = await startBackend({
+    PORT: String(storedConfigPort),
+    ADMIN_TOKEN: TEST_ADMIN_TOKEN,
+    ADMIN_USER: 'config-admin',
+    KIMI_API_KEY: '',
+    MOONSHOT_API_KEY: '',
+    KIMI_BASE_URL: '',
+    KIMI_MODEL: ''
+  });
+
+  try {
+    await waitForBackend(storedConfigPort);
+    const authHeaders = { Authorization: `Bearer ${TEST_ADMIN_TOKEN}` };
+    const saved = await requestJson(`http://${HOST}:${storedConfigPort}/api/admin/integration-configs/llm`, {
+      method: 'PATCH',
+      headers: authHeaders,
+      body: JSON.stringify({
+        values: {
+          LLM_API_KEY: TEST_KEY,
+          LLM_BASE_URL: `http://${HOST}:${kimiPort}/v1`,
+          LLM_MODEL: TEST_MODEL
+        }
+      })
+    });
+
+    assert.strictEqual(saved.status, 200);
+    const apiKeyField = saved.body.data.fields.find((field) => field.key === 'LLM_API_KEY');
+    assert.strictEqual(apiKeyField.configured, true);
+    assert.strictEqual(apiKeyField.source, 'database');
+    assert.ok(apiKeyField.valuePreview);
+    assert.strictEqual(apiKeyField.displayValue, undefined);
+    assert.strictEqual(JSON.stringify(saved.body).includes(TEST_KEY), false);
+
+    const testResult = await requestJson(`http://${HOST}:${storedConfigPort}/api/admin/integration-configs/llm/test`, {
+      method: 'POST',
+      headers: authHeaders
+    });
+    assert.strictEqual(testResult.status, 200);
+    assert.strictEqual(testResult.body.data.ok, true);
+
+    const chat = await requestJson(`http://${HOST}:${storedConfigPort}/api/v1/ai-guide/chat`, {
+      method: 'POST',
+      body: JSON.stringify({ question: '现在真的连上模型了吗？', history: [] })
+    });
+
+    assert.strictEqual(chat.status, 201);
+    assert.strictEqual(chat.body.data.mode, 'official');
+    assert.strictEqual(chat.body.data.answer, 'Stored Kimi config reply');
+    assert.ok(requestCount >= 2, 'test connection and chat should both reach the Kimi adapter');
+  } finally {
+    await stopBackend(backend);
+    await closeServer(kimiStub);
+  }
+}
+
 async function main() {
   await runKimiProxyTest();
   await runLocalFallbackTest();
+  await runStoredKimiConfigTest();
 }
 
 main().catch((error) => {

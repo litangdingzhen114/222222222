@@ -67,6 +67,123 @@ const ALLOWED_ORIGINS = CONFIGURED_ALLOWED_ORIGINS.length
 const RATE_LIMIT_WINDOW_MS = Number(process.env.RATE_LIMIT_WINDOW_MS || 60 * 1000);
 const RATE_LIMIT_MAX = Number(process.env.RATE_LIMIT_MAX || 240);
 const ADMIN_RATE_LIMIT_MAX = Number(process.env.ADMIN_RATE_LIMIT_MAX || 600);
+const INTEGRATION_CONFIG_FILE = 'integration-configs.json';
+const INTEGRATION_GROUPS = [
+  {
+    service: 'wechat',
+    name: '微信小程序',
+    description: '用于 wx.login code2Session、手机号能力和小程序登录。',
+    links: [
+      { label: '微信公众平台', url: 'https://mp.weixin.qq.com/' },
+      { label: '小程序开发文档', url: 'https://developers.weixin.qq.com/miniprogram/dev/framework/' },
+    ],
+    fields: [
+      { key: 'WECHAT_APP_ID', label: 'AppID', secret: false, required: true, placeholder: 'wx 开头的小程序 AppID' },
+      {
+        key: 'WECHAT_APP_SECRET',
+        label: 'AppSecret',
+        secret: true,
+        required: true,
+        envKeys: ['WECHAT_APP_SECRET', 'WECHAT_SECRET'],
+        placeholder: '小程序后台生成的 AppSecret',
+      },
+      { key: 'WECHAT_API_BASE_URL', label: '微信 API 地址', secret: false, placeholder: 'https://api.weixin.qq.com' },
+    ],
+  },
+  {
+    service: 'wechatPay',
+    name: '微信支付',
+    description: '用于 JSAPI 下单、支付回调验签和支付状态同步。',
+    links: [
+      { label: '微信支付商户平台', url: 'https://pay.weixin.qq.com/' },
+      { label: 'API v3 接入文档', url: 'https://pay.wechatpay.cn/doc/v3/merchant/4012791850' },
+    ],
+    fields: [
+      { key: 'WECHAT_PAY_APP_ID', label: '支付 AppID', secret: false, required: true },
+      { key: 'WECHAT_PAY_MCH_ID', label: '商户号', secret: false, required: true },
+      {
+        key: 'WECHAT_PAY_API_V3_KEY',
+        label: 'API v3 Key',
+        secret: true,
+        required: true,
+        envKeys: ['WECHAT_PAY_API_V3_KEY', 'WECHAT_PAY_KEY'],
+      },
+      { key: 'WECHAT_PAY_SERIAL_NO', label: '商户证书序列号', secret: false, required: true },
+      { key: 'WECHAT_PAY_NOTIFY_URL', label: '支付回调 URL', secret: false, required: true },
+    ],
+  },
+  {
+    service: 'ezviz',
+    name: '萤石云直播',
+    description: '用于缓存萤石云 accessToken 并动态获取直播播放地址。',
+    links: [
+      { label: '萤石开放平台', url: 'https://open.ys7.com/' },
+      { label: '开发者服务', url: 'https://open.ys7.com/help' },
+    ],
+    fields: [
+      { key: 'EZVIZ_APP_KEY', label: 'AppKey', secret: false, required: true },
+      { key: 'EZVIZ_APP_SECRET', label: 'AppSecret', secret: true, required: true },
+      { key: 'EZVIZ_API_BASE_URL', label: '萤石云 API 地址', secret: false, placeholder: 'https://open.ys7.com/api/lapp' },
+    ],
+  },
+  {
+    service: 'amap',
+    name: '高德地图',
+    description: '用于服务端地理编码、行政区或后续路径能力。',
+    links: [
+      { label: '高德开放平台', url: 'https://lbs.amap.com/' },
+      { label: 'Key 控制台', url: 'https://console.amap.com/dev/key/app' },
+    ],
+    fields: [
+      { key: 'AMAP_KEY', label: '高德 Key', secret: true, required: true, envKeys: ['AMAP_KEY', 'MAP_KEY'] },
+      { key: 'AMAP_API_BASE_URL', label: '高德 API 地址', secret: false, placeholder: 'https://restapi.amap.com' },
+    ],
+  },
+  {
+    service: 'storage',
+    name: '文件存储',
+    description: '开发环境可用本地存储，生产环境建议切换腾讯云 COS。',
+    links: [
+      { label: '腾讯云 COS', url: 'https://cloud.tencent.com/product/cos' },
+      { label: '访问密钥管理', url: 'https://console.cloud.tencent.com/cam/capi' },
+    ],
+    fields: [
+      { key: 'STORAGE_DRIVER', label: '存储驱动', secret: false, placeholder: 'local 或 cos' },
+      { key: 'TENCENT_COS_SECRET_ID', label: 'COS SecretId', secret: true, envKeys: ['TENCENT_COS_SECRET_ID', 'COS_SECRET_ID'] },
+      { key: 'TENCENT_COS_SECRET_KEY', label: 'COS SecretKey', secret: true, envKeys: ['TENCENT_COS_SECRET_KEY', 'COS_KEY'] },
+      { key: 'TENCENT_COS_BUCKET', label: 'COS Bucket', secret: false },
+      { key: 'TENCENT_COS_REGION', label: 'COS Region', secret: false },
+    ],
+  },
+  {
+    service: 'llm',
+    name: 'AI 导游模型',
+    description: '用于 AI 导游回答生成；未配置时使用数据库检索 fallback。',
+    links: [
+      { label: 'Moonshot API Keys', url: 'https://platform.moonshot.cn/console/api-keys' },
+      { label: 'Kimi 接入文档', url: 'https://platform.moonshot.cn/docs' },
+      { label: 'OpenAI API Keys', url: 'https://platform.openai.com/api-keys' },
+    ],
+    fields: [
+      { key: 'LLM_PROVIDER', label: '模型供应商', secret: false, placeholder: 'kimi/openai' },
+      {
+        key: 'LLM_API_KEY',
+        label: '模型 API Key',
+        secret: true,
+        required: true,
+        envKeys: ['LLM_API_KEY', 'AI_API_KEY', 'KIMI_API_KEY', 'MOONSHOT_API_KEY'],
+      },
+      {
+        key: 'LLM_BASE_URL',
+        label: 'OpenAI 兼容 Base URL',
+        secret: false,
+        placeholder: 'https://api.moonshot.cn/v1',
+        envKeys: ['LLM_BASE_URL', 'KIMI_BASE_URL'],
+      },
+      { key: 'LLM_MODEL', label: '模型名称', secret: false, placeholder: 'kimi-k2.6', envKeys: ['LLM_MODEL', 'KIMI_MODEL'] },
+    ],
+  },
+];
 
 const banners = require('../miniprogram/data/banners');
 const gridPages = require('../miniprogram/data/homeGrids');
@@ -456,6 +573,270 @@ function writeJsonObject(fileName, payload) {
   const tempPath = `${filePath}.${process.pid}.${Date.now()}.tmp`;
   fs.writeFileSync(tempPath, JSON.stringify(payload, null, 2), 'utf8');
   fs.renameSync(tempPath, filePath);
+}
+
+function integrationGroupDefinition(service) {
+  return INTEGRATION_GROUPS.find((group) => group.service === service);
+}
+
+function integrationFieldDefinition(service, key) {
+  const group = integrationGroupDefinition(service);
+  return group && group.fields.find((field) => field.key === key);
+}
+
+function readIntegrationConfigStore() {
+  const stored = readJsonObject(INTEGRATION_CONFIG_FILE);
+  if (!stored || !stored.services || typeof stored.services !== 'object') {
+    return { services: {} };
+  }
+  return stored;
+}
+
+function writeIntegrationConfigStore(store) {
+  writeJsonObject(INTEGRATION_CONFIG_FILE, {
+    services: store.services || {},
+  });
+}
+
+function fieldEnvKeys(field) {
+  return [field.key, ...(field.envKeys || [])];
+}
+
+function envConfigValue(field) {
+  for (const key of fieldEnvKeys(field)) {
+    const value = String(process.env[key] || '').trim();
+    if (value) return value;
+  }
+  return '';
+}
+
+function storedIntegrationValue(service, key) {
+  const store = readIntegrationConfigStore();
+  const value = store.services?.[service]?.values?.[key];
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+function integrationValue(service, key, fallback = '') {
+  const field = integrationFieldDefinition(service, key);
+  const stored = storedIntegrationValue(service, key);
+  if (stored) return stored;
+  const envValue = field ? envConfigValue(field) : '';
+  return envValue || fallback;
+}
+
+function secretPreview(value) {
+  const text = String(value || '');
+  if (!text) return '';
+  if (text.length <= 8) return '********';
+  return `${text.slice(0, 4)}...${text.slice(-4)}`;
+}
+
+function publicIntegrationGroup(group) {
+  const store = readIntegrationConfigStore();
+  const record = store.services[group.service] || {};
+  const storedValues = record.values || {};
+  return {
+    service: group.service,
+    name: group.name,
+    description: group.description,
+    links: group.links || [],
+    updatedAt: record.updatedAt,
+    updatedBy: record.updatedBy,
+    fields: group.fields.map((field) => {
+      const stored = typeof storedValues[field.key] === 'string' ? storedValues[field.key] : '';
+      const envValue = envConfigValue(field);
+      const value = stored || envValue;
+      const source = stored ? 'database' : envValue ? 'env' : 'none';
+      return {
+        key: field.key,
+        label: field.label,
+        secret: Boolean(field.secret),
+        required: Boolean(field.required),
+        configured: Boolean(value),
+        source,
+        valuePreview: field.secret ? secretPreview(value) : undefined,
+        displayValue: field.secret ? undefined : value,
+        placeholder: field.placeholder,
+        help: field.help,
+      };
+    }),
+  };
+}
+
+function publicIntegrationConfigs() {
+  return {
+    groups: INTEGRATION_GROUPS.map(publicIntegrationGroup),
+  };
+}
+
+function updateIntegrationConfig(req, service, body) {
+  const group = integrationGroupDefinition(service);
+  if (!group) throw new HttpError(404, 'Integration service not found');
+
+  const allowedKeys = new Set(group.fields.map((field) => field.key));
+  const store = readIntegrationConfigStore();
+  const current = store.services[service] || { values: {} };
+  const nextValues = { ...(current.values || {}) };
+  const changedKeys = new Set();
+
+  const clearKeys = Array.isArray(body.clearKeys) ? body.clearKeys : [];
+  clearKeys.forEach((key) => {
+    if (allowedKeys.has(key)) {
+      delete nextValues[key];
+      changedKeys.add(key);
+    }
+  });
+
+  const values = body.values && typeof body.values === 'object' ? body.values : {};
+  Object.entries(values).forEach(([key, value]) => {
+    if (!allowedKeys.has(key)) return;
+    const text = cleanText(value, 4000);
+    if (!text) return;
+    nextValues[key] = text;
+    changedKeys.add(key);
+  });
+
+  const now = new Date().toISOString();
+  store.services[service] = {
+    values: nextValues,
+    updatedAt: now,
+    updatedBy: ADMIN_USER,
+  };
+  writeIntegrationConfigStore(store);
+  appendAudit(req, 'integration-config.updated', 'integration-config', service, {
+    keys: [...changedKeys].sort(),
+  });
+  return publicIntegrationGroup(group);
+}
+
+function runtimeKimiConfig() {
+  return {
+    apiKey: integrationValue('llm', 'LLM_API_KEY', KIMI_API_KEY),
+    baseUrl: integrationValue('llm', 'LLM_BASE_URL', KIMI_BASE_URL).replace(/\/+$/, ''),
+    model: integrationValue('llm', 'LLM_MODEL', KIMI_MODEL),
+  };
+}
+
+async function testLlmIntegration() {
+  const config = runtimeKimiConfig();
+  if (!config.apiKey) {
+    return {
+      service: 'llm',
+      ok: false,
+      mode: 'not_configured',
+      message: '请先填写模型 API Key。',
+      checkedAt: new Date().toISOString(),
+    };
+  }
+
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 12000);
+    let response;
+    try {
+      response = await fetch(`${config.baseUrl}/chat/completions`, {
+        method: 'POST',
+        signal: controller.signal,
+        headers: {
+          Authorization: `Bearer ${config.apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: config.model,
+          messages: [
+            { role: 'system', content: '你是接口连通性测试助手。' },
+            { role: 'user', content: '请只回复 OK' },
+          ],
+          temperature: 0,
+        }),
+      });
+    } finally {
+      clearTimeout(timer);
+    }
+    if (!response.ok) {
+      return {
+        service: 'llm',
+        ok: false,
+        mode: 'failed',
+        message: `模型接口请求失败：HTTP ${response.status}`,
+        checkedAt: new Date().toISOString(),
+      };
+    }
+    return {
+      service: 'llm',
+      ok: true,
+      mode: 'official',
+      message: `${config.model} 连接成功。`,
+      checkedAt: new Date().toISOString(),
+    };
+  } catch (error) {
+    return {
+      service: 'llm',
+      ok: false,
+      mode: 'failed',
+      message: `模型接口连接失败：${error.message}`,
+      checkedAt: new Date().toISOString(),
+    };
+  }
+}
+
+async function testAmapIntegration() {
+  const apiKey = integrationValue('amap', 'AMAP_KEY');
+  const baseUrl = integrationValue('amap', 'AMAP_API_BASE_URL', 'https://restapi.amap.com');
+  if (!apiKey) {
+    return {
+      service: 'amap',
+      ok: false,
+      mode: 'not_configured',
+      message: '请先填写高德 Key。',
+      checkedAt: new Date().toISOString(),
+    };
+  }
+
+  try {
+    const url = new URL('/v3/config/district', baseUrl);
+    url.searchParams.set('key', apiKey);
+    url.searchParams.set('keywords', '青田县');
+    url.searchParams.set('subdistrict', '0');
+    const response = await fetch(url, { signal: AbortSignal.timeout(10000) });
+    const result = await response.json().catch(() => ({}));
+    const ok = response.ok && String(result.status) === '1';
+    return {
+      service: 'amap',
+      ok,
+      mode: ok ? 'official' : 'failed',
+      message: ok ? '高德地图服务连接成功。' : `高德地图返回异常：${result.info || response.status}`,
+      checkedAt: new Date().toISOString(),
+    };
+  } catch (error) {
+    return {
+      service: 'amap',
+      ok: false,
+      mode: 'failed',
+      message: `高德地图连接失败：${error.message}`,
+      checkedAt: new Date().toISOString(),
+    };
+  }
+}
+
+async function testIntegrationConfig(service) {
+  const group = integrationGroupDefinition(service);
+  if (!group) throw new HttpError(404, 'Integration service not found');
+  if (service === 'llm') return testLlmIntegration();
+  if (service === 'amap') return testAmapIntegration();
+
+  const missing = group.fields
+    .filter((field) => field.required)
+    .filter((field) => !integrationValue(service, field.key))
+    .map((field) => field.label);
+
+  return {
+    service,
+    ok: missing.length === 0,
+    mode: missing.length === 0 ? 'structural' : 'not_configured',
+    message: missing.length === 0 ? '配置项已具备，正式调用将在对应业务接口使用。' : `等待配置：${missing.join('、')}`,
+    checkedAt: new Date().toISOString(),
+  };
 }
 
 function appendRecord(fileName, payload, req) {
@@ -1835,7 +2216,8 @@ function extractChatCompletionText(result) {
 }
 
 async function askKimi(body) {
-  if (!KIMI_API_KEY) return null;
+  const config = runtimeKimiConfig();
+  if (!config.apiKey) return null;
 
   const prompt = buildAiPrompt(body);
   const instructions = [
@@ -1844,19 +2226,19 @@ async function askKimi(body) {
     '不要编造具体营业执照、电话、价格或实时余位。涉及预约、价格、直播、房态时提示以后端实时信息为准。',
   ].join('\n');
 
-  const response = await fetch(`${KIMI_BASE_URL}/chat/completions`, {
+  const response = await fetch(`${config.baseUrl}/chat/completions`, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${KIMI_API_KEY}`,
+      Authorization: `Bearer ${config.apiKey}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: KIMI_MODEL,
+      model: config.model,
       messages: [
         { role: 'system', content: instructions },
         { role: 'user', content: prompt.input },
       ],
-      temperature: /^kimi-k2/i.test(KIMI_MODEL) ? 1 : 0.3,
+      temperature: /^kimi-k2/i.test(config.model) ? 1 : 0.3,
     }),
   });
 
@@ -1992,6 +2374,7 @@ function adminSummary() {
   const homeContent = readHomeContentEnvelope();
   const liveContent = readLiveContentEnvelope();
   const resourceContent = contentResourceIndex();
+  const kimiConfig = runtimeKimiConfig();
   return {
     counts: {
       bookings: { ...countByStatus(bookings, BOOKING_STATUSES), today: todayCount(bookings) },
@@ -2015,8 +2398,8 @@ function adminSummary() {
       environment: NODE_ENV,
       adminUser: ADMIN_USER,
       storageWritable: storageWritable(),
-      aiProvider: KIMI_API_KEY ? 'kimi' : 'local',
-      aiModel: KIMI_API_KEY ? KIMI_MODEL : undefined,
+      aiProvider: kimiConfig.apiKey ? 'kimi' : 'local',
+      aiModel: kimiConfig.apiKey ? kimiConfig.model : undefined,
       publicBaseUrl: PUBLIC_BASE_URL || undefined,
       security: {
         publicBaseUrl: PUBLIC_BASE_URL || '',
@@ -2136,6 +2519,7 @@ function configStatusItem(key, name, ok, mode, missingMessage, configuredMessage
 }
 
 function adminConfigStatus() {
+  const kimiConfig = runtimeKimiConfig();
   return {
     environment: NODE_ENV,
     publicBaseUrl: PUBLIC_BASE_URL || undefined,
@@ -2167,10 +2551,10 @@ function adminConfigStatus() {
       configStatusItem(
         'ai',
         'AI 导游模型',
-        Boolean(KIMI_API_KEY),
+        Boolean(kimiConfig.apiKey),
         'official',
         '未配置模型密钥，当前使用本地规则 fallback',
-        `${KIMI_MODEL} 已配置`,
+        `${kimiConfig.model} 已配置`,
       ),
       configStatusItem(
         'storage',
@@ -2790,6 +3174,23 @@ async function handleAdminRequest(req, res, url, route) {
     sendJson(req, res, 200, { data: adminConfigStatus() });
     return;
   }
+  if (route === 'GET /api/admin/integration-configs') {
+    sendJson(req, res, 200, { data: publicIntegrationConfigs() });
+    return;
+  }
+  const integrationUpdate = route.match(/^PATCH \/api\/admin\/integration-configs\/([^/]+)$/);
+  if (integrationUpdate) {
+    const body = await readBody(req);
+    const group = updateIntegrationConfig(req, decodeURIComponent(integrationUpdate[1]), body);
+    sendJson(req, res, 200, { data: group, message: '配置已保存' });
+    return;
+  }
+  const integrationTest = route.match(/^POST \/api\/admin\/integration-configs\/([^/]+)\/test$/);
+  if (integrationTest) {
+    const result = await testIntegrationConfig(decodeURIComponent(integrationTest[1]));
+    sendJson(req, res, 200, { data: result });
+    return;
+  }
   if (route === 'GET /api/admin/home-content') {
     sendJson(req, res, 200, { data: readHomeContentEnvelope() });
     return;
@@ -3318,6 +3719,7 @@ async function handleRequest(req, res) {
     }
 
     if (route === 'GET /health' || route === 'GET /api/health') {
+      const kimiConfig = runtimeKimiConfig();
       const health = {
         api: 'ok',
         database: storageWritable() ? 'ok' : 'error',
@@ -3326,8 +3728,8 @@ async function handleRequest(req, res) {
         time: new Date().toISOString(),
         environment: NODE_ENV,
         storageMode: 'json-fallback',
-        aiProvider: KIMI_API_KEY ? 'kimi' : 'local',
-        aiModel: KIMI_API_KEY ? KIMI_MODEL : undefined,
+        aiProvider: kimiConfig.apiKey ? 'kimi' : 'local',
+        aiModel: kimiConfig.apiKey ? kimiConfig.model : undefined,
         adminConfigured: Boolean(ADMIN_TOKEN),
       };
       sendJson(req, res, 200, {
