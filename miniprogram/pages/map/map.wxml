@@ -114,6 +114,7 @@
           <cover-view class="poi-desc">{{activePoint.desc}}</cover-view>
           <cover-view class="poi-info-row">
             <cover-view class="poi-info">开放 {{activePoint.openTime}}</cover-view>
+            <cover-view wx:if="{{activePoint.directionText}}" class="poi-info">{{activePoint.directionText}}</cover-view>
           </cover-view>
           <cover-view class="poi-tip">{{activePoint.tips}}</cover-view>
         </cover-view>

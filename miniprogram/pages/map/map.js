@@ -1,75 +1,75 @@
-const fallbackMapPoints = require('../../data/mapPoints');
+const fallbackMapPoints = require("../../data/mapPoints");
 const {
   categories,
   mapCenter,
   mapTools,
   routeSuggestions,
-  subTags
-} = require('../../data/mapFeatures');
-const { loadMapPoints } = require('../../services/content');
-const { quickToast } = require('../../utils/mock');
+  subTags,
+} = require("../../data/mapFeatures");
+const { loadMapDirections, loadMapPoints } = require("../../services/content");
+const { quickToast } = require("../../utils/mock");
 
 const pointTypeView = {
   SCENIC_SPOT: {
-    type: '景点',
-    subType: '乡村景点',
-    actionText: '查看景点',
-    imageUrl: '/assets/photos/ricefish-paddy.jpg'
+    type: "景点",
+    subType: "乡村景点",
+    actionText: "查看景点",
+    imageUrl: "/assets/photos/ricefish-paddy.jpg",
   },
   PARKING: {
-    type: '公共服务',
-    subType: '便民服务',
-    actionText: '导航前往',
-    imageUrl: '/assets/photos/ai-village-gate.jpg'
+    type: "公共服务",
+    subType: "便民服务",
+    actionText: "导航前往",
+    imageUrl: "/assets/photos/ai-village-gate.jpg",
   },
   TOILET: {
-    type: '公共服务',
-    subType: '便民服务',
-    actionText: '导航前往',
-    imageUrl: '/assets/photos/qingtian-tashan.jpg'
+    type: "公共服务",
+    subType: "便民服务",
+    actionText: "导航前往",
+    imageUrl: "/assets/photos/qingtian-tashan.jpg",
   },
   SERVICE_CENTER: {
-    type: '公共服务',
-    subType: '核心景区',
-    actionText: '服务咨询',
-    imageUrl: '/assets/photos/ai-village-gate.jpg'
+    type: "公共服务",
+    subType: "核心景区",
+    actionText: "服务咨询",
+    imageUrl: "/assets/photos/ai-village-gate.jpg",
   },
   HOMESTAY: {
-    type: '住宿',
-    subType: '乡村景点',
-    actionText: '民宿预约',
-    imageUrl: '/assets/photos/ai-overseas-cafe.jpg'
+    type: "住宿",
+    subType: "乡村景点",
+    actionText: "民宿预约",
+    imageUrl: "/assets/photos/ai-overseas-cafe.jpg",
   },
   FOOD: {
-    type: '美食',
-    subType: '核心景区',
-    actionText: '寻味美食',
-    imageUrl: '/assets/photos/ricefish-drying.jpg'
+    type: "美食",
+    subType: "核心景区",
+    actionText: "寻味美食",
+    imageUrl: "/assets/photos/ricefish-drying.jpg",
   },
   FARM: {
-    type: '体验',
-    subType: '乡村景点',
-    actionText: '预约体验',
-    imageUrl: '/assets/photos/ricefish-paddy.jpg'
+    type: "体验",
+    subType: "乡村景点",
+    actionText: "预约体验",
+    imageUrl: "/assets/photos/ricefish-paddy.jpg",
   },
   MEDICAL: {
-    type: '公共服务',
-    subType: '便民服务',
-    actionText: '导航前往',
-    imageUrl: '/assets/photos/ai-village-gate.jpg'
+    type: "公共服务",
+    subType: "便民服务",
+    actionText: "导航前往",
+    imageUrl: "/assets/photos/ai-village-gate.jpg",
   },
   CAMERA: {
-    type: '体验',
-    subType: '网红打卡点',
-    actionText: '查看直播',
-    imageUrl: '/assets/photos/ricefish-paddy.jpg'
+    type: "体验",
+    subType: "网红打卡点",
+    actionText: "查看直播",
+    imageUrl: "/assets/photos/ricefish-paddy.jpg",
   },
   OTHER: {
-    type: '公共服务',
-    subType: '便民服务',
-    actionText: '导航前往',
-    imageUrl: '/assets/photos/ai-village-gate.jpg'
-  }
+    type: "公共服务",
+    subType: "便民服务",
+    actionText: "导航前往",
+    imageUrl: "/assets/photos/ai-village-gate.jpg",
+  },
 };
 
 function asNumber(value, fallback) {
@@ -78,36 +78,46 @@ function asNumber(value, fallback) {
 }
 
 function pointView(rawType) {
-  const key = String(rawType || 'OTHER');
+  const key = String(rawType || "OTHER");
   return pointTypeView[key] || pointTypeView.OTHER;
 }
 
 function normalizeMapPoint(point, index) {
   const view = pointView(point.type);
-  const markerId = typeof point.markerId === 'number' ? point.markerId : index + 1;
+  const markerId =
+    typeof point.markerId === "number" ? point.markerId : index + 1;
   const latitude = asNumber(point.latitude, mapCenter.latitude);
   const longitude = asNumber(point.longitude, mapCenter.longitude);
-  const isEnumType = Boolean(pointTypeView[String(point.type || '')]);
-  const relatedType = String(point.relatedEntityType || '');
-  const refType = point.refType || (relatedType === 'SCENIC_SPOT' ? 'spot' : '');
+  const isEnumType = Boolean(pointTypeView[String(point.type || "")]);
+  const relatedType = String(point.relatedEntityType || "");
+  const refType =
+    point.refType || (relatedType === "SCENIC_SPOT" ? "spot" : "");
   return {
     id: point.id == null ? markerId : point.id,
     markerId,
-    title: point.title || point.name || '海林点位',
+    title: point.title || point.name || "海林点位",
     type: isEnumType ? view.type : point.type || view.type,
     subType: point.subType || view.subType,
-    distance: point.distance || '村内点位',
-    desc: point.desc || point.description || point.summary || point.address || '海林村公共导览点位',
-    imageUrl: point.imageUrl || point.coverImage || point.image || view.imageUrl,
-    openTime: point.openTime || point.businessHours || '以现场公示为准',
-    tips: point.tips || (point.address ? `地址：${point.address}` : '可点击导航前往该点位。'),
+    distance: point.distance || "村内点位",
+    desc:
+      point.desc ||
+      point.description ||
+      point.summary ||
+      point.address ||
+      "海林村公共导览点位",
+    imageUrl:
+      point.imageUrl || point.coverImage || point.image || view.imageUrl,
+    openTime: point.openTime || point.businessHours || "以现场公示为准",
+    tips:
+      point.tips ||
+      (point.address ? `地址：${point.address}` : "可点击导航前往该点位。"),
     actionText: point.actionText || view.actionText,
     latitude,
     longitude,
     refType,
-    refId: point.refId || point.relatedEntityId || '',
-    targetUrl: point.targetUrl || view.targetUrl || '',
-    phone: point.phone || ''
+    refId: point.refId || point.relatedEntityId || "",
+    targetUrl: point.targetUrl || view.targetUrl || "",
+    phone: point.phone || "",
   };
 }
 
@@ -123,7 +133,9 @@ function normalizeMapPoints(payload) {
 }
 
 function findRoutePoint(points, id) {
-  return points.find((point) => String(point.id) === String(id) || point.markerId === Number(id));
+  return points.find(
+    (point) => String(point.id) === String(id) || point.markerId === Number(id),
+  );
 }
 
 const initialMapPoints = normalizeMapPoints(fallbackMapPoints);
@@ -136,22 +148,22 @@ function buildMarkers(points, activeId) {
       latitude: point.latitude,
       longitude: point.longitude,
       title: point.title,
-      iconPath: '/assets/map/poi.png',
+      iconPath: "/assets/map/poi.png",
       width: isActive ? 50 : 40,
       height: isActive ? 50 : 40,
       anchor: {
         x: 0.5,
-        y: 0.9
+        y: 0.9,
       },
       callout: {
         content: point.title,
-        color: isActive ? '#0F6B67' : '#193C3A',
+        color: isActive ? "#0F6B67" : "#193C3A",
         fontSize: isActive ? 14 : 12,
         borderRadius: 8,
-        bgColor: '#FBFFFC',
+        bgColor: "#FBFFFC",
         padding: 8,
-        display: 'ALWAYS'
-      }
+        display: "ALWAYS",
+      },
     };
   });
 }
@@ -163,35 +175,79 @@ function buildPolyline(route, points) {
     .filter(Boolean)
     .map((point) => ({
       latitude: point.latitude,
-      longitude: point.longitude
+      longitude: point.longitude,
     }));
 
   if (routePoints.length < 2) return [];
   return [
     {
       points: routePoints,
-      color: '#0F6B67DD',
+      color: "#0F6B67DD",
       width: 6,
       dottedLine: false,
-      arrowLine: true
-    }
+      arrowLine: true,
+    },
   ];
 }
 
+function buildDirectionsPolyline(directions) {
+  const points = Array.isArray(directions && directions.polyline)
+    ? directions.polyline
+        .map((point) => ({
+          latitude: Number(point.latitude),
+          longitude: Number(point.longitude),
+        }))
+        .filter(
+          (point) => isFinite(point.latitude) && isFinite(point.longitude),
+        )
+    : [];
+  if (points.length < 2) return [];
+  return [
+    {
+      points,
+      color: "#2477C7DD",
+      width: 6,
+      dottedLine: false,
+      arrowLine: true,
+    },
+  ];
+}
+
+function formatDistance(meters) {
+  const value = Number(meters || 0);
+  if (!isFinite(value) || value <= 0) return "距离待确认";
+  if (value >= 1000) return `${(value / 1000).toFixed(1)}公里`;
+  return `${Math.round(value)}米`;
+}
+
+function formatDuration(seconds) {
+  const value = Number(seconds || 0);
+  if (!isFinite(value) || value <= 0) return "时间待确认";
+  const minutes = Math.max(1, Math.round(value / 60));
+  if (minutes >= 60)
+    return `${Math.floor(minutes / 60)}小时${minutes % 60}分钟`;
+  return `${minutes}分钟`;
+}
+
 function isTabUrl(url) {
-  return ['/pages/home/home', '/pages/map/map', '/pages/food/food', '/pages/mine/mine'].includes(url);
+  return [
+    "/pages/home/home",
+    "/pages/map/map",
+    "/pages/food/food",
+    "/pages/mine/mine",
+  ].includes(url);
 }
 
 Page({
   data: {
-    title: '一部手机游青田海林',
+    title: "一部手机游青田海林",
     categories,
     subTags,
     mapTools,
     routeSuggestions,
-    activeCategory: '全部',
-    activeSubTag: '全部',
-    searchKeyword: '',
+    activeCategory: "全部",
+    activeSubTag: "全部",
+    searchKeyword: "",
     searchFocus: false,
     center: mapCenter,
     scale: 16,
@@ -203,11 +259,11 @@ Page({
     activeRoute: null,
     routePanelOpen: false,
     showUserLocation: false,
-    summaryText: `共 ${initialMapPoints.length} 个点位`
+    summaryText: `共 ${initialMapPoints.length} 个点位`,
   },
 
   onReady() {
-    this.mapContext = wx.createMapContext('hailinMap');
+    this.mapContext = wx.createMapContext("hailinMap");
     this.focusPoints(this.data.filteredPoints);
   },
 
@@ -221,11 +277,16 @@ Page({
   },
 
   getFilteredPoints(category, subTag, keyword, points = this.data.points) {
-    const cleanKeyword = String(keyword || '').trim().toLowerCase();
+    const cleanKeyword = String(keyword || "")
+      .trim()
+      .toLowerCase();
     return points.filter((point) => {
-      const categoryMatched = !category || category === '全部' || point.type === category;
-      const tagMatched = !subTag || subTag === '全部' || point.subType === subTag;
-      const text = `${point.title} ${point.type} ${point.subType} ${point.desc} ${point.tips}`.toLowerCase();
+      const categoryMatched =
+        !category || category === "全部" || point.type === category;
+      const tagMatched =
+        !subTag || subTag === "全部" || point.subType === subTag;
+      const text =
+        `${point.title} ${point.type} ${point.subType} ${point.desc} ${point.tips}`.toLowerCase();
       const keywordMatched = !cleanKeyword || text.includes(cleanKeyword);
       return categoryMatched && tagMatched && keywordMatched;
     });
@@ -235,10 +296,21 @@ Page({
     const points = options.points || this.data.points;
     const category = options.category || this.data.activeCategory;
     const subTag = options.subTag || this.data.activeSubTag;
-    const keyword = options.keyword == null ? this.data.searchKeyword : options.keyword;
-    const activeRoute = options.activeRoute === undefined ? this.data.activeRoute : options.activeRoute;
-    const filteredPoints = this.getFilteredPoints(category, subTag, keyword, points);
-    const activePoint = filteredPoints.some((point) => this.data.activePoint && point.id === this.data.activePoint.id)
+    const keyword =
+      options.keyword == null ? this.data.searchKeyword : options.keyword;
+    const activeRoute =
+      options.activeRoute === undefined
+        ? this.data.activeRoute
+        : options.activeRoute;
+    const filteredPoints = this.getFilteredPoints(
+      category,
+      subTag,
+      keyword,
+      points,
+    );
+    const activePoint = filteredPoints.some(
+      (point) => this.data.activePoint && point.id === this.data.activePoint.id,
+    )
       ? this.data.activePoint
       : null;
 
@@ -251,17 +323,22 @@ Page({
       activeRoute,
       markers: buildMarkers(filteredPoints, activePoint && activePoint.id),
       polylines: activeRoute ? buildPolyline(activeRoute, points) : [],
-      summaryText: this.buildSummaryText(filteredPoints, category, subTag, keyword)
+      summaryText: this.buildSummaryText(
+        filteredPoints,
+        category,
+        subTag,
+        keyword,
+      ),
     });
     this.focusPoints(filteredPoints);
   },
 
   buildSummaryText(points, category, subTag, keyword) {
     const parts = [];
-    if (category && category !== '全部') parts.push(category);
-    if (subTag && subTag !== '全部') parts.push(subTag);
+    if (category && category !== "全部") parts.push(category);
+    if (subTag && subTag !== "全部") parts.push(subTag);
     if (keyword) parts.push(`搜索“${keyword}”`);
-    const prefix = parts.length ? parts.join(' · ') : '海林全域';
+    const prefix = parts.length ? parts.join(" · ") : "海林全域";
     return `${prefix} · ${points.length} 个点位`;
   },
 
@@ -270,9 +347,9 @@ Page({
     this.mapContext.includePoints({
       points: points.map((point) => ({
         latitude: point.latitude,
-        longitude: point.longitude
+        longitude: point.longitude,
       })),
-      padding: [82, 48, this.data.activePoint ? 520 : 180, 48]
+      padding: [82, 48, this.data.activePoint ? 520 : 180, 48],
     });
   },
 
@@ -282,14 +359,14 @@ Page({
       keyword: event.detail.value,
       subTag: this.data.activeSubTag,
       category: this.data.activeCategory,
-      activeRoute: null
+      activeRoute: null,
     });
   },
 
   onSearchConfirm() {
     this.setData({ searchFocus: false });
     if (!this.data.filteredPoints.length) {
-      quickToast('没有找到相关点位');
+      quickToast("没有找到相关点位");
       return;
     }
     this.focusPoints(this.data.filteredPoints);
@@ -297,7 +374,7 @@ Page({
 
   onClearSearch() {
     this.setData({ searchFocus: false });
-    this.applyFilters({ keyword: '', activeRoute: null });
+    this.applyFilters({ keyword: "", activeRoute: null });
   },
 
   onCategoryTap(event) {
@@ -305,9 +382,9 @@ Page({
     this.setData({ routePanelOpen: false });
     this.applyFilters({
       category,
-      subTag: '全部',
+      subTag: "全部",
       keyword: this.data.searchKeyword,
-      activeRoute: null
+      activeRoute: null,
     });
   },
 
@@ -317,7 +394,7 @@ Page({
       subTag: event.currentTarget.dataset.tag,
       category: this.data.activeCategory,
       keyword: this.data.searchKeyword,
-      activeRoute: null
+      activeRoute: null,
     });
   },
 
@@ -330,102 +407,128 @@ Page({
   },
 
   selectPointById(id) {
-    const point = this.data.points.find((item) => String(item.id) === String(id));
+    const point = this.data.points.find(
+      (item) => String(item.id) === String(id),
+    );
     this.selectPoint(point);
   },
 
   selectPointByMarkerId(markerId) {
-    const point = this.data.points.find((item) => item.markerId === Number(markerId));
+    const point = this.data.points.find(
+      (item) => item.markerId === Number(markerId),
+    );
     this.selectPoint(point);
   },
 
   selectPoint(point) {
     if (!point) return;
 
-    const filteredPoints = this.data.filteredPoints.some((item) => item.id === point.id)
+    const filteredPoints = this.data.filteredPoints.some(
+      (item) => item.id === point.id,
+    )
       ? this.data.filteredPoints
       : [point, ...this.data.filteredPoints];
     this.setData({
       activePoint: point,
       center: {
         latitude: point.latitude,
-        longitude: point.longitude
+        longitude: point.longitude,
       },
       scale: 17,
       markers: buildMarkers(filteredPoints, point.id),
-      routePanelOpen: false
+      routePanelOpen: false,
+      activeRoute: null,
+      polylines: [],
     });
   },
 
   onToolTap(event) {
     const id = event.currentTarget.dataset.id;
-    if (id === 'route') {
+    if (id === "route") {
       if (this.data.routePanelOpen) {
         this.setData({
           routePanelOpen: false,
           activeRoute: null,
-          polylines: []
+          polylines: [],
         });
         this.applyFilters({ activeRoute: null });
         return;
       }
-      const activeRoute = this.data.activeRoute || this.data.routeSuggestions[0];
+      const activeRoute =
+        this.data.activeRoute || this.data.routeSuggestions[0];
       this.setData({
         routePanelOpen: true,
         activeRoute,
         activePoint: null,
-        polylines: buildPolyline(activeRoute, this.data.points)
+        polylines: buildPolyline(activeRoute, this.data.points),
       });
       this.focusRoute(activeRoute);
       return;
     }
-    if (id === 'search') {
+    if (id === "search") {
       this.setData({ searchFocus: true, routePanelOpen: false });
       return;
     }
-    if (id === 'location') {
+    if (id === "location") {
       this.locateUser();
       return;
     }
-    if (id === 'service') {
+    if (id === "service") {
       this.setData({ routePanelOpen: false });
-      this.applyFilters({ category: '公共服务', subTag: '便民服务', keyword: '', activeRoute: null });
+      this.applyFilters({
+        category: "公共服务",
+        subTag: "便民服务",
+        keyword: "",
+        activeRoute: null,
+      });
       return;
     }
-    if (id === 'overview') {
-      this.setData({ routePanelOpen: false, activeRoute: null, activePoint: null, polylines: [] });
-      this.applyFilters({ category: '全部', subTag: '全部', keyword: '', activeRoute: null });
+    if (id === "overview") {
+      this.setData({
+        routePanelOpen: false,
+        activeRoute: null,
+        activePoint: null,
+        polylines: [],
+      });
+      this.applyFilters({
+        category: "全部",
+        subTag: "全部",
+        keyword: "",
+        activeRoute: null,
+      });
       return;
     }
   },
 
   locateUser() {
     if (!wx.getLocation) {
-      quickToast('当前环境不支持定位');
+      quickToast("当前环境不支持定位");
       return;
     }
     wx.getLocation({
-      type: 'gcj02',
+      type: "gcj02",
       success: (result) => {
         this.setData({
           center: {
             latitude: result.latitude,
-            longitude: result.longitude
+            longitude: result.longitude,
           },
           scale: 16,
           showUserLocation: true,
-          routePanelOpen: false
+          routePanelOpen: false,
         });
-        quickToast('已定位到当前位置');
+        quickToast("已定位到当前位置");
       },
       fail: () => {
-        quickToast('授权定位后可查看当前位置');
-      }
+        quickToast("授权定位后可查看当前位置");
+      },
     });
   },
 
   onRouteTap(event) {
-    const route = this.data.routeSuggestions.find((item) => item.id === event.currentTarget.dataset.id);
+    const route = this.data.routeSuggestions.find(
+      (item) => item.id === event.currentTarget.dataset.id,
+    );
     if (!route) return;
 
     const routePoints = route.pointIds
@@ -437,7 +540,7 @@ Page({
       filteredPoints: routePoints,
       markers: buildMarkers(routePoints),
       polylines: buildPolyline(route, this.data.points),
-      summaryText: `${route.title} · ${route.duration}`
+      summaryText: `${route.title} · ${route.duration}`,
     });
     this.focusRoute(route);
   },
@@ -453,23 +556,23 @@ Page({
   onOpenRouteDetail() {
     const route = this.data.activeRoute || this.data.routeSuggestions[0];
     wx.navigateTo({
-      url: `/pages/route-detail/route-detail?id=${route.routeId}`
+      url: `/pages/route-detail/route-detail?id=${route.routeId}`,
     });
   },
 
   onCloseSheet() {
     this.setData({
       activePoint: null,
-      markers: buildMarkers(this.data.filteredPoints)
+      markers: buildMarkers(this.data.filteredPoints),
     });
   },
 
   onViewDetail() {
     const point = this.data.activePoint;
     if (!point) return;
-    if (point.refType === 'spot' && point.refId) {
+    if (point.refType === "spot" && point.refId) {
       wx.navigateTo({
-        url: `/pages/spot-detail/spot-detail?id=${point.refId}`
+        url: `/pages/spot-detail/spot-detail?id=${point.refId}`,
       });
       return;
     }
@@ -487,7 +590,7 @@ Page({
       this.navigateSmart(point.targetUrl);
       return;
     }
-    if (point.refType === 'spot') {
+    if (point.refType === "spot") {
       this.onViewDetail();
       return;
     }
@@ -503,8 +606,53 @@ Page({
   },
 
   onGoHere() {
-    const point = this.data.activePoint || this.data.points.find((item) => item.id === 10) || this.data.points[0];
+    const point =
+      this.data.activePoint ||
+      this.data.points.find((item) => item.id === 10) ||
+      this.data.points[0];
     if (!point) return;
+    if (wx.getLocation) {
+      wx.getLocation({
+        type: "gcj02",
+        success: (location) => {
+          this.previewDirections(point, location);
+        },
+        fail: () => {
+          this.openNativeLocation(point);
+        },
+      });
+      return;
+    }
+    this.openNativeLocation(point);
+  },
+
+  previewDirections(point, location) {
+    loadMapDirections(point.id, {
+      longitude: location.longitude,
+      latitude: location.latitude,
+    })
+      .then((directions) => {
+        const directionText = `高德步行 ${formatDistance(directions.distanceMeters)} · ${formatDuration(directions.durationSeconds)}`;
+        this.setData({
+          activePoint: {
+            ...point,
+            directionText,
+          },
+          showUserLocation: true,
+          polylines: buildDirectionsPolyline(directions),
+          summaryText: `${point.title} · ${directionText}`,
+        });
+        quickToast(
+          directions.provider === "amap" ? "已生成高德路线" : "已生成估算路线",
+        );
+        this.openNativeLocation(point);
+      })
+      .catch(() => {
+        this.openNativeLocation(point);
+      });
+  },
+
+  openNativeLocation(point) {
     wx.openLocation({
       latitude: point.latitude,
       longitude: point.longitude,
@@ -512,8 +660,8 @@ Page({
       address: `浙江省丽水市青田县海口镇海林村 · ${point.title}`,
       scale: 17,
       fail: () => {
-        quickToast('请在真机授权位置服务后导航');
-      }
+        quickToast("请在真机授权位置服务后导航");
+      },
     });
-  }
+  },
 });

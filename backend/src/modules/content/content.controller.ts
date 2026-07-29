@@ -5,6 +5,7 @@ import { PageQueryDto } from '../../common/dto/page.dto';
 import {
   ArticleQueryDto,
   MapPointQueryDto,
+  MapPointDirectionsQueryDto,
   NearbyMapPointQueryDto,
   PublishedContentQueryDto,
 } from './dto/content.dto';
@@ -76,6 +77,11 @@ export class ContentController {
   @Get('map-points/nearby')
   nearbyMapPoints(@Query() query: NearbyMapPointQueryDto) {
     return this.content.nearbyMapPoints(query);
+  }
+
+  @Get('map-points/:id/directions')
+  mapPointDirections(@Param('id') id: string, @Query() query: MapPointDirectionsQueryDto) {
+    return this.content.mapPointDirections(id, query);
   }
 
   @Get('map-points/:id')

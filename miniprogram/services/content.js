@@ -1,21 +1,23 @@
-const banners = require('../data/banners');
-const gridPages = require('../data/homeGrids');
-const products = require('../data/products');
-const recommend = require('../data/recommend');
-const mapPoints = require('../data/mapPoints');
-const foods = require('../data/foods');
-const lives = require('../data/lives');
-const spots = require('../data/spots');
-const routes = require('../data/routes');
-const { request, serviceConfig, serviceModeText } = require('./api');
+const banners = require("../data/banners");
+const gridPages = require("../data/homeGrids");
+const products = require("../data/products");
+const recommend = require("../data/recommend");
+const mapPoints = require("../data/mapPoints");
+const foods = require("../data/foods");
+const lives = require("../data/lives");
+const spots = require("../data/spots");
+const routes = require("../data/routes");
+const { request, serviceConfig, serviceModeText } = require("./api");
 
 function isContentFallbackEnabled() {
-  return Boolean(serviceConfig.contentFallbackEnabled || serviceConfig.reviewMode);
+  return Boolean(
+    serviceConfig.contentFallbackEnabled || serviceConfig.reviewMode,
+  );
 }
 
 function fallbackOrReject(fallbackValue, error) {
   if (isContentFallbackEnabled()) return Promise.resolve(fallbackValue);
-  return Promise.reject(error || new Error('Content service unavailable'));
+  return Promise.reject(error || new Error("Content service unavailable"));
 }
 
 function withFallback(endpoint, fallbackValue) {
@@ -32,10 +34,14 @@ function normalizePageList(remoteValue) {
 }
 
 function withContentFallback(key, fallbackValue, mapper) {
-  const v1Endpoint = serviceConfig.v1Endpoints && serviceConfig.v1Endpoints[key];
+  const v1Endpoint =
+    serviceConfig.v1Endpoints && serviceConfig.v1Endpoints[key];
   const legacyEndpoint = serviceConfig.endpoints[key];
   const normalize = (remoteValue) => {
-    const mapped = typeof mapper === 'function' ? mapper(remoteValue, fallbackValue) : remoteValue;
+    const mapped =
+      typeof mapper === "function"
+        ? mapper(remoteValue, fallbackValue)
+        : remoteValue;
     return mapped || (isContentFallbackEnabled() ? fallbackValue : mapped);
   };
   if (!v1Endpoint) {
@@ -56,44 +62,46 @@ function withContentFallback(key, fallbackValue, mapper) {
 }
 
 function moneyText(cents) {
-  if (typeof cents !== 'number') return '';
+  if (typeof cents !== "number") return "";
   return (cents / 100).toFixed(2);
 }
 
 function firstImage(item) {
-  if (!item) return '';
+  if (!item) return "";
   if (cleanImage(item.coverImage)) return cleanImage(item.coverImage);
   if (cleanImage(item.coverUrl)) return cleanImage(item.coverUrl);
   if (cleanImage(item.imageUrl)) return cleanImage(item.imageUrl);
-  if (Array.isArray(item.images) && item.images.length) return cleanImage(item.images[0]);
-  if (Array.isArray(item.imageUrls) && item.imageUrls.length) return cleanImage(item.imageUrls[0]);
-  return '';
+  if (Array.isArray(item.images) && item.images.length)
+    return cleanImage(item.images[0]);
+  if (Array.isArray(item.imageUrls) && item.imageUrls.length)
+    return cleanImage(item.imageUrls[0]);
+  return "";
 }
 
 const defaultImages = {
-  banner: '/assets/photos/ai-village-gate.jpg',
-  mapPoint: '/assets/photos/ai-village-gate.jpg',
-  food: '/assets/photos/ricefish-drying.jpg',
-  spot: '/assets/photos/ai-village-gate.jpg',
-  route: '/assets/photos/qingtian-city.jpg',
-  product: '/assets/photos/ai-fish-keychain.jpg',
-  live: '/assets/photos/ai-village-gate.jpg'
+  banner: "/assets/photos/ai-village-gate.jpg",
+  mapPoint: "/assets/photos/ai-village-gate.jpg",
+  food: "/assets/photos/ricefish-drying.jpg",
+  spot: "/assets/photos/ai-village-gate.jpg",
+  route: "/assets/photos/qingtian-city.jpg",
+  product: "/assets/photos/ai-fish-keychain.jpg",
+  live: "/assets/photos/ai-village-gate.jpg",
 };
 
 const legacySceneImages = {
-  '/assets/scenes/village-gate.png': '/assets/photos/ai-village-gate.jpg',
-  '/assets/scenes/ricefish-field.png': '/assets/photos/ricefish-paddy.jpg',
-  '/assets/scenes/creek-trail.png': '/assets/photos/qingtian-tashan.jpg',
-  '/assets/scenes/tofu-workshop.png': '/assets/photos/ai-tofu-workshop.jpg',
-  '/assets/scenes/overseas-yard.png': '/assets/photos/ai-overseas-cafe.jpg',
-  '/assets/scenes/overseas-cafe.png': '/assets/photos/ai-overseas-cafe.jpg',
-  '/assets/scenes/ricefish-banquet.png': '/assets/photos/ricefish-drying.jpg',
-  '/assets/scenes/creek-tea.png': '/assets/photos/qingtian-tashan.jpg'
+  "/assets/scenes/village-gate.png": "/assets/photos/ai-village-gate.jpg",
+  "/assets/scenes/ricefish-field.png": "/assets/photos/ricefish-paddy.jpg",
+  "/assets/scenes/creek-trail.png": "/assets/photos/qingtian-tashan.jpg",
+  "/assets/scenes/tofu-workshop.png": "/assets/photos/ai-tofu-workshop.jpg",
+  "/assets/scenes/overseas-yard.png": "/assets/photos/ai-overseas-cafe.jpg",
+  "/assets/scenes/overseas-cafe.png": "/assets/photos/ai-overseas-cafe.jpg",
+  "/assets/scenes/ricefish-banquet.png": "/assets/photos/ricefish-drying.jpg",
+  "/assets/scenes/creek-tea.png": "/assets/photos/qingtian-tashan.jpg",
 };
 
 function cleanImage(value) {
-  const image = String(value || '').trim();
-  if (!image || image === 'null' || image === 'undefined') return '';
+  const image = String(value || "").trim();
+  if (!image || image === "null" || image === "undefined") return "";
   return legacySceneImages[image] || image;
 }
 
@@ -103,48 +111,68 @@ function fallbackItemAt(fallbackValue, index) {
 }
 
 function displayImage(item, fallbackItem, type) {
-  return firstImage(item) || firstImage(fallbackItem) || defaultImages[type] || defaultImages.banner;
+  return (
+    firstImage(item) ||
+    firstImage(fallbackItem) ||
+    defaultImages[type] ||
+    defaultImages.banner
+  );
 }
 
 function displayImages(item, fallbackItem, type) {
   const imageSet = new Set();
-  [item?.images, item?.imageUrls, fallbackItem?.imageUrls, fallbackItem?.images].forEach((list) => {
+  [
+    item?.images,
+    item?.imageUrls,
+    fallbackItem?.imageUrls,
+    fallbackItem?.images,
+  ].forEach((list) => {
     if (!Array.isArray(list)) return;
     list.forEach((image) => {
       const clean = cleanImage(image);
       if (clean) imageSet.add(clean);
     });
   });
-  [firstImage(item), firstImage(fallbackItem), defaultImages[type]].forEach((image) => {
-    const clean = cleanImage(image);
-    if (clean) imageSet.add(clean);
-  });
+  [firstImage(item), firstImage(fallbackItem), defaultImages[type]].forEach(
+    (image) => {
+      const clean = cleanImage(image);
+      if (clean) imageSet.add(clean);
+    },
+  );
   return Array.from(imageSet);
 }
 
 const mapPointTypeText = {
-  SCENIC_SPOT: '景点',
-  PARKING: '停车',
-  TOILET: '厕所',
-  SERVICE_CENTER: '服务',
-  HOMESTAY: '住宿',
-  FOOD: '餐饮',
-  FARM: '采摘',
-  MEDICAL: '医疗',
-  CAMERA: '直播',
-  OTHER: '其他'
+  SCENIC_SPOT: "景点",
+  PARKING: "停车",
+  TOILET: "厕所",
+  SERVICE_CENTER: "服务",
+  HOMESTAY: "住宿",
+  FOOD: "餐饮",
+  FARM: "采摘",
+  MEDICAL: "医疗",
+  CAMERA: "直播",
+  OTHER: "其他",
 };
 
 function adaptBanners(list, fallbackValue) {
   const fallback = fallbackValue || [];
   return normalizePageList(list).map((item, index) => ({
     id: item.id || `banner-${index}`,
-    title: item.title || fallbackItemAt(fallback, index).title || '海林村欢迎你',
-    subtitle: item.subtitle || item.summary || fallbackItemAt(fallback, index).subtitle || '',
-    tag: item.tag || fallbackItemAt(fallback, index).tag || serviceConfig.locationText,
-    imageClass: fallbackItemAt(fallback, index).imageClass || 'banner-oujiang',
-    icon: fallbackItemAt(fallback, index).icon || '海',
-    imageUrl: displayImage(item, fallbackItemAt(fallback, index), 'banner')
+    title:
+      item.title || fallbackItemAt(fallback, index).title || "海林村欢迎你",
+    subtitle:
+      item.subtitle ||
+      item.summary ||
+      fallbackItemAt(fallback, index).subtitle ||
+      "",
+    tag:
+      item.tag ||
+      fallbackItemAt(fallback, index).tag ||
+      serviceConfig.locationText,
+    imageClass: fallbackItemAt(fallback, index).imageClass || "banner-oujiang",
+    icon: fallbackItemAt(fallback, index).icon || "海",
+    imageUrl: displayImage(item, fallbackItemAt(fallback, index), "banner"),
   }));
 }
 
@@ -152,24 +180,31 @@ function adaptMapPoints(remoteValue, fallbackValue) {
   const fallback = fallbackValue || [];
   return normalizePageList(remoteValue).map((item, index) => {
     const fallbackItem = fallback[index % Math.max(fallback.length, 1)] || {};
-    const typeText = mapPointTypeText[item.type] || item.type || fallbackItem.type || '其他';
+    const typeText =
+      mapPointTypeText[item.type] || item.type || fallbackItem.type || "其他";
     return {
       id: item.id || index + 1,
       markerId: index + 1,
-      title: item.name || item.title || fallbackItem.title || '未命名点位',
+      title: item.name || item.title || fallbackItem.title || "未命名点位",
       type: typeText,
-      subType: item.address || item.relatedEntityType || fallbackItem.subType || '',
-      distance: fallbackItem.distance || '',
-      desc: item.description || fallbackItem.desc || '',
-      imageUrl: displayImage(item, fallbackItem, 'mapPoint'),
-      openTime: item.businessHours || fallbackItem.openTime || '',
-      tips: item.description || fallbackItem.tips || '',
-      actionText: item.relatedEntityId ? '查看详情' : fallbackItem.actionText || '查看点位',
+      subType:
+        item.address || item.relatedEntityType || fallbackItem.subType || "",
+      distance: fallbackItem.distance || "",
+      desc: item.description || fallbackItem.desc || "",
+      imageUrl: displayImage(item, fallbackItem, "mapPoint"),
+      openTime: item.businessHours || fallbackItem.openTime || "",
+      tips: item.description || fallbackItem.tips || "",
+      actionText: item.relatedEntityId
+        ? "查看详情"
+        : fallbackItem.actionText || "查看点位",
       latitude: Number(item.latitude || fallbackItem.latitude || 0),
       longitude: Number(item.longitude || fallbackItem.longitude || 0),
-      refType: item.relatedEntityType === 'SCENIC_SPOT' ? 'spot' : fallbackItem.refType,
+      refType:
+        item.relatedEntityType === "SCENIC_SPOT"
+          ? "spot"
+          : fallbackItem.refType,
       refId: item.relatedEntityId || fallbackItem.refId,
-      targetUrl: fallbackItem.targetUrl
+      targetUrl: fallbackItem.targetUrl,
     };
   });
 }
@@ -180,14 +215,16 @@ function adaptFoods(remoteValue, fallbackValue) {
     const fallbackItem = fallback[index % Math.max(fallback.length, 1)] || {};
     return {
       id: item.id || fallbackItem.id || `food-${index}`,
-      name: item.name || fallbackItem.name || '海林乡味',
-      perCapita: item.avgPrice ? `${moneyText(item.avgPrice)}元` : fallbackItem.perCapita || '到店咨询',
-      distance: fallbackItem.distance || '',
-      desc: item.description || fallbackItem.desc || '',
+      name: item.name || fallbackItem.name || "海林乡味",
+      perCapita: item.avgPrice
+        ? `${moneyText(item.avgPrice)}元`
+        : fallbackItem.perCapita || "到店咨询",
+      distance: fallbackItem.distance || "",
+      desc: item.description || fallbackItem.desc || "",
       tags: item.tags || fallbackItem.tags || [],
-      imageClass: fallbackItem.imageClass || 'ph-ricefish',
-      icon: fallbackItem.icon || '食',
-      imageUrl: displayImage(item, fallbackItem, 'food')
+      imageClass: fallbackItem.imageClass || "ph-ricefish",
+      icon: fallbackItem.icon || "食",
+      imageUrl: displayImage(item, fallbackItem, "food"),
     };
   });
 }
@@ -195,27 +232,51 @@ function adaptFoods(remoteValue, fallbackValue) {
 function adaptSpots(remoteValue, fallbackValue) {
   const fallback = fallbackValue || [];
   return normalizePageList(remoteValue).map((item, index) => {
-    const fallbackItem = fallback.find((spot) => spot.id === item.id) || fallback[index % Math.max(fallback.length, 1)] || {};
-    const coverUrl = displayImage(item, fallbackItem, 'spot');
+    const fallbackItem =
+      fallback.find((spot) => spot.id === item.id) ||
+      fallback[index % Math.max(fallback.length, 1)] ||
+      {};
+    const coverUrl = displayImage(item, fallbackItem, "spot");
     return {
       ...fallbackItem,
       id: item.id || fallbackItem.id || `spot-${index}`,
-      name: item.name || item.title || fallbackItem.name || fallbackItem.title || '海林景点',
-      category: item.tags?.[0] || fallbackItem.category || '乡村景点',
+      name:
+        item.name ||
+        item.title ||
+        fallbackItem.name ||
+        fallbackItem.title ||
+        "海林景点",
+      category: item.tags?.[0] || fallbackItem.category || "乡村景点",
       tags: item.tags || fallbackItem.tags || [],
-      openTime: item.openingHours || fallbackItem.openTime || '',
-      duration: item.suggestedDuration || fallbackItem.duration || '',
-      distance: fallbackItem.distance || '',
-      desc: item.summary || item.content || item.subtitle || fallbackItem.desc || fallbackItem.subtitle || '',
-      title: item.title || item.name || fallbackItem.title || fallbackItem.name || '海林景点',
-      subtitle: item.subtitle || item.summary || fallbackItem.subtitle || fallbackItem.desc || '',
-      buttonText: item.buttonText || fallbackItem.buttonText || '查看详情',
+      openTime: item.openingHours || fallbackItem.openTime || "",
+      duration: item.suggestedDuration || fallbackItem.duration || "",
+      distance: fallbackItem.distance || "",
+      desc:
+        item.summary ||
+        item.content ||
+        item.subtitle ||
+        fallbackItem.desc ||
+        fallbackItem.subtitle ||
+        "",
+      title:
+        item.title ||
+        item.name ||
+        fallbackItem.title ||
+        fallbackItem.name ||
+        "海林景点",
+      subtitle:
+        item.subtitle ||
+        item.summary ||
+        fallbackItem.subtitle ||
+        fallbackItem.desc ||
+        "",
+      buttonText: item.buttonText || fallbackItem.buttonText || "查看详情",
       imageClass: item.imageClass || fallbackItem.imageClass,
       coverUrl,
-      imageUrls: displayImages(item, fallbackItem, 'spot'),
-      icon: item.icon || fallbackItem.icon || '景',
+      imageUrls: displayImages(item, fallbackItem, "spot"),
+      icon: item.icon || fallbackItem.icon || "景",
       url: item.url || fallbackItem.url,
-      openType: item.openType || fallbackItem.openType
+      openType: item.openType || fallbackItem.openType,
     };
   });
 }
@@ -223,26 +284,47 @@ function adaptSpots(remoteValue, fallbackValue) {
 function adaptRoutes(remoteValue, fallbackValue) {
   const fallback = fallbackValue || [];
   return normalizePageList(remoteValue).map((item, index) => {
-    const fallbackItem = fallback.find((route) => route.id === item.id) || fallback[index % Math.max(fallback.length, 1)] || {};
-    const routeTitle = item.title || item.name || fallbackItem.title || fallbackItem.name || '海林路线';
-    const timeline = Array.isArray(item.timeline) && item.timeline.length ? item.timeline : fallbackItem.timeline || [];
+    const fallbackItem =
+      fallback.find((route) => route.id === item.id) ||
+      fallback[index % Math.max(fallback.length, 1)] ||
+      {};
+    const routeTitle =
+      item.title ||
+      item.name ||
+      fallbackItem.title ||
+      fallbackItem.name ||
+      "海林路线";
+    const timeline =
+      Array.isArray(item.timeline) && item.timeline.length
+        ? item.timeline
+        : fallbackItem.timeline || [];
     return {
       ...fallbackItem,
       id: item.id || fallbackItem.id || `route-${index}`,
-      name: item.name || fallbackItem.name || '海林路线',
+      name: item.name || fallbackItem.name || "海林路线",
       title: routeTitle,
-      subtitle: item.summary || fallbackItem.subtitle || '',
-      reason: item.content || item.summary || fallbackItem.reason || '',
-      duration: item.duration || fallbackItem.duration || '',
-      time: item.duration || fallbackItem.time || fallbackItem.duration || '',
-      route: item.route || timeline.map((step) => step.title).filter(Boolean).join(' - ') || fallbackItem.route || '',
+      subtitle: item.summary || fallbackItem.subtitle || "",
+      reason: item.content || item.summary || fallbackItem.reason || "",
+      duration: item.duration || fallbackItem.duration || "",
+      time: item.duration || fallbackItem.time || fallbackItem.duration || "",
+      route:
+        item.route ||
+        timeline
+          .map((step) => step.title)
+          .filter(Boolean)
+          .join(" - ") ||
+        fallbackItem.route ||
+        "",
       highlights: item.highlights || fallbackItem.highlights || [],
-      label: item.label || fallbackItem.label || '推荐路线',
-      audience: item.suitableFor || fallbackItem.audience || '',
-      cost: fallbackItem.cost || '',
-      imageUrl: displayImage(item, fallbackItem, 'route'),
+      label: item.label || fallbackItem.label || "推荐路线",
+      audience: item.suitableFor || fallbackItem.audience || "",
+      cost: fallbackItem.cost || "",
+      imageUrl: displayImage(item, fallbackItem, "route"),
       timeline,
-      url: item.url || fallbackItem.url || `/pages/route-detail/route-detail?id=${encodeURIComponent(item.id || fallbackItem.id || `route-${index}`)}`
+      url:
+        item.url ||
+        fallbackItem.url ||
+        `/pages/route-detail/route-detail?id=${encodeURIComponent(item.id || fallbackItem.id || `route-${index}`)}`,
     };
   });
 }
@@ -253,16 +335,16 @@ function adaptProducts(remoteValue, fallbackValue) {
     const fallbackItem = fallback[index % Math.max(fallback.length, 1)] || {};
     return {
       id: item.id || fallbackItem.id || `product-${index}`,
-      title: item.name || item.title || fallbackItem.title || '海林农特产',
-      subtitle: item.subtitle || fallbackItem.subtitle || '',
-      price: moneyText(item.price) || fallbackItem.price || '',
-      categoryId: item.categoryId || fallbackItem.categoryId || '',
+      title: item.name || item.title || fallbackItem.title || "海林农特产",
+      subtitle: item.subtitle || fallbackItem.subtitle || "",
+      price: moneyText(item.price) || fallbackItem.price || "",
+      categoryId: item.categoryId || fallbackItem.categoryId || "",
       stock: item.stock ?? fallbackItem.stock,
-      unit: item.unit || fallbackItem.unit || '件',
-      specification: item.specification || fallbackItem.specification || '',
-      imageClass: fallbackItem.imageClass || 'ph-product-fish',
-      icon: fallbackItem.icon || '物',
-      imageUrl: displayImage(item, fallbackItem, 'product')
+      unit: item.unit || fallbackItem.unit || "件",
+      specification: item.specification || fallbackItem.specification || "",
+      imageClass: fallbackItem.imageClass || "ph-product-fish",
+      icon: fallbackItem.icon || "物",
+      imageUrl: displayImage(item, fallbackItem, "product"),
     };
   });
 }
@@ -273,26 +355,36 @@ function adaptLives(remoteValue, fallbackValue) {
     const fallbackItem = fallback[index % Math.max(fallback.length, 1)] || {};
     return {
       id: item.id || fallbackItem.id || `live-${index}`,
-      title: item.name || item.title || fallbackItem.title || '海林慢直播',
+      title: item.name || item.title || fallbackItem.title || "海林慢直播",
       viewers: fallbackItem.viewers || 0,
-      desc: item.description || fallbackItem.desc || '',
-      imageClass: fallbackItem.imageClass || 'ph-oujiang',
-      icon: fallbackItem.icon || '播',
-      coverUrl: displayImage(item, fallbackItem, 'live'),
-      liveUrl: item.playUrl || fallbackItem.liveUrl || '',
-      hlsUrl: fallbackItem.hlsUrl || '',
-      enabled: item.status === 'ONLINE' || fallbackItem.enabled !== false,
-      statusText: item.status === 'ONLINE' ? '直播中' : '维护中'
+      desc: item.description || fallbackItem.desc || "",
+      imageClass: fallbackItem.imageClass || "ph-oujiang",
+      icon: fallbackItem.icon || "播",
+      coverUrl: displayImage(item, fallbackItem, "live"),
+      liveUrl: item.playUrl || fallbackItem.liveUrl || "",
+      hlsUrl: fallbackItem.hlsUrl || "",
+      enabled: item.status === "ONLINE" || fallbackItem.enabled !== false,
+      statusText: item.status === "ONLINE" ? "直播中" : "维护中",
     };
   });
 }
 
 function adaptHome(remoteValue, fallbackValue) {
-  const source = remoteValue && remoteValue.content ? remoteValue.content : remoteValue;
+  const source =
+    remoteValue && remoteValue.content ? remoteValue.content : remoteValue;
   if (!source || !Array.isArray(source.banners)) return fallbackValue;
-  const scenicItems = adaptSpots(source.scenicSpots || source.hotRecommends || [], spots).slice(0, 4);
-  const routeItems = adaptRoutes(source.routes || source.itineraries || [], recommend.itineraries).slice(0, 2);
-  const productItems = adaptProducts(source.products || [], products).slice(0, 3);
+  const scenicItems = adaptSpots(
+    source.scenicSpots || source.hotRecommends || [],
+    spots,
+  ).slice(0, 4);
+  const routeItems = adaptRoutes(
+    source.routes || source.itineraries || [],
+    recommend.itineraries,
+  ).slice(0, 2);
+  const productItems = adaptProducts(source.products || [], products).slice(
+    0,
+    3,
+  );
   const notices = normalizePageList(source.notices);
   return {
     ...fallbackValue,
@@ -303,19 +395,21 @@ function adaptHome(remoteValue, fallbackValue) {
           id: item.id,
           title: item.title || item.name,
           subtitle: item.subtitle || item.desc,
-          buttonText: item.buttonText || '查看详情',
-          icon: item.icon || '景',
+          buttonText: item.buttonText || "查看详情",
+          icon: item.icon || "景",
           imageClass: item.imageClass,
           imageUrl: item.coverUrl,
-          url: item.url || `/pages/spot-detail/spot-detail?id=${encodeURIComponent(item.id)}`,
-          openType: item.openType
+          url:
+            item.url ||
+            `/pages/spot-detail/spot-detail?id=${encodeURIComponent(item.id)}`,
+          openType: item.openType,
         }))
       : fallbackValue.hotRecommends,
     itineraries: routeItems.length ? routeItems : fallbackValue.itineraries,
     notice: source.notice || notices[0]?.title || fallbackValue.notice,
     weather: source.weather || fallbackValue.weather,
     serviceMode: serviceModeText(),
-    locationText: serviceConfig.locationText
+    locationText: serviceConfig.locationText,
   };
 }
 
@@ -330,102 +424,122 @@ function loadHomeData() {
     rankings: recommend.rankings,
     corridor: recommend.corridor,
     feeds: recommend.feeds,
-    notice: '今日推荐：先到游客中心确认停车与讲解，再走溪谷步道，午餐预约海林田鱼家宴',
-    weather: '青田海口镇多云间晴，瓯江沿线适合慢行；亲水步道雨后注意防滑',
+    notice:
+      "今日推荐：先到游客中心确认停车与讲解，再走溪谷步道，午餐预约海林田鱼家宴",
+    weather: "青田海口镇多云间晴，瓯江沿线适合慢行；亲水步道雨后注意防滑",
     serviceMode: serviceModeText(),
-    locationText: serviceConfig.locationText
+    locationText: serviceConfig.locationText,
   };
 
-  return withContentFallback('home', fallback, adaptHome);
+  return withContentFallback("home", fallback, adaptHome);
 }
 
 function loadMapPoints() {
-  return withContentFallback('mapPoints', mapPoints, adaptMapPoints);
+  return withContentFallback("mapPoints", mapPoints, adaptMapPoints);
+}
+
+function loadMapDirections(pointId, origin, mode = "walking") {
+  const id = encodeURIComponent(pointId || "");
+  if (!id || !origin)
+    return Promise.reject(new Error("missing map direction input"));
+  const query = [
+    `longitude=${encodeURIComponent(origin.longitude)}`,
+    `latitude=${encodeURIComponent(origin.latitude)}`,
+    `mode=${encodeURIComponent(mode)}`,
+  ].join("&");
+  return request(`/api/v1/map-points/${id}/directions?${query}`);
 }
 
 function loadFoods() {
-  return withContentFallback('foods', foods, adaptFoods);
+  return withContentFallback("foods", foods, adaptFoods);
 }
 
 function loadSpots() {
-  return withContentFallback('spots', spots, adaptSpots);
+  return withContentFallback("spots", spots, adaptSpots);
 }
 
 function loadRoutes() {
-  return withContentFallback('routes', routes, adaptRoutes);
+  return withContentFallback("routes", routes, adaptRoutes);
 }
 
 function loadProducts() {
-  return withContentFallback('products', products, adaptProducts);
+  return withContentFallback("products", products, adaptProducts);
 }
 
 function loadLives() {
-  return withContentFallback('lives', lives, adaptLives);
+  return withContentFallback("lives", lives, adaptLives);
 }
 
 function normalizePlayUrl(payload) {
-  if (!payload) return '';
-  const url = String(payload.playUrl || payload.hlsUrl || payload.liveUrl || '').trim();
-  if (!url) return '';
+  if (!payload) return "";
+  const url = String(
+    payload.playUrl || payload.hlsUrl || payload.liveUrl || "",
+  ).trim();
+  if (!url) return "";
   if (/^https?:\/\//i.test(url)) return url;
-  if (url.startsWith('/')) {
-    const { mediaUrl } = require('./api');
+  if (url.startsWith("/")) {
+    const { mediaUrl } = require("./api");
     return mediaUrl(url);
   }
   return url;
 }
 
 function loadLivePlayUrl(id) {
-  const cameraId = encodeURIComponent(id || '');
-  if (!cameraId) return Promise.reject(new Error('missing camera id'));
-  return request(`/api/v1/cameras/${cameraId}/play-url`, { method: 'POST' })
-    .then((payload) => ({
-      ...payload,
-      playUrl: normalizePlayUrl(payload)
-    }));
+  const cameraId = encodeURIComponent(id || "");
+  if (!cameraId) return Promise.reject(new Error("missing camera id"));
+  return request(`/api/v1/cameras/${cameraId}/play-url`, {
+    method: "POST",
+  }).then((payload) => ({
+    ...payload,
+    playUrl: normalizePlayUrl(payload),
+  }));
 }
 
 function submitBooking(payload) {
   return request(serviceConfig.endpoints.booking, {
-    method: 'POST',
-    data: payload
+    method: "POST",
+    data: payload,
   });
 }
 
 function submitFeedback(payload) {
   return request(serviceConfig.endpoints.feedback, {
-    method: 'POST',
-    data: payload
+    method: "POST",
+    data: payload,
   });
 }
 
 function submitOrder(payload) {
   return request(serviceConfig.endpoints.orders, {
-    method: 'POST',
-    data: payload
+    method: "POST",
+    data: payload,
   });
 }
 
 function loadOrders(clientId) {
-  const endpoint = `${serviceConfig.endpoints.orders}?clientId=${encodeURIComponent(clientId || '')}`;
+  const endpoint = `${serviceConfig.endpoints.orders}?clientId=${encodeURIComponent(clientId || "")}`;
   return withFallback(endpoint, { items: [], page: 1, pageSize: 50, total: 0 });
 }
 
 function loadOrderDetail(id, clientId) {
-  const endpoint = `${serviceConfig.endpoints.orders}/${encodeURIComponent(id)}?clientId=${encodeURIComponent(clientId || '')}`;
+  const endpoint = `${serviceConfig.endpoints.orders}/${encodeURIComponent(id)}?clientId=${encodeURIComponent(clientId || "")}`;
   return request(endpoint);
 }
 
 function cancelOrder(id, clientId, note) {
-  return request(`${serviceConfig.endpoints.orders}/${encodeURIComponent(id)}/cancel`, {
-    method: 'PATCH',
-    data: { clientId, note }
-  });
+  return request(
+    `${serviceConfig.endpoints.orders}/${encodeURIComponent(id)}/cancel`,
+    {
+      method: "PATCH",
+      data: { clientId, note },
+    },
+  );
 }
 
 module.exports = {
   loadHomeData,
   loadMapPoints,
+  loadMapDirections,
   loadFoods,
   loadSpots,
   loadRoutes,
@@ -437,5 +551,5 @@ module.exports = {
   submitOrder,
   loadOrders,
   loadOrderDetail,
-  cancelOrder
+  cancelOrder,
 };

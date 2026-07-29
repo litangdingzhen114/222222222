@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsEnum, IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
+import { IsEnum, IsIn, IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
 import { ArticleType, ContentStatus, MapPointType } from '@prisma/client';
 import { PageQueryDto } from '../../../common/dto/page.dto';
 
@@ -43,4 +43,18 @@ export class NearbyMapPointQueryDto {
   @IsEnum(MapPointType)
   @IsOptional()
   type?: MapPointType;
+}
+
+export class MapPointDirectionsQueryDto {
+  @Type(() => Number)
+  @IsNumber()
+  longitude!: number;
+
+  @Type(() => Number)
+  @IsNumber()
+  latitude!: number;
+
+  @IsIn(['walking', 'driving'])
+  @IsOptional()
+  mode: 'walking' | 'driving' = 'walking';
 }

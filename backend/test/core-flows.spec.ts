@@ -24,6 +24,7 @@ import { RolesGuard } from '../src/common/guards/roles.guard';
 import { PrismaService } from '../src/database/prisma.service';
 import { AuthService } from '../src/modules/auth/auth.service';
 import { CommerceService } from '../src/modules/commerce/commerce.service';
+import { ContentService } from '../src/modules/content/content.service';
 import { EngagementService } from '../src/modules/engagement/engagement.service';
 import { PaymentsService } from '../src/modules/payments/payments.service';
 import { ReservationsService } from '../src/modules/reservations/reservations.service';
@@ -375,5 +376,78 @@ describe('AI 导游接口兼容测试', () => {
     await expect(new EngagementService(prismaForAi(), llm as never).aiChat({})).rejects.toThrow(
       BadRequestException,
     );
+  });
+});
+
+describe('高德地图路线适配测试', () => {
+  const mapPoint = {
+    id: 'point-1',
+    name: '海林游客中心',
+    type: 'SERVICE_CENTER',
+    imageUrl: '/uploads/center.jpg',
+    longitude: 120.2195,
+    latitude: 28.2139,
+    address: '海林村游客中心',
+    phone: null,
+    description: '游客服务点',
+    businessHours: '09:00-17:00',
+    relatedEntityType: null,
+    relatedEntityId: null,
+    status: ContentStatus.PUBLISHED,
+    deletedAt: null,
+  };
+
+  function contentService(amapResult: unknown) {
+    const prisma = {
+      mapPoint: {
+        findFirst: jest.fn().mockResolvedValue(mapPoint),
+      },
+    } as unknown as PrismaService;
+    const amap = {
+      directions: jest.fn().mockResolvedValue(amapResult),
+    };
+    return {
+      service: new ContentService(prisma, config({ MAP_MAX_RADIUS_METERS: 20000 }), amap as never),
+      amap,
+    };
+  }
+
+  it('有高德路线结果时返回 amap provider', async () => {
+    const { service, amap } = contentService({
+      provider: 'amap',
+      mode: 'walking',
+      distanceMeters: 320,
+      durationSeconds: 260,
+      polyline: [
+        { longitude: 120.218, latitude: 28.213 },
+        { longitude: 120.2195, latitude: 28.2139 },
+      ],
+      steps: [],
+    });
+    const result = await service.mapPointDirections('point-1', {
+      longitude: 120.218,
+      latitude: 28.213,
+      mode: 'walking',
+    });
+    expect(result.provider).toBe('amap');
+    expect(result.distanceMeters).toBe(320);
+    expect(amap.directions).toHaveBeenCalledWith(
+      expect.objectContaining({
+        mode: 'walking',
+        destination: { longitude: 120.2195, latitude: 28.2139 },
+      }),
+    );
+  });
+
+  it('高德不可用时返回本地估算路线', async () => {
+    const { service } = contentService(null);
+    const result = await service.mapPointDirections('point-1', {
+      longitude: 120.218,
+      latitude: 28.213,
+      mode: 'walking',
+    });
+    expect(result.provider).toBe('fallback');
+    expect(result.distanceMeters).toBeGreaterThan(0);
+    expect(result.polyline).toHaveLength(2);
   });
 });

@@ -1,11 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ArticleType, ContentStatus, MapPointType, ProductStatus } from '@prisma/client';
 import { getPagination, PageQueryDto, toPageResult } from '../../common/dto/page.dto';
 import { decimalToNumber, haversineDistanceMeters } from '../../common/utils/geo.util';
 import { PrismaService } from '../../database/prisma.service';
+import { AmapAdapter } from '../../integrations/amap/amap.adapter';
 import {
   ArticleQueryDto,
+  MapPointDirectionsQueryDto,
   MapPointQueryDto,
   NearbyMapPointQueryDto,
   PublishedContentQueryDto,
@@ -31,6 +33,7 @@ export class ContentService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly config: ConfigService,
+    private readonly amap: AmapAdapter,
   ) {}
 
   async home() {
@@ -268,6 +271,36 @@ export class ContentService {
     });
     if (!item) throw new NotFoundException('map point not found');
     return this.withCoordinates(item);
+  }
+
+  async mapPointDirections(id: string, query: MapPointDirectionsQueryDto) {
+    const point = (await this.mapPoint(id)) as PublicMapPoint;
+    if (point.longitude == null || point.latitude == null) {
+      throw new BadRequestException('map point coordinates are missing');
+    }
+    const origin = { longitude: query.longitude, latitude: query.latitude };
+    const destination = { longitude: point.longitude, latitude: point.latitude };
+    const mode = query.mode ?? 'walking';
+
+    const amap = await this.amap.directions({ origin, destination, mode });
+    if (amap) {
+      return {
+        ...amap,
+        target: point,
+      };
+    }
+
+    const distanceMeters = Math.round(haversineDistanceMeters(origin, destination));
+    return {
+      provider: 'fallback',
+      mode,
+      distanceMeters,
+      durationSeconds: Math.round(distanceMeters / (mode === 'driving' ? 8 : 1.2)),
+      polyline: [origin, destination],
+      steps: [],
+      target: point,
+      message: '高德路线规划暂不可用，已使用直线距离估算。',
+    };
   }
 
   async legacyMapPoints(query: PageQueryDto) {
