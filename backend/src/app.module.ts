@@ -41,11 +41,18 @@ import { UsersModule } from './modules/users/users.module';
       ],
     }),
     ScheduleModule.forRoot(),
-    ServeStaticModule.forRoot({
-      rootPath: join(process.cwd(), 'admin'),
-      serveRoot: '/admin',
-      exclude: ['/api', '/api/{*path}'],
-    }),
+    ServeStaticModule.forRoot(
+      {
+        rootPath: join(process.cwd(), 'admin'),
+        serveRoot: '/admin',
+        exclude: ['/api', '/api/{*path}'],
+      },
+      {
+        rootPath: join(process.cwd(), 'admin', 'media'),
+        serveRoot: '/media',
+        exclude: ['/api', '/api/{*path}'],
+      },
+    ),
     DatabaseModule,
     RedisModule,
     IntegrationConfigModule,
