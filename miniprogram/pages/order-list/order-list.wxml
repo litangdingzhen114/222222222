@@ -1,7 +1,7 @@
 <view class="page page-pad order-list-page">
   <view class="order-hero">
     <view class="order-title">我的订单</view>
-    <view class="order-sub">查看预约、票券、文创商品和服务履约进度</view>
+  <view class="order-sub">查看预约、票券、农品商品和服务履约进度</view>
   </view>
 
   <view class="summary-grid">
@@ -55,7 +55,7 @@
 
   <view wx:elif="{{!loading}}" class="empty-card">
     <view class="empty-title">还没有订单</view>
-    <view class="empty-desc">预约讲解、购买文创或报名活动后，订单会出现在这里。</view>
+    <view class="empty-desc">预约讲解、购买农品或报名活动后，订单会出现在这里。</view>
     <button class="empty-action" bindtap="onExploreTap">去预约村游服务</button>
   </view>
 </view>

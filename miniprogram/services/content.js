@@ -84,7 +84,7 @@ const defaultImages = {
   food: "/assets/photos/ricefish-drying.jpg",
   spot: "/assets/photos/ai-village-gate.jpg",
   route: "/assets/photos/qingtian-city.jpg",
-  product: "/assets/photos/ai-fish-keychain.jpg",
+  product: "/assets/photos/ai-product-honey.jpg",
   live: "/assets/photos/ai-village-gate.jpg",
 };
 
@@ -349,6 +349,56 @@ function adaptProducts(remoteValue, fallbackValue) {
   });
 }
 
+function localProducts(fallbackValue) {
+  return (Array.isArray(fallbackValue) ? fallbackValue : []).map(
+    (item, index) => ({
+      id: item.id || `local-product-${index}`,
+      title: item.title || item.name || "海林农特产",
+      subtitle: item.subtitle || "",
+      price: item.price || "",
+      categoryId: item.categoryId || "",
+      stock: item.stock,
+      unit: item.unit || "件",
+      specification: item.specification || "",
+      imageClass: item.imageClass || "ph-product-honey",
+      icon: item.icon || "物",
+      imageUrl: displayImage(item, item, "product"),
+    }),
+  );
+}
+
+function mergeProducts(remoteValue, fallbackValue) {
+  const curated = localProducts(fallbackValue);
+  const remoteItems = adaptProducts(remoteValue, fallbackValue);
+  const seen = new Set(
+    curated.flatMap((item) => [String(item.id), String(item.title)]),
+  );
+  return curated.concat(
+    remoteItems.filter((item) => {
+      const keys = [String(item.id), String(item.title)];
+      if (keys.some((key) => seen.has(key))) return false;
+      keys.forEach((key) => seen.add(key));
+      return true;
+    }),
+  );
+}
+
+function mergeMapPoints(remoteValue, fallbackValue) {
+  const localPoints = Array.isArray(fallbackValue) ? fallbackValue : [];
+  const remotePoints = adaptMapPoints(remoteValue, fallbackValue);
+  const seen = new Set(
+    localPoints.flatMap((item) => [String(item.id), String(item.title)]),
+  );
+  return localPoints.concat(
+    remotePoints.filter((item) => {
+      const keys = [String(item.id), String(item.title)];
+      if (keys.some((key) => seen.has(key))) return false;
+      keys.forEach((key) => seen.add(key));
+      return true;
+    }),
+  );
+}
+
 function adaptLives(remoteValue, fallbackValue) {
   const fallback = fallbackValue || [];
   return normalizePageList(remoteValue).map((item, index) => {
@@ -381,9 +431,9 @@ function adaptHome(remoteValue, fallbackValue) {
     source.routes || source.itineraries || [],
     recommend.itineraries,
   ).slice(0, 2);
-  const productItems = adaptProducts(source.products || [], products).slice(
+  const productItems = mergeProducts(source.products || [], products).slice(
     0,
-    3,
+    4,
   );
   const notices = normalizePageList(source.notices);
   return {
@@ -435,7 +485,7 @@ function loadHomeData() {
 }
 
 function loadMapPoints() {
-  return withContentFallback("mapPoints", mapPoints, adaptMapPoints);
+  return withContentFallback("mapPoints", mapPoints, mergeMapPoints);
 }
 
 function loadMapDirections(pointId, origin, mode = "walking") {
@@ -463,7 +513,7 @@ function loadRoutes() {
 }
 
 function loadProducts() {
-  return withContentFallback("products", products, adaptProducts);
+  return withContentFallback("products", products, mergeProducts);
 }
 
 function loadLives() {

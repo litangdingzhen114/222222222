@@ -1,39 +1,69 @@
-const { loadHomeData } = require('../../services/content');
-const { featureComing, quickToast } = require('../../utils/mock');
+const { loadHomeData } = require("../../services/content");
+const { featureComing, quickToast } = require("../../utils/mock");
 
 const HOME_IMAGE_FALLBACKS = {
-  banners: '/assets/photos/ai-village-gate.jpg',
-  itineraries: '/assets/photos/qingtian-city.jpg',
-  hotRecommends: '/assets/photos/ai-village-gate.jpg',
-  products: '/assets/photos/ai-fish-keychain.jpg',
-  rankings: '/assets/photos/ai-village-gate.jpg',
-  corridor: '/assets/photos/ai-village-gate.jpg',
-  feedsLeft: '/assets/photos/ai-village-gate.jpg',
-  feedsRight: '/assets/photos/ricefish-paddy.jpg'
+  banners: "/assets/photos/ai-village-gate.jpg",
+  itineraries: "/assets/photos/qingtian-city.jpg",
+  hotRecommends: "/assets/photos/ai-village-gate.jpg",
+  products: "/assets/photos/ai-product-honey.jpg",
+  rankings: "/assets/photos/ai-village-gate.jpg",
+  corridor: "/assets/photos/ai-village-gate.jpg",
+  feedsLeft: "/assets/photos/ai-village-gate.jpg",
+  feedsRight: "/assets/photos/ricefish-paddy.jpg",
 };
 
 function ensureImageList(list, field, fallback) {
   return (Array.isArray(list) ? list : []).map((item) => ({
     ...item,
-    [field]: item && item[field] ? item[field] : fallback
+    [field]: item && item[field] ? item[field] : fallback,
   }));
 }
 
 function normalizeHomeImages(data) {
   const source = data || {};
-  const feeds = ensureImageList(source.feeds, 'imageUrl', HOME_IMAGE_FALLBACKS.feedsLeft);
+  const feeds = ensureImageList(
+    source.feeds,
+    "imageUrl",
+    HOME_IMAGE_FALLBACKS.feedsLeft,
+  );
   return {
     ...source,
-    banners: ensureImageList(source.banners, 'imageUrl', HOME_IMAGE_FALLBACKS.banners),
-    itineraries: ensureImageList(source.itineraries, 'imageUrl', HOME_IMAGE_FALLBACKS.itineraries),
-    hotRecommends: ensureImageList(source.hotRecommends, 'imageUrl', HOME_IMAGE_FALLBACKS.hotRecommends),
-    products: ensureImageList(source.products, 'imageUrl', HOME_IMAGE_FALLBACKS.products),
-    corridor: ensureImageList(source.corridor, 'imageUrl', HOME_IMAGE_FALLBACKS.corridor),
-    rankings: (Array.isArray(source.rankings) ? source.rankings : []).map((section) => ({
-      ...section,
-      items: ensureImageList(section.items, 'imageUrl', HOME_IMAGE_FALLBACKS.rankings)
-    })),
-    feeds
+    banners: ensureImageList(
+      source.banners,
+      "imageUrl",
+      HOME_IMAGE_FALLBACKS.banners,
+    ),
+    itineraries: ensureImageList(
+      source.itineraries,
+      "imageUrl",
+      HOME_IMAGE_FALLBACKS.itineraries,
+    ),
+    hotRecommends: ensureImageList(
+      source.hotRecommends,
+      "imageUrl",
+      HOME_IMAGE_FALLBACKS.hotRecommends,
+    ),
+    products: ensureImageList(
+      source.products,
+      "imageUrl",
+      HOME_IMAGE_FALLBACKS.products,
+    ),
+    corridor: ensureImageList(
+      source.corridor,
+      "imageUrl",
+      HOME_IMAGE_FALLBACKS.corridor,
+    ),
+    rankings: (Array.isArray(source.rankings) ? source.rankings : []).map(
+      (section) => ({
+        ...section,
+        items: ensureImageList(
+          section.items,
+          "imageUrl",
+          HOME_IMAGE_FALLBACKS.rankings,
+        ),
+      }),
+    ),
+    feeds,
   };
 }
 
@@ -50,10 +80,10 @@ Page({
     feedsLeft: [],
     feedsRight: [],
     gridCurrent: 0,
-    notice: '',
-    weather: '',
-    serviceMode: '',
-    locationText: ''
+    notice: "",
+    weather: "",
+    serviceMode: "",
+    locationText: "",
   },
 
   onLoad() {
@@ -75,10 +105,10 @@ Page({
         corridor: safeData.corridor || [],
         feedsLeft: feeds.filter((_, index) => index % 2 === 0),
         feedsRight: feeds.filter((_, index) => index % 2 === 1),
-        notice: safeData.notice || '',
-        weather: safeData.weather || '',
-        serviceMode: safeData.serviceMode || '',
-        locationText: safeData.locationText || ''
+        notice: safeData.notice || "",
+        weather: safeData.weather || "",
+        serviceMode: safeData.serviceMode || "",
+        locationText: safeData.locationText || "",
       });
     });
   },
@@ -89,18 +119,18 @@ Page({
     if (!list || !field || Number.isNaN(itemIndex)) return;
     const fallback = HOME_IMAGE_FALLBACKS[list] || HOME_IMAGE_FALLBACKS.banners;
     this.setData({
-      [`${list}[${itemIndex}].${field}`]: fallback
+      [`${list}[${itemIndex}].${field}`]: fallback,
     });
   },
 
   onGridChange(event) {
     this.setData({
-      gridCurrent: event.detail.current
+      gridCurrent: event.detail.current,
     });
   },
 
   onSearchTap() {
-    wx.switchTab({ url: '/pages/map/map' });
+    wx.switchTab({ url: "/pages/map/map" });
   },
 
   onGridTap(event) {
@@ -128,7 +158,7 @@ Page({
       featureComing(title);
       return;
     }
-    if (openType === 'switchTab') {
+    if (openType === "switchTab") {
       wx.switchTab({ url });
       return;
     }
@@ -136,29 +166,32 @@ Page({
   },
 
   onProductTap(event) {
-    const product = this.data.products.find((item) => item.id === event.detail.id) || {};
-    const item = product.title || product.name || '';
-    wx.navigateTo({ url: `/pages/mine-feature/mine-feature?id=mall&item=${encodeURIComponent(item)}` });
+    const product =
+      this.data.products.find((item) => item.id === event.detail.id) || {};
+    const item = product.title || product.name || "";
+    wx.navigateTo({
+      url: `/pages/mine-feature/mine-feature?id=mall&item=${encodeURIComponent(item)}`,
+    });
   },
 
   onRankingTap(event) {
-    const title = event.currentTarget.dataset.title || '';
-    if (title.includes('美食') || title.includes('田鱼')) {
-      wx.switchTab({ url: '/pages/food/food' });
+    const title = event.currentTarget.dataset.title || "";
+    if (title.includes("美食") || title.includes("田鱼")) {
+      wx.switchTab({ url: "/pages/food/food" });
       return;
     }
-    wx.switchTab({ url: '/pages/map/map' });
+    wx.switchTab({ url: "/pages/map/map" });
   },
 
   onMoreProducts() {
-    wx.navigateTo({ url: '/pages/mine-feature/mine-feature?id=mall' });
+    wx.navigateTo({ url: "/pages/mine-feature/mine-feature?id=mall" });
   },
 
   onMoreRoutes() {
-    wx.navigateTo({ url: '/pages/route-list/route-list' });
+    wx.navigateTo({ url: "/pages/route-list/route-list" });
   },
 
   onFeedTap() {
-    wx.navigateTo({ url: '/pages/user-list/user-list?type=notes' });
-  }
+    wx.navigateTo({ url: "/pages/user-list/user-list?type=notes" });
+  },
 });

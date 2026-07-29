@@ -65,6 +65,22 @@ assert(
   ),
   "service points should navigate to service workflows",
 );
+assert(
+  mapPoints.some(
+    (point) =>
+      point.title === "田铺驿站" &&
+      point.imageUrl === "/assets/photos/ai-map-tianpu-station.jpg",
+  ),
+  "map should include Tianpu station with a generated display image",
+);
+assert(
+  mapPoints.some(
+    (point) =>
+      point.title === "海林·溪谷" &&
+      point.imageUrl === "/assets/photos/ai-map-hailin-creek.jpg",
+  ),
+  "map should include Hailin creek valley with a generated display image",
+);
 assert(mapWxml.includes("search-input"), "map page should expose search input");
 assert(
   mapWxml.includes("route-panel"),

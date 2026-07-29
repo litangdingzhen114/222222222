@@ -7,13 +7,13 @@
 文件：`miniprogram/config/service.js`
 
 ```js
-apiBaseUrl: 'https://api.hailin.store'
+apiBaseUrl: "https://api.hailin.store";
 ```
 
 本地开发可以使用：
 
 ```js
-devApiBaseUrl: 'http://127.0.0.1:8787'
+devApiBaseUrl: "http://127.0.0.1:8787";
 ```
 
 真机预览时不要使用 `127.0.0.1`，需要换成电脑局域网 IP；正式上线必须使用 HTTPS 域名，并在微信公众平台配置合法 request 域名。
@@ -103,7 +103,7 @@ PUT /api/admin/home-content
 POST /api/admin/home-content/reset
 ```
 
-可管理内容包含轮播、快捷入口、文创商品、热门推荐、榜单、长廊、游记流、公告、天气和服务状态。保存后会写入 `backend/storage/home-content.json`，并同步进入审计和完整备份。
+可管理内容包含轮播、快捷入口、农品商品、热门推荐、榜单、长廊、游记流、公告、天气和服务状态。保存后会写入 `backend/storage/home-content.json`，并同步进入审计和完整备份。
 
 ## 慢直播
 

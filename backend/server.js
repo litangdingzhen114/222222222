@@ -20,9 +20,12 @@ function loadEnvFile(filePath) {
 
     const key = trimmed.slice(0, separator).trim();
     let value = trimmed.slice(separator + 1).trim();
-    if (!key || process.env[key]) continue;
+    if (!key || Object.prototype.hasOwnProperty.call(process.env, key)) continue;
 
-    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
       value = value.slice(1, -1);
     }
     process.env[key] = value;
@@ -44,17 +47,23 @@ const STORAGE_DIR = resolveStorageDir();
 const LOG_DIR = path.join(STORAGE_DIR, 'logs');
 const PUBLIC_BASE_URL = (process.env.PUBLIC_BASE_URL || '').replace(/\/+$/, '');
 const KIMI_API_KEY = process.env.KIMI_API_KEY || process.env.MOONSHOT_API_KEY || '';
-const KIMI_BASE_URL = (process.env.KIMI_BASE_URL || 'https://api.moonshot.cn/v1').replace(/\/+$/, '');
+const KIMI_BASE_URL = (process.env.KIMI_BASE_URL || 'https://api.moonshot.cn/v1').replace(
+  /\/+$/,
+  '',
+);
 const KIMI_MODEL = process.env.KIMI_MODEL || 'kimi-k2.6';
 const ADMIN_USER = process.env.ADMIN_USER || 'hailin-admin';
-const ADMIN_TOKEN = process.env.ADMIN_TOKEN || (NODE_ENV === 'production' ? '' : 'hailin-admin-dev-token');
+const ADMIN_TOKEN =
+  process.env.ADMIN_TOKEN || (NODE_ENV === 'production' ? '' : 'hailin-admin-dev-token');
 const CONFIGURED_ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || '')
   .split(',')
   .map((item) => item.trim())
   .filter(Boolean);
 const ALLOWED_ORIGINS = CONFIGURED_ALLOWED_ORIGINS.length
   ? CONFIGURED_ALLOWED_ORIGINS
-  : (NODE_ENV === 'production' && PUBLIC_BASE_URL ? [PUBLIC_BASE_URL] : []);
+  : NODE_ENV === 'production' && PUBLIC_BASE_URL
+    ? [PUBLIC_BASE_URL]
+    : [];
 const RATE_LIMIT_WINDOW_MS = Number(process.env.RATE_LIMIT_WINDOW_MS || 60 * 1000);
 const RATE_LIMIT_MAX = Number(process.env.RATE_LIMIT_MAX || 240);
 const ADMIN_RATE_LIMIT_MAX = Number(process.env.ADMIN_RATE_LIMIT_MAX || 600);
@@ -70,10 +79,10 @@ const spots = require('../miniprogram/data/spots');
 const routes = require('../miniprogram/data/routes');
 
 const productCategories = [
-  { id: 'souvenir', name: '文创好礼', icon: '石', sort: 1, status: 'PUBLISHED' },
-  { id: 'farm', name: '山乡农品', icon: '田', sort: 2, status: 'PUBLISHED' },
-  { id: 'food', name: '乡味美食', icon: '鱼', sort: 3, status: 'PUBLISHED' },
-  { id: 'course', name: '研学体验', icon: '研', sort: 4, status: 'PUBLISHED' }
+  { id: 'farm', name: '农品预购', icon: '农', sort: 1, status: 'PUBLISHED' },
+  { id: 'meat', name: '土鸡黑猪', icon: '肉', sort: 2, status: 'PUBLISHED' },
+  { id: 'honey', name: '土蜂蜜蛋品', icon: '蜜', sort: 3, status: 'PUBLISHED' },
+  { id: 'course', name: '研学体验', icon: '研', sort: 4, status: 'PUBLISHED' },
 ];
 
 const LOCATION_TEXT = '浙江省丽水市青田县海口镇海林村';
@@ -93,7 +102,7 @@ const ORDER_STATUSES = [
   'verified',
   'completed',
   'cancelled',
-  'expired'
+  'expired',
 ];
 const STATUS_TRANSITIONS = {
   booking: {
@@ -101,13 +110,13 @@ const STATUS_TRANSITIONS = {
     confirmed: ['processing', 'completed', 'cancelled'],
     processing: ['completed', 'cancelled'],
     completed: [],
-    cancelled: []
+    cancelled: [],
   },
   feedback: {
     new: ['processing', 'resolved', 'archived'],
     processing: ['resolved', 'archived'],
     resolved: ['archived'],
-    archived: []
+    archived: [],
   },
   order: {
     product: {
@@ -117,7 +126,7 @@ const STATUS_TRANSITIONS = {
       shipped: ['received', 'completed'],
       received: ['completed'],
       completed: [],
-      cancelled: []
+      cancelled: [],
     },
     service: {
       new: ['confirmed', 'cancelled'],
@@ -125,7 +134,7 @@ const STATUS_TRANSITIONS = {
       pending_service: ['in_service', 'cancelled'],
       in_service: ['completed', 'cancelled'],
       completed: [],
-      cancelled: []
+      cancelled: [],
     },
     ticket: {
       new: ['confirmed', 'cancelled'],
@@ -134,7 +143,7 @@ const STATUS_TRANSITIONS = {
       verified: ['completed'],
       completed: [],
       cancelled: [],
-      expired: []
+      expired: [],
     },
     stay: {
       new: ['confirmed', 'cancelled'],
@@ -142,7 +151,7 @@ const STATUS_TRANSITIONS = {
       pending_service: ['in_service', 'cancelled'],
       in_service: ['completed', 'cancelled'],
       completed: [],
-      cancelled: []
+      cancelled: [],
     },
     venue: {
       new: ['confirmed', 'cancelled'],
@@ -150,9 +159,9 @@ const STATUS_TRANSITIONS = {
       pending_service: ['in_service', 'cancelled'],
       in_service: ['completed', 'cancelled'],
       completed: [],
-      cancelled: []
-    }
-  }
+      cancelled: [],
+    },
+  },
 };
 const AUDIT_FILE = 'audit.json';
 const HOME_CONTENT_FILE = 'home-content.json';
@@ -165,38 +174,38 @@ const CONTENT_RESOURCES = {
     label: '景点',
     fileName: 'spots-content.json',
     defaults: spots,
-    limit: 80
+    limit: 80,
   },
   routes: {
     label: '路线',
     fileName: 'routes-content.json',
     defaults: routes,
-    limit: 60
+    limit: 60,
   },
   foods: {
     label: '美食',
     fileName: 'foods-content.json',
     defaults: foods,
-    limit: 80
+    limit: 80,
   },
   'map-points': {
     label: '地图点位',
     fileName: 'map-points-content.json',
     defaults: mapPoints,
-    limit: 160
+    limit: 160,
   },
   products: {
-    label: '文创商品',
+    label: '农品商品',
     fileName: 'products-content.json',
     defaults: products,
-    limit: 80
+    limit: 80,
   },
   'product-categories': {
     label: '商品分类',
     fileName: 'product-categories-content.json',
     defaults: productCategories,
-    limit: 40
-  }
+    limit: 40,
+  },
 };
 const ADMIN_RESOURCE_ENDPOINTS = {
   'scenic-spots': 'spots',
@@ -204,7 +213,7 @@ const ADMIN_RESOURCE_ENDPOINTS = {
   foods: 'foods',
   'map-points': 'map-points',
   products: 'products',
-  'product-categories': 'product-categories'
+  'product-categories': 'product-categories',
 };
 const rateBuckets = new Map();
 
@@ -232,7 +241,7 @@ function corsHeaders(req) {
   const headers = {
     'Access-Control-Allow-Methods': 'GET,POST,PUT,PATCH,DELETE,OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Admin-Token',
-    'Access-Control-Max-Age': '86400'
+    'Access-Control-Max-Age': '86400',
   };
 
   if (!ALLOWED_ORIGINS.length) {
@@ -270,14 +279,14 @@ function securityHeaders(extra = {}) {
     'Referrer-Policy': 'no-referrer',
     'X-Frame-Options': 'DENY',
     'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
-    'Cache-Control': 'no-store'
+    'Cache-Control': 'no-store',
   };
   if (NODE_ENV === 'production' && httpsEnabled()) {
     headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains';
   }
   return {
     ...headers,
-    ...extra
+    ...extra,
   };
 }
 
@@ -288,7 +297,7 @@ function sendJson(req, res, statusCode, payload) {
     ...securityHeaders(),
     'Content-Type': 'application/json; charset=utf-8',
     'Content-Length': Buffer.byteLength(body),
-    'X-Request-Id': req.requestId
+    'X-Request-Id': req.requestId,
   });
   res.end(body);
 }
@@ -298,7 +307,7 @@ function sendText(req, res, statusCode, body, headers = {}) {
     ...corsHeaders(req),
     ...securityHeaders(headers),
     'Content-Length': Buffer.byteLength(body),
-    'X-Request-Id': req.requestId
+    'X-Request-Id': req.requestId,
   });
   res.end(body);
 }
@@ -307,8 +316,8 @@ function sendError(req, res, statusCode, message, detail) {
   sendJson(req, res, statusCode, {
     error: {
       message,
-      detail: detail || undefined
-    }
+      detail: detail || undefined,
+    },
   });
 }
 
@@ -316,7 +325,7 @@ function sendOptions(req, res) {
   res.writeHead(204, {
     ...corsHeaders(req),
     ...securityHeaders(),
-    'X-Request-Id': req.requestId
+    'X-Request-Id': req.requestId,
   });
   res.end();
 }
@@ -343,7 +352,11 @@ function logEvent(event) {
     ensureStorage();
     const date = new Date().toISOString().slice(0, 10);
     const logPath = path.join(LOG_DIR, `${date}.log`);
-    fs.appendFile(logPath, `${JSON.stringify({ time: new Date().toISOString(), ...event })}\n`, () => {});
+    fs.appendFile(
+      logPath,
+      `${JSON.stringify({ time: new Date().toISOString(), ...event })}\n`,
+      () => {},
+    );
   } catch {
     // Logging must never break the public service.
   }
@@ -427,7 +440,12 @@ function readJsonObject(fileName) {
     } catch {
       // Ignore backup failures and return a safe default object.
     }
-    logEvent({ level: 'error', message: 'storage_object_read_failed', fileName, detail: error.message });
+    logEvent({
+      level: 'error',
+      message: 'storage_object_read_failed',
+      fileName,
+      detail: error.message,
+    });
     return null;
   }
 }
@@ -448,17 +466,19 @@ function appendRecord(fileName, payload, req) {
     createdAt: now,
     updatedAt: now,
     status: 'new',
-    statusHistory: [{
-      id: crypto.randomUUID(),
-      type: 'created',
-      at: now,
-      by: 'public',
-      fromStatus: '',
-      toStatus: 'new',
-      note: '游客提交',
-      requestId: req?.requestId || ''
-    }],
-    ...payload
+    statusHistory: [
+      {
+        id: crypto.randomUUID(),
+        type: 'created',
+        at: now,
+        by: 'public',
+        fromStatus: '',
+        toStatus: 'new',
+        note: '游客提交',
+        requestId: req?.requestId || '',
+      },
+    ],
+    ...payload,
   };
   records.unshift(record);
   writeRecords(fileName, records);
@@ -476,7 +496,7 @@ function appendAudit(req, action, targetType, targetId, detail = {}) {
     adminUser: targetType === 'public' ? 'public' : ADMIN_USER,
     requestId: req.requestId,
     ip: clientIp(req),
-    detail
+    detail,
   };
   audit.unshift(entry);
   writeRecords(AUDIT_FILE, audit.slice(0, 5000));
@@ -495,14 +515,18 @@ function ensureStatusTransition(kind, currentStatus, nextStatus) {
 
   const allowedNext = STATUS_TRANSITIONS[kind]?.[fromStatus] || [];
   if (!allowedNext.includes(nextStatus)) {
-    throw new HttpError(409, 'Invalid status transition', `${fromStatus} -> ${nextStatus} is not allowed`);
+    throw new HttpError(
+      409,
+      'Invalid status transition',
+      `${fromStatus} -> ${nextStatus} is not allowed`,
+    );
   }
 }
 
 function nextStatusFields(kind, status, now, record) {
   const fields = {
     lastHandledAt: now,
-    lastHandledBy: ADMIN_USER
+    lastHandledBy: ADMIN_USER,
   };
   if (kind === 'booking') {
     if (status === 'completed') fields.completedAt = record.completedAt || now;
@@ -530,7 +554,7 @@ function applyStatusUpdate(record, kind, status, note, req, now) {
     fromStatus,
     toStatus: status,
     note: noteProvided ? adminNote : '',
-    requestId: req.requestId
+    requestId: req.requestId,
   };
 
   return {
@@ -539,7 +563,7 @@ function applyStatusUpdate(record, kind, status, note, req, now) {
     status,
     adminNote,
     updatedAt: now,
-    statusHistory: [...history, historyEntry]
+    statusHistory: [...history, historyEntry],
   };
 }
 
@@ -549,7 +573,14 @@ function updateRecordStatus(fileName, id, kind, allowedStatuses, status, note, r
   const index = records.findIndex((item) => item.id === id);
   if (index === -1) throw new HttpError(404, 'Record not found');
 
-  records[index] = applyStatusUpdate(records[index], kind, status, note, req, new Date().toISOString());
+  records[index] = applyStatusUpdate(
+    records[index],
+    kind,
+    status,
+    note,
+    req,
+    new Date().toISOString(),
+  );
   writeRecords(fileName, records);
   return records[index];
 }
@@ -585,7 +616,9 @@ function updateRecordsStatus(fileName, ids, kind, allowedStatuses, status, note,
 }
 
 function cleanText(value, maxLength = 200) {
-  return String(value || '').trim().slice(0, maxLength);
+  return String(value || '')
+    .trim()
+    .slice(0, maxLength);
 }
 
 function normalizePositiveInt(value, fallback, min, max) {
@@ -610,7 +643,7 @@ function validateBooking(body) {
     people,
     contact,
     remark: cleanText(body.remark || body.note, 500),
-    source: cleanText(body.source, 40) || 'mini-program'
+    source: cleanText(body.source, 40) || 'mini-program',
   };
 }
 
@@ -622,7 +655,7 @@ function validateFeedback(body) {
     nickname: cleanText(body.nickname || body.name, 80) || '游客',
     contact: cleanText(body.contact, 80),
     content,
-    source: cleanText(body.source, 40) || 'mini-program'
+    source: cleanText(body.source, 40) || 'mini-program',
   };
 }
 
@@ -669,7 +702,7 @@ function validateOrder(body) {
     contact,
     remark: cleanText(body.remark || body.note, 800),
     price: cleanText(body.price, 80),
-    source: cleanText(body.source, 40) || 'mini-program'
+    source: cleanText(body.source, 40) || 'mini-program',
   };
 }
 
@@ -688,31 +721,33 @@ function createOrder(body, req) {
       carrier: '',
       trackingNo: '',
       shippedAt: '',
-      receivedAt: ''
+      receivedAt: '',
     },
     verification: {
       code: `HL${crypto.randomBytes(3).toString('hex').toUpperCase()}`,
       verifiedAt: '',
-      verifiedBy: ''
+      verifiedBy: '',
     },
-    statusHistory: [{
-      id: crypto.randomUUID(),
-      type: 'created',
-      at: now,
-      by: 'public',
-      fromStatus: '',
-      toStatus: 'new',
-      note: '游客提交订单',
-      requestId: req?.requestId || ''
-    }],
-    ...payload
+    statusHistory: [
+      {
+        id: crypto.randomUUID(),
+        type: 'created',
+        at: now,
+        by: 'public',
+        fromStatus: '',
+        toStatus: 'new',
+        note: '游客提交订单',
+        requestId: req?.requestId || '',
+      },
+    ],
+    ...payload,
   };
   records.unshift(record);
   writeRecords('orders.json', records);
   appendAudit(req, 'order.created', 'public', record.id, {
     orderNo: record.orderNo,
     type: record.type,
-    item: record.item
+    item: record.item,
   });
   return record;
 }
@@ -724,35 +759,42 @@ function ensureOrderTransition(orderType, currentStatus, nextStatus) {
   if (current === nextStatus) return;
   const allowedNext = STATUS_TRANSITIONS.order[type]?.[current] || [];
   if (!allowedNext.includes(nextStatus)) {
-    throw new HttpError(409, 'Invalid order status transition', `${current} -> ${nextStatus} is not allowed for ${type}`);
+    throw new HttpError(
+      409,
+      'Invalid order status transition',
+      `${current} -> ${nextStatus} is not allowed for ${type}`,
+    );
   }
 }
 
 function orderStatusFields(status, body, now, record) {
   const fields = {
     lastHandledAt: now,
-    lastHandledBy: ADMIN_USER
+    lastHandledBy: ADMIN_USER,
   };
   if (status === 'shipped') {
     fields.logistics = {
       ...(record.logistics || {}),
       carrier: cleanText(body.carrier || body.logistics?.carrier, 80),
       trackingNo: cleanText(body.trackingNo || body.logistics?.trackingNo, 120),
-      shippedAt: cleanText(body.shippedAt || body.logistics?.shippedAt, 40) || now
+      shippedAt: cleanText(body.shippedAt || body.logistics?.shippedAt, 40) || now,
     };
   }
   if (status === 'received') {
     fields.logistics = {
       ...(record.logistics || {}),
-      receivedAt: cleanText(body.receivedAt || body.logistics?.receivedAt, 40) || now
+      receivedAt: cleanText(body.receivedAt || body.logistics?.receivedAt, 40) || now,
     };
   }
   if (status === 'verified') {
     fields.verification = {
       ...(record.verification || {}),
-      code: cleanText(body.verifyCode || body.verification?.code, 40) || record.verification?.code || '',
+      code:
+        cleanText(body.verifyCode || body.verification?.code, 40) ||
+        record.verification?.code ||
+        '',
       verifiedAt: cleanText(body.verifiedAt || body.verification?.verifiedAt, 40) || now,
-      verifiedBy: ADMIN_USER
+      verifiedBy: ADMIN_USER,
     };
   }
   if (status === 'completed') fields.completedAt = record.completedAt || now;
@@ -791,9 +833,9 @@ function updateOrderFulfillment(id, body, req) {
         fromStatus,
         toStatus: nextStatus,
         note: noteProvided ? adminNote : '',
-        requestId: req.requestId
-      }
-    ]
+        requestId: req.requestId,
+      },
+    ],
   };
   writeRecords('orders.json', records);
   return records[index];
@@ -806,11 +848,14 @@ function cancelPublicOrder(id, body, req) {
   const records = readRecords('orders.json');
   const index = records.findIndex((item) => item.id === id || item.orderNo === id);
   if (index === -1) throw new HttpError(404, 'Order not found');
-  if (records[index].clientId !== clientId) throw new HttpError(403, 'Order does not belong to this client');
+  if (records[index].clientId !== clientId)
+    throw new HttpError(403, 'Order does not belong to this client');
 
   ensureOrderTransition(records[index].type, records[index].status, 'cancelled');
   const now = new Date().toISOString();
-  const history = Array.isArray(records[index].statusHistory) ? records[index].statusHistory.slice(-59) : [];
+  const history = Array.isArray(records[index].statusHistory)
+    ? records[index].statusHistory.slice(-59)
+    : [];
   const fromStatus = cleanText(records[index].status, 40) || 'new';
   records[index] = {
     ...records[index],
@@ -827,14 +872,14 @@ function cancelPublicOrder(id, body, req) {
         fromStatus,
         toStatus: 'cancelled',
         note: cleanText(body.note, 300) || '游客取消订单',
-        requestId: req.requestId
-      }
-    ]
+        requestId: req.requestId,
+      },
+    ],
   };
   writeRecords('orders.json', records);
   appendAudit(req, 'order.cancelled', 'public', records[index].id, {
     orderNo: records[index].orderNo,
-    clientId
+    clientId,
   });
   return records[index];
 }
@@ -853,7 +898,7 @@ function homePayload() {
     notice: '今日推荐：先到游客中心确认停车与讲解，再走溪谷步道，午餐预约海林田鱼家宴',
     weather: '青田海口镇多云间晴，瓯江沿线适合慢行；亲水步道雨后注意防滑',
     serviceMode: '真实服务已连接',
-    locationText: LOCATION_TEXT
+    locationText: LOCATION_TEXT,
   };
 }
 
@@ -899,7 +944,7 @@ const LEGACY_SCENE_IMAGES = {
   '/assets/scenes/overseas-yard.png': '/assets/photos/ai-overseas-cafe.jpg',
   '/assets/scenes/overseas-cafe.png': '/assets/photos/ai-overseas-cafe.jpg',
   '/assets/scenes/ricefish-banquet.png': '/assets/photos/ricefish-drying.jpg',
-  '/assets/scenes/creek-tea.png': '/assets/photos/qingtian-tashan.jpg'
+  '/assets/scenes/creek-tea.png': '/assets/photos/qingtian-tashan.jpg',
 };
 
 function hasTextValue(value) {
@@ -917,7 +962,8 @@ function firstMediaValue(item) {
     if (hasTextValue(item[field])) return normalizeMediaValue(item[field]);
   }
   for (const field of MEDIA_LIST_FIELDS) {
-    if (Array.isArray(item[field]) && hasTextValue(item[field][0])) return normalizeMediaValue(item[field][0]);
+    if (Array.isArray(item[field]) && hasTextValue(item[field][0]))
+      return normalizeMediaValue(item[field][0]);
   }
   return '';
 }
@@ -928,7 +974,8 @@ function hasAnyMedia(item) {
 
 function fillMediaFields(item, fallback) {
   if (!item || typeof item !== 'object' || Array.isArray(item)) return item;
-  const fallbackItem = fallback && typeof fallback === 'object' && !Array.isArray(fallback) ? fallback : {};
+  const fallbackItem =
+    fallback && typeof fallback === 'object' && !Array.isArray(fallback) ? fallback : {};
   const result = { ...item };
 
   for (const field of MEDIA_FIELDS) {
@@ -953,7 +1000,9 @@ function fillMediaFields(item, fallback) {
   }
 
   if (Array.isArray(result.items) && Array.isArray(fallbackItem.items)) {
-    result.items = result.items.map((child, index) => fillMediaFields(child, fallbackItem.items[index]));
+    result.items = result.items.map((child, index) =>
+      fillMediaFields(child, fallbackItem.items[index]),
+    );
   }
 
   return result;
@@ -964,7 +1013,12 @@ function sanitizeContentList(value, fallback, limit) {
   const fallbackItems = Array.isArray(fallback) ? fallback : [];
   return value
     .slice(0, limit)
-    .map((item, index) => fillMediaFields(sanitizeJsonValue(item), fallbackItems[index] || fallbackItems[index % Math.max(fallbackItems.length, 1)]))
+    .map((item, index) =>
+      fillMediaFields(
+        sanitizeJsonValue(item),
+        fallbackItems[index] || fallbackItems[index % Math.max(fallbackItems.length, 1)],
+      ),
+    )
     .filter((item) => item && typeof item === 'object' && Object.keys(item).length);
 }
 
@@ -987,21 +1041,24 @@ function sanitizeHomeContent(input) {
     notice: cleanText(input.notice, 240) || defaults.notice,
     weather: cleanText(input.weather, 180) || defaults.weather,
     serviceMode: cleanText(input.serviceMode, 80) || defaults.serviceMode,
-    locationText: cleanText(input.locationText, 160) || defaults.locationText
+    locationText: cleanText(input.locationText, 160) || defaults.locationText,
   };
 }
 
 function homeContentStats(content) {
   return {
     banners: content.banners.length,
-    gridItems: content.gridPages.reduce((total, page) => total + (Array.isArray(page.items) ? page.items.length : 0), 0),
+    gridItems: content.gridPages.reduce(
+      (total, page) => total + (Array.isArray(page.items) ? page.items.length : 0),
+      0,
+    ),
     products: content.products.length,
     hotRecommends: content.hotRecommends.length,
     itineraries: content.itineraries.length,
     serviceCards: content.serviceCards.length,
     rankings: content.rankings.length,
     corridor: content.corridor.length,
-    feeds: content.feeds.length
+    feeds: content.feeds.length,
   };
 }
 
@@ -1013,9 +1070,9 @@ function defaultHomeEnvelope() {
       version: HOME_CONTENT_VERSION,
       updatedAt: '',
       updatedBy: '',
-      stats: homeContentStats(content)
+      stats: homeContentStats(content),
     },
-    content
+    content,
   };
 }
 
@@ -1030,9 +1087,9 @@ function readHomeContentEnvelope() {
       version: cleanText(stored.version, 20) || HOME_CONTENT_VERSION,
       updatedAt: cleanText(stored.updatedAt, 40),
       updatedBy: cleanText(stored.updatedBy, 80),
-      stats: homeContentStats(content)
+      stats: homeContentStats(content),
     },
-    content
+    content,
   };
 }
 
@@ -1042,12 +1099,12 @@ function saveHomeContent(req, rawContent) {
     version: HOME_CONTENT_VERSION,
     updatedAt: new Date().toISOString(),
     updatedBy: ADMIN_USER,
-    content
+    content,
   };
   writeJsonObject(HOME_CONTENT_FILE, stored);
   appendAudit(req, 'home-content.updated', 'home-content', 'home', {
     updatedAt: stored.updatedAt,
-    stats: homeContentStats(content)
+    stats: homeContentStats(content),
   });
   return readHomeContentEnvelope();
 }
@@ -1063,7 +1120,7 @@ function managedHomePayload() {
   const envelope = readHomeContentEnvelope();
   const content = {
     ...envelope.content,
-    contentMeta: envelope.meta
+    contentMeta: envelope.meta,
   };
   if (envelope.meta.source !== 'storage') {
     content.products = managedContentItems('products');
@@ -1076,19 +1133,21 @@ function defaultLiveItems() {
     ...deepClone(item),
     enabled: true,
     sortOrder: index + 1,
-    statusText: '直播中'
+    statusText: '直播中',
   }));
 }
 
 function sanitizeLiveItem(input, fallback = {}, index = 0) {
   const raw = input && typeof input === 'object' ? input : {};
   const id = cleanText(raw.id, 80) || cleanText(fallback.id, 80) || `live-${index + 1}`;
-  const longitude = raw.longitude === undefined || raw.longitude === null || raw.longitude === ''
-    ? fallback.longitude
-    : Number(raw.longitude);
-  const latitude = raw.latitude === undefined || raw.latitude === null || raw.latitude === ''
-    ? fallback.latitude
-    : Number(raw.latitude);
+  const longitude =
+    raw.longitude === undefined || raw.longitude === null || raw.longitude === ''
+      ? fallback.longitude
+      : Number(raw.longitude);
+  const latitude =
+    raw.latitude === undefined || raw.latitude === null || raw.latitude === ''
+      ? fallback.latitude
+      : Number(raw.latitude);
   return {
     id,
     title: cleanText(raw.title, 100) || cleanText(fallback.title, 100) || '海林慢直播',
@@ -1100,7 +1159,12 @@ function sanitizeLiveItem(input, fallback = {}, index = 0) {
     liveUrl: cleanText(raw.liveUrl, 500),
     hlsUrl: cleanText(raw.hlsUrl, 500),
     enabled: raw.enabled !== false,
-    sortOrder: normalizePositiveInt(raw.sortOrder, Number(fallback.sortOrder) || index + 1, 0, 9999),
+    sortOrder: normalizePositiveInt(
+      raw.sortOrder,
+      Number(fallback.sortOrder) || index + 1,
+      0,
+      9999,
+    ),
     statusText: cleanText(raw.statusText, 40) || cleanText(fallback.statusText, 40) || '直播中',
     deviceSerial: cleanText(raw.deviceSerial, 120) || cleanText(fallback.deviceSerial, 120) || id,
     channelNo: normalizePositiveInt(raw.channelNo, Number(fallback.channelNo) || 1, 1, 64),
@@ -1109,7 +1173,7 @@ function sanitizeLiveItem(input, fallback = {}, index = 0) {
     longitude: Number.isFinite(longitude) ? longitude : undefined,
     latitude: Number.isFinite(latitude) ? latitude : undefined,
     createdAt: cleanText(raw.createdAt, 40) || cleanText(fallback.createdAt, 40),
-    updatedAt: cleanText(raw.updatedAt, 40) || cleanText(fallback.updatedAt, 40)
+    updatedAt: cleanText(raw.updatedAt, 40) || cleanText(fallback.updatedAt, 40),
   };
 }
 
@@ -1127,7 +1191,7 @@ function liveContentStats(items) {
   return {
     total: items.length,
     enabled: items.filter((item) => item.enabled !== false).length,
-    customSources: items.filter((item) => item.liveUrl || item.hlsUrl).length
+    customSources: items.filter((item) => item.liveUrl || item.hlsUrl).length,
   };
 }
 
@@ -1139,9 +1203,9 @@ function defaultLiveEnvelope() {
       version: LIVES_CONTENT_VERSION,
       updatedAt: '',
       updatedBy: '',
-      stats: liveContentStats(items)
+      stats: liveContentStats(items),
     },
-    items
+    items,
   };
 }
 
@@ -1156,9 +1220,9 @@ function readLiveContentEnvelope() {
       version: cleanText(stored.version, 20) || LIVES_CONTENT_VERSION,
       updatedAt: cleanText(stored.updatedAt, 40),
       updatedBy: cleanText(stored.updatedBy, 80),
-      stats: liveContentStats(items)
+      stats: liveContentStats(items),
     },
-    items
+    items,
   };
 }
 
@@ -1168,12 +1232,12 @@ function saveLiveContent(req, rawItems) {
     version: LIVES_CONTENT_VERSION,
     updatedAt: new Date().toISOString(),
     updatedBy: ADMIN_USER,
-    items
+    items,
   };
   writeJsonObject(LIVES_CONTENT_FILE, stored);
   appendAudit(req, 'lives-content.updated', 'lives-content', 'lives', {
     updatedAt: stored.updatedAt,
-    stats: liveContentStats(items)
+    stats: liveContentStats(items),
   });
   return readLiveContentEnvelope();
 }
@@ -1213,16 +1277,30 @@ function sanitizeResourceItems(resourceKey, rawItems, fallbackOnInvalid = true) 
   const fallbackItems = Array.isArray(config.defaults) ? config.defaults : [];
   return rawItems
     .slice(0, config.limit)
-    .map((item, index) => sanitizeResourceItem(item, fallbackItems[index] || fallbackItems[index % Math.max(fallbackItems.length, 1)], index, config.key))
+    .map((item, index) =>
+      sanitizeResourceItem(
+        item,
+        fallbackItems[index] || fallbackItems[index % Math.max(fallbackItems.length, 1)],
+        index,
+        config.key,
+      ),
+    )
     .filter((item) => item && typeof item === 'object' && item.id != null);
 }
 
 function contentResourceStats(items) {
   return {
     total: items.length,
-    withImage: items.filter((item) => item.imageUrl || item.coverUrl || item.coverImage || (Array.isArray(item.imageUrls) && item.imageUrls.length) || (Array.isArray(item.images) && item.images.length)).length,
+    withImage: items.filter(
+      (item) =>
+        item.imageUrl ||
+        item.coverUrl ||
+        item.coverImage ||
+        (Array.isArray(item.imageUrls) && item.imageUrls.length) ||
+        (Array.isArray(item.images) && item.images.length),
+    ).length,
     withTarget: items.filter((item) => item.targetUrl || item.bookingUrl || item.refId).length,
-    hidden: items.filter((item) => item.enabled === false || item.status === 'disabled').length
+    hidden: items.filter((item) => item.enabled === false || item.status === 'disabled').length,
   };
 }
 
@@ -1233,7 +1311,7 @@ function contentResourceIndex() {
       key,
       label: config.label,
       limit: config.limit,
-      meta: envelope.meta
+      meta: envelope.meta,
     };
   });
 }
@@ -1250,9 +1328,9 @@ function defaultContentResourceEnvelope(resourceKey) {
       version: RESOURCE_CONTENT_VERSION,
       updatedAt: '',
       updatedBy: '',
-      stats: contentResourceStats(items)
+      stats: contentResourceStats(items),
     },
-    items
+    items,
   };
 }
 
@@ -1271,9 +1349,9 @@ function readContentResourceEnvelope(resourceKey) {
       version: cleanText(stored.version, 20) || RESOURCE_CONTENT_VERSION,
       updatedAt: cleanText(stored.updatedAt, 40),
       updatedBy: cleanText(stored.updatedBy, 80),
-      stats: contentResourceStats(items)
+      stats: contentResourceStats(items),
     },
-    items
+    items,
   };
 }
 
@@ -1284,13 +1362,13 @@ function saveContentResource(req, resourceKey, rawItems) {
     version: RESOURCE_CONTENT_VERSION,
     updatedAt: new Date().toISOString(),
     updatedBy: ADMIN_USER,
-    items
+    items,
   };
   writeJsonObject(config.fileName, stored);
   appendAudit(req, 'resource-content.updated', 'resource-content', config.key, {
     label: config.label,
     updatedAt: stored.updatedAt,
-    stats: contentResourceStats(items)
+    stats: contentResourceStats(items),
   });
   return readContentResourceEnvelope(config.key);
 }
@@ -1300,7 +1378,7 @@ function resetContentResource(req, resourceKey) {
   const filePath = storagePath(config.fileName);
   if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
   appendAudit(req, 'resource-content.reset', 'resource-content', config.key, {
-    label: config.label
+    label: config.label,
   });
   return defaultContentResourceEnvelope(config.key);
 }
@@ -1323,9 +1401,16 @@ function firstResourceImage(item) {
 }
 
 function arrayValue(value) {
-  if (Array.isArray(value)) return value.filter(Boolean).map((item) => cleanText(item, 500)).filter(Boolean);
+  if (Array.isArray(value))
+    return value
+      .filter(Boolean)
+      .map((item) => cleanText(item, 500))
+      .filter(Boolean);
   if (typeof value === 'string' && value.trim()) {
-    return value.split(/[，,]/).map((item) => cleanText(item, 500)).filter(Boolean);
+    return value
+      .split(/[，,]/)
+      .map((item) => cleanText(item, 500))
+      .filter(Boolean);
   }
   return [];
 }
@@ -1364,7 +1449,7 @@ function mapPointTypeValue(value) {
     农场: 'FARM',
     医疗: 'MEDICAL',
     直播: 'CAMERA',
-    其他: 'OTHER'
+    其他: 'OTHER',
   };
   return map[text] || text || 'OTHER';
 }
@@ -1377,7 +1462,7 @@ function normalizedAdminResourceItem(resourceKey, item, index = 0) {
     sort: normalizePositiveInt(item.sort ?? item.sortOrder, index + 1, 0, 9999),
     status: statusForResource(resourceKey, item),
     createdAt: cleanText(item.createdAt, 40),
-    updatedAt: cleanText(item.updatedAt, 40)
+    updatedAt: cleanText(item.updatedAt, 40),
   };
 
   if (resourceKey === 'spots') {
@@ -1392,7 +1477,7 @@ function normalizedAdminResourceItem(resourceKey, item, index = 0) {
       openingHours: cleanText(item.openingHours || item.openTime, 120),
       suggestedDuration: cleanText(item.suggestedDuration || item.duration, 120),
       tags: arrayValue(item.tags),
-      isRecommended: Boolean(item.isRecommended ?? item.recommended ?? index < 4)
+      isRecommended: Boolean(item.isRecommended ?? item.recommended ?? index < 4),
     };
   }
 
@@ -1406,7 +1491,7 @@ function normalizedAdminResourceItem(resourceKey, item, index = 0) {
       duration: cleanText(item.duration || item.time, 120),
       suitableFor: cleanText(item.suitableFor || item.audience, 160),
       tags: arrayValue(item.tags),
-      isRecommended: Boolean(item.isRecommended ?? index < 3)
+      isRecommended: Boolean(item.isRecommended ?? index < 3),
     };
   }
 
@@ -1415,11 +1500,11 @@ function normalizedAdminResourceItem(resourceKey, item, index = 0) {
       ...base,
       name: cleanText(item.name || item.title, 120) || '海林美食',
       coverImage: image || '/assets/photos/ricefish-drying.jpg',
-      images: arrayValue(item.images).length ? arrayValue(item.images) : (image ? [image] : []),
+      images: arrayValue(item.images).length ? arrayValue(item.images) : image ? [image] : [],
       description: cleanText(item.description || item.desc || item.summary, 1200),
       businessHours: cleanText(item.businessHours || item.openTime, 120),
       avgPrice: moneyValueToCents(item.avgPrice || item.price || item.perCapita),
-      tags: arrayValue(item.tags)
+      tags: arrayValue(item.tags),
     };
   }
 
@@ -1433,8 +1518,11 @@ function normalizedAdminResourceItem(resourceKey, item, index = 0) {
       latitude: Number(item.latitude || 28.2136),
       description: cleanText(item.description || item.desc || item.tips, 800),
       businessHours: cleanText(item.businessHours || item.openTime, 120),
-      relatedEntityType: cleanText(item.relatedEntityType || (item.refType === 'spot' ? 'SCENIC_SPOT' : ''), 80),
-      relatedEntityId: cleanText(item.relatedEntityId || item.refId, 120)
+      relatedEntityType: cleanText(
+        item.relatedEntityType || (item.refType === 'spot' ? 'SCENIC_SPOT' : ''),
+        80,
+      ),
+      relatedEntityId: cleanText(item.relatedEntityId || item.refId, 120),
     };
   }
 
@@ -1444,7 +1532,7 @@ function normalizedAdminResourceItem(resourceKey, item, index = 0) {
       name: cleanText(item.name || item.title, 120) || '海林农特产',
       subtitle: cleanText(item.subtitle || item.desc, 160),
       coverImage: image || '/assets/photos/ai-fish-keychain.jpg',
-      images: arrayValue(item.images).length ? arrayValue(item.images) : (image ? [image] : []),
+      images: arrayValue(item.images).length ? arrayValue(item.images) : image ? [image] : [],
       detail: cleanText(item.detail || item.description || item.subtitle || item.title, 2000),
       categoryId: cleanText(item.categoryId, 80) || 'souvenir',
       price: moneyValueToCents(item.price),
@@ -1452,7 +1540,7 @@ function normalizedAdminResourceItem(resourceKey, item, index = 0) {
       stock: normalizePositiveInt(item.stock, 99, 0, 999999),
       unit: cleanText(item.unit, 40) || '件',
       specification: cleanText(item.specification, 160),
-      status: statusForResource(resourceKey, item, 'ON_SALE')
+      status: statusForResource(resourceKey, item, 'ON_SALE'),
     };
   }
 
@@ -1462,7 +1550,7 @@ function normalizedAdminResourceItem(resourceKey, item, index = 0) {
       name: cleanText(item.name || item.title, 80) || '商品分类',
       icon: cleanText(item.icon, 80),
       parentId: cleanText(item.parentId, 120),
-      status: statusForResource(resourceKey, item, 'PUBLISHED')
+      status: statusForResource(resourceKey, item, 'PUBLISHED'),
     };
   }
 
@@ -1470,12 +1558,19 @@ function normalizedAdminResourceItem(resourceKey, item, index = 0) {
 }
 
 function publicContentItems(resourceKey) {
-  return readContentResourceEnvelope(resourceKey).items
-    .filter((item) => item.enabled !== false && item.status !== 'disabled' && item.status !== 'DELETED' && !item.deletedAt);
+  return readContentResourceEnvelope(resourceKey).items.filter(
+    (item) =>
+      item.enabled !== false &&
+      item.status !== 'disabled' &&
+      item.status !== 'DELETED' &&
+      !item.deletedAt,
+  );
 }
 
 function normalizedAdminResourceItems(resourceKey) {
-  return publicContentItems(resourceKey).map((item, index) => normalizedAdminResourceItem(resourceKey, item, index));
+  return publicContentItems(resourceKey).map((item, index) =>
+    normalizedAdminResourceItem(resourceKey, item, index),
+  );
 }
 
 function listAdminResourceItems(endpoint, query) {
@@ -1491,14 +1586,20 @@ function createAdminResourceItem(req, endpoint, body) {
   const envelope = readContentResourceEnvelope(resourceKey);
   const data = body.data || body;
   const now = new Date().toISOString();
-  const item = normalizedAdminResourceItem(resourceKey, {
-    ...data,
-    id: cleanText(data.id, 120) || `${resourceKey}-${crypto.randomBytes(4).toString('hex')}`,
-    createdAt: now,
-    updatedAt: now
-  }, envelope.items.length);
+  const item = normalizedAdminResourceItem(
+    resourceKey,
+    {
+      ...data,
+      id: cleanText(data.id, 120) || `${resourceKey}-${crypto.randomBytes(4).toString('hex')}`,
+      createdAt: now,
+      updatedAt: now,
+    },
+    envelope.items.length,
+  );
   saveAdminResourceItems(req, resourceKey, [...envelope.items, item]);
-  appendAudit(req, 'resource.created', resourceKey, item.id, { name: item.name || item.title || item.id });
+  appendAudit(req, 'resource.created', resourceKey, item.id, {
+    name: item.name || item.title || item.id,
+  });
   return item;
 }
 
@@ -1510,15 +1611,21 @@ function updateAdminResourceItem(req, endpoint, id, body) {
   if (index === -1) throw new HttpError(404, 'Resource item not found');
   const items = envelope.items.slice();
   const now = new Date().toISOString();
-  items[index] = normalizedAdminResourceItem(resourceKey, {
-    ...items[index],
-    ...data,
-    id,
-    createdAt: items[index].createdAt || now,
-    updatedAt: now
-  }, index);
+  items[index] = normalizedAdminResourceItem(
+    resourceKey,
+    {
+      ...items[index],
+      ...data,
+      id,
+      createdAt: items[index].createdAt || now,
+      updatedAt: now,
+    },
+    index,
+  );
   saveAdminResourceItems(req, resourceKey, items);
-  appendAudit(req, 'resource.updated', resourceKey, id, { name: items[index].name || items[index].title || id });
+  appendAudit(req, 'resource.updated', resourceKey, id, {
+    name: items[index].name || items[index].title || id,
+  });
   return normalizedAdminResourceItem(resourceKey, items[index], index);
 }
 
@@ -1537,7 +1644,7 @@ function deleteAdminResourceItem(req, endpoint, id) {
     ...items[index],
     status: 'DELETED',
     deletedAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    updatedAt: new Date().toISOString(),
   };
   saveAdminResourceItems(req, resourceKey, items);
   appendAudit(req, 'resource.deleted', resourceKey, id, {});
@@ -1550,12 +1657,12 @@ function managedContentItems(resourceKey) {
 
 function livePayload(req) {
   const origin = PUBLIC_BASE_URL || `http://${req.headers.host || `${HOST}:${PORT}`}`;
-  return readLiveContentEnvelope().items
-    .filter((item) => item.enabled !== false)
+  return readLiveContentEnvelope()
+    .items.filter((item) => item.enabled !== false)
     .map((item) => ({
       ...item,
       liveUrl: item.liveUrl || (item.hlsUrl ? '' : `${origin}/media/hailin-live.mp4`),
-      hlsUrl: item.hlsUrl || ''
+      hlsUrl: item.hlsUrl || '',
     }));
 }
 
@@ -1566,7 +1673,9 @@ function pageFromItems(items, query, defaultPageSize = 20) {
   const type = cleanText(query.get('type'), 80);
   const filtered = items
     .filter((item) => !keyword || matchesQuery(item, keyword))
-    .filter((item) => !type || item.type === type || item.category === type || item.categoryId === type);
+    .filter(
+      (item) => !type || item.type === type || item.category === type || item.categoryId === type,
+    );
   const start = (page - 1) * pageSize;
   return pagedResult(filtered.slice(start, start + pageSize), page, pageSize, filtered.length);
 }
@@ -1602,32 +1711,41 @@ function cameraFromLiveItem(item, index = 0) {
     status,
     sort: item.sortOrder ?? index + 1,
     createdAt: item.createdAt || '',
-    updatedAt: item.updatedAt || readLiveContentEnvelope().meta.updatedAt || ''
+    updatedAt: item.updatedAt || readLiveContentEnvelope().meta.updatedAt || '',
   };
 }
 
 function liveItemFromCamera(data, fallback = {}, index = 0) {
-  const status = cleanText(data.status || fallback.status, 40) || cameraStatusFromLiveItem(fallback);
-  const id = cleanText(data.id, 80) || cleanText(fallback.id, 80) || `camera-${crypto.randomBytes(4).toString('hex')}`;
-  return sanitizeLiveItem({
-    ...fallback,
-    id,
-    title: cleanText(data.name, 100) || cleanText(fallback.title, 100) || '海林慢直播',
-    coverUrl: cleanText(data.coverImage, 500) || cleanText(fallback.coverUrl, 500),
-    desc: cleanText(data.description, 500) || cleanText(fallback.desc, 500),
-    enabled: status !== 'DISABLED',
-    status,
-    statusText: status === 'OFFLINE' ? '离线' : status === 'DISABLED' ? '已停用' : '直播中',
-    sortOrder: normalizePositiveInt(data.sort, Number(fallback.sortOrder) || index + 1, 0, 9999),
-    deviceSerial: cleanText(data.deviceSerial, 120) || cleanText(fallback.deviceSerial, 120) || id,
-    channelNo: normalizePositiveInt(data.channelNo, Number(fallback.channelNo) || 1, 1, 64),
-    ezvizDeviceId: cleanText(data.ezvizDeviceId, 120) || cleanText(fallback.ezvizDeviceId, 120),
-    location: cleanText(data.location, 160) || cleanText(fallback.location, 160),
-    longitude: data.longitude ?? fallback.longitude,
-    latitude: data.latitude ?? fallback.latitude,
-    updatedAt: new Date().toISOString(),
-    createdAt: fallback.createdAt || new Date().toISOString()
-  }, fallback, index);
+  const status =
+    cleanText(data.status || fallback.status, 40) || cameraStatusFromLiveItem(fallback);
+  const id =
+    cleanText(data.id, 80) ||
+    cleanText(fallback.id, 80) ||
+    `camera-${crypto.randomBytes(4).toString('hex')}`;
+  return sanitizeLiveItem(
+    {
+      ...fallback,
+      id,
+      title: cleanText(data.name, 100) || cleanText(fallback.title, 100) || '海林慢直播',
+      coverUrl: cleanText(data.coverImage, 500) || cleanText(fallback.coverUrl, 500),
+      desc: cleanText(data.description, 500) || cleanText(fallback.desc, 500),
+      enabled: status !== 'DISABLED',
+      status,
+      statusText: status === 'OFFLINE' ? '离线' : status === 'DISABLED' ? '已停用' : '直播中',
+      sortOrder: normalizePositiveInt(data.sort, Number(fallback.sortOrder) || index + 1, 0, 9999),
+      deviceSerial:
+        cleanText(data.deviceSerial, 120) || cleanText(fallback.deviceSerial, 120) || id,
+      channelNo: normalizePositiveInt(data.channelNo, Number(fallback.channelNo) || 1, 1, 64),
+      ezvizDeviceId: cleanText(data.ezvizDeviceId, 120) || cleanText(fallback.ezvizDeviceId, 120),
+      location: cleanText(data.location, 160) || cleanText(fallback.location, 160),
+      longitude: data.longitude ?? fallback.longitude,
+      latitude: data.latitude ?? fallback.latitude,
+      updatedAt: new Date().toISOString(),
+      createdAt: fallback.createdAt || new Date().toISOString(),
+    },
+    fallback,
+    index,
+  );
 }
 
 function listAdminCameras(query) {
@@ -1694,10 +1812,9 @@ function buildAiPrompt(body) {
 
   return {
     message,
-    input: [
-      historyText ? `历史对话：\n${historyText}` : '',
-      `游客问题：${message}`
-    ].filter(Boolean).join('\n\n')
+    input: [historyText ? `历史对话：\n${historyText}` : '', `游客问题：${message}`]
+      .filter(Boolean)
+      .join('\n\n'),
   };
 }
 
@@ -1724,23 +1841,23 @@ async function askKimi(body) {
   const instructions = [
     '你是浙江省丽水市青田县海口镇海林村小程序里的 AI 导游。',
     '回答要短、实用、适合游客阅读。优先围绕瓯江、青田石、田鱼、侨乡、山水村落和海林村服务点。',
-    '不要编造具体营业执照、电话、价格或实时余位。涉及预约、价格、直播、房态时提示以后端实时信息为准。'
+    '不要编造具体营业执照、电话、价格或实时余位。涉及预约、价格、直播、房态时提示以后端实时信息为准。',
   ].join('\n');
 
   const response = await fetch(`${KIMI_BASE_URL}/chat/completions`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${KIMI_API_KEY}`,
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify({
       model: KIMI_MODEL,
       messages: [
         { role: 'system', content: instructions },
-        { role: 'user', content: prompt.input }
+        { role: 'user', content: prompt.input },
       ],
-      temperature: /^kimi-k2/i.test(KIMI_MODEL) ? 1 : 0.3
-    })
+      temperature: /^kimi-k2/i.test(KIMI_MODEL) ? 1 : 0.3,
+    }),
   });
 
   if (!response.ok) {
@@ -1777,7 +1894,7 @@ function requireAdmin(req, res) {
       level: 'warn',
       message: 'admin_unauthorized',
       path: req.url,
-      ip: clientIp(req)
+      ip: clientIp(req),
     });
     sendError(req, res, 401, 'Unauthorized');
     return false;
@@ -1812,7 +1929,7 @@ function adminProfile() {
     role: 'SUPER_ADMIN',
     status: 'ACTIVE',
     createdAt: '2026-01-01T00:00:00.000Z',
-    lastLoginAt: new Date().toISOString()
+    lastLoginAt: new Date().toISOString(),
   };
 }
 
@@ -1820,14 +1937,14 @@ function adminTokenBundle() {
   return {
     accessToken: ADMIN_TOKEN,
     refreshToken: ADMIN_TOKEN,
-    expiresIn: 60 * 60 * 24 * 30
+    expiresIn: 60 * 60 * 24 * 30,
   };
 }
 
 function adminLoginPayload() {
   return {
     ...adminTokenBundle(),
-    admin: adminProfile()
+    admin: adminProfile(),
   };
 }
 
@@ -1843,7 +1960,7 @@ function pagedResult(items, page, pageSize, total, extra = {}) {
     pageSize,
     total,
     totalPages: Math.ceil(total / pageSize),
-    ...extra
+    ...extra,
   };
 }
 
@@ -1852,7 +1969,7 @@ function mapPageItems(page, mapper) {
   return {
     ...page,
     items,
-    list: items
+    list: items,
   };
 }
 
@@ -1886,13 +2003,13 @@ function adminSummary() {
       homeContent: {
         source: homeContent.meta.source,
         updatedAt: homeContent.meta.updatedAt,
-        ...homeContent.meta.stats
-      }
+        ...homeContent.meta.stats,
+      },
     },
     recent: {
       orders: orders.slice(0, 5),
       bookings: bookings.slice(0, 5),
-      feedback: feedback.slice(0, 5)
+      feedback: feedback.slice(0, 5),
     },
     system: {
       environment: NODE_ENV,
@@ -1906,10 +2023,10 @@ function adminSummary() {
         httpsEnabled: httpsEnabled(),
         adminTokenConfigured: Boolean(ADMIN_TOKEN),
         corsRestricted: Boolean(ALLOWED_ORIGINS.length),
-        allowedOrigins: ALLOWED_ORIGINS
+        allowedOrigins: ALLOWED_ORIGINS,
       },
-      uptimeSeconds: Math.round(process.uptime())
-    }
+      uptimeSeconds: Math.round(process.uptime()),
+    },
   };
 }
 
@@ -1938,8 +2055,10 @@ function adminOverview() {
     orders: orders.length,
     reservations: bookings.length,
     activities: 0,
-    feedbackPending: feedback.filter((item) => ['new', 'processing', 'PENDING', 'PROCESSING'].includes(item.status)).length,
-    productLowStock: productsLowStockCount(productItems)
+    feedbackPending: feedback.filter((item) =>
+      ['new', 'processing', 'PENDING', 'PROCESSING'].includes(item.status),
+    ).length,
+    productLowStock: productsLowStockCount(productItems),
   };
 }
 
@@ -1952,7 +2071,7 @@ function trendRows(orders) {
       date,
       newUsers: 0,
       orderCount: dayOrders.length,
-      orderAmount: dayOrders.reduce((sum, item) => sum + parseMoneyToCents(item.price), 0)
+      orderAmount: dayOrders.reduce((sum, item) => sum + parseMoneyToCents(item.price), 0),
     });
   }
   return rows;
@@ -1976,14 +2095,17 @@ function adminDashboard() {
       todayUsers: 0,
       scenicSpots: scenicItems.length,
       activities: 0,
-      pendingReservations: bookings.filter((item) => ['new', 'confirmed', 'processing'].includes(item.status)).length,
+      pendingReservations: bookings.filter((item) =>
+        ['new', 'confirmed', 'processing'].includes(item.status),
+      ).length,
       pendingShipments: orders.filter((item) => item.status === 'pending_shipment').length,
       todayOrderAmount: todayOrders.reduce((sum, item) => sum + parseMoneyToCents(item.price), 0),
       todayOrderCount: todayOrders.length,
       totalOrderAmount: orders.reduce((sum, item) => sum + parseMoneyToCents(item.price), 0),
       totalOrderCount: orders.length,
       productLowStock: productsLowStockCount(productItems),
-      feedbackPending: feedback.filter((item) => ['new', 'processing'].includes(item.status)).length
+      feedbackPending: feedback.filter((item) => ['new', 'processing'].includes(item.status))
+        .length,
     },
     charts: {
       trend: trendRows(orders),
@@ -1991,15 +2113,15 @@ function adminDashboard() {
       popularSpots: scenicItems.slice(0, 5).map((item, index) => ({
         id: String(item.id || `spot-${index + 1}`),
         name: cleanText(item.name || item.title, 80) || `景点 ${index + 1}`,
-        value: Number(item.viewCount || item.views || 0)
+        value: Number(item.viewCount || item.views || 0),
       })),
       hotProducts: productItems.slice(0, 5).map((item, index) => ({
         id: String(item.id || `product-${index + 1}`),
         name: cleanText(item.name || item.title, 80) || `商品 ${index + 1}`,
         sales: normalizePositiveInt(item.sales, 0, 0, 999999),
-        stock: normalizePositiveInt(item.stock ?? item.inventory, 0, 0, 999999)
-      }))
-    }
+        stock: normalizePositiveInt(item.stock ?? item.inventory, 0, 0, 999999),
+      })),
+    },
   };
 }
 
@@ -2009,7 +2131,7 @@ function configStatusItem(key, name, ok, mode, missingMessage, configuredMessage
     name,
     status: ok ? 'configured' : 'missing',
     mode: ok ? mode : 'waiting_credentials',
-    message: ok ? configuredMessage : missingMessage
+    message: ok ? configuredMessage : missingMessage,
   };
 }
 
@@ -2018,12 +2140,47 @@ function adminConfigStatus() {
     environment: NODE_ENV,
     publicBaseUrl: PUBLIC_BASE_URL || undefined,
     items: [
-      configStatusItem('adminToken', '管理后台登录密钥', Boolean(ADMIN_TOKEN), 'official', '等待配置 ADMIN_TOKEN', '已配置强登录密钥'),
-      configStatusItem('publicBaseUrl', '公网访问地址', httpsEnabled(), 'official', '等待配置 HTTPS 的 PUBLIC_BASE_URL', PUBLIC_BASE_URL || '已配置'),
-      configStatusItem('cors', 'CORS 白名单', Boolean(ALLOWED_ORIGINS.length), 'official', '建议配置 ALLOWED_ORIGINS', ALLOWED_ORIGINS.join(', ') || '已限制'),
-      configStatusItem('ai', 'AI 导游模型', Boolean(KIMI_API_KEY), 'official', '未配置模型密钥，当前使用本地规则 fallback', `${KIMI_MODEL} 已配置`),
-      configStatusItem('storage', '本地数据存储', storageWritable(), 'development', '存储目录不可写', '存储目录可写')
-    ]
+      configStatusItem(
+        'adminToken',
+        '管理后台登录密钥',
+        Boolean(ADMIN_TOKEN),
+        'official',
+        '等待配置 ADMIN_TOKEN',
+        '已配置强登录密钥',
+      ),
+      configStatusItem(
+        'publicBaseUrl',
+        '公网访问地址',
+        httpsEnabled(),
+        'official',
+        '等待配置 HTTPS 的 PUBLIC_BASE_URL',
+        PUBLIC_BASE_URL || '已配置',
+      ),
+      configStatusItem(
+        'cors',
+        'CORS 白名单',
+        Boolean(ALLOWED_ORIGINS.length),
+        'official',
+        '建议配置 ALLOWED_ORIGINS',
+        ALLOWED_ORIGINS.join(', ') || '已限制',
+      ),
+      configStatusItem(
+        'ai',
+        'AI 导游模型',
+        Boolean(KIMI_API_KEY),
+        'official',
+        '未配置模型密钥，当前使用本地规则 fallback',
+        `${KIMI_MODEL} 已配置`,
+      ),
+      configStatusItem(
+        'storage',
+        '本地数据存储',
+        storageWritable(),
+        'development',
+        '存储目录不可写',
+        '存储目录可写',
+      ),
+    ],
   };
 }
 
@@ -2052,7 +2209,7 @@ function legacyReservationStatus(status) {
     confirmed: 'CONFIRMED',
     processing: 'PAID',
     completed: 'COMPLETED',
-    cancelled: 'CANCELLED'
+    cancelled: 'CANCELLED',
   };
   return map[status] || status || 'PENDING_PAYMENT';
 }
@@ -2065,7 +2222,7 @@ function reservationStatusToLegacy(status) {
     COMPLETED: 'completed',
     CANCELLED: 'cancelled',
     REFUNDING: 'processing',
-    REFUNDED: 'completed'
+    REFUNDED: 'completed',
   };
   return map[status] || status || 'new';
 }
@@ -2076,18 +2233,22 @@ function bookingAsReservationOrder(record) {
     id: record.id,
     orderNo: record.orderNo || record.id,
     userId: record.clientId || '',
-    user: { id: record.clientId || '', nickname: cleanText(record.nickname, 80), phone: cleanText(record.phone, 40) },
+    user: {
+      id: record.clientId || '',
+      nickname: cleanText(record.nickname, 80),
+      phone: cleanText(record.phone, 40),
+    },
     item: {
       id: record.service || record.id,
       title: record.service || '预约项目',
       type: 'FARM',
-      unit: '人'
+      unit: '人',
     },
     slot: {
       id: date || record.id,
       date,
       startTime: '',
-      endTime: ''
+      endTime: '',
     },
     contactName: record.contact || '',
     contactPhone: record.phone || '',
@@ -2099,7 +2260,7 @@ function bookingAsReservationOrder(record) {
     cancelledAt: record.cancelledAt || '',
     verifiedAt: record.completedAt || '',
     createdAt: record.createdAt,
-    updatedAt: record.updatedAt
+    updatedAt: record.updatedAt,
   };
 }
 
@@ -2112,7 +2273,7 @@ function legacyFeedbackStatus(status) {
     new: 'PENDING',
     processing: 'PROCESSING',
     resolved: 'REPLIED',
-    archived: 'CLOSED'
+    archived: 'CLOSED',
   };
   return map[status] || status || 'PENDING';
 }
@@ -2122,7 +2283,7 @@ function feedbackStatusToLegacy(status) {
     PENDING: 'new',
     PROCESSING: 'processing',
     REPLIED: 'resolved',
-    CLOSED: 'archived'
+    CLOSED: 'archived',
   };
   return map[status] || status || 'new';
 }
@@ -2133,7 +2294,7 @@ function feedbackAsApiRecord(record) {
     user: {
       id: record.clientId || '',
       nickname: record.nickname || '游客',
-      phone: record.phone || ''
+      phone: record.phone || '',
     },
     type: record.source || 'mini-program',
     content: record.content || '',
@@ -2143,7 +2304,7 @@ function feedbackAsApiRecord(record) {
     adminReply: record.adminNote || record.adminReply || '',
     repliedAt: record.resolvedAt || record.lastHandledAt || '',
     createdAt: record.createdAt,
-    updatedAt: record.updatedAt
+    updatedAt: record.updatedAt,
   };
 }
 
@@ -2181,7 +2342,7 @@ function legacyOrderStatus(status) {
     verified: 'COMPLETED',
     completed: 'COMPLETED',
     cancelled: 'CANCELLED',
-    expired: 'CLOSED'
+    expired: 'CLOSED',
   };
   return map[status] || status || 'PENDING_PAYMENT';
 }
@@ -2196,7 +2357,7 @@ function orderStatusToLegacy(status, type = 'product') {
     CANCELLED: 'cancelled',
     REFUNDING: 'confirmed',
     REFUNDED: 'completed',
-    CLOSED: 'expired'
+    CLOSED: 'expired',
   };
   return map[status] || status || 'new';
 }
@@ -2212,12 +2373,12 @@ function orderAsApiRecord(record) {
     user: {
       id: record.clientId || '',
       nickname: record.nickname || '游客',
-      phone: record.phone || ''
+      phone: record.phone || '',
     },
     addressSnapshot: {
       contactName: record.contact || '',
       phone: record.phone || '',
-      detail: record.address || ''
+      detail: record.address || '',
     },
     productAmount: amount,
     freightAmount: 0,
@@ -2225,8 +2386,15 @@ function orderAsApiRecord(record) {
     payableAmount: amount,
     paidAmount: legacyOrderStatus(record.status) === 'PENDING_PAYMENT' ? 0 : amount,
     status: legacyOrderStatus(record.status),
-    paymentStatus: record.paymentStatus || (legacyOrderStatus(record.status) === 'PENDING_PAYMENT' ? 'UNPAID' : 'PAID'),
-    shippingStatus: record.status === 'shipped' ? 'SHIPPED' : record.status === 'received' ? 'RECEIVED' : 'NOT_SHIPPED',
+    paymentStatus:
+      record.paymentStatus ||
+      (legacyOrderStatus(record.status) === 'PENDING_PAYMENT' ? 'UNPAID' : 'PAID'),
+    shippingStatus:
+      record.status === 'shipped'
+        ? 'SHIPPED'
+        : record.status === 'received'
+          ? 'RECEIVED'
+          : 'NOT_SHIPPED',
     remark: record.remark || record.adminNote || '',
     logisticsCompany: logistics.carrier || '',
     logisticsNo: logistics.trackingNo || '',
@@ -2244,9 +2412,9 @@ function orderAsApiRecord(record) {
         specification: record.service || record.type || '',
         unitPrice: amount,
         quantity,
-        totalAmount: amount
-      }
-    ]
+        totalAmount: amount,
+      },
+    ],
   };
 }
 
@@ -2262,7 +2430,7 @@ function orderListStats(records) {
     completed: 0,
     cancelled: 0,
     expired: 0,
-    actionRequired: 0
+    actionRequired: 0,
   };
 
   for (const record of records) {
@@ -2277,7 +2445,8 @@ function orderListStats(records) {
     if (record.status === 'expired') stats.expired += 1;
   }
 
-  stats.actionRequired = stats.new + stats.pendingShipment + stats.pendingVerify + stats.pendingService;
+  stats.actionRequired =
+    stats.new + stats.pendingShipment + stats.pendingVerify + stats.pendingService;
   return stats;
 }
 
@@ -2288,7 +2457,7 @@ function listOrders(query, admin = false) {
   const start = (page - 1) * pageSize;
 
   return pagedResult(all.slice(start, start + pageSize), page, pageSize, all.length, {
-    stats: orderListStats(all)
+    stats: orderListStats(all),
   });
 }
 
@@ -2328,7 +2497,7 @@ function backupPayload() {
   const homeContent = readHomeContentEnvelope();
   const liveContent = readLiveContentEnvelope();
   const resourceContent = Object.fromEntries(
-    Object.keys(CONTENT_RESOURCES).map((key) => [key, readContentResourceEnvelope(key)])
+    Object.keys(CONTENT_RESOURCES).map((key) => [key, readContentResourceEnvelope(key)]),
   );
 
   return {
@@ -2342,8 +2511,8 @@ function backupPayload() {
         orders: orders.length,
         audit: audit.length,
         lives: liveContent.items.length,
-        resources: Object.keys(resourceContent).length
-      }
+        resources: Object.keys(resourceContent).length,
+      },
     },
     data: {
       bookings,
@@ -2352,8 +2521,8 @@ function backupPayload() {
       audit,
       homeContent,
       liveContent,
-      resourceContent
-    }
+      resourceContent,
+    },
   };
 }
 
@@ -2364,9 +2533,12 @@ function csvEscape(value) {
 }
 
 function csvFieldValue(record, pathName) {
-  const value = pathName.split('.').reduce((current, key) => (
-    current && typeof current === 'object' ? current[key] : undefined
-  ), record);
+  const value = pathName
+    .split('.')
+    .reduce(
+      (current, key) => (current && typeof current === 'object' ? current[key] : undefined),
+      record,
+    );
   if (value == null) return '';
   if (Array.isArray(value)) return JSON.stringify(value);
   if (typeof value === 'object') return JSON.stringify(value);
@@ -2375,9 +2547,63 @@ function csvFieldValue(record, pathName) {
 
 function recordsToCsv(type, records) {
   const headersByType = {
-    bookings: ['id', 'createdAt', 'updatedAt', 'status', 'service', 'date', 'people', 'contact', 'remark', 'adminNote', 'lastHandledAt', 'lastHandledBy', 'completedAt', 'cancelledAt'],
-    feedback: ['id', 'createdAt', 'updatedAt', 'status', 'nickname', 'contact', 'content', 'adminNote', 'lastHandledAt', 'lastHandledBy', 'resolvedAt', 'archivedAt'],
-    orders: ['id', 'orderNo', 'createdAt', 'updatedAt', 'type', 'status', 'featureId', 'service', 'item', 'date', 'people', 'contact', 'price', 'remark', 'adminNote', 'logistics.carrier', 'logistics.trackingNo', 'logistics.shippedAt', 'verification.code', 'verification.verifiedAt', 'lastHandledAt', 'lastHandledBy', 'completedAt', 'cancelledAt', 'expiredAt']
+    bookings: [
+      'id',
+      'createdAt',
+      'updatedAt',
+      'status',
+      'service',
+      'date',
+      'people',
+      'contact',
+      'remark',
+      'adminNote',
+      'lastHandledAt',
+      'lastHandledBy',
+      'completedAt',
+      'cancelledAt',
+    ],
+    feedback: [
+      'id',
+      'createdAt',
+      'updatedAt',
+      'status',
+      'nickname',
+      'contact',
+      'content',
+      'adminNote',
+      'lastHandledAt',
+      'lastHandledBy',
+      'resolvedAt',
+      'archivedAt',
+    ],
+    orders: [
+      'id',
+      'orderNo',
+      'createdAt',
+      'updatedAt',
+      'type',
+      'status',
+      'featureId',
+      'service',
+      'item',
+      'date',
+      'people',
+      'contact',
+      'price',
+      'remark',
+      'adminNote',
+      'logistics.carrier',
+      'logistics.trackingNo',
+      'logistics.shippedAt',
+      'verification.code',
+      'verification.verifiedAt',
+      'lastHandledAt',
+      'lastHandledBy',
+      'completedAt',
+      'cancelledAt',
+      'expiredAt',
+    ],
   };
   const headers = headersByType[type] || headersByType.bookings;
   const rows = [headers.join(',')];
@@ -2389,19 +2615,21 @@ function recordsToCsv(type, records) {
 
 function contentType(filePath) {
   const extension = path.extname(filePath).toLowerCase();
-  return {
-    '.html': 'text/html; charset=utf-8',
-    '.css': 'text/css; charset=utf-8',
-    '.js': 'application/javascript; charset=utf-8',
-    '.png': 'image/png',
-    '.jpg': 'image/jpeg',
-    '.jpeg': 'image/jpeg',
-    '.svg': 'image/svg+xml',
-    '.webp': 'image/webp',
-    '.mp4': 'video/mp4',
-    '.woff': 'font/woff',
-    '.woff2': 'font/woff2'
-  }[extension] || 'application/octet-stream';
+  return (
+    {
+      '.html': 'text/html; charset=utf-8',
+      '.css': 'text/css; charset=utf-8',
+      '.js': 'application/javascript; charset=utf-8',
+      '.png': 'image/png',
+      '.jpg': 'image/jpeg',
+      '.jpeg': 'image/jpeg',
+      '.svg': 'image/svg+xml',
+      '.webp': 'image/webp',
+      '.mp4': 'video/mp4',
+      '.woff': 'font/woff',
+      '.woff2': 'font/woff2',
+    }[extension] || 'application/octet-stream'
+  );
 }
 
 function serveStaticFile(req, res, filePath, cacheControl = 'no-store') {
@@ -2415,10 +2643,11 @@ function serveStaticFile(req, res, filePath, cacheControl = 'no-store') {
     ...securityHeaders({
       'Content-Type': contentType(filePath),
       'Cache-Control': cacheControl,
-      'Content-Security-Policy': "default-src 'self'; connect-src 'self'; img-src 'self' data:; font-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; base-uri 'none'; form-action 'none'"
+      'Content-Security-Policy':
+        "default-src 'self'; connect-src 'self'; img-src 'self' data:; font-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; base-uri 'none'; form-action 'none'",
     }),
     'Content-Length': body.length,
-    'X-Request-Id': req.requestId
+    'X-Request-Id': req.requestId,
   });
   res.end(body);
 }
@@ -2429,7 +2658,10 @@ function isInsideDirectory(parentDir, filePath) {
 }
 
 function serveAdmin(req, res, pathname) {
-  const relative = pathname === '/admin' || pathname === '/admin/' ? 'index.html' : pathname.replace(/^\/admin\/?/, '');
+  const relative =
+    pathname === '/admin' || pathname === '/admin/'
+      ? 'index.html'
+      : pathname.replace(/^\/admin\/?/, '');
   const filePath = path.resolve(ADMIN_DIR, relative);
   if (!isInsideDirectory(ADMIN_DIR, filePath)) {
     sendError(req, res, 403, 'Forbidden');
@@ -2465,7 +2697,7 @@ function serveVideo(req, res) {
       'Content-Type': 'video/mp4',
       'Content-Length': stat.size,
       'Accept-Ranges': 'bytes',
-      'X-Request-Id': req.requestId
+      'X-Request-Id': req.requestId,
     });
     fs.createReadStream(videoPath).pipe(res);
     return;
@@ -2483,7 +2715,7 @@ function serveVideo(req, res) {
     'Content-Length': chunkSize,
     'Content-Range': `bytes ${start}-${end}/${stat.size}`,
     'Accept-Ranges': 'bytes',
-    'X-Request-Id': req.requestId
+    'X-Request-Id': req.requestId,
   });
   fs.createReadStream(videoPath, { start, end }).pipe(res);
 }
@@ -2502,14 +2734,14 @@ async function handleAdminLogin(req, res) {
       level: 'warn',
       message: 'admin_login_failed',
       username,
-      ip: clientIp(req)
+      ip: clientIp(req),
     });
     sendError(req, res, 401, 'Invalid username or password');
     return;
   }
 
   appendAudit(req, 'admin.login', 'admin', ADMIN_USER, {
-    source: 'admin-ui'
+    source: 'admin-ui',
   });
   sendJson(req, res, 200, { data: adminLoginPayload(), message: 'success' });
 }
@@ -2537,7 +2769,9 @@ async function handleAdminRequest(req, res, url, route) {
     return;
   }
   if (route === 'GET /api/admin/session') {
-    sendJson(req, res, 200, { data: { user: ADMIN_USER, admin: adminProfile(), environment: NODE_ENV } });
+    sendJson(req, res, 200, {
+      data: { user: ADMIN_USER, admin: adminProfile(), environment: NODE_ENV },
+    });
     return;
   }
   if (route === 'GET /api/admin/summary') {
@@ -2581,7 +2815,7 @@ async function handleAdminRequest(req, res, url, route) {
     const camera = updateAdminCamera(req, decodeURIComponent(cameraUpdate[1]), body);
     appendAudit(req, 'camera.updated', 'camera', camera.id, {
       name: camera.name,
-      status: camera.status
+      status: camera.status,
     });
     sendJson(req, res, 200, { data: camera });
     return;
@@ -2617,37 +2851,51 @@ async function handleAdminRequest(req, res, url, route) {
   }
   const resourceRead = route.match(/^GET \/api\/admin\/resources\/([^/]+)$/);
   if (resourceRead) {
-    sendJson(req, res, 200, { data: readContentResourceEnvelope(decodeURIComponent(resourceRead[1])) });
+    sendJson(req, res, 200, {
+      data: readContentResourceEnvelope(decodeURIComponent(resourceRead[1])),
+    });
     return;
   }
   const resourceSave = route.match(/^PUT \/api\/admin\/resources\/([^/]+)$/);
   if (resourceSave) {
     const body = await readBody(req);
-    const envelope = saveContentResource(req, decodeURIComponent(resourceSave[1]), body.items || body);
+    const envelope = saveContentResource(
+      req,
+      decodeURIComponent(resourceSave[1]),
+      body.items || body,
+    );
     sendJson(req, res, 200, { data: envelope });
     return;
   }
   const resourceReset = route.match(/^POST \/api\/admin\/resources\/([^/]+)\/reset$/);
   if (resourceReset) {
-    sendJson(req, res, 200, { data: resetContentResource(req, decodeURIComponent(resourceReset[1])) });
+    sendJson(req, res, 200, {
+      data: resetContentResource(req, decodeURIComponent(resourceReset[1])),
+    });
     return;
   }
   const adminResourceList = route.match(/^GET \/api\/admin\/([^/]+)$/);
   if (adminResourceList && ADMIN_RESOURCE_ENDPOINTS[decodeURIComponent(adminResourceList[1])]) {
-    sendJson(req, res, 200, { data: listAdminResourceItems(decodeURIComponent(adminResourceList[1]), url.searchParams) });
+    sendJson(req, res, 200, {
+      data: listAdminResourceItems(decodeURIComponent(adminResourceList[1]), url.searchParams),
+    });
     return;
   }
   const adminResourceCreate = route.match(/^POST \/api\/admin\/([^/]+)$/);
   if (adminResourceCreate && ADMIN_RESOURCE_ENDPOINTS[decodeURIComponent(adminResourceCreate[1])]) {
     const body = await readBody(req);
-    sendJson(req, res, 201, { data: createAdminResourceItem(req, decodeURIComponent(adminResourceCreate[1]), body) });
+    sendJson(req, res, 201, {
+      data: createAdminResourceItem(req, decodeURIComponent(adminResourceCreate[1]), body),
+    });
     return;
   }
   const adminResourceRead = route.match(/^GET \/api\/admin\/([^/]+)\/([^/]+)$/);
   if (adminResourceRead && ADMIN_RESOURCE_ENDPOINTS[decodeURIComponent(adminResourceRead[1])]) {
     const resourceKey = adminResourceKey(decodeURIComponent(adminResourceRead[1]));
     const id = decodeURIComponent(adminResourceRead[2]);
-    const item = normalizedAdminResourceItems(resourceKey).find((entry) => cleanText(entry.id, 120) === id);
+    const item = normalizedAdminResourceItems(resourceKey).find(
+      (entry) => cleanText(entry.id, 120) === id,
+    );
     if (!item) throw new HttpError(404, 'Resource item not found');
     sendJson(req, res, 200, { data: item });
     return;
@@ -2655,26 +2903,59 @@ async function handleAdminRequest(req, res, url, route) {
   const adminResourceUpdate = route.match(/^PATCH \/api\/admin\/([^/]+)\/([^/]+)$/);
   if (adminResourceUpdate && ADMIN_RESOURCE_ENDPOINTS[decodeURIComponent(adminResourceUpdate[1])]) {
     const body = await readBody(req);
-    sendJson(req, res, 200, { data: updateAdminResourceItem(req, decodeURIComponent(adminResourceUpdate[1]), decodeURIComponent(adminResourceUpdate[2]), body) });
+    sendJson(req, res, 200, {
+      data: updateAdminResourceItem(
+        req,
+        decodeURIComponent(adminResourceUpdate[1]),
+        decodeURIComponent(adminResourceUpdate[2]),
+        body,
+      ),
+    });
     return;
   }
   const adminResourceDelete = route.match(/^DELETE \/api\/admin\/([^/]+)\/([^/]+)$/);
   if (adminResourceDelete && ADMIN_RESOURCE_ENDPOINTS[decodeURIComponent(adminResourceDelete[1])]) {
-    sendJson(req, res, 200, { data: deleteAdminResourceItem(req, decodeURIComponent(adminResourceDelete[1]), decodeURIComponent(adminResourceDelete[2])) });
+    sendJson(req, res, 200, {
+      data: deleteAdminResourceItem(
+        req,
+        decodeURIComponent(adminResourceDelete[1]),
+        decodeURIComponent(adminResourceDelete[2]),
+      ),
+    });
     return;
   }
   const adminResourcePublish = route.match(/^POST \/api\/admin\/([^/]+)\/([^/]+)\/publish$/);
-  if (adminResourcePublish && ADMIN_RESOURCE_ENDPOINTS[decodeURIComponent(adminResourcePublish[1])]) {
+  if (
+    adminResourcePublish &&
+    ADMIN_RESOURCE_ENDPOINTS[decodeURIComponent(adminResourcePublish[1])]
+  ) {
     const endpoint = decodeURIComponent(adminResourcePublish[1]);
     const status = adminResourceKey(endpoint) === 'products' ? 'ON_SALE' : 'PUBLISHED';
-    sendJson(req, res, 200, { data: setAdminResourceItemStatus(req, endpoint, decodeURIComponent(adminResourcePublish[2]), status) });
+    sendJson(req, res, 200, {
+      data: setAdminResourceItemStatus(
+        req,
+        endpoint,
+        decodeURIComponent(adminResourcePublish[2]),
+        status,
+      ),
+    });
     return;
   }
   const adminResourceOffline = route.match(/^POST \/api\/admin\/([^/]+)\/([^/]+)\/offline$/);
-  if (adminResourceOffline && ADMIN_RESOURCE_ENDPOINTS[decodeURIComponent(adminResourceOffline[1])]) {
+  if (
+    adminResourceOffline &&
+    ADMIN_RESOURCE_ENDPOINTS[decodeURIComponent(adminResourceOffline[1])]
+  ) {
     const endpoint = decodeURIComponent(adminResourceOffline[1]);
     const status = adminResourceKey(endpoint) === 'products' ? 'OFF_SALE' : 'OFFLINE';
-    sendJson(req, res, 200, { data: setAdminResourceItemStatus(req, endpoint, decodeURIComponent(adminResourceOffline[2]), status) });
+    sendJson(req, res, 200, {
+      data: setAdminResourceItemStatus(
+        req,
+        endpoint,
+        decodeURIComponent(adminResourceOffline[2]),
+        status,
+      ),
+    });
     return;
   }
   if (route === 'GET /api/admin/bookings') {
@@ -2703,12 +2984,12 @@ async function handleAdminRequest(req, res, url, route) {
   }
   if (route === 'GET /api/admin/backup') {
     appendAudit(req, 'backup.exported', 'system', 'backup', {
-      format: 'json'
+      format: 'json',
     });
     const backup = JSON.stringify(backupPayload(), null, 2);
     sendText(req, res, 200, backup, {
       'Content-Type': 'application/json; charset=utf-8',
-      'Content-Disposition': `attachment; filename="hailin-backup-${new Date().toISOString().slice(0, 10)}.json"`
+      'Content-Disposition': `attachment; filename="hailin-backup-${new Date().toISOString().slice(0, 10)}.json"`,
     });
     return;
   }
@@ -2725,29 +3006,37 @@ async function handleAdminRequest(req, res, url, route) {
           exportQuery.delete('type');
           if (orderType) exportQuery.set('type', orderType);
           return filterOrders(exportQuery, true);
-        }
-      }
+        },
+      },
     };
     const config = exportConfig[requestedType] || exportConfig.bookings;
     const type = config.type;
     const csv = recordsToCsv(type, config.records());
     appendAudit(req, `${type}.csv.exported`, type, 'export', {
-      format: 'csv'
+      format: 'csv',
     });
     sendText(req, res, 200, csv, {
       'Content-Type': 'text/csv; charset=utf-8',
-      'Content-Disposition': `attachment; filename="hailin-${type}.csv"`
+      'Content-Disposition': `attachment; filename="hailin-${type}.csv"`,
     });
     return;
   }
 
   if (route === 'PATCH /api/admin/bookings/bulk-status') {
     const body = await readBody(req);
-    const items = updateRecordsStatus('bookings.json', body.ids, 'booking', BOOKING_STATUSES, cleanText(body.status), body.note, req);
+    const items = updateRecordsStatus(
+      'bookings.json',
+      body.ids,
+      'booking',
+      BOOKING_STATUSES,
+      cleanText(body.status),
+      body.note,
+      req,
+    );
     appendAudit(req, 'booking.bulk-status.updated', 'booking', 'bulk', {
       ids: items.map((item) => item.id),
       status: cleanText(body.status),
-      note: cleanText(body.note, 500)
+      note: cleanText(body.note, 500),
     });
     sendJson(req, res, 200, { data: { updated: items.length, items } });
     return;
@@ -2755,11 +3044,19 @@ async function handleAdminRequest(req, res, url, route) {
 
   if (route === 'PATCH /api/admin/feedback/bulk-status') {
     const body = await readBody(req);
-    const items = updateRecordsStatus('feedback.json', body.ids, 'feedback', FEEDBACK_STATUSES, cleanText(body.status), body.note, req);
+    const items = updateRecordsStatus(
+      'feedback.json',
+      body.ids,
+      'feedback',
+      FEEDBACK_STATUSES,
+      cleanText(body.status),
+      body.note,
+      req,
+    );
     appendAudit(req, 'feedback.bulk-status.updated', 'feedback', 'bulk', {
       ids: items.map((item) => item.id),
       status: cleanText(body.status),
-      note: cleanText(body.note, 500)
+      note: cleanText(body.note, 500),
     });
     sendJson(req, res, 200, { data: { updated: items.length, items } });
     return;
@@ -2770,10 +3067,18 @@ async function handleAdminRequest(req, res, url, route) {
     const body = await readBody(req);
     const data = body.data || body;
     const legacyStatus = reservationStatusToLegacy(cleanText(data.status));
-    const record = updateRecordStatus('bookings.json', reservationUpdate[1], 'booking', BOOKING_STATUSES, legacyStatus, data.remark || data.note, req);
+    const record = updateRecordStatus(
+      'bookings.json',
+      reservationUpdate[1],
+      'booking',
+      BOOKING_STATUSES,
+      legacyStatus,
+      data.remark || data.note,
+      req,
+    );
     appendAudit(req, 'reservation-order.updated', 'booking', record.id, {
       status: record.status,
-      note: cleanText(data.remark || data.note, 500)
+      note: cleanText(data.remark || data.note, 500),
     });
     sendJson(req, res, 200, { data: bookingAsReservationOrder(record) });
     return;
@@ -2782,11 +3087,19 @@ async function handleAdminRequest(req, res, url, route) {
   const bookingStatus = route.match(/^PATCH \/api\/admin\/bookings\/([^/]+)\/status$/);
   if (bookingStatus) {
     const body = await readBody(req);
-    const record = updateRecordStatus('bookings.json', bookingStatus[1], 'booking', BOOKING_STATUSES, cleanText(body.status), body.note, req);
+    const record = updateRecordStatus(
+      'bookings.json',
+      bookingStatus[1],
+      'booking',
+      BOOKING_STATUSES,
+      cleanText(body.status),
+      body.note,
+      req,
+    );
     appendAudit(req, 'booking.status.updated', 'booking', record.id, {
       fromStatus: record.statusHistory?.[record.statusHistory.length - 1]?.fromStatus,
       status: record.status,
-      note: record.adminNote
+      note: record.adminNote,
     });
     sendJson(req, res, 200, { data: record });
     return;
@@ -2795,9 +3108,17 @@ async function handleAdminRequest(req, res, url, route) {
   const feedbackReply = route.match(/^POST \/api\/admin\/feedback\/([^/]+)\/reply$/);
   if (feedbackReply) {
     const body = await readBody(req);
-    const record = updateRecordStatus('feedback.json', feedbackReply[1], 'feedback', FEEDBACK_STATUSES, 'resolved', body.adminReply || body.note || '已回复', req);
+    const record = updateRecordStatus(
+      'feedback.json',
+      feedbackReply[1],
+      'feedback',
+      FEEDBACK_STATUSES,
+      'resolved',
+      body.adminReply || body.note || '已回复',
+      req,
+    );
     appendAudit(req, 'feedback.replied', 'feedback', record.id, {
-      note: record.adminNote
+      note: record.adminNote,
     });
     sendJson(req, res, 200, { data: feedbackAsApiRecord(record) });
     return;
@@ -2808,10 +3129,18 @@ async function handleAdminRequest(req, res, url, route) {
     const body = await readBody(req);
     const data = body.data || body;
     const legacyStatus = feedbackStatusToLegacy(cleanText(data.status));
-    const record = updateRecordStatus('feedback.json', feedbackUpdate[1], 'feedback', FEEDBACK_STATUSES, legacyStatus, data.adminReply || data.note, req);
+    const record = updateRecordStatus(
+      'feedback.json',
+      feedbackUpdate[1],
+      'feedback',
+      FEEDBACK_STATUSES,
+      legacyStatus,
+      data.adminReply || data.note,
+      req,
+    );
     appendAudit(req, 'feedback.updated', 'feedback', record.id, {
       status: record.status,
-      note: record.adminNote
+      note: record.adminNote,
     });
     sendJson(req, res, 200, { data: feedbackAsApiRecord(record) });
     return;
@@ -2820,11 +3149,19 @@ async function handleAdminRequest(req, res, url, route) {
   const feedbackStatus = route.match(/^PATCH \/api\/admin\/feedback\/([^/]+)\/status$/);
   if (feedbackStatus) {
     const body = await readBody(req);
-    const record = updateRecordStatus('feedback.json', feedbackStatus[1], 'feedback', FEEDBACK_STATUSES, cleanText(body.status), body.note, req);
+    const record = updateRecordStatus(
+      'feedback.json',
+      feedbackStatus[1],
+      'feedback',
+      FEEDBACK_STATUSES,
+      cleanText(body.status),
+      body.note,
+      req,
+    );
     appendAudit(req, 'feedback.status.updated', 'feedback', record.id, {
       fromStatus: record.statusHistory?.[record.statusHistory.length - 1]?.fromStatus,
       status: record.status,
-      note: record.adminNote
+      note: record.adminNote,
     });
     sendJson(req, res, 200, { data: record });
     return;
@@ -2832,7 +3169,9 @@ async function handleAdminRequest(req, res, url, route) {
 
   const orderRead = route.match(/^GET \/api\/admin\/orders\/([^/]+)$/);
   if (orderRead) {
-    const order = readRecords('orders.json').find((item) => item.id === orderRead[1] || item.orderNo === orderRead[1]);
+    const order = readRecords('orders.json').find(
+      (item) => item.id === orderRead[1] || item.orderNo === orderRead[1],
+    );
     if (!order) throw new HttpError(404, 'Order not found');
     sendJson(req, res, 200, { data: orderAsApiRecord(order) });
     return;
@@ -2841,16 +3180,20 @@ async function handleAdminRequest(req, res, url, route) {
   const orderShip = route.match(/^POST \/api\/admin\/orders\/([^/]+)\/ship$/);
   if (orderShip) {
     const body = await readBody(req);
-    const order = updateOrderFulfillment(orderShip[1], {
-      status: 'shipped',
-      carrier: body.logisticsCompany,
-      trackingNo: body.logisticsNo,
-      note: body.note || '后台填写发货信息'
-    }, req);
+    const order = updateOrderFulfillment(
+      orderShip[1],
+      {
+        status: 'shipped',
+        carrier: body.logisticsCompany,
+        trackingNo: body.logisticsNo,
+        note: body.note || '后台填写发货信息',
+      },
+      req,
+    );
     appendAudit(req, 'order.shipped', 'order', order.id, {
       orderNo: order.orderNo,
       carrier: cleanText(body.logisticsCompany, 80),
-      trackingNo: cleanText(body.logisticsNo, 120)
+      trackingNo: cleanText(body.logisticsNo, 120),
     });
     sendJson(req, res, 200, { data: orderAsApiRecord(order) });
     return;
@@ -2858,7 +3201,11 @@ async function handleAdminRequest(req, res, url, route) {
 
   const orderRefunding = route.match(/^POST \/api\/admin\/orders\/([^/]+)\/refunding$/);
   if (orderRefunding) {
-    const order = updateOrderFulfillment(orderRefunding[1], { status: 'confirmed', note: '标记退款中' }, req);
+    const order = updateOrderFulfillment(
+      orderRefunding[1],
+      { status: 'confirmed', note: '标记退款中' },
+      req,
+    );
     appendAudit(req, 'order.refunding', 'order', order.id, { orderNo: order.orderNo });
     sendJson(req, res, 200, { data: { ...orderAsApiRecord(order), status: 'REFUNDING' } });
     return;
@@ -2866,7 +3213,11 @@ async function handleAdminRequest(req, res, url, route) {
 
   const orderRefunded = route.match(/^POST \/api\/admin\/orders\/([^/]+)\/refunded$/);
   if (orderRefunded) {
-    const order = updateOrderFulfillment(orderRefunded[1], { status: 'completed', note: '标记已退款' }, req);
+    const order = updateOrderFulfillment(
+      orderRefunded[1],
+      { status: 'completed', note: '标记已退款' },
+      req,
+    );
     appendAudit(req, 'order.refunded', 'order', order.id, { orderNo: order.orderNo });
     sendJson(req, res, 200, { data: { ...orderAsApiRecord(order), status: 'REFUNDED' } });
     return;
@@ -2877,15 +3228,19 @@ async function handleAdminRequest(req, res, url, route) {
     const body = await readBody(req);
     const data = body.data || body;
     const legacyStatus = orderStatusToLegacy(cleanText(data.status), cleanText(data.type));
-    const order = updateOrderFulfillment(orderUpdate[1], {
-      status: legacyStatus,
-      carrier: data.logisticsCompany,
-      trackingNo: data.logisticsNo,
-      note: data.remark || data.note
-    }, req);
+    const order = updateOrderFulfillment(
+      orderUpdate[1],
+      {
+        status: legacyStatus,
+        carrier: data.logisticsCompany,
+        trackingNo: data.logisticsNo,
+        note: data.remark || data.note,
+      },
+      req,
+    );
     appendAudit(req, 'order.updated', 'order', order.id, {
       orderNo: order.orderNo,
-      status: order.status
+      status: order.status,
     });
     sendJson(req, res, 200, { data: orderAsApiRecord(order) });
     return;
@@ -2899,7 +3254,7 @@ async function handleAdminRequest(req, res, url, route) {
       orderNo: order.orderNo,
       type: order.type,
       status: order.status,
-      note: cleanText(body.note, 800)
+      note: cleanText(body.note, 800),
     });
     sendJson(req, res, 200, { data: order });
     return;
@@ -2922,7 +3277,7 @@ async function handleRequest(req, res) {
       path: url.pathname,
       statusCode: res.statusCode,
       durationMs: Date.now() - startedAt,
-      ip: clientIp(req)
+      ip: clientIp(req),
     });
   });
 
@@ -2973,12 +3328,12 @@ async function handleRequest(req, res) {
         storageMode: 'json-fallback',
         aiProvider: KIMI_API_KEY ? 'kimi' : 'local',
         aiModel: KIMI_API_KEY ? KIMI_MODEL : undefined,
-        adminConfigured: Boolean(ADMIN_TOKEN)
+        adminConfigured: Boolean(ADMIN_TOKEN),
       };
       sendJson(req, res, 200, {
         ok: health.api === 'ok' && health.database === 'ok',
         ...health,
-        data: health
+        data: health,
       });
       return;
     }
@@ -3031,7 +3386,9 @@ async function handleRequest(req, res) {
       return;
     }
     if (route === 'GET /api/product-categories') {
-      sendJson(req, res, 200, { data: contentResourcePage('product-categories', url.searchParams) });
+      sendJson(req, res, 200, {
+        data: contentResourcePage('product-categories', url.searchParams),
+      });
       return;
     }
     if (route === 'GET /api/cameras') {
@@ -3044,15 +3401,17 @@ async function handleRequest(req, res) {
     }
     const cameraPlayUrl = route.match(/^POST \/api\/cameras\/([^/]+)\/play-url$/);
     if (cameraPlayUrl) {
-      const camera = livePayload(req).find((item) => item.id === decodeURIComponent(cameraPlayUrl[1]));
+      const camera = livePayload(req).find(
+        (item) => item.id === decodeURIComponent(cameraPlayUrl[1]),
+      );
       if (!camera) throw new HttpError(404, 'Camera not found');
       if (camera.enabled === false) throw new HttpError(409, 'Camera is disabled');
       sendJson(req, res, 200, {
         data: {
           playUrl: camera.hlsUrl || camera.liveUrl,
           expireAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
-          mode: camera.hlsUrl ? 'official' : 'development'
-        }
+          mode: camera.hlsUrl ? 'official' : 'development',
+        },
       });
       return;
     }
@@ -3084,7 +3443,7 @@ async function handleRequest(req, res) {
         service: record.service,
         date: record.date,
         people: record.people,
-        source: record.source
+        source: record.source,
       });
       sendJson(req, res, 201, { data: record, message: '预约已提交' });
       return;
@@ -3094,7 +3453,7 @@ async function handleRequest(req, res) {
       const record = appendRecord('feedback.json', validateFeedback(body), req);
       appendAudit(req, 'feedback.created', 'public', record.id, {
         nickname: record.nickname,
-        source: record.source
+        source: record.source,
       });
       sendJson(req, res, 201, { data: record, message: '反馈已提交' });
       return;
@@ -3132,8 +3491,13 @@ async function handleRequest(req, res) {
             answer,
             mode: source === 'kimi' ? 'official' : 'fallback',
             relatedItems: [],
-            suggestedQuestions: ['推荐一条游玩路线', '附近有什么美食', '停车场在哪里', '今天有哪些活动']
-          }
+            suggestedQuestions: [
+              '推荐一条游玩路线',
+              '附近有什么美食',
+              '停车场在哪里',
+              '今天有哪些活动',
+            ],
+          },
         });
         return;
       }
@@ -3143,8 +3507,8 @@ async function handleRequest(req, res) {
           reply: answer,
           source,
           location: LOCATION_TEXT,
-          context: REGION_KEYWORDS
-        }
+          context: REGION_KEYWORDS,
+        },
       });
       return;
     }
@@ -3152,7 +3516,13 @@ async function handleRequest(req, res) {
     sendError(req, res, 404, 'Not found');
   } catch (error) {
     const statusCode = error.statusCode || 500;
-    sendError(req, res, statusCode, statusCode >= 500 ? 'Internal server error' : error.message, error.detail || (statusCode >= 500 ? error.message : undefined));
+    sendError(
+      req,
+      res,
+      statusCode,
+      statusCode >= 500 ? 'Internal server error' : error.message,
+      error.detail || (statusCode >= 500 ? error.message : undefined),
+    );
   }
 }
 
@@ -3195,5 +3565,5 @@ if (require.main === module) {
 module.exports = {
   bootstrap,
   handleRequest,
-  startServer
+  startServer,
 };

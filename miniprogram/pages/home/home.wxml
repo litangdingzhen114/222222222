@@ -132,12 +132,12 @@
       </view>
     </view>
 
-    <section-title title="海林特色文创" moreText="更多" bind:moretap="onMoreProducts"></section-title>
+    <section-title title="海林农品预购" moreText="更多" bind:moretap="onMoreProducts"></section-title>
     <view class="product-panel card">
       <view class="product-head">
         <view>
-          <view class="product-title-main">文创好礼等您来选</view>
-          <view class="product-sub">把青田石色、田鱼朱金与瓯江山水带回家</view>
+          <view class="product-title-main">土鸡、土蜂蜜和山乡鲜味可预订</view>
+          <view class="product-sub">土鸡、土鸡蛋、黑猪肉、土蜂蜜，后台确认库存与履约</view>
         </view>
       </view>
       <scroll-view scroll-x="{{true}}" class="product-scroll" enable-flex="{{true}}">

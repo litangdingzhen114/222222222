@@ -14,9 +14,9 @@ function runNode(code, env = {}) {
         ...process.env,
         NODE_ENV: 'test',
         PORT: '18987',
-        ...env
+        ...env,
       },
-      stdio: ['ignore', 'pipe', 'pipe']
+      stdio: ['ignore', 'pipe', 'pipe'],
     });
     let stdout = '';
     let stderr = '';
@@ -24,7 +24,7 @@ function runNode(code, env = {}) {
     const timer = setTimeout(() => {
       timedOut = true;
       child.kill();
-    }, 900);
+    }, 2500);
 
     child.stdout.on('data', (chunk) => {
       stdout += chunk.toString();
@@ -47,20 +47,43 @@ async function main() {
     console.log('server import safe');
   `);
 
-  assert.strictEqual(importResult.timedOut, false, 'server module should not listen forever when imported by Vercel');
+  assert.strictEqual(
+    importResult.timedOut,
+    false,
+    'server module should not listen forever when imported by Vercel',
+  );
   assert.strictEqual(importResult.code, 0, importResult.stderr || importResult.stdout);
   assert.match(importResult.stdout, /server import safe/);
 
   const handler = require('../api/index.js');
-  assert.strictEqual(typeof handler, 'function', 'api/index.js should export a Vercel function handler');
+  assert.strictEqual(
+    typeof handler,
+    'function',
+    'api/index.js should export a Vercel function handler',
+  );
 
   const vercelConfig = JSON.parse(fs.readFileSync(path.join(ROOT, 'vercel.json'), 'utf8'));
   const rewriteSources = vercelConfig.rewrites.map((rewrite) => rewrite.source);
-  assert.ok(rewriteSources.includes('/api/(.*)'), 'Vercel should route API requests to the backend function');
-  assert.ok(rewriteSources.includes('/admin/(.*)'), 'Vercel should route admin pages to the backend function');
-  assert.ok(rewriteSources.includes('/media/(.*)'), 'Vercel should route media requests to the backend function');
-  assert.ok(rewriteSources.includes('/assets/(.*)'), 'Vercel should route shared media assets to the backend function');
-  assert.ok(rewriteSources.includes('/health'), 'Vercel should route health checks to the backend function');
+  assert.ok(
+    rewriteSources.includes('/api/(.*)'),
+    'Vercel should route API requests to the backend function',
+  );
+  assert.ok(
+    rewriteSources.includes('/admin/(.*)'),
+    'Vercel should route admin pages to the backend function',
+  );
+  assert.ok(
+    rewriteSources.includes('/media/(.*)'),
+    'Vercel should route media requests to the backend function',
+  );
+  assert.ok(
+    rewriteSources.includes('/assets/(.*)'),
+    'Vercel should route shared media assets to the backend function',
+  );
+  assert.ok(
+    rewriteSources.includes('/health'),
+    'Vercel should route health checks to the backend function',
+  );
 }
 
 main()

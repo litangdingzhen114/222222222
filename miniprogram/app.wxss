@@ -171,6 +171,22 @@ button::after {
   background: #D6D0C4;
 }
 
+.ph-product-chicken {
+  background: #E8D3A7;
+}
+
+.ph-product-eggs {
+  background: #EFE4CF;
+}
+
+.ph-product-pork {
+  background: #D7B3A6;
+}
+
+.ph-product-honey {
+  background: #E8C470;
+}
+
 .safe-bottom {
   padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
 }

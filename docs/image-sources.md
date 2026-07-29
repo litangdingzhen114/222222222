@@ -55,3 +55,21 @@
 - `miniprogram/assets/photos/ai-oujiang-postcards.jpg`
   - 用途：瓯江山村明信片
   - 生成原因：文创产品为拟建设内容，暂无真实商品图
+- `miniprogram/assets/photos/ai-product-native-chicken.jpg`
+  - 用途：山林散养土鸡商品卡
+  - 生成原因：一期农品预购为拟建设供应链，暂无统一授权商品摄影
+- `miniprogram/assets/photos/ai-product-native-eggs.jpg`
+  - 用途：农家土鸡蛋商品卡
+  - 生成原因：一期农品预购为拟建设供应链，暂无统一授权商品摄影
+- `miniprogram/assets/photos/ai-product-black-pork.jpg`
+  - 用途：山乡黑猪肉商品卡
+  - 生成原因：一期农品预购为拟建设供应链，暂无统一授权商品摄影
+- `miniprogram/assets/photos/ai-product-honey.jpg`
+  - 用途：海林土蜂蜜商品卡、首页农品预购卡
+  - 生成原因：一期农品预购为拟建设供应链，暂无统一授权商品摄影
+- `miniprogram/assets/photos/ai-map-tianpu-station.jpg`
+  - 用途：田铺驿站地图点位和首页服务推荐
+  - 生成原因：暂未取得田铺驿站可上线授权实拍图，先用生成图占位
+- `miniprogram/assets/photos/ai-map-hailin-creek.jpg`
+  - 用途：海林·溪谷地图点位、首页推荐和 AI 导游入口氛围图
+  - 生成原因：暂未取得海林·溪谷可上线授权实拍图，先用生成图占位
