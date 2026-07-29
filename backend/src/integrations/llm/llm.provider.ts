@@ -51,7 +51,7 @@ export class LlmProvider {
           },
           { role: 'user', content: `问题：${input.question}\n\n数据库上下文：\n${input.context}` },
         ],
-        temperature: 0.2,
+        temperature: this.temperatureFor(model),
       }),
     });
     if (!response.ok) {
@@ -71,5 +71,9 @@ export class LlmProvider {
       return `我暂时没有在系统数据库里找到和“${question}”直接相关的内容，可以换个更具体的问题，比如景点、停车场、美食、采摘或活动。`;
     }
     return `根据系统里已经配置的海林村数据，和“${question}”相关的信息如下：\n${context}`;
+  }
+
+  private temperatureFor(model: string) {
+    return /^kimi-k2/i.test(model) ? 1 : 0.2;
   }
 }

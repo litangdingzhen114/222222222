@@ -578,7 +578,7 @@ export class IntegrationConfigService {
         body: JSON.stringify({
           model,
           messages: [{ role: 'user', content: 'ping' }],
-          temperature: 0,
+          temperature: this.llmTemperatureFor(model),
           max_tokens: 8,
         }),
       },
@@ -612,6 +612,10 @@ export class IntegrationConfigService {
     } finally {
       clearTimeout(timer);
     }
+  }
+
+  private llmTemperatureFor(model: string) {
+    return /^kimi-k2/i.test(model) ? 1 : 0.2;
   }
 
   private groupDefinition(service: string) {
