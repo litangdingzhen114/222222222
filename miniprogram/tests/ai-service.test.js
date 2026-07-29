@@ -55,7 +55,7 @@ function createWxMock(responses) {
   assert.strictEqual(result.source, "kimi");
   assert.strictEqual(
     wxMock.requests()[0].url,
-    "https://www.hailin.store/api/v1/ai-guide/chat",
+    "https://api.hailin.store/api/v1/ai-guide/chat",
   );
   assert.deepStrictEqual(wxMock.requests()[0].data, {
     question: "推荐一条路线",
@@ -71,7 +71,7 @@ function createWxMock(responses) {
   assert.strictEqual(fallbackWx.requests().length, 1);
   assert.strictEqual(
     fallbackWx.requests()[0].url,
-    "https://www.hailin.store/api/v1/ai-guide/chat",
+    "https://api.hailin.store/api/v1/ai-guide/chat",
   );
   assert.deepStrictEqual(
     ai.normalizedHistory([

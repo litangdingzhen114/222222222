@@ -7,11 +7,11 @@
 文件：`miniprogram/config/service.js`
 
 ```js
-apiBaseUrl: "https://www.hailin.store";
+apiBaseUrl: "https://api.hailin.store";
 ```
 
-当前 Vercel 演示版的接口与后台共用 `https://www.hailin.store`。等阿里云独立后端
-`https://api.hailin.store` 的健康检查稳定通过后，再把小程序 API 域名切换到独立 API。
+当前 Vercel 演示版后台继续使用 `https://www.hailin.store/admin/`。阿里云独立后端
+`https://api.hailin.store` 的健康检查已经通过，小程序 API 域名默认指向独立 API。
 
 本地开发可以使用：
 

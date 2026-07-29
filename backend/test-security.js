@@ -8,7 +8,7 @@ const serviceConfig = require('../miniprogram/config/service');
 
 const HOST = '127.0.0.1';
 const PORT = 18889;
-const BACKEND_DOMAIN = 'https://www.hailin.store';
+const BACKEND_DOMAIN = 'https://api.hailin.store';
 const ADMIN_TOKEN = 'test-admin-production-token-32-chars';
 
 function request(url, options = {}) {
@@ -43,6 +43,14 @@ function stopProcess(child) {
     child.once('exit', resolve);
     child.kill();
   });
+}
+
+async function waitForExit(child, timeoutMs = 5000) {
+  if (!child || child.exitCode !== null || child.signalCode !== null) return;
+  await Promise.race([
+    new Promise((resolve) => child.once('exit', resolve)),
+    wait(timeoutMs)
+  ]);
 }
 
 async function waitForBackend() {
@@ -86,7 +94,7 @@ async function assertProductionRejectsMissingAdminToken() {
   });
 
   try {
-    await wait(900);
+    await waitForExit(backend);
     assert.notStrictEqual(backend.exitCode, null, 'production server should exit when ADMIN_TOKEN is missing');
     assert.notStrictEqual(backend.exitCode, 0, 'missing ADMIN_TOKEN should be a startup failure');
     assert.match(stderr, /ADMIN_TOKEN/, 'startup failure should explain ADMIN_TOKEN requirement');

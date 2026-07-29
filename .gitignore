@@ -23,6 +23,7 @@ backend/storage/logs/*.txt
 .vercel/
 .codex/
 .agents/
+.playwright-cli/
 work/
 outputs/
 project.private.config.json

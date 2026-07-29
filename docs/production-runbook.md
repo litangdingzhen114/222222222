@@ -2,7 +2,7 @@
 
 ## 上线前配置
 
-1. 准备 HTTPS API 域名：当前 Vercel 演示使用 `https://www.hailin.store`，阿里云生产 API 建议使用 `https://api.hailin.store`。
+1. 准备 HTTPS API 域名：当前小程序使用阿里云生产 API `https://api.hailin.store`，Vercel 后台展示域保留为 `https://www.hailin.store`。
 2. 在微信公众平台配置 request 合法域名。
 3. 在服务器创建 `backend/.env`。
 4. 设置强随机 `ADMIN_TOKEN`，不要使用开发默认 Token。
@@ -58,8 +58,8 @@ Vercel 环境变量：
 
 ```text
 NODE_ENV=production
-PUBLIC_BASE_URL=https://www.hailin.store
-ALLOWED_ORIGINS=https://www.hailin.store,https://hailin.store
+PUBLIC_BASE_URL=https://api.hailin.store
+ALLOWED_ORIGINS=https://www.hailin.store,https://hailin.store,https://api.hailin.store
 ADMIN_TOKEN=换成强随机Token
 KIMI_API_KEY=你的KimiKey
 KIMI_MODEL=moonshot-v1-8k
