@@ -47,5 +47,6 @@ module.exports = {
   ai: {
     provider: "backend-proxy",
     fallbackEnabled: true,
+    requestTimeout: 20000,
   },
 };

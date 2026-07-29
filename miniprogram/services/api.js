@@ -1,13 +1,17 @@
-const serviceConfig = require('../config/service');
+const serviceConfig = require("../config/service");
 
-const API_BASE_OVERRIDE_KEY = 'hailin-api-base-url';
-const ACCESS_TOKEN_KEY = 'hailin-access-token';
-const REFRESH_TOKEN_KEY = 'hailin-refresh-token';
-const USER_PROFILE_KEY = 'hailin-user-profile';
+const API_BASE_OVERRIDE_KEY = "hailin-api-base-url";
+const ACCESS_TOKEN_KEY = "hailin-access-token";
+const REFRESH_TOKEN_KEY = "hailin-refresh-token";
+const USER_PROFILE_KEY = "hailin-user-profile";
 
 function safeWxCall(methodName, fallback) {
   try {
-    if (typeof wx === 'undefined' || !wx || typeof wx[methodName] !== 'function') {
+    if (
+      typeof wx === "undefined" ||
+      !wx ||
+      typeof wx[methodName] !== "function"
+    ) {
       return fallback;
     }
     return wx[methodName]();
@@ -17,35 +21,47 @@ function safeWxCall(methodName, fallback) {
 }
 
 function isDevtools() {
-  const info = safeWxCall('getSystemInfoSync', {});
-  return info && info.platform === 'devtools';
+  const info = safeWxCall("getSystemInfoSync", {});
+  return info && info.platform === "devtools";
 }
 
 function storageApiBaseUrl() {
   try {
-    if (typeof wx === 'undefined' || !wx || typeof wx.getStorageSync !== 'function') {
-      return '';
+    if (
+      typeof wx === "undefined" ||
+      !wx ||
+      typeof wx.getStorageSync !== "function"
+    ) {
+      return "";
     }
-    return String(wx.getStorageSync(API_BASE_OVERRIDE_KEY) || '').trim();
+    return String(wx.getStorageSync(API_BASE_OVERRIDE_KEY) || "").trim();
   } catch (error) {
-    return '';
+    return "";
   }
 }
 
 function storageGet(key) {
   try {
-    if (typeof wx === 'undefined' || !wx || typeof wx.getStorageSync !== 'function') {
-      return '';
+    if (
+      typeof wx === "undefined" ||
+      !wx ||
+      typeof wx.getStorageSync !== "function"
+    ) {
+      return "";
     }
-    return wx.getStorageSync(key) || '';
+    return wx.getStorageSync(key) || "";
   } catch (error) {
-    return '';
+    return "";
   }
 }
 
 function storageSet(key, value) {
   try {
-    if (typeof wx !== 'undefined' && wx && typeof wx.setStorageSync === 'function') {
+    if (
+      typeof wx !== "undefined" &&
+      wx &&
+      typeof wx.setStorageSync === "function"
+    ) {
       wx.setStorageSync(key, value);
     }
   } catch (error) {
@@ -55,7 +71,11 @@ function storageSet(key, value) {
 
 function storageRemove(key) {
   try {
-    if (typeof wx !== 'undefined' && wx && typeof wx.removeStorageSync === 'function') {
+    if (
+      typeof wx !== "undefined" &&
+      wx &&
+      typeof wx.removeStorageSync === "function"
+    ) {
       wx.removeStorageSync(key);
     }
   } catch (error) {
@@ -66,8 +86,9 @@ function storageRemove(key) {
 function resolveApiBaseUrl() {
   const overrideUrl = storageApiBaseUrl();
   if (overrideUrl) return overrideUrl;
-  if (isDevtools() && serviceConfig.devApiBaseUrl) return serviceConfig.devApiBaseUrl;
-  return serviceConfig.apiBaseUrl || '';
+  if (isDevtools() && serviceConfig.devApiBaseUrl)
+    return serviceConfig.devApiBaseUrl;
+  return serviceConfig.apiBaseUrl || "";
 }
 
 function hasBackend() {
@@ -75,14 +96,14 @@ function hasBackend() {
 }
 
 function joinUrl(baseUrl, endpoint) {
-  const cleanBase = baseUrl.replace(/\/+$/, '');
-  const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  const cleanBase = baseUrl.replace(/\/+$/, "");
+  const cleanEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
   return `${cleanBase}${cleanEndpoint}`;
 }
 
 function mediaUrl(pathname) {
   const baseUrl = resolveApiBaseUrl();
-  if (!baseUrl) return '';
+  if (!baseUrl) return "";
   return joinUrl(baseUrl, pathname);
 }
 
@@ -95,16 +116,16 @@ function normalizePayload(response) {
 
 function request(endpoint, options = {}) {
   if (!hasBackend()) {
-    return Promise.reject(new Error('Backend is not configured'));
+    return Promise.reject(new Error("Backend is not configured"));
   }
 
-  const method = options.method || 'GET';
+  const method = options.method || "GET";
   const data = options.data || {};
   const url = joinUrl(resolveApiBaseUrl(), endpoint);
   const token = getAccessToken();
   const header = {
-    'content-type': 'application/json',
-    ...(options.header || {})
+    "content-type": "application/json",
+    ...(options.header || {}),
   };
   if (token) header.Authorization = `Bearer ${token}`;
 
@@ -113,7 +134,7 @@ function request(endpoint, options = {}) {
       url,
       method,
       data,
-      timeout: serviceConfig.requestTimeout,
+      timeout: options.timeout || serviceConfig.requestTimeout,
       header,
       success(result) {
         if (result.statusCode >= 200 && result.statusCode < 300) {
@@ -124,17 +145,17 @@ function request(endpoint, options = {}) {
       },
       fail(error) {
         reject(error);
-      }
+      },
     });
   });
 }
 
 function getAccessToken() {
-  return String(storageGet(ACCESS_TOKEN_KEY) || '').trim();
+  return String(storageGet(ACCESS_TOKEN_KEY) || "").trim();
 }
 
 function getRefreshToken() {
-  return String(storageGet(REFRESH_TOKEN_KEY) || '').trim();
+  return String(storageGet(REFRESH_TOKEN_KEY) || "").trim();
 }
 
 function saveAuthSession(session) {
@@ -152,8 +173,10 @@ function clearAuthSession() {
 
 function serviceModeText() {
   const baseUrl = resolveApiBaseUrl();
-  if (!baseUrl) return '内容预览模式';
-  return baseUrl === serviceConfig.devApiBaseUrl ? '开发服务已连接' : '服务已连接';
+  if (!baseUrl) return "内容预览模式";
+  return baseUrl === serviceConfig.devApiBaseUrl
+    ? "开发服务已连接"
+    : "服务已连接";
 }
 
 module.exports = {
@@ -166,5 +189,5 @@ module.exports = {
   saveAuthSession,
   clearAuthSession,
   serviceModeText,
-  serviceConfig
+  serviceConfig,
 };

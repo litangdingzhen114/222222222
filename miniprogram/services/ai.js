@@ -57,6 +57,7 @@ function askGuide(question, history) {
 
   return request(v1Endpoint, {
     method: "POST",
+    timeout: serviceConfig.ai.requestTimeout,
     data: {
       question,
     },
@@ -65,6 +66,7 @@ function askGuide(question, history) {
     .catch(() =>
       request(legacyEndpoint, {
         method: "POST",
+        timeout: serviceConfig.ai.requestTimeout,
         data: {
           question,
           history: history || [],

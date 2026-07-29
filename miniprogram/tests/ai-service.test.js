@@ -60,6 +60,7 @@ function createWxMock(responses) {
   assert.deepStrictEqual(wxMock.requests()[0].data, {
     question: "推荐一条路线",
   });
+  assert.strictEqual(wxMock.requests()[0].timeout, 20000);
 
   const fallbackWx = createWxMock([
     { statusCode: 500, data: { message: "v1 temporarily unavailable" } },
@@ -82,6 +83,7 @@ function createWxMock(responses) {
     "https://api.hailin.store/api/hailin/ai-guide",
   );
   assert.strictEqual(fallbackWx.requests()[1].data.question, "停车场在哪里");
+  assert.strictEqual(fallbackWx.requests()[1].timeout, 20000);
 
   delete global.wx;
   console.log("ai service requests v1 kimi proxy ok");
