@@ -1,5 +1,15 @@
 const { request, serviceConfig, hasBackend } = require("./api");
 
+function normalizedHistory(history) {
+  return (Array.isArray(history) ? history : [])
+    .filter((item) => item && item.role && item.content)
+    .slice(-8)
+    .map((item) => ({
+      role: item.role === "assistant" ? "assistant" : "user",
+      content: String(item.content || "").slice(0, 600),
+    }));
+}
+
 function normalizeRemoteReply(result, question) {
   const reply = result && (result.answer || result.reply || result.content);
   const mode = result && result.mode;
@@ -53,36 +63,41 @@ function askGuide(question, history) {
 
   const v1Endpoint =
     serviceConfig.v1Endpoints.aiGuide || "/api/v1/ai-guide/chat";
-  const legacyEndpoint = serviceConfig.endpoints.aiGuide;
+  const legacyEndpoint =
+    serviceConfig.ai.legacyFallbackEnabled !== false
+      ? serviceConfig.endpoints.aiGuide
+      : "";
+  const payload = {
+    question,
+    history: normalizedHistory(history),
+  };
 
   return request(v1Endpoint, {
     method: "POST",
     timeout: serviceConfig.ai.requestTimeout,
-    data: {
-      question,
-    },
+    data: payload,
   })
     .then((result) => normalizeRemoteReply(result, question))
-    .catch(() =>
-      request(legacyEndpoint, {
+    .catch((v1Error) => {
+      if (!legacyEndpoint) {
+        return Promise.reject(v1Error);
+      }
+      return request(legacyEndpoint, {
         method: "POST",
         timeout: serviceConfig.ai.requestTimeout,
         data: {
-          question,
-          history: history || [],
+          ...payload,
           location: serviceConfig.locationText,
           context: serviceConfig.regionKeywords,
         },
       })
         .then((result) => normalizeRemoteReply(result, question))
-        .catch(() => ({
-          reply: buildLocalReply(question),
-          source: "local",
-        })),
-    );
+        .catch(() => Promise.reject(v1Error));
+    });
 }
 
 module.exports = {
   askGuide,
   buildLocalReply,
+  normalizedHistory,
 };

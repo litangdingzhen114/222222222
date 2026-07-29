@@ -103,6 +103,11 @@
   color: #A7472D;
 }
 
+.source-tag.error {
+  background: #FDECEC;
+  color: #A2322A;
+}
+
 .quick-row {
   display: flex;
   gap: 12rpx;

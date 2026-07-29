@@ -55,35 +55,36 @@ function createWxMock(responses) {
   assert.strictEqual(result.source, "kimi");
   assert.strictEqual(
     wxMock.requests()[0].url,
-    "https://api.hailin.store/api/v1/ai-guide/chat",
+    "https://www.hailin.store/api/v1/ai-guide/chat",
   );
   assert.deepStrictEqual(wxMock.requests()[0].data, {
     question: "推荐一条路线",
+    history: [],
   });
   assert.strictEqual(wxMock.requests()[0].timeout, 20000);
 
   const fallbackWx = createWxMock([
     { statusCode: 500, data: { message: "v1 temporarily unavailable" } },
-    {
-      data: {
-        code: 0,
-        data: {
-          reply: "旧兼容接口回复",
-          source: "kimi",
-        },
-      },
-    },
   ]);
   ai = loadAi(fallbackWx);
-  result = await ai.askGuide("停车场在哪里", []);
-  assert.strictEqual(result.reply, "旧兼容接口回复");
-  assert.strictEqual(result.source, "kimi");
+  await assert.rejects(() => ai.askGuide("停车场在哪里", []), /Request failed/);
+  assert.strictEqual(fallbackWx.requests().length, 1);
   assert.strictEqual(
-    fallbackWx.requests()[1].url,
-    "https://api.hailin.store/api/hailin/ai-guide",
+    fallbackWx.requests()[0].url,
+    "https://www.hailin.store/api/v1/ai-guide/chat",
   );
-  assert.strictEqual(fallbackWx.requests()[1].data.question, "停车场在哪里");
-  assert.strictEqual(fallbackWx.requests()[1].timeout, 20000);
+  assert.deepStrictEqual(
+    ai.normalizedHistory([
+      { role: "assistant", content: "你好" },
+      { role: "user", content: "推荐路线" },
+      { role: "system", content: "ignore role becomes user" },
+    ]),
+    [
+      { role: "assistant", content: "你好" },
+      { role: "user", content: "推荐路线" },
+      { role: "user", content: "ignore role becomes user" },
+    ],
+  );
 
   delete global.wx;
   console.log("ai service requests v1 kimi proxy ok");

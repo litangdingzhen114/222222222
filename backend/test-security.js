@@ -8,7 +8,7 @@ const serviceConfig = require('../miniprogram/config/service');
 
 const HOST = '127.0.0.1';
 const PORT = 18889;
-const BACKEND_DOMAIN = 'https://api.hailin.store';
+const BACKEND_DOMAIN = 'https://www.hailin.store';
 const ADMIN_TOKEN = 'test-admin-production-token-32-chars';
 
 function request(url, options = {}) {

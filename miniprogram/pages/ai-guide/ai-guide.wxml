@@ -14,7 +14,7 @@
       <view class="avatar">{{item.role === 'user' ? '客' : '林'}}</view>
       <view class="message-bubble">
         <view wx:if="{{item.role === 'assistant' && item.source}}" class="source-tag {{item.source}}">
-          {{item.source === 'kimi' ? 'Kimi 回复' : item.source === 'backend-fallback' ? '数据库检索' : item.source === 'backend' ? '在线回复' : item.source === 'loading' ? '连接中' : '导览建议'}}
+          {{item.source === 'kimi' ? 'Kimi 回复' : item.source === 'backend-fallback' ? '数据库检索' : item.source === 'backend' ? '在线回复' : item.source === 'loading' ? '连接中' : item.source === 'error' ? '服务未连接' : '导览建议'}}
         </view>
         <text>{{item.content}}</text>
       </view>

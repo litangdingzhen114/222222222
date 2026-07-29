@@ -91,9 +91,9 @@ Page({
       })
       .catch(() => {
         this.playAssistantReply(loadingMessage.id, {
-          source: "local",
+          source: "error",
           reply:
-            "小林刚才没有连上服务，请稍后再试，或先从首页的路线、美食和地图入口查看。",
+            "小林没有连上 AI 服务。请确认小程序 request 合法域名包含 https://www.hailin.store，并且后台 Kimi Key 已保存；修好后这里会显示“Kimi 回复”。",
         });
       });
   },

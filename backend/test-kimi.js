@@ -136,6 +136,18 @@ async function runKimiProxyTest() {
     assert.ok(Array.isArray(capturedRequest.body.messages), 'messages should be an array');
     assert.ok(capturedRequest.body.messages.some((item) => item.role === 'system'));
     assert.ok(capturedRequest.body.messages.some((item) => item.role === 'user' && item.content.includes('半日路线')));
+
+    const v1Result = await requestJson(`http://${HOST}:${BACKEND_PORT}/api/v1/ai-guide/chat`, {
+      method: 'POST',
+      body: JSON.stringify({
+        question: '附近有什么美食',
+        history: [{ role: 'user', content: '我想吃田鱼' }]
+      })
+    });
+
+    assert.strictEqual(v1Result.status, 201);
+    assert.strictEqual(v1Result.body.data.mode, 'official');
+    assert.strictEqual(v1Result.body.data.answer, 'Kimi stub reply');
   } finally {
     await stopBackend(backend);
     await closeServer(kimiStub);

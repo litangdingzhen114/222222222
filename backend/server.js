@@ -3471,7 +3471,8 @@ async function handleRequest(req, res) {
       sendJson(req, res, 200, { data: record, message: '订单已取消' });
       return;
     }
-    if (route === 'POST /api/hailin/ai-guide' || route === 'POST /api/v1/ai-guide/chat') {
+    const aiGuideChatRoute = route === 'POST /api/ai-guide/chat' || route === 'POST /api/v1/ai-guide/chat';
+    if (route === 'POST /api/hailin/ai-guide' || aiGuideChatRoute) {
       const body = await readBody(req);
       const question = body.message || body.question || '';
       let reply = null;
@@ -3485,7 +3486,7 @@ async function handleRequest(req, res) {
       }
 
       const answer = reply || localGuideReply(question);
-      if (route === 'POST /api/v1/ai-guide/chat') {
+      if (aiGuideChatRoute) {
         sendJson(req, res, 201, {
           data: {
             answer,
