@@ -394,6 +394,10 @@ export type IntegrationConfigGroup = {
   service: string;
   name: string;
   description: string;
+  links: Array<{
+    label: string;
+    url: string;
+  }>;
   updatedAt?: string;
   updatedBy?: string;
   fields: IntegrationConfigField[];

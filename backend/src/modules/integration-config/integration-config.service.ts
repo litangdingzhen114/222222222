@@ -24,10 +24,16 @@ interface IntegrationFieldDefinition {
   help?: string;
 }
 
+export interface IntegrationLinkDefinition {
+  label: string;
+  url: string;
+}
+
 interface IntegrationGroupDefinition {
   service: string;
   name: string;
   description: string;
+  links: IntegrationLinkDefinition[];
   fields: IntegrationFieldDefinition[];
 }
 
@@ -48,6 +54,7 @@ export interface IntegrationConfigGroupState {
   service: string;
   name: string;
   description: string;
+  links: IntegrationLinkDefinition[];
   updatedAt?: Date;
   updatedBy?: string;
   fields: IntegrationConfigFieldState[];
@@ -70,6 +77,13 @@ export class IntegrationConfigService {
       service: 'wechat',
       name: '微信小程序',
       description: '用于 wx.login code2Session、手机号能力和小程序登录。',
+      links: [
+        { label: '微信公众平台', url: 'https://mp.weixin.qq.com/' },
+        {
+          label: '小程序开发管理',
+          url: 'https://developers.weixin.qq.com/miniprogram/dev/framework/',
+        },
+      ],
       fields: [
         {
           key: 'WECHAT_APP_ID',
@@ -98,6 +112,13 @@ export class IntegrationConfigService {
       service: 'wechatPay',
       name: '微信支付',
       description: '用于 JSAPI 下单、支付回调验签和支付状态同步。',
+      links: [
+        { label: '微信支付商户平台', url: 'https://pay.weixin.qq.com/' },
+        {
+          label: 'API v3 接入文档',
+          url: 'https://pay.wechatpay.cn/doc/v3/merchant/4012791850',
+        },
+      ],
       fields: [
         { key: 'WECHAT_PAY_APP_ID', label: '支付 AppID', secret: false, required: true },
         { key: 'WECHAT_PAY_MCH_ID', label: '商户号', secret: false, required: true },
@@ -135,6 +156,10 @@ export class IntegrationConfigService {
       service: 'ezviz',
       name: '萤石云直播',
       description: '用于缓存萤石云 accessToken 并动态获取直播播放地址。',
+      links: [
+        { label: '萤石开放平台', url: 'https://open.ys7.com/' },
+        { label: '开发者服务', url: 'https://open.ys7.com/help' },
+      ],
       fields: [
         { key: 'EZVIZ_APP_KEY', label: 'AppKey', secret: false, required: true },
         { key: 'EZVIZ_APP_SECRET', label: 'AppSecret', secret: true, required: true },
@@ -150,6 +175,10 @@ export class IntegrationConfigService {
       service: 'amap',
       name: '高德地图',
       description: '用于服务端地理编码、行政区或后续路径能力。',
+      links: [
+        { label: '高德开放平台', url: 'https://lbs.amap.com/' },
+        { label: 'Key 控制台', url: 'https://console.amap.com/dev/key/app' },
+      ],
       fields: [
         {
           key: 'AMAP_KEY',
@@ -170,6 +199,10 @@ export class IntegrationConfigService {
       service: 'storage',
       name: '文件存储',
       description: '开发环境可用本地存储，生产环境建议切换腾讯云 COS。',
+      links: [
+        { label: '腾讯云 COS', url: 'https://cloud.tencent.com/product/cos' },
+        { label: '访问密钥管理', url: 'https://console.cloud.tencent.com/cam/capi' },
+      ],
       fields: [
         {
           key: 'STORAGE_DRIVER',
@@ -199,6 +232,10 @@ export class IntegrationConfigService {
       service: 'llm',
       name: 'AI 导游模型',
       description: '用于 AI 导游回答生成；未配置时使用数据库检索 fallback。',
+      links: [
+        { label: 'Moonshot 控制台', url: 'https://platform.moonshot.cn/console/api-keys' },
+        { label: 'OpenAI API Keys', url: 'https://platform.openai.com/api-keys' },
+      ],
       fields: [
         { key: 'LLM_PROVIDER', label: '模型供应商', secret: false, placeholder: 'kimi/openai' },
         {
@@ -242,6 +279,7 @@ export class IntegrationConfigService {
         service: group.service,
         name: group.name,
         description: group.description,
+        links: group.links,
         updatedAt: latest?.updatedAt,
         updatedBy: latest?.updatedBy?.displayName || latest?.updatedBy?.username,
         fields: group.fields.map((field) => this.fieldState(field, byKey.get(field.key))),

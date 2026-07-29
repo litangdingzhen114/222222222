@@ -5,6 +5,7 @@ import {
   CloudServerOutlined,
   ExclamationCircleOutlined,
   ExperimentOutlined,
+  LinkOutlined,
   SaveOutlined,
   SafetyCertificateOutlined,
 } from '@ant-design/icons';
@@ -139,6 +140,21 @@ function ConfigGroupForm({ group }: { group: IntegrationConfigGroup }) {
 
   return (
     <Form form={form} layout="vertical">
+      {group.links?.length ? (
+        <Space wrap style={{ marginBottom: 16 }}>
+          {group.links.map((link) => (
+            <Button
+              key={link.url}
+              icon={<LinkOutlined />}
+              href={link.url}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {link.label}
+            </Button>
+          ))}
+        </Space>
+      ) : null}
       <Row gutter={[16, 0]}>
         {group.fields.map((field) => {
           const source = sourceLabel[field.source];
