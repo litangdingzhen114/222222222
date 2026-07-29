@@ -38,5 +38,23 @@ export class CreateFeedbackDto {
 export class AiGuideChatDto {
   @IsString()
   @Length(1, 500)
-  question!: string;
+  @IsOptional()
+  question?: string;
+
+  @IsString()
+  @Length(1, 500)
+  @IsOptional()
+  message?: string;
+
+  @IsArray()
+  @IsOptional()
+  history?: unknown[];
+
+  @IsString()
+  @IsOptional()
+  location?: string;
+
+  @IsArray()
+  @IsOptional()
+  context?: string[];
 }

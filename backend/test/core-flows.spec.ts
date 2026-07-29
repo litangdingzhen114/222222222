@@ -1,4 +1,9 @@
-import { ConflictException, ForbiddenException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
@@ -19,6 +24,7 @@ import { RolesGuard } from '../src/common/guards/roles.guard';
 import { PrismaService } from '../src/database/prisma.service';
 import { AuthService } from '../src/modules/auth/auth.service';
 import { CommerceService } from '../src/modules/commerce/commerce.service';
+import { EngagementService } from '../src/modules/engagement/engagement.service';
 import { PaymentsService } from '../src/modules/payments/payments.service';
 import { ReservationsService } from '../src/modules/reservations/reservations.service';
 
@@ -335,5 +341,39 @@ describe('支付回调重复通知测试', () => {
     await expect(
       new PaymentsService(prisma, adapter as never).handleWechatNotify({}, '{}', {}),
     ).rejects.toThrow(NotFoundException);
+  });
+});
+
+describe('AI 导游接口兼容测试', () => {
+  function prismaForAi() {
+    return {
+      scenicSpot: { findMany: jest.fn().mockResolvedValue([]) },
+      travelRoute: { findMany: jest.fn().mockResolvedValue([]) },
+      food: { findMany: jest.fn().mockResolvedValue([]) },
+      homestay: { findMany: jest.fn().mockResolvedValue([]) },
+      farm: { findMany: jest.fn().mockResolvedValue([]) },
+      activity: { findMany: jest.fn().mockResolvedValue([]) },
+      mapPoint: { findMany: jest.fn().mockResolvedValue([]) },
+    } as unknown as PrismaService;
+  }
+
+  it('兼容旧小程序 message 字段并调用 LLM Provider', async () => {
+    const llm = {
+      chat: jest.fn().mockResolvedValue({ mode: 'official', answer: 'Kimi route answer' }),
+    };
+    const result = await new EngagementService(prismaForAi(), llm as never).aiChat({
+      message: '停车场在哪里',
+      history: [],
+    });
+    expect(result.mode).toBe('official');
+    expect(result.answer).toBe('Kimi route answer');
+    expect(llm.chat).toHaveBeenCalledWith({ question: '停车场在哪里', context: '' });
+  });
+
+  it('空问题仍然返回明确参数错误', async () => {
+    const llm = { chat: jest.fn() };
+    await expect(new EngagementService(prismaForAi(), llm as never).aiChat({})).rejects.toThrow(
+      BadRequestException,
+    );
   });
 });

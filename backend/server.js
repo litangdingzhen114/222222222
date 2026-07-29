@@ -1739,7 +1739,7 @@ async function askKimi(body) {
         { role: 'system', content: instructions },
         { role: 'user', content: prompt.input }
       ],
-      temperature: 0.3
+      temperature: /^kimi-k2/i.test(KIMI_MODEL) ? 1 : 0.3
     })
   });
 
@@ -3112,7 +3112,7 @@ async function handleRequest(req, res) {
       sendJson(req, res, 200, { data: record, message: '订单已取消' });
       return;
     }
-    if (route === 'POST /api/hailin/ai-guide') {
+    if (route === 'POST /api/hailin/ai-guide' || route === 'POST /api/v1/ai-guide/chat') {
       const body = await readBody(req);
       const question = body.message || body.question || '';
       let reply = null;
@@ -3125,9 +3125,22 @@ async function handleRequest(req, res) {
         logEvent({ level: 'warn', message: 'kimi_request_failed', detail: error.message });
       }
 
+      const answer = reply || localGuideReply(question);
+      if (route === 'POST /api/v1/ai-guide/chat') {
+        sendJson(req, res, 201, {
+          data: {
+            answer,
+            mode: source === 'kimi' ? 'official' : 'fallback',
+            relatedItems: [],
+            suggestedQuestions: ['推荐一条游玩路线', '附近有什么美食', '停车场在哪里', '今天有哪些活动']
+          }
+        });
+        return;
+      }
+
       sendJson(req, res, 200, {
         data: {
-          reply: reply || localGuideReply(question),
+          reply: answer,
           source,
           location: LOCATION_TEXT,
           context: REGION_KEYWORDS

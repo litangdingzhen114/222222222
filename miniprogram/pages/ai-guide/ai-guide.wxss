@@ -88,6 +88,16 @@
   color: #0F6B67;
 }
 
+.source-tag.kimi {
+  background: #E6F0FF;
+  color: #1E4F9A;
+}
+
+.source-tag.backend-fallback {
+  background: #EEF2E6;
+  color: #5E6F2E;
+}
+
 .source-tag.loading {
   background: #F4E9DA;
   color: #A7472D;

@@ -1,4 +1,9 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ContentStatus, FeedbackStatus, TokenSubjectType } from '@prisma/client';
 import { getPagination, PageQueryDto, toPageResult } from '../../common/dto/page.dto';
 import { PrismaService } from '../../database/prisma.service';
@@ -103,17 +108,24 @@ export class EngagementService {
   }
 
   async aiChat(dto: AiGuideChatDto) {
-    const contextItems = await this.searchContext(dto.question);
+    const question = this.guideQuestion(dto);
+    const contextItems = await this.searchContext(question);
     const context = contextItems
       .map((item, index) => `${index + 1}. [${item.type}] ${item.title}：${item.summary}`)
       .join('\n');
-    const llm = await this.llm.chat({ question: dto.question, context });
+    const llm = await this.llm.chat({ question, context });
     return {
       answer: llm.answer,
       mode: llm.mode,
       relatedItems: contextItems,
       suggestedQuestions: this.suggestions().slice(0, 4),
     };
+  }
+
+  private guideQuestion(dto: AiGuideChatDto) {
+    const question = String(dto.question || dto.message || '').trim();
+    if (!question) throw new BadRequestException('question is required');
+    return question.slice(0, 500);
   }
 
   private async searchContext(question: string) {
