@@ -2,7 +2,8 @@
   "outputDirectory": "backend/admin",
   "functions": {
     "api/index.js": {
-      "maxDuration": 30
+      "maxDuration": 30,
+      "includeFiles": "miniprogram/assets/videos/hailin-live.mp4"
     }
   },
   "rewrites": [
