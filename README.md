@@ -43,7 +43,7 @@ npm run admin:build
 
 - 当前 Vercel 演示和后台使用 `https://www.hailin.store`
 - 阿里云生产 API 使用 `https://api.hailin.store`
-- 小程序合法 request/upload/download 域名配置 `https://api.hailin.store`
+- 小程序合法 request/upload/download 域名优先配置 `https://www.hailin.store`，`https://api.hailin.store` 保留为阿里云直连备用
 - 后台管理入口为 `https://www.hailin.store/admin/`
 
 ## 生产环境变量

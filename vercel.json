@@ -8,6 +8,18 @@
   },
   "rewrites": [
     {
+      "source": "/api/v1/:path*",
+      "destination": "https://api.hailin.store/api/v1/:path*"
+    },
+    {
+      "source": "/api/hailin/:path*",
+      "destination": "https://api.hailin.store/api/hailin/:path*"
+    },
+    {
+      "source": "/uploads/:path*",
+      "destination": "https://api.hailin.store/uploads/:path*"
+    },
+    {
       "source": "/health",
       "destination": "/api/index"
     },

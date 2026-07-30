@@ -2,7 +2,7 @@
 
 ## 当前生产域名
 
-- 当前小程序 API：`https://api.hailin.store`
+- 当前小程序 API：`https://www.hailin.store`（Vercel 代理到阿里云 API）
 - Vercel 演示 API：`https://www.hailin.store`
 - Vercel 管理后台：`https://www.hailin.store/admin/`
 - 阿里云后端健康检查：`https://api.hailin.store/api/v1/health`
@@ -41,12 +41,12 @@ curl https://api.hailin.store/api/v1/health
 
 在“小程序后台 - 开发管理 - 开发设置 - 服务器域名”配置：
 
-- `request 合法域名`：`https://api.hailin.store`
-- `uploadFile 合法域名`：`https://api.hailin.store`
-- `downloadFile 合法域名`：`https://api.hailin.store`
+- `request 合法域名`：`https://www.hailin.store`
+- `uploadFile 合法域名`：`https://www.hailin.store`
+- `downloadFile 合法域名`：`https://www.hailin.store`
 
 `https://www.hailin.store` 可作为后台展示域名继续保留；小程序请求以
-`https://api.hailin.store` 为准。
+`https://www.hailin.store` 为准，Vercel 再代理到阿里云 `api.hailin.store`。
 
 发布前确认：
 
