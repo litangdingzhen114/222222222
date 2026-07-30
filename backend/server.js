@@ -1213,6 +1213,23 @@ function defaultNextOrderStatus(type) {
   return 'pending_service';
 }
 
+function normalizeOrderProducts(value) {
+  if (!Array.isArray(value)) return [];
+
+  return value
+    .slice(0, 20)
+    .map((item) => ({
+      productId: cleanText(item.productId || item.id, 120),
+      productName: cleanText(item.productName || item.name || item.title, 120),
+      productImage: cleanText(item.productImage || item.imageUrl || item.coverImage, 500),
+      specification: cleanText(item.specification, 160),
+      unitPrice: normalizePositiveInt(item.unitPrice, 0, 0, 100000000),
+      quantity: normalizePositiveInt(item.quantity, 1, 1, 200),
+      totalAmount: normalizePositiveInt(item.totalAmount, 0, 0, 100000000),
+    }))
+    .filter((item) => item.productName);
+}
+
 function validateOrder(body) {
   const contact = cleanText(body.contact, 80);
   if (!contact) throw new HttpError(400, 'Contact is required');
@@ -1221,6 +1238,7 @@ function validateOrder(body) {
   const featureId = cleanText(body.featureId, 40);
   const type = normalizeOrderType(body.orderType || body.type, featureId);
   const clientId = cleanText(body.clientId, 120);
+  const deliveryType = cleanText(body.deliveryType, 40);
 
   return {
     clientId,
@@ -1233,6 +1251,14 @@ function validateOrder(body) {
     contact,
     remark: cleanText(body.remark || body.note, 800),
     price: cleanText(body.price, 80),
+    deliveryType: ['pickup', 'express'].includes(deliveryType) ? deliveryType : '',
+    deliveryText: cleanText(body.deliveryText, 80),
+    address: cleanText(body.address, 300),
+    productId: cleanText(body.productId, 120),
+    productImage: cleanText(body.productImage, 500),
+    specification: cleanText(body.specification, 160),
+    products: normalizeOrderProducts(body.products),
+    idempotencyKey: cleanText(body.idempotencyKey, 160),
     source: cleanText(body.source, 40) || 'mini-program',
   };
 }
@@ -1240,6 +1266,15 @@ function validateOrder(body) {
 function createOrder(body, req) {
   const payload = validateOrder(body);
   const records = readRecords('orders.json');
+  if (payload.idempotencyKey) {
+    const existing = records.find(
+      (item) =>
+        item.clientId === payload.clientId &&
+        item.idempotencyKey === payload.idempotencyKey,
+    );
+    if (existing) return existing;
+  }
+
   const now = new Date().toISOString();
   const record = {
     id: crypto.randomUUID(),

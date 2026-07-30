@@ -1,0 +1,299 @@
+<view class="market-page">
+  <view class="market-head">
+    <view class="market-head-row">
+      <view>
+        <view class="market-kicker">海林村共富集市</view>
+        <view class="market-title">农产品预订购买</view>
+      </view>
+      <button class="order-entry" bindtap="onViewOrders" aria-label="查看我的订单">
+        <text class="order-entry-icon">单</text>
+        <text>我的订单</text>
+      </button>
+    </view>
+    <view class="market-intro">土鸡、土鸡蛋、黑猪肉和土蜂蜜，由村里农户按订单备货。</view>
+
+    <view class="search-box">
+      <text class="search-icon">⌕</text>
+      <input
+        class="search-input"
+        value="{{keyword}}"
+        placeholder="搜索土鸡、鸡蛋、蜂蜜"
+        placeholder-class="search-placeholder"
+        bindinput="onSearchInput"
+      />
+      <button wx:if="{{keyword}}" class="search-clear" bindtap="onClearSearch" aria-label="清空搜索">×</button>
+    </view>
+  </view>
+
+  <scroll-view class="category-scroll" scroll-x enable-flex>
+    <view class="category-row">
+      <button
+        wx:for="{{categories}}"
+        wx:key="id"
+        class="category-tab {{activeCategory === item.id ? 'active' : ''}}"
+        data-id="{{item.id}}"
+        bindtap="onCategoryTap"
+      >{{item.name}}</button>
+    </view>
+  </scroll-view>
+
+  <view class="fulfillment-band">
+    <view class="fulfillment-item">
+      <text class="fulfillment-index">1</text>
+      <view>
+        <view class="fulfillment-name">提交预订</view>
+        <view class="fulfillment-desc">选择商品与数量</view>
+      </view>
+    </view>
+    <view class="fulfillment-line"></view>
+    <view class="fulfillment-item">
+      <text class="fulfillment-index">2</text>
+      <view>
+        <view class="fulfillment-name">农户备货</view>
+        <view class="fulfillment-desc">后台确认库存</view>
+      </view>
+    </view>
+    <view class="fulfillment-line"></view>
+    <view class="fulfillment-item">
+      <text class="fulfillment-index">3</text>
+      <view>
+        <view class="fulfillment-name">取货配送</view>
+        <view class="fulfillment-desc">自提或同城送</view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{featuredProduct && activeCategory === 'all' && !keyword}}" class="featured-product" data-id="{{featuredProduct.id}}" bindtap="onProductTap">
+    <image
+      class="featured-image"
+      src="{{featuredProduct.imageUrl}}"
+      mode="aspectFill"
+      data-id="{{featuredProduct.id}}"
+      binderror="onProductImageError"
+    />
+    <view class="featured-copy">
+      <view class="featured-label">本周推荐</view>
+      <view class="featured-title">{{featuredProduct.title}}</view>
+      <view class="featured-subtitle">{{featuredProduct.subtitle}}</view>
+      <view class="featured-foot">
+        <view class="price-line"><text class="price-symbol">¥</text><text class="featured-price">{{featuredProduct.priceText}}</text><text class="price-unit">/{{featuredProduct.unit}}</text></view>
+        <button class="featured-action" data-id="{{featuredProduct.id}}" catchtap="onCardAdd" aria-label="加入购物车">+</button>
+      </view>
+    </view>
+  </view>
+
+  <view class="section-heading">
+    <view>
+      <view class="section-title">{{activeCategory === 'all' ? '村里好物' : activeCategoryName}}</view>
+      <view class="section-subtitle">按实际库存备货，价格以提交时为准</view>
+    </view>
+    <text class="section-count">{{filteredProducts.length}} 款</text>
+  </view>
+
+  <view wx:if="{{filteredProducts.length}}" class="product-grid">
+    <view
+      wx:for="{{filteredProducts}}"
+      wx:key="id"
+      class="product-card"
+      data-id="{{item.id}}"
+      bindtap="onProductTap"
+    >
+      <view class="product-image-wrap">
+        <image
+          class="product-image"
+          src="{{item.imageUrl}}"
+          mode="aspectFill"
+          data-id="{{item.id}}"
+          binderror="onProductImageError"
+        />
+        <view class="product-category">{{item.categoryName}}</view>
+        <view wx:if="{{item.soldOut}}" class="sold-out-mask">暂时售罄</view>
+      </view>
+      <view class="product-copy">
+        <view class="product-title">{{item.title}}</view>
+        <view class="product-subtitle">{{item.subtitle}}</view>
+        <view class="product-spec">{{item.specification}}</view>
+        <view class="product-bottom">
+          <view>
+            <view class="product-price"><text>¥</text>{{item.priceText}}</view>
+            <view class="product-stock">{{item.stockText}}</view>
+          </view>
+          <button
+            class="add-cart {{item.soldOut ? 'disabled' : ''}}"
+            data-id="{{item.id}}"
+            catchtap="onCardAdd"
+            disabled="{{item.soldOut}}"
+            aria-label="加入购物车"
+          >+</button>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:elif="{{!loading}}" class="empty-state">
+    <view class="empty-title">没有找到对应农品</view>
+    <view class="empty-copy">换个关键词或查看全部分类。</view>
+    <button class="empty-action" bindtap="onClearSearch">查看全部</button>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading-state">正在整理村里好物...</view>
+  <view class="page-spacer"></view>
+
+  <view wx:if="{{cartCount}}" class="cart-dock safe-bottom">
+    <button class="cart-summary" bindtap="onOpenCart">
+      <view class="cart-icon-wrap">
+        <text class="cart-icon">篮</text>
+        <text class="cart-badge">{{cartCount}}</text>
+      </view>
+      <view class="cart-price">
+        <text class="cart-price-symbol">¥</text>
+        <text>{{cartTotalText}}</text>
+      </view>
+      <text class="cart-hint">查看购物车</text>
+    </button>
+    <button class="checkout-shortcut" bindtap="onOpenCart">去结算</button>
+  </view>
+
+  <view wx:if="{{detailVisible && selectedProduct}}" class="sheet-layer">
+    <view class="sheet-mask" bindtap="onCloseDetail"></view>
+    <view class="detail-sheet safe-bottom" catchtap="noop">
+      <button class="sheet-close" bindtap="onCloseDetail" aria-label="关闭">×</button>
+      <scroll-view class="detail-scroll" scroll-y>
+        <image
+          class="detail-image"
+          src="{{selectedProduct.imageUrl}}"
+          mode="aspectFill"
+          data-id="{{selectedProduct.id}}"
+          binderror="onProductImageError"
+        />
+        <view class="detail-body">
+          <view class="detail-category">{{selectedProduct.categoryName}}</view>
+          <view class="detail-title">{{selectedProduct.title}}</view>
+          <view class="detail-subtitle">{{selectedProduct.subtitle}}</view>
+          <view class="detail-price-row">
+            <view class="detail-price"><text>¥</text>{{selectedProduct.priceText}}<text class="detail-unit">/{{selectedProduct.unit}}</text></view>
+            <view class="detail-stock">{{selectedProduct.stockText}}</view>
+          </view>
+
+          <view class="detail-info-row">
+            <text>商品规格</text>
+            <text>{{selectedProduct.specification}}</text>
+          </view>
+          <view class="detail-info-row">
+            <text>履约方式</text>
+            <text>到村自提 / 同城配送</text>
+          </view>
+          <view class="detail-notice">农产品受季节、重量和当日库存影响，后台确认后安排备货；如有差异会先联系您。</view>
+
+          <view class="quantity-row">
+            <view>
+              <view class="quantity-title">购买数量</view>
+              <view class="quantity-sub">最多可订 {{selectedProduct.stock}} {{selectedProduct.unit}}</view>
+            </view>
+            <view class="stepper">
+              <button class="step-button" bindtap="onSelectedMinus" aria-label="减少数量">−</button>
+              <text class="step-value">{{selectedQuantity}}</text>
+              <button class="step-button" bindtap="onSelectedPlus" aria-label="增加数量">+</button>
+            </view>
+          </view>
+        </view>
+      </scroll-view>
+      <view class="detail-actions">
+        <view class="detail-total">
+          <text>合计</text>
+          <view><text>¥</text>{{selectedTotalText}}</view>
+        </view>
+        <button class="detail-cart-button" bindtap="onDetailAdd">加入购物车</button>
+        <button class="detail-buy-button" bindtap="onBuyNow">立即预订</button>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{cartVisible}}" class="sheet-layer">
+    <view class="sheet-mask" bindtap="onCloseCart"></view>
+    <view class="cart-sheet safe-bottom" catchtap="noop">
+      <view class="cart-sheet-head">
+        <view>
+          <view class="cart-sheet-title">确认农品订单</view>
+          <view class="cart-sheet-sub">{{cartCount}} 件商品</view>
+        </view>
+        <button class="sheet-close static" bindtap="onCloseCart" aria-label="关闭">×</button>
+      </view>
+
+      <scroll-view class="cart-scroll" scroll-y>
+        <view class="cart-lines">
+          <view wx:for="{{cart}}" wx:key="productId" class="cart-line">
+            <image class="cart-line-image" src="{{item.imageUrl}}" mode="aspectFill" />
+            <view class="cart-line-copy">
+              <view class="cart-line-title">{{item.title}}</view>
+              <view class="cart-line-spec">{{item.specification}}</view>
+              <view class="cart-line-bottom">
+                <view class="cart-line-price">¥{{item.lineTotalText}}</view>
+                <view class="cart-stepper">
+                  <button data-id="{{item.productId}}" bindtap="onCartMinus" aria-label="减少数量">−</button>
+                  <text>{{item.quantity}}</text>
+                  <button data-id="{{item.productId}}" bindtap="onCartPlus" aria-label="增加数量">+</button>
+                </view>
+              </view>
+            </view>
+            <button class="cart-remove" data-id="{{item.productId}}" bindtap="onCartRemove" aria-label="移除商品">×</button>
+          </view>
+        </view>
+
+        <view class="checkout-section">
+          <view class="checkout-title">取货方式</view>
+          <view class="delivery-options">
+            <button
+              wx:for="{{deliveryOptions}}"
+              wx:key="id"
+              class="delivery-option {{deliveryType === item.id ? 'active' : ''}}"
+              data-id="{{item.id}}"
+              bindtap="onDeliveryTap"
+            >
+              <view class="delivery-name">{{item.name}}</view>
+              <view class="delivery-desc">{{item.desc}}</view>
+            </button>
+          </view>
+        </view>
+
+        <view class="checkout-section">
+          <view class="field-label">联系方式</view>
+          <input
+            class="checkout-input"
+            value="{{contact}}"
+            placeholder="手机号或微信号"
+            placeholder-class="checkout-placeholder"
+            bindinput="onContactInput"
+          />
+          <block wx:if="{{deliveryType === 'express'}}">
+            <view class="field-label field-gap">配送地址</view>
+            <textarea
+              class="checkout-textarea address"
+              value="{{address}}"
+              placeholder="填写区县、街道和门牌信息"
+              placeholder-class="checkout-placeholder"
+              bindinput="onAddressInput"
+            ></textarea>
+          </block>
+          <view class="field-label field-gap">订单备注</view>
+          <textarea
+            class="checkout-textarea"
+            value="{{remark}}"
+            placeholder="可填写部位、到村时间或其他需求"
+            placeholder-class="checkout-placeholder"
+            bindinput="onRemarkInput"
+          ></textarea>
+        </view>
+      </scroll-view>
+
+      <view class="cart-submit-row">
+        <view class="cart-submit-total">
+          <text>应付</text>
+          <view><text>¥</text>{{cartTotalText}}</view>
+          <text class="offline-note">后台确认后支付</text>
+        </view>
+        <button class="cart-submit" loading="{{submitting}}" bindtap="onSubmitOrder">提交预订</button>
+      </view>
+    </view>
+  </view>
+</view>

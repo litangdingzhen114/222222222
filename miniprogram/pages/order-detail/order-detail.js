@@ -207,6 +207,15 @@ Page({
       venue: 'venue',
       service: 'tour'
     }[order.type] || 'tour';
+
+    if (order.type === 'product' || featureId === 'mall') {
+      const query = order.productId
+        ? `id=${encodeURIComponent(order.productId)}`
+        : `keyword=${encodeURIComponent(order.item || '')}`;
+      wx.navigateTo({ url: `/pages/product-list/product-list?${query}` });
+      return;
+    }
+
     const item = encodeURIComponent(order.item || '');
     wx.navigateTo({ url: `/pages/mine-feature/mine-feature?id=${featureId}&item=${item}` });
   },

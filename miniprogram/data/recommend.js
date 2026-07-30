@@ -8,7 +8,7 @@ module.exports = {
       icon: "农",
       imageClass: "recommend-food",
       imageUrl: "/assets/photos/ai-product-honey.jpg",
-      url: "/pages/mine-feature/mine-feature?id=mall",
+      url: "/pages/product-list/product-list",
     },
     {
       id: "monitor",
@@ -105,7 +105,7 @@ module.exports = {
       status: "可预订",
       actionText: "去下单",
       icon: "农",
-      url: "/pages/mine-feature/mine-feature?id=mall",
+      url: "/pages/product-list/product-list",
     },
     {
       id: "monitor",

@@ -4,7 +4,7 @@ const pageOne = [
     title: "农品预购",
     icon: "市",
     iconPath: "/assets/icons/commerce.png",
-    url: "/pages/mine-feature/mine-feature?id=mall",
+    url: "/pages/product-list/product-list",
   },
   {
     id: "monitor",
@@ -174,7 +174,7 @@ const pageTwo = [
     title: "乡心支付",
     icon: "付",
     iconPath: "/assets/icons/pay.png",
-    url: "/pages/mine-feature/mine-feature?id=mall",
+    url: "/pages/product-list/product-list",
   },
   {
     id: "culture",

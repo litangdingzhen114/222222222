@@ -14,6 +14,7 @@
     "pages/spot-detail/spot-detail",
     "pages/route-list/route-list",
     "pages/route-detail/route-detail",
+    "pages/product-list/product-list",
     "pages/live-list/live-list",
     "pages/live-detail/live-detail",
     "pages/ai-guide/ai-guide",

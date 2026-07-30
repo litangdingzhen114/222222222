@@ -168,9 +168,9 @@ Page({
   onProductTap(event) {
     const product =
       this.data.products.find((item) => item.id === event.detail.id) || {};
-    const item = product.title || product.name || "";
+    const id = product.id ? encodeURIComponent(product.id) : "";
     wx.navigateTo({
-      url: `/pages/mine-feature/mine-feature?id=mall&item=${encodeURIComponent(item)}`,
+      url: `/pages/product-list/product-list${id ? `?id=${id}` : ""}`,
     });
   },
 
@@ -184,7 +184,7 @@ Page({
   },
 
   onMoreProducts() {
-    wx.navigateTo({ url: "/pages/mine-feature/mine-feature?id=mall" });
+    wx.navigateTo({ url: "/pages/product-list/product-list" });
   },
 
   onMoreRoutes() {
