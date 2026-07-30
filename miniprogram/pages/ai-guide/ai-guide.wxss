@@ -72,42 +72,6 @@
   color: #FBFFFC;
 }
 
-.source-tag {
-  display: inline-flex;
-  margin-bottom: 8rpx;
-  padding: 4rpx 10rpx;
-  border-radius: 6rpx;
-  background: #E2F0EC;
-  color: #0F6B67;
-  font-size: 19rpx;
-  font-weight: 800;
-}
-
-.source-tag.backend {
-  background: #E8F4F1;
-  color: #0F6B67;
-}
-
-.source-tag.kimi {
-  background: #E6F0FF;
-  color: #1E4F9A;
-}
-
-.source-tag.backend-fallback {
-  background: #EEF2E6;
-  color: #5E6F2E;
-}
-
-.source-tag.loading {
-  background: #F4E9DA;
-  color: #A7472D;
-}
-
-.source-tag.error {
-  background: #FDECEC;
-  color: #A2322A;
-}
-
 .quick-row {
   display: flex;
   gap: 12rpx;
