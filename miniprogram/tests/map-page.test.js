@@ -82,6 +82,16 @@ assert(
   ),
   "map should include Hailin creek valley with a generated display image",
 );
+assert(
+  mapPoints.some(
+    (point) =>
+      point.id === "chenrongkao-tree" &&
+      point.title === "陈嵘栲古树" &&
+      point.imageUrl === "/assets/photos/ai-chenrongkao-tree.jpg" &&
+      point.refId === "ancient-tree",
+  ),
+  "map should include the Chenrongkao village tree as a focusable scenic point",
+);
 assert(mapWxml.includes("search-input"), "map page should expose search input");
 assert(
   mapWxml.includes("route-panel"),
@@ -112,6 +122,11 @@ assert(
 assert(
   mapJs.includes("normalizeMapPoints"),
   "map page should normalize backend map point payloads",
+);
+assert(
+  mapJs.includes("consumePendingFocusPoint") &&
+    mapJs.includes("hailin_pending_map_point"),
+  "map page should consume home shortcut requests and focus a selected point",
 );
 assert(
   mapJs.includes("markerIconPath") &&

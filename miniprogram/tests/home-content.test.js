@@ -48,6 +48,17 @@ assert(
   banners.some((item) => item.title.includes("海口镇海林村")),
   "banners should make the location explicit",
 );
+assert.strictEqual(
+  banners[0].id,
+  "banner-chenrongkao",
+  "home first banner should feature the Chenrongkao village tree",
+);
+assert(
+  banners[0].subtitle.includes("350") &&
+    banners[0].subtitle.includes("陈嵘栲") &&
+    banners[0].imageUrl === "/assets/photos/ai-chenrongkao-tree.jpg",
+  "Chenrongkao banner should use sourced facts and the generated tree image",
+);
 assert(
   recommend.hotRecommends.length >= 6,
   "home should expose richer recommendations",
@@ -96,16 +107,24 @@ assert(
     "行李无忧",
     "意见反馈",
     "乡宿体验",
+    "非遗手作",
   ].every(
     (title) => !gridTitles.includes(title),
   ),
   "home grid should merge overlapping culture and travel entries",
 );
 assert(
-  ["非遗手作", "AR合影", "寻野 cafe", "便民服务", "热门景点"].every((title) =>
+  ["村树陈嵘栲", "AR合影", "寻野 cafe", "便民服务", "热门景点"].every((title) =>
     gridTitles.includes(title),
   ),
   "home grid should keep merged culture and travel entries",
+);
+const villageTreeEntry = gridItems.find((item) => item.id === "village-tree");
+assert(villageTreeEntry, "village tree entry should exist");
+assert.strictEqual(
+  villageTreeEntry.focusMapPoint,
+  "chenrongkao-tree",
+  "village tree shortcut should focus the Chenrongkao map point",
 );
 const arPhotoEntry = gridItems.find((item) => item.id === "photo-memory");
 assert(arPhotoEntry, "AR photo entry should exist");
@@ -123,6 +142,12 @@ assert(
     path.join(root, "miniprogram/assets/photos/ai-xunye-cafe.jpg"),
   ),
   "Xunye cafe should use a generated cafe image asset",
+);
+assert(
+  fs.existsSync(
+    path.join(root, "miniprogram/assets/photos/ai-chenrongkao-tree.jpg"),
+  ),
+  "Chenrongkao village tree should use a generated tree image asset",
 );
 assert.strictEqual(
   new Set(gridItems.map((item) => item.id)).size,
@@ -233,6 +258,11 @@ assert(
 assert(
   homeJs.includes("quickToast(toast)") && homeWxml.includes("data-toast"),
   "home grid should support non-detail placeholder prompts",
+);
+assert(
+  homeJs.includes("hailin_pending_map_point") &&
+    homeWxml.includes("data-focus-map-point"),
+  "home grid should support focusing a map point after switchTab navigation",
 );
 assert(
   homeWxml.includes("今日这样游"),

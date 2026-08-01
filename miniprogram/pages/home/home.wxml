@@ -42,6 +42,7 @@
               data-url="{{item.url}}"
               data-open-type="{{item.openType}}"
               data-toast="{{item.toast}}"
+              data-focus-map-point="{{item.focusMapPoint}}"
               bindtap="onGridTap"
             >
               <view class="grid-icon">

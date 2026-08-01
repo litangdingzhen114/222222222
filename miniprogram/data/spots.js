@@ -1,31 +1,31 @@
 const spotDetails = {
   "ancient-tree": {
     highlights: [
-      "作为海林村游线的集合点，适合领取导览、确认停车和活动签到。",
-      "村牌、导览牌与山水背景同框，适合做第一张到村打卡照。",
-      "可衔接村情馆、溪谷步道和田鱼家宴，适合团队统一出发。",
+      "陈嵘栲古树约 350 年树龄，被海林村视作村树与村庄记忆的标志。",
+      "公开报道中提到它胸围约 310 厘米、胸径近 1 米、树高约 20 米、冠幅约 18 米。",
+      "它是已知较大的陈嵘栲个体，适合作为自然教育、古树保护和村庄故事讲解点。",
     ],
     visitTips: [
-      "自驾游客建议先在这里确认停车位置，再步行进入核心点位。",
-      "团队活动可提前 10 分钟到达，便于讲解员清点人数。",
-      "雨天可把集合点改到村情馆门口，行程更稳。",
+      "古树属于保护对象，请不要攀爬、刻画或进入围栏范围。",
+      "拍摄建议使用广角，把树冠、石径和村庄山景一起收入画面。",
+      "具体位置和开放提示以后以村里现场导览牌与后台公告为准。",
     ],
     services: [
       {
         title: "预约讲解",
-        desc: "安排村民讲解员带队进入村情馆和田鱼田。",
+        desc: "安排村民讲解员讲述古树、村庄生态和海林村故事。",
         url: "/pages/mine-feature/mine-feature?id=guide",
       },
       {
-        title: "村游订单",
-        desc: "把集合、餐食、讲解和体验打包成半日或一日行程。",
-        url: "/pages/mine-feature/mine-feature?id=tour",
-      },
-      {
-        title: "导航地图",
-        desc: "查看停车、卫生间、步道和直播点位。",
+        title: "查看地图",
+        desc: "在全域地图上查看古树、驿站、溪谷和公共服务点。",
         url: "/pages/map/map",
         openType: "switchTab",
+      },
+      {
+        title: "路线推荐",
+        desc: "把古树打卡、田铺驿站和海林溪谷串成半日慢游。",
+        url: "/pages/route-list/route-list",
       },
     ],
   },
@@ -150,21 +150,21 @@ const spotDetails = {
 const spots = [
   {
     id: "ancient-tree",
-    name: "海林村口会客点",
+    name: "陈嵘栲古树",
     category: "自然风光",
-    tags: ["自然风光", "拍照打卡", "免费"],
+    tags: ["古树名木", "自然风光", "拍照打卡"],
     openTime: "全天开放",
     duration: "约 20 分钟",
-    distance: "0.2公里",
-    desc: "这里是游客进入海口镇海林村后的第一处服务节点，适合做集合、咨询、导览领取和第一张打卡照。真实上线后可接后台公告与实时客流。",
+    distance: "0.3公里",
+    desc: "陈嵘栲古树是海林村的村树，公开报道显示树龄约 350 年，胸围约 310 厘米、胸径近 1 米、树高约 20 米、冠幅约 18 米。它适合作为到村后的自然教育与古树保护讲解点。",
     images: ["ph-oujiang", "ph-village", "ph-creek"],
-    coverUrl: "/assets/photos/ai-village-gate.jpg",
+    coverUrl: "/assets/photos/ai-chenrongkao-tree.jpg",
     imageUrls: [
-      "/assets/photos/ai-village-gate.jpg",
+      "/assets/photos/ai-chenrongkao-tree.jpg",
       "/assets/photos/qingtian-city.jpg",
       "/assets/photos/qingtian-tashan.jpg",
     ],
-    icon: "瓯",
+    icon: "树",
   },
   {
     id: "rice-view",

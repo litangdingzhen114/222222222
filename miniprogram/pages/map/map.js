@@ -86,6 +86,8 @@ const markerIcons = {
   default: "/assets/map/marker-default.png",
 };
 
+const PENDING_MAP_POINT_KEY = "hailin_pending_map_point";
+
 function asNumber(value, fallback) {
   const number = Number(value);
   return isFinite(number) ? number : fallback;
@@ -306,13 +308,30 @@ Page({
     this.focusPoints(this.data.filteredPoints);
   },
 
-  onLoad() {
+  onLoad(options = {}) {
+    if (options.point) {
+      wx.setStorageSync(PENDING_MAP_POINT_KEY, options.point);
+    }
     loadMapPoints().then((payload) => {
       const points = normalizeMapPoints(payload);
       if (!points.length) return;
       this.setData({ points });
       this.applyFilters({ points });
+      this.consumePendingFocusPoint(points);
     });
+  },
+
+  onShow() {
+    this.consumePendingFocusPoint();
+  },
+
+  consumePendingFocusPoint(points = this.data.points) {
+    const pointId = wx.getStorageSync(PENDING_MAP_POINT_KEY);
+    if (!pointId || !points.length) return;
+    const point = findRoutePoint(points, pointId);
+    if (!point) return;
+    wx.removeStorageSync(PENDING_MAP_POINT_KEY);
+    this.selectPoint(point);
   },
 
   getFilteredPoints(category, subTag, keyword, points = this.data.points) {

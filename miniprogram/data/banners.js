@@ -1,12 +1,12 @@
 module.exports = [
   {
-    id: 'banner-hailin',
-    title: '海口镇海林村欢迎你',
-    subtitle: '从瓯江山水入村，串联村口会客、溪谷慢行、田鱼家宴和侨乡小院',
-    tag: '丽水市青田县海口镇',
+    id: 'banner-chenrongkao',
+    title: '海口镇海林村村树',
+    subtitle: '探访约 350 年树龄的陈嵘栲古树，胸径近 1 米，树冠如盖守望村庄',
+    tag: '陈嵘栲古树 · 村树打卡',
     imageClass: 'banner-oujiang',
-    icon: '瓯',
-    imageUrl: '/assets/photos/ai-village-gate.jpg'
+    icon: '树',
+    imageUrl: '/assets/photos/ai-chenrongkao-tree.jpg'
   },
   {
     id: 'banner-festival',

@@ -1,6 +1,8 @@
 const { loadHomeData } = require("../../services/content");
 const { featureComing, quickToast } = require("../../utils/mock");
 
+const PENDING_MAP_POINT_KEY = "hailin_pending_map_point";
+
 const HOME_IMAGE_FALLBACKS = {
   banners: "/assets/photos/ai-village-gate.jpg",
   itineraries: "/assets/photos/qingtian-city.jpg",
@@ -134,8 +136,9 @@ Page({
   },
 
   onGridTap(event) {
-    const { title, url, openType, toast } = event.currentTarget.dataset;
-    this.navigateByDataset(title, url, openType, toast);
+    const { title, url, openType, toast, focusMapPoint } =
+      event.currentTarget.dataset;
+    this.navigateByDataset(title, url, openType, toast, focusMapPoint);
   },
 
   onRecommendTap(event) {
@@ -153,7 +156,7 @@ Page({
     this.navigateByDataset(title, url, openType);
   },
 
-  navigateByDataset(title, url, openType, toast) {
+  navigateByDataset(title, url, openType, toast, focusMapPoint) {
     if (toast) {
       quickToast(toast);
       return;
@@ -161,6 +164,9 @@ Page({
     if (!url) {
       featureComing(title);
       return;
+    }
+    if (focusMapPoint) {
+      wx.setStorageSync(PENDING_MAP_POINT_KEY, focusMapPoint);
     }
     if (openType === "switchTab") {
       wx.switchTab({ url });

@@ -96,11 +96,13 @@ const pageOne = [
     url: "/pages/spot-list/spot-list",
   },
   {
-    id: "heritage-workshop",
-    title: "非遗手作",
-    icon: "作",
-    iconPath: "/assets/icons/heritage.png",
-    url: "/pages/mine-feature/mine-feature?id=activity",
+    id: "village-tree",
+    title: "村树陈嵘栲",
+    icon: "树",
+    iconPath: "/assets/icons/spots.png",
+    url: "/pages/map/map",
+    openType: "switchTab",
+    focusMapPoint: "chenrongkao-tree",
   },
   {
     id: "photo-memory",
