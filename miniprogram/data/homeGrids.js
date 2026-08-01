@@ -96,18 +96,18 @@ const pageOne = [
     url: "/pages/spot-list/spot-list",
   },
   {
-    id: "stay-experience",
-    title: "乡宿体验",
-    icon: "宿",
-    iconPath: "/assets/icons/stay.png",
-    url: "/pages/mine-feature/mine-feature?id=stay",
+    id: "heritage-workshop",
+    title: "非遗手作",
+    icon: "作",
+    iconPath: "/assets/icons/heritage.png",
+    url: "/pages/mine-feature/mine-feature?id=activity",
   },
   {
     id: "photo-memory",
-    title: "旅拍合影",
-    icon: "拍",
-    iconPath: "/assets/icons/photo.png",
-    url: "/pages/ai-guide/ai-guide",
+    title: "AR合影",
+    icon: "AR",
+    iconPath: "/assets/icons/ar.png",
+    toast: "AR合影功能完善中，暂不进入详情页",
   },
 ];
 

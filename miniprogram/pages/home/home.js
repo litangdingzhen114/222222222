@@ -134,8 +134,8 @@ Page({
   },
 
   onGridTap(event) {
-    const { title, url, openType } = event.currentTarget.dataset;
-    this.navigateByDataset(title, url, openType);
+    const { title, url, openType, toast } = event.currentTarget.dataset;
+    this.navigateByDataset(title, url, openType, toast);
   },
 
   onRecommendTap(event) {
@@ -153,7 +153,11 @@ Page({
     this.navigateByDataset(title, url, openType);
   },
 
-  navigateByDataset(title, url, openType) {
+  navigateByDataset(title, url, openType, toast) {
+    if (toast) {
+      quickToast(toast);
+      return;
+    }
     if (!url) {
       featureComing(title);
       return;

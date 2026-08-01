@@ -41,6 +41,7 @@
               data-title="{{item.title}}"
               data-url="{{item.url}}"
               data-open-type="{{item.openType}}"
+              data-toast="{{item.toast}}"
               bindtap="onGridTap"
             >
               <view class="grid-icon">

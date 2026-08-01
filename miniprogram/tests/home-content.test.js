@@ -87,7 +87,7 @@ assert(
     "海口天气",
     "交通出行",
     "AI旅拍",
-    "AR合影",
+    "旅拍合影",
     "海林侨乡",
     "文化云",
     "非遗地图",
@@ -95,16 +95,28 @@ assert(
     "团建定制游",
     "行李无忧",
     "意见反馈",
+    "乡宿体验",
   ].every(
     (title) => !gridTitles.includes(title),
   ),
   "home grid should merge overlapping culture and travel entries",
 );
 assert(
-  ["乡宿体验", "旅拍合影", "寻野 cafe", "便民服务", "热门景点"].every((title) =>
+  ["非遗手作", "AR合影", "寻野 cafe", "便民服务", "热门景点"].every((title) =>
     gridTitles.includes(title),
   ),
   "home grid should keep merged culture and travel entries",
+);
+const arPhotoEntry = gridItems.find((item) => item.id === "photo-memory");
+assert(arPhotoEntry, "AR photo entry should exist");
+assert.strictEqual(
+  arPhotoEntry.url,
+  undefined,
+  "AR photo entry should not navigate to a placeholder detail page",
+);
+assert(
+  arPhotoEntry.toast && arPhotoEntry.toast.includes("完善中"),
+  "AR photo entry should explain that the feature is still being completed",
 );
 assert(
   fs.existsSync(
@@ -204,6 +216,10 @@ assert(
 assert(
   homeJs.includes("navigateByDataset"),
   "home page should share navigation behavior",
+);
+assert(
+  homeJs.includes("quickToast(toast)") && homeWxml.includes("data-toast"),
+  "home grid should support non-detail placeholder prompts",
 );
 assert(
   homeWxml.includes("今日这样游"),
