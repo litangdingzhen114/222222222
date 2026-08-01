@@ -142,7 +142,7 @@
   <view wx:if="{{cartCount}}" class="cart-dock safe-bottom">
     <button class="cart-summary" bindtap="onOpenCart">
       <view class="cart-icon-wrap">
-        <text class="cart-icon">篮</text>
+        <image class="cart-icon" src="/assets/icons/commerce.png" mode="aspectFit"></image>
         <text class="cart-badge">{{cartCount}}</text>
       </view>
       <view class="cart-price">

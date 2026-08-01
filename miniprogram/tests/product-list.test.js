@@ -58,6 +58,18 @@ assert(
   wxss.includes("detail-button-row") && wxss.includes("box-sizing: border-box"),
   "product action and form controls should be stable on narrow screens",
 );
+assert(
+  wxml.includes('class="cart-icon" src="/assets/icons/commerce.png"') &&
+    !wxml.includes(">篮<"),
+  "cart dock should use a real icon asset instead of a large text icon",
+);
+assert(
+  wxss.includes(".cart-dock") &&
+    wxss.includes("display: flex") &&
+    wxss.includes("max-width: calc(100vw - 48rpx)") &&
+    wxss.includes("max-width: 34%"),
+  "cart dock and checkout button should stay inside the viewport",
+);
 
 const decorated = products.map(productPage.decorateProduct);
 assert(
