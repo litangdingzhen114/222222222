@@ -109,6 +109,31 @@ assert(
   mapJs.includes("normalizeMapPoints"),
   "map page should normalize backend map point payloads",
 );
+assert(
+  mapJs.includes("markerIconPath") &&
+    mapJs.includes("markerIcons") &&
+    !mapJs.includes('iconPath: "/assets/map/poi.png"'),
+  "map page should render category-specific sticker marker icons",
+);
+
+[
+  "marker-scenic.png",
+  "marker-station.png",
+  "marker-food.png",
+  "marker-stay.png",
+  "marker-parking.png",
+  "marker-toilet.png",
+  "marker-farm.png",
+  "marker-live.png",
+  "marker-market.png",
+  "marker-service.png",
+  "marker-default.png",
+].forEach((filename) => {
+  assert(
+    fs.existsSync(path.join(root, "miniprogram/assets/map", filename)),
+    `${filename} should exist for map markers`,
+  );
+});
 
 const categoryIds = new Set(mapFeatures.categories.map((item) => item.id));
 assert(categoryIds.has("全部"), "categories should include all");

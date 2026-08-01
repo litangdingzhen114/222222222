@@ -72,6 +72,20 @@ const pointTypeView = {
   },
 };
 
+const markerIcons = {
+  scenic: "/assets/map/marker-scenic.png",
+  station: "/assets/map/marker-station.png",
+  food: "/assets/map/marker-food.png",
+  stay: "/assets/map/marker-stay.png",
+  parking: "/assets/map/marker-parking.png",
+  toilet: "/assets/map/marker-toilet.png",
+  farm: "/assets/map/marker-farm.png",
+  live: "/assets/map/marker-live.png",
+  market: "/assets/map/marker-market.png",
+  service: "/assets/map/marker-service.png",
+  default: "/assets/map/marker-default.png",
+};
+
 function asNumber(value, fallback) {
   const number = Number(value);
   return isFinite(number) ? number : fallback;
@@ -80,6 +94,30 @@ function asNumber(value, fallback) {
 function pointView(rawType) {
   const key = String(rawType || "OTHER");
   return pointTypeView[key] || pointTypeView.OTHER;
+}
+
+function markerIconPath(point) {
+  const text = `${point.title || ""} ${point.type || ""} ${point.subType || ""} ${point.desc || ""}`;
+  if (text.includes("停车")) return markerIcons.parking;
+  if (text.includes("厕所") || text.includes("卫生间"))
+    return markerIcons.toilet;
+  if (text.includes("直播") || text.includes("摄像"))
+    return markerIcons.live;
+  if (
+    text.includes("驿站") ||
+    text.includes("游客中心") ||
+    text.includes("会客")
+  )
+    return markerIcons.station;
+  if (point.type === "美食") return markerIcons.food;
+  if (point.type === "住宿") return markerIcons.stay;
+  if (point.type === "体验" || text.includes("稻鱼"))
+    return markerIcons.farm;
+  if (point.type === "购物" || text.includes("集市"))
+    return markerIcons.market;
+  if (point.type === "公共服务") return markerIcons.service;
+  if (point.type === "景点") return markerIcons.scenic;
+  return markerIcons.default;
 }
 
 function normalizeMapPoint(point, index) {
@@ -114,6 +152,7 @@ function normalizeMapPoint(point, index) {
     actionText: point.actionText || view.actionText,
     latitude,
     longitude,
+    markerIconPath: point.markerIconPath || "",
     refType,
     refId: point.refId || point.relatedEntityId || "",
     targetUrl: point.targetUrl || view.targetUrl || "",
@@ -148,19 +187,19 @@ function buildMarkers(points, activeId) {
       latitude: point.latitude,
       longitude: point.longitude,
       title: point.title,
-      iconPath: "/assets/map/poi.png",
-      width: isActive ? 50 : 40,
-      height: isActive ? 50 : 40,
+      iconPath: point.markerIconPath || markerIconPath(point),
+      width: isActive ? 58 : 46,
+      height: isActive ? 68 : 54,
       anchor: {
         x: 0.5,
-        y: 0.9,
+        y: 0.94,
       },
       callout: {
         content: point.title,
         color: isActive ? "#0F6B67" : "#193C3A",
         fontSize: isActive ? 14 : 12,
-        borderRadius: 8,
-        bgColor: "#FBFFFC",
+        borderRadius: 10,
+        bgColor: isActive ? "#FFF3C4" : "#FBFFFC",
         padding: 8,
         display: "ALWAYS",
       },
