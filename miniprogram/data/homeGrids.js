@@ -55,16 +55,14 @@ const pageOne = [
     title: "田铺驿站",
     icon: "驿",
     iconPath: "/assets/icons/gate.png",
-    url: "/pages/map/map",
-    openType: "switchTab",
+    url: "/pages/spot-detail/spot-detail?id=tianpu-station",
   },
   {
     id: "hailin-creek",
     title: "黄湖溪谷",
     icon: "溪",
     iconPath: "/assets/icons/old-street.png",
-    url: "/pages/map/map",
-    openType: "switchTab",
+    url: "/pages/spot-detail/spot-detail?id=creek-trail",
   },
   {
     id: "routes",
@@ -100,8 +98,7 @@ const pageOne = [
     title: "村树陈嵘栲",
     icon: "树",
     iconPath: "/assets/icons/village-tree.png",
-    url: "/pages/map/map",
-    openType: "switchTab",
+    url: "/pages/spot-detail/spot-detail?id=ancient-tree",
     focusMapPoint: "chenrongkao-tree",
   },
   {

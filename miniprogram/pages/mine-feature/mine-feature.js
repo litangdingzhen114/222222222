@@ -54,6 +54,7 @@ Page({
   data: {
     id: '',
     feature: {},
+    featureStyleClass: 'style-service',
     selectedIndex: 0,
     selectedCard: {},
     orderPreview: {},
@@ -103,6 +104,7 @@ Page({
     this.setData({
       id,
       feature,
+      featureStyleClass: `style-${feature.detailStyle || 'service'}`,
       selectedIndex,
       selectedCard,
       orderPreview: buildOrderPreview(feature, selectedCard, todayText(), people),

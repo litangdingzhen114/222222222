@@ -99,12 +99,16 @@ function resolveApiBaseUrl() {
 }
 
 function resolveRequestBaseUrls() {
+  const inDevtools = isDevtools();
   const primary = resolveApiBaseUrl().trim();
   const devtoolsFallback =
-    isDevtools() && serviceConfig.devtoolsApiBaseUrl
+    inDevtools && serviceConfig.devtoolsApiBaseUrl
       ? String(serviceConfig.devtoolsApiBaseUrl || "").trim()
       : "";
-  const fallback = String(serviceConfig.apiBaseUrl || "").trim();
+  const fallback =
+    inDevtools && devtoolsFallback
+      ? ""
+      : String(serviceConfig.apiBaseUrl || "").trim();
   const extraFallbacks = Array.isArray(serviceConfig.apiFallbackBaseUrls)
     ? serviceConfig.apiFallbackBaseUrls.map((url) => String(url || "").trim())
     : [];

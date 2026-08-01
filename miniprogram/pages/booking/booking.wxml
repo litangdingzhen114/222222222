@@ -1,68 +1,92 @@
-<view class="page page-pad booking-page">
+<view class="page booking-page safe-bottom">
   <view class="booking-hero">
-    <view class="booking-title">黄湖林场讲解服务</view>
-    <view class="booking-desc">村情馆、稻鱼田、溪谷步道、古树年轮拓印点可预约讲解，适合亲子、研学和团队游客。</view>
+    <image class="booking-hero-img" src="/assets/photos/ai-chenrongkao-tree.jpg" mode="aspectFill"></image>
+    <view class="booking-hero-shade"></view>
+    <view class="booking-hero-copy">
+      <view class="booking-kicker">黄湖林场导览</view>
+      <view class="booking-title">把讲解、课程和场地一次约清楚</view>
+      <view class="booking-desc">适合亲子、学校、团队和到村访客，提交后由后台确认讲解员、场地与时间。</view>
+    </view>
+  </view>
+
+  <view class="booking-summary">
+    <view class="summary-cell">
+      <text>服务</text>
+      <text>{{selectedService.title}}</text>
+    </view>
+    <view class="summary-cell">
+      <text>日期</text>
+      <text>{{date}}</text>
+    </view>
+    <view class="summary-cell">
+      <text>人数</text>
+      <text>{{people}} 人</text>
+    </view>
   </view>
 
   <view class="section-head">
     <text>选择服务</text>
     <text>{{serviceOptions.length}} 项</text>
   </view>
-  <view class="service-option-grid">
-    <view
-      wx:for="{{serviceOptions}}"
-      wx:key="id"
-      class="service-option {{selectedServiceId === item.id ? 'active' : ''}}"
-      data-id="{{item.id}}"
-      bindtap="onServiceTap"
-    >
-      <view class="service-option-head">
-        <text>{{item.title}}</text>
-        <text>{{item.tag}}</text>
+  <scroll-view scroll-x="{{true}}" enable-flex="{{true}}" class="service-rail">
+    <view class="service-row">
+      <view
+        wx:for="{{serviceOptions}}"
+        wx:key="id"
+        class="service-option {{selectedServiceId === item.id ? 'active' : ''}}"
+        data-id="{{item.id}}"
+        bindtap="onServiceTap"
+      >
+        <view class="service-option-top">
+          <view class="service-dot"></view>
+          <text>{{item.tag}}</text>
+        </view>
+        <view class="service-option-title">{{item.title}}</view>
+        <view class="service-option-desc">{{item.desc}}</view>
       </view>
-      <view class="service-option-desc">{{item.desc}}</view>
     </view>
-  </view>
+  </scroll-view>
 
   <view class="section-head">
     <text>快速方案</text>
-    <text>点选填入人数</text>
+    <text>点选自动填入</text>
   </view>
   <view class="quick-plan-list">
     <view wx:for="{{quickPlans}}" wx:key="id" class="quick-plan-card" data-id="{{item.id}}" bindtap="onQuickPlanTap">
       <view class="quick-plan-title">{{item.title}}</view>
       <view class="quick-plan-desc">{{item.desc}}</view>
+      <view class="quick-plan-people">{{item.people}} 人参考</view>
     </view>
   </view>
 
-  <view class="booking-card card">
-    <view class="booking-card-title">预约信息</view>
-    <view class="form-item">
-      <text class="form-label">预约日期</text>
-      <picker mode="date" value="{{date}}" bindchange="onDateChange">
-        <view class="picker-value">{{date}}</view>
-      </picker>
+  <view class="booking-card">
+    <view class="booking-card-head">
+      <view>
+        <view class="booking-card-title">预约信息</view>
+        <view class="booking-card-sub">先提交意向，后台确认后再形成正式订单。</view>
+      </view>
+      <view class="booking-card-badge">后台确认</view>
     </view>
 
-    <view class="form-item">
-      <text class="form-label">预约人数</text>
-      <view class="stepper">
-        <view class="step-btn" bindtap="onMinus">−</view>
-        <view class="step-value">{{people}}</view>
-        <view class="step-btn" bindtap="onPlus">＋</view>
+    <view class="field-grid">
+      <picker mode="date" value="{{date}}" bindchange="onDateChange">
+        <view class="field-card">
+          <text>预约日期</text>
+          <text>{{date}}</text>
+        </view>
+      </picker>
+      <view class="field-card">
+        <text>预约人数</text>
+        <view class="stepper">
+          <view class="step-btn" bindtap="onMinus">−</view>
+          <view class="step-value">{{people}}</view>
+          <view class="step-btn" bindtap="onPlus">＋</view>
+        </view>
       </view>
     </view>
 
-    <view class="form-item vertical">
-      <text class="form-label">联系方式</text>
-      <input class="contact-input" placeholder="请填写手机号或微信号" placeholder-class="form-placeholder" value="{{contact}}" bindinput="onContactInput" />
-    </view>
-
-    <view class="form-item vertical">
-      <text class="form-label">补充需求</text>
-      <textarea class="remark-input" placeholder="可填写到达时间、老人儿童人数、餐食忌口、课程主题等" placeholder-class="form-placeholder" value="{{remark}}" bindinput="onRemarkInput"></textarea>
-    </view>
-
+    <input class="contact-input" placeholder="联系方式：手机号或微信号" placeholder-class="form-placeholder" value="{{contact}}" bindinput="onContactInput" />
+    <textarea class="remark-input" placeholder="补充需求：到达时间、老人儿童人数、餐食忌口、课程主题等" placeholder-class="form-placeholder" value="{{remark}}" bindinput="onRemarkInput"></textarea>
     <button class="submit-btn" bindtap="onSubmit">提交预约</button>
   </view>
 

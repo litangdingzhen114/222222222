@@ -481,10 +481,156 @@ const serviceEnhancements = {
   },
 };
 
+const featureDesigns = {
+  mall: {
+    detailStyle: "market",
+    heroImage: "/assets/photos/ai-product-honey.jpg",
+    moodLine: "先提交意向，运营再按当天供应确认重量、份数和提货方式。",
+    requestTitle: "预购清单",
+    requestLead: "适合把土鸡、鸡蛋、黑猪肉和蜂蜜一次性备注清楚。",
+    sceneStats: [
+      { label: "交付", value: "自提/配送" },
+      { label: "库存", value: "后台确认" },
+      { label: "适合", value: "家庭/团队" },
+    ],
+    cards: [
+      {
+        title: "山林散养土鸡",
+        desc: "按只预订，适合家庭餐食和到村伴手礼，最终重量后台确认",
+        price: "128元/只",
+        imageUrl: "/assets/photos/ai-product-native-chicken.jpg",
+      },
+      {
+        title: "农家土鸡蛋",
+        desc: "30枚组合装，适合周末自提和团队采购",
+        price: "36元/盒",
+        imageUrl: "/assets/photos/ai-product-native-eggs.jpg",
+      },
+      {
+        title: "山乡黑猪肉",
+        desc: "五花、前腿等按份预订，后台确认可选部位和重量",
+        price: "68元/斤",
+        imageUrl: "/assets/photos/ai-product-black-pork.jpg",
+      },
+      {
+        title: "黄湖林场土蜂蜜",
+        desc: "山野花香，500g瓶装，可做农品礼盒搭配",
+        price: "59元/瓶",
+        imageUrl: "/assets/photos/ai-product-honey.jpg",
+      },
+    ],
+  },
+  ticket: {
+    detailStyle: "ticket",
+    heroImage: "/assets/photos/ricefish-paddy.jpg",
+    moodLine: "票券不是简单下单，先确认日期、场次和参与人群更稳。",
+    requestTitle: "选择票种",
+    requestLead: "亲子、研学、夜游可拆开预约，也可以在备注里组合。",
+    sceneStats: [
+      { label: "核销", value: "到场确认" },
+      { label: "雨天", value: "可调室内" },
+      { label: "人群", value: "亲子友好" },
+    ],
+  },
+  tour: {
+    detailStyle: "route",
+    heroImage: "/assets/photos/ricefish-terrace.jpg",
+    moodLine: "把点位、餐食和讲解串成一次顺路的村游，而不是自己拼路线。",
+    requestTitle: "行程需求",
+    requestLead: "告诉后台出行人数、时间和偏好，由运营人员补齐餐食与讲解。",
+    sceneStats: [
+      { label: "时长", value: "半日/一日" },
+      { label: "集合", value: "游客中心" },
+      { label: "组合", value: "餐食+讲解" },
+    ],
+  },
+  guide: {
+    detailStyle: "guide",
+    heroImage: "/assets/photos/ai-chenrongkao-tree.jpg",
+    moodLine: "讲解跟拍适合把古树、稻鱼田、溪谷和田铺驿站串成完整记忆。",
+    requestTitle: "讲解安排",
+    requestLead: "可以备注想听的主题、跟拍风格和老人儿童情况。",
+    sceneStats: [
+      { label: "讲解", value: "村民带路" },
+      { label: "影像", value: "手机跟拍" },
+      { label: "建议", value: "提前预约" },
+    ],
+  },
+  stay: {
+    detailStyle: "stay",
+    heroImage: "/assets/photos/ai-map-tianpu-station.jpg",
+    moodLine: "把住宿当成两天一晚的慢游起点，先确认房型，再衔接村咖和溪谷。",
+    requestTitle: "住宿需求",
+    requestLead: "填写入住人数、床型偏好、早餐和停车需求，后台再确认房态。",
+    sceneStats: [
+      { label: "房态", value: "后台确认" },
+      { label: "配套", value: "早餐/停车" },
+      { label: "适合", value: "亲子/团队" },
+    ],
+    cards: [
+      {
+        title: "溪畔家庭房",
+        desc: "亲水步道旁，适合一家三口",
+        price: "268元起",
+        imageUrl: "/assets/photos/ai-map-hailin-creek.jpg",
+      },
+      {
+        title: "侨乡院落房",
+        desc: "老宅改造，适合慢游和拍照",
+        price: "328元起",
+        imageUrl: "/assets/photos/ai-map-tianpu-station.jpg",
+      },
+      {
+        title: "研学团队房",
+        desc: "多人床位、早餐和活动室可配",
+        price: "按团询价",
+        imageUrl: "/assets/photos/ricefish-paddy.jpg",
+      },
+    ],
+  },
+  activity: {
+    detailStyle: "study",
+    heroImage: "/assets/photos/ricefish-harvest.jpg",
+    moodLine: "研学页重点不是卖课，而是让老师和家长看清主题、人数和安全安排。",
+    requestTitle: "课程报名",
+    requestLead: "建议备注年级、课程目标、带队老师和是否需要任务卡。",
+    sceneStats: [
+      { label: "主题", value: "稻鱼/古树" },
+      { label: "对象", value: "学校/亲子" },
+      { label: "执行", value: "讲师带队" },
+    ],
+  },
+  venue: {
+    detailStyle: "venue",
+    heroImage: "/assets/photos/ai-map-tianpu-station.jpg",
+    moodLine: "场地预约要先看空间能力，再说明活动配置，不要只填一张表。",
+    requestTitle: "场地需求",
+    requestLead: "写清桌椅、投影、用电、餐饮、搭建和车辆安排。",
+    sceneStats: [
+      { label: "空间", value: "室内/户外" },
+      { label: "配置", value: "桌椅/投影" },
+      { label: "确认", value: "后台排期" },
+    ],
+  },
+  build: {
+    detailStyle: "team",
+    heroImage: "/assets/photos/ai-map-hailin-creek.jpg",
+    moodLine: "团建定制先问目标和人数，再由后台组合路线、餐食和活动。",
+    requestTitle: "团队方案",
+    requestLead: "适合企业、学校、社群把主题和预算一次说清楚。",
+    sceneStats: [
+      { label: "人数", value: "20人起" },
+      { label: "方案", value: "定制报价" },
+      { label: "内容", value: "农文旅组合" },
+    ],
+  },
+};
+
 Object.keys(serviceEnhancements).forEach((id) => {
   bookingFeatures[id] = {
     ...bookingFeatures[id],
     ...serviceEnhancements[id],
+    ...(featureDesigns[id] || {}),
   };
 });
 

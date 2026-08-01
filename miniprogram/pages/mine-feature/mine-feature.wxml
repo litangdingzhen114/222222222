@@ -1,10 +1,14 @@
-<view class="page page-pad mine-feature-page">
+<view class="page mine-feature-page safe-bottom {{featureStyleClass}}">
   <view class="feature-hero">
-    <view class="hero-tag">{{feature.heroTag || '黄湖林场服务'}}</view>
-    <view class="feature-title">{{feature.title}}</view>
-    <view class="feature-subtitle">{{feature.subtitle}}</view>
-    <view class="chip-row">
-      <text wx:for="{{feature.chips}}" wx:key="*this" class="hero-chip">{{item}}</text>
+    <image wx:if="{{feature.heroImage}}" class="feature-hero-img" src="{{feature.heroImage}}" mode="aspectFill"></image>
+    <view class="feature-hero-shade"></view>
+    <view class="feature-hero-copy">
+      <view class="hero-tag">{{feature.heroTag || '黄湖林场服务'}}</view>
+      <view class="feature-title">{{feature.title}}</view>
+      <view class="feature-subtitle">{{feature.subtitle}}</view>
+      <view class="chip-row">
+        <text wx:for="{{feature.chips}}" wx:key="*this" class="hero-chip">{{item}}</text>
+      </view>
     </view>
   </view>
 
@@ -64,11 +68,11 @@
   </block>
 
   <block wx:elif="{{feature.type === 'verify'}}">
-    <view class="form-card card">
-      <view class="field-label">核销码</view>
+    <view class="request-panel card">
+      <view class="request-title">到场核销</view>
+      <view class="request-lead">工作人员确认订单后，可在这里输入核销码完成服务确认。</view>
       <input class="form-input code-input" placeholder="请输入订单或票券核销码" placeholder-class="form-placeholder" value="{{verifyCode}}" bindinput="onVerifyInput" />
       <button class="primary-action" bindtap="onVerifyCode">立即核销</button>
-      <view class="form-tip">核销码由工作人员在订单确认后提供。</view>
     </view>
 
     <view class="section-head">
@@ -99,10 +103,10 @@
       </view>
     </view>
 
-    <view class="form-card card">
-      <view class="field-label">合作内容</view>
+    <view class="request-panel card">
+      <view class="request-title">合作线索</view>
+      <view class="request-lead">写清合作方向、资源和时间，后台会保留记录便于后续沟通。</view>
       <textarea class="form-textarea" placeholder="请说明合作方向、资源、预计时间或团队情况" placeholder-class="form-placeholder" value="{{cooperationContent}}" bindinput="onCooperationInput"></textarea>
-      <view class="field-label">联系方式</view>
       <input class="form-input" placeholder="手机号或微信号" placeholder-class="form-placeholder" value="{{contact}}" bindinput="onContactInput" />
       <button class="primary-action" loading="{{submitting}}" bindtap="onSubmitCooperation">提交合作意向</button>
     </view>
@@ -123,96 +127,99 @@
   </block>
 
   <block wx:else>
-    <block wx:if="{{feature.highlights && feature.highlights.length}}">
-      <view class="section-head">
-        <text>服务亮点</text>
-        <text class="section-meta">{{feature.highlights.length}} 项</text>
+    <view wx:if="{{feature.sceneStats && feature.sceneStats.length}}" class="scene-strip">
+      <view wx:for="{{feature.sceneStats}}" wx:key="label" class="scene-stat">
+        <text>{{item.label}}</text>
+        <text>{{item.value}}</text>
       </view>
-      <view class="feature-highlight-grid">
-        <view wx:for="{{feature.highlights}}" wx:key="title" class="feature-highlight-card">
-          <view class="feature-highlight-title">{{item.title}}</view>
-          <view class="feature-highlight-desc">{{item.desc}}</view>
+    </view>
+
+    <view wx:if="{{feature.moodLine}}" class="mood-card">
+      <view class="mood-mark">到访建议</view>
+      <view class="mood-copy">{{feature.moodLine}}</view>
+    </view>
+
+    <view class="section-head">
+      <text>服务亮点</text>
+      <text class="section-meta">{{feature.highlights.length}} 项</text>
+    </view>
+    <view class="feature-highlight-grid">
+      <view wx:for="{{feature.highlights}}" wx:key="title" class="feature-highlight-card">
+        <view class="feature-highlight-title">{{item.title}}</view>
+        <view class="feature-highlight-desc">{{item.desc}}</view>
+      </view>
+    </view>
+
+    <view class="section-head">
+      <text>{{feature.requestTitle || '选择服务'}}</text>
+      <text class="section-meta">横滑选择</text>
+    </view>
+    <scroll-view scroll-x="{{true}}" enable-flex="{{true}}" class="choice-rail">
+      <view class="choice-row">
+        <view
+          wx:for="{{feature.cards}}"
+          wx:key="title"
+          class="choice-card {{selectedIndex === index ? 'active' : ''}}"
+          data-index="{{index}}"
+          bindtap="onCardTap"
+        >
+          <image wx:if="{{item.imageUrl || feature.heroImage}}" class="choice-photo" src="{{item.imageUrl || feature.heroImage}}" mode="aspectFill"></image>
+          <view class="choice-body">
+            <view class="choice-title">{{item.title}}</view>
+            <view class="choice-desc">{{item.desc}}</view>
+            <view class="choice-price">{{item.price}}</view>
+          </view>
         </view>
       </view>
-    </block>
+    </scroll-view>
 
     <view wx:if="{{feature.process && feature.process.length}}" class="service-flow-card card">
-      <view class="service-flow-title">预约流程</view>
+      <view class="service-flow-title">到达后怎么走</view>
       <view wx:for="{{feature.process}}" wx:key="*this" class="flow-step">
         <text class="flow-index">{{index + 1}}</text>
         <text class="flow-copy">{{item}}</text>
       </view>
     </view>
 
+    <view class="request-panel card">
+      <view class="request-head">
+        <view>
+          <view class="request-title">确认预约</view>
+          <view class="request-lead">{{feature.requestLead || '提交后由后台确认日期、人数和服务安排。'}}</view>
+        </view>
+        <view class="request-price">{{orderPreview.price}}</view>
+      </view>
+
+      <view class="selected-summary">
+        <view class="selected-title">{{orderPreview.item}}</view>
+        <view class="selected-sub">{{orderPreview.service}}</view>
+      </view>
+
+      <view class="compact-fields">
+        <picker mode="date" value="{{date}}" bindchange="onDateChange">
+          <view class="compact-field">
+            <text>{{feature.formLabels.date}}</text>
+            <text>{{date}}</text>
+          </view>
+        </picker>
+        <view class="compact-field">
+          <text>{{feature.formLabels.people}}</text>
+          <view class="stepper">
+            <view class="step-btn" bindtap="onMinus">−</view>
+            <view class="step-value">{{people}}</view>
+            <view class="step-btn" bindtap="onPlus">＋</view>
+          </view>
+        </view>
+      </view>
+
+      <input class="form-input" placeholder="{{feature.formLabels.contact}}：手机号或微信号" placeholder-class="form-placeholder" value="{{contact}}" bindinput="onContactInput" />
+      <textarea class="form-textarea small" placeholder="{{feature.formLabels.remark}}：时间段、预算、口味、课程或其他需求" placeholder-class="form-placeholder" value="{{remark}}" bindinput="onRemarkInput"></textarea>
+      <button class="primary-action" loading="{{submitting}}" bindtap="onSubmitService">{{feature.actionText}}</button>
+    </view>
+
     <view wx:if="{{feature.notes && feature.notes.length}}" class="service-note-card">
       <view class="service-note-title">预订须知</view>
       <view wx:for="{{feature.notes}}" wx:key="*this" class="service-note-item">{{item}}</view>
-    </view>
-
-    <view class="section-head">
-      <text>选择服务</text>
-      <text class="section-meta">{{feature.cards.length}} 项</text>
-    </view>
-    <view class="choice-list">
-      <view
-        wx:for="{{feature.cards}}"
-        wx:key="title"
-        class="choice-card {{selectedIndex === index ? 'active' : ''}}"
-        data-index="{{index}}"
-        bindtap="onCardTap"
-      >
-        <view class="choice-title">{{item.title}}</view>
-        <view class="choice-desc">{{item.desc}}</view>
-        <view class="choice-price">{{item.price}}</view>
-      </view>
-    </view>
-
-    <view class="order-preview-card card">
-      <view class="preview-head">
-        <text>确认预约</text>
-        <text>{{orderPreview.price}}</text>
-      </view>
-      <view class="preview-title">{{orderPreview.item}}</view>
-      <view class="preview-grid">
-        <view class="preview-cell">
-          <text>服务</text>
-          <text>{{orderPreview.service}}</text>
-        </view>
-        <view class="preview-cell">
-          <text>{{feature.formLabels.date}}</text>
-          <text>{{orderPreview.date}}</text>
-        </view>
-        <view class="preview-cell">
-          <text>{{feature.formLabels.people}}</text>
-          <text>{{orderPreview.peopleText}}</text>
-        </view>
-      </view>
-    </view>
-
-    <view class="form-card card">
-      <view class="form-row">
-        <text class="field-label">{{feature.formLabels.date}}</text>
-        <picker mode="date" value="{{date}}" bindchange="onDateChange">
-          <view class="picker-value">{{date}}</view>
-        </picker>
-      </view>
-      <view class="form-row">
-        <text class="field-label">{{feature.formLabels.people}}</text>
-        <view class="stepper">
-          <view class="step-btn" bindtap="onMinus">−</view>
-          <view class="step-value">{{people}}</view>
-          <view class="step-btn" bindtap="onPlus">＋</view>
-        </view>
-      </view>
-      <view class="field-block">
-        <view class="field-label">{{feature.formLabels.contact}}</view>
-        <input class="form-input" placeholder="请填写手机号或微信号" placeholder-class="form-placeholder" value="{{contact}}" bindinput="onContactInput" />
-      </view>
-      <view class="field-block">
-        <view class="field-label">{{feature.formLabels.remark}}</view>
-        <textarea class="form-textarea small" placeholder="可填写时间段、预算、口味、课程或其他需求" placeholder-class="form-placeholder" value="{{remark}}" bindinput="onRemarkInput"></textarea>
-      </view>
-      <button class="primary-action" loading="{{submitting}}" bindtap="onSubmitService">{{feature.actionText}}</button>
     </view>
 
     <view class="section-head">
