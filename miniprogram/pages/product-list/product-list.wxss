@@ -51,27 +51,24 @@
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  gap: 8rpx;
+  gap: 10rpx;
   min-height: 64rpx;
-  padding: 0 16rpx;
+  padding: 0 18rpx;
   border: 1rpx solid #cbded9;
-  border-radius: 14rpx;
+  border-radius: 13rpx;
   background: #fff;
   color: #295b56;
   font-size: 23rpx;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .order-entry-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   width: 36rpx;
   height: 36rpx;
-  border-radius: 8rpx;
-  background: #e0f0ec;
-  color: #0f6b67;
-  font-size: 20rpx;
+  padding: 6rpx;
+  border-radius: 9rpx;
+  background: #e7f3f0;
+  box-sizing: border-box;
 }
 
 .search-box {
@@ -580,11 +577,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: 0 0 172rpx;
+  flex: 0 0 178rpx;
   box-sizing: border-box;
-  max-width: 34%;
+  max-width: 36%;
   height: 70rpx;
-  padding: 0 22rpx;
+  padding: 0 18rpx;
   border-radius: 13rpx;
   background: #d99b43;
   color: #2f2414;

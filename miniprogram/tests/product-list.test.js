@@ -64,10 +64,26 @@ assert(
   "cart dock should use a real icon asset instead of a large text icon",
 );
 assert(
+  wxml.includes('class="order-entry-icon" src="/assets/icons/booking.png"') &&
+    !wxml.includes(">单<"),
+  "order entry should use a real icon asset instead of a large text icon",
+);
+assert(
+  wxml.includes("查看预订清单") &&
+    wxml.includes("提交预订") &&
+    wxml.includes("预估") &&
+    wxml.includes("最终以后台确认为准"),
+  "personal-account product flow should use preorder copy instead of payment copy",
+);
+assert(
+  !/结账|结算|应付|支付|购物车/.test(wxml),
+  "product page should not expose direct payment or checkout copy before merchant payment is available",
+);
+assert(
   wxss.includes(".cart-dock") &&
     wxss.includes("display: flex") &&
     wxss.includes("max-width: calc(100vw - 48rpx)") &&
-    wxss.includes("max-width: 34%"),
+    wxss.includes("max-width: 36%"),
   "cart dock and checkout button should stay inside the viewport",
 );
 

@@ -434,7 +434,7 @@ const pageConfig = {
       );
     }
     this.applyCart(writeCart(cart));
-    if (showMessage) quickToast("已加入购物车");
+    if (showMessage) quickToast("已加入预订清单");
   },
 
   applyCart(cart) {
@@ -451,7 +451,7 @@ const pageConfig = {
 
   onOpenCart() {
     if (!this.data.cart.length) {
-      quickToast("购物车还是空的");
+      quickToast("预订清单还是空的");
       return;
     }
     this.setData({ cartVisible: true, detailVisible: false });

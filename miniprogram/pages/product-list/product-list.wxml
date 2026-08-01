@@ -6,7 +6,7 @@
         <view class="market-title">农产品预订购买</view>
       </view>
       <button class="order-entry" bindtap="onViewOrders" aria-label="查看我的订单">
-        <text class="order-entry-icon">单</text>
+        <image class="order-entry-icon" src="/assets/icons/booking.png" mode="aspectFit"></image>
         <text>我的订单</text>
       </button>
     </view>
@@ -77,7 +77,7 @@
       <view class="featured-subtitle">{{featuredProduct.subtitle}}</view>
       <view class="featured-foot">
         <view class="price-line"><text class="price-symbol">¥</text><text class="featured-price">{{featuredProduct.priceText}}</text><text class="price-unit">/{{featuredProduct.unit}}</text></view>
-        <button class="featured-action" data-id="{{featuredProduct.id}}" catchtap="onCardAdd" aria-label="加入购物车">+</button>
+        <button class="featured-action" data-id="{{featuredProduct.id}}" catchtap="onCardAdd" aria-label="加入预订清单">+</button>
       </view>
     </view>
   </view>
@@ -123,7 +123,7 @@
             data-id="{{item.id}}"
             catchtap="onCardAdd"
             disabled="{{item.soldOut}}"
-            aria-label="加入购物车"
+            aria-label="加入预订清单"
           >+</button>
         </view>
       </view>
@@ -149,9 +149,9 @@
         <text class="cart-price-symbol">¥</text>
         <text>{{cartTotalText}}</text>
       </view>
-      <text class="cart-hint">查看购物车</text>
+      <text class="cart-hint">查看预订清单</text>
     </button>
-    <button class="checkout-shortcut" bindtap="onOpenCart">去结算</button>
+    <button class="checkout-shortcut" bindtap="onOpenCart">提交预订</button>
   </view>
 
   <view wx:if="{{detailVisible && selectedProduct}}" class="sheet-layer">
@@ -204,7 +204,7 @@
           <view><text>¥</text>{{selectedTotalText}}</view>
         </view>
         <view class="detail-button-row">
-          <button class="detail-cart-button" bindtap="onDetailAdd">加入购物车</button>
+          <button class="detail-cart-button" bindtap="onDetailAdd">加入清单</button>
           <button class="detail-buy-button" bindtap="onBuyNow">立即预订</button>
         </view>
       </view>
@@ -260,7 +260,7 @@
 
         <view class="checkout-section">
           <view class="checkout-title">收货信息</view>
-          <view class="form-help">真实购买需要预留姓名、手机号和履约日期，后台确认库存后联系支付与发货。</view>
+          <view class="form-help">提交预订需要预留姓名、手机号和履约日期，后台确认库存、重量和取货方式后联系您。</view>
           <view class="field-label">联系人姓名</view>
           <input
             class="checkout-input"
@@ -315,9 +315,9 @@
 
       <view class="cart-submit-row">
         <view class="cart-submit-total">
-          <text>应付</text>
+          <text>预估</text>
           <view><text>¥</text>{{cartTotalText}}</view>
-          <text class="offline-note">后台确认后支付</text>
+          <text class="offline-note">最终以后台确认为准</text>
         </view>
         <button class="cart-submit" loading="{{submitting}}" bindtap="onSubmitOrder">提交预订</button>
       </view>
