@@ -65,13 +65,21 @@ function createWxMock(responses) {
 
   const fallbackWx = createWxMock([
     { statusCode: 500, data: { message: "v1 temporarily unavailable" } },
+    { fail: "proxy unavailable" },
   ]);
   ai = loadAi(fallbackWx);
-  await assert.rejects(() => ai.askGuide("停车场在哪里", []), /Request failed/);
-  assert.strictEqual(fallbackWx.requests().length, 1);
+  await assert.rejects(
+    () => ai.askGuide("停车场在哪里", []),
+    /proxy unavailable|Request failed/,
+  );
+  assert.strictEqual(fallbackWx.requests().length, 2);
   assert.strictEqual(
     fallbackWx.requests()[0].url,
     "https://api.hailin.store/api/v1/ai-guide/chat",
+  );
+  assert.strictEqual(
+    fallbackWx.requests()[1].url,
+    "https://www.hailin.store/api/v1/ai-guide/chat",
   );
   assert.deepStrictEqual(
     ai.normalizedHistory([

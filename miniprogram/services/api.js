@@ -86,6 +86,9 @@ function storageRemove(key) {
 function resolveApiBaseUrl() {
   const overrideUrl = storageApiBaseUrl();
   if (overrideUrl) return overrideUrl;
+  if (isDevtools() && serviceConfig.devtoolsApiBaseUrl) {
+    return serviceConfig.devtoolsApiBaseUrl;
+  }
   if (
     isDevtools() &&
     serviceConfig.useDevApiInDevtools &&
@@ -97,10 +100,19 @@ function resolveApiBaseUrl() {
 
 function resolveRequestBaseUrls() {
   const primary = resolveApiBaseUrl().trim();
+  const devtoolsFallback =
+    isDevtools() && serviceConfig.devtoolsApiBaseUrl
+      ? String(serviceConfig.devtoolsApiBaseUrl || "").trim()
+      : "";
   const fallback = String(serviceConfig.apiBaseUrl || "").trim();
-  return [primary, fallback].filter((url, index, list) => {
-    return url && list.indexOf(url) === index;
-  });
+  const extraFallbacks = Array.isArray(serviceConfig.apiFallbackBaseUrls)
+    ? serviceConfig.apiFallbackBaseUrls.map((url) => String(url || "").trim())
+    : [];
+  return [primary, devtoolsFallback, fallback, ...extraFallbacks].filter(
+    (url, index, list) => {
+      return url && list.indexOf(url) === index;
+    },
+  );
 }
 
 function hasBackend() {
