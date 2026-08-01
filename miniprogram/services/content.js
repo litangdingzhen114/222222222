@@ -482,7 +482,7 @@ function loadHomeData() {
     feeds: recommend.feeds,
     notice:
       "今日推荐：先到游客中心确认停车与讲解，再走溪谷步道，午餐预约海林田鱼家宴",
-    weather: "青田海口镇多云间晴，瓯江沿线适合慢行；亲水步道雨后注意防滑",
+    weather: "小程序信息正在完善中，当前为 Demo 体验阶段，内容将持续更新",
     serviceMode: serviceModeText(),
     locationText: serviceConfig.locationText,
   };
