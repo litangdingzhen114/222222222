@@ -283,7 +283,7 @@ const spotDetails = {
       },
       {
         title: "研学报名",
-        desc: "报名非遗手作与乡村观察组合课程。",
+        desc: "报名古树年轮观察与乡村自然课堂。",
         url: "/pages/mine-feature/mine-feature?id=activity",
       },
       {

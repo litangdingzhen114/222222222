@@ -120,7 +120,8 @@ assert(
   "map subtag overlay should keep compact labels mapped to full filter values",
 );
 assert(
-  mapWxss.includes("flex: 1 1 0") &&
+  mapWxss.includes("overflow: visible") &&
+    mapWxss.includes("font-size: 20rpx") &&
     mapWxss.includes("white-space: nowrap"),
   "map subtag overlay should fit all filter chips without clipping text",
 );

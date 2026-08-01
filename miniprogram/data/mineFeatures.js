@@ -142,7 +142,7 @@ const bookingFeatures = {
       },
       {
         title: "亲子研学线",
-        desc: "自然观察、非遗手作和村落任务卡",
+        desc: "自然观察、古树年轮和村落任务卡",
         price: "128元/人",
       },
     ],

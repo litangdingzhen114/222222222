@@ -209,20 +209,22 @@
   right: 18rpx;
   top: 22rpx;
   display: flex;
-  gap: 8rpx;
-  overflow: hidden;
+  flex-wrap: nowrap;
+  gap: 6rpx;
+  box-sizing: border-box;
+  overflow: visible;
 }
 
 .subtag-item {
   flex: 1 1 0;
   min-width: 0;
   box-sizing: border-box;
-  padding: 9rpx 2rpx;
+  padding: 9rpx 0;
   border: 2rpx solid rgba(15, 107, 103, 0.36);
   border-radius: 8rpx;
   background: rgba(251, 255, 252, 0.92);
   color: #193C3A;
-  font-size: 22rpx;
+  font-size: 20rpx;
   font-weight: 800;
   line-height: 1.1;
   text-align: center;
