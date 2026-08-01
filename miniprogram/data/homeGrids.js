@@ -113,16 +113,11 @@ const pageOne = [
 
 const pageTwo = [
   {
-    id: "stone",
-    title: "青田石韵",
-    icon: "石",
-    iconPath: "/assets/icons/stone.png",
-  },
-  {
-    id: "ricefish",
-    title: "稻鱼体验",
+    id: "stone-ricefish",
+    title: "石韵稻鱼",
     icon: "鱼",
     iconPath: "/assets/icons/ricefish.png",
+    url: "/pages/route-detail/route-detail?id=one-day",
   },
   {
     id: "weather",
@@ -134,7 +129,7 @@ const pageTwo = [
   },
   {
     id: "traffic",
-    title: "交通指南",
+    title: "交通出行",
     icon: "行",
     iconPath: "/assets/icons/traffic.png",
     url: "/pages/map/map",
@@ -148,25 +143,10 @@ const pageTwo = [
     url: "/pages/ai-guide/ai-guide",
   },
   {
-    id: "overseas",
-    title: "侨乡故事",
+    id: "hailin-overseas",
+    title: "海林侨乡",
     icon: "侨",
     iconPath: "/assets/icons/overseas.png",
-    url: "/pages/spot-detail/spot-detail?id=museum",
-  },
-  {
-    id: "travel",
-    title: "出行服务",
-    icon: "车",
-    iconPath: "/assets/icons/travel.png",
-    url: "/pages/map/map",
-    openType: "switchTab",
-  },
-  {
-    id: "story",
-    title: "海林故事",
-    icon: "故",
-    iconPath: "/assets/icons/story.png",
     url: "/pages/spot-detail/spot-detail?id=museum",
   },
   {

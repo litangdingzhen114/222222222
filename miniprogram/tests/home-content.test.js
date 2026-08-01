@@ -63,6 +63,25 @@ assert.deepStrictEqual(
   ["farm-order", "monitor", "stay", "venue", "ai", "activity", "map"],
   "home first grid should prioritize farm products, monitoring, stay/venue and AI guide",
 );
+const gridItems = gridPages.flatMap((page) => page.items);
+const gridTitles = gridItems.map((item) => item.title);
+assert(
+  ["海林故事", "侨乡故事", "青田石韵", "稻鱼体验", "出行服务", "交通指南"].every(
+    (title) => !gridTitles.includes(title),
+  ),
+  "home grid should merge overlapping culture and travel entries",
+);
+assert(
+  ["海林侨乡", "石韵稻鱼", "交通出行"].every((title) =>
+    gridTitles.includes(title),
+  ),
+  "home grid should keep merged culture and travel entries",
+);
+assert.strictEqual(
+  new Set(gridItems.map((item) => item.id)).size,
+  gridItems.length,
+  "home grid ids should remain unique after merging",
+);
 assert(
   products.length >= 4,
   "home products should expose agricultural preorder items",
