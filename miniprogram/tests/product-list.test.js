@@ -40,8 +40,11 @@ assert(
 assert(
   wxml.includes("农产品预订购买") &&
     wxml.includes("product-grid") &&
-    wxml.includes("cart-sheet"),
-  "product page should render marketplace, grid and checkout sheet",
+    wxml.includes("cart-sheet") &&
+    wxml.includes("联系人姓名") &&
+    wxml.includes("联系电话") &&
+    wxml.includes("date-picker"),
+  "product page should render marketplace, grid, checkout sheet and buyer fields",
 );
 assert(
   !wxml.toLowerCase().includes("<table"),
@@ -50,6 +53,10 @@ assert(
 assert(
   !wxss.includes("linear-gradient"),
   "product page should avoid obvious placeholder gradient panels",
+);
+assert(
+  wxss.includes("detail-button-row") && wxss.includes("box-sizing: border-box"),
+  "product action and form controls should be stable on narrow screens",
 );
 
 const decorated = products.map(productPage.decorateProduct);
@@ -84,14 +91,30 @@ assert(Number(summary.totalText) > 0, "cart summary should calculate amount");
 
 const payload = productPage.buildOrderPayload(cart, {
   deliveryType: "pickup",
-  contact: "13800000000",
+  contactName: "海林游客",
+  contactPhone: "13800000000",
+  deliveryDate: "2026-08-02",
   remark: "测试提交",
 });
 assert.strictEqual(payload.type, "product");
 assert.strictEqual(payload.featureId, "mall");
+assert.strictEqual(payload.contactName, "海林游客");
+assert.strictEqual(payload.contactPhone, "13800000000");
+assert.strictEqual(payload.deliveryDate, "2026-08-02");
+assert(payload.pickupSite.includes("海林村"), "pickup order should keep pickup site");
 assert.strictEqual(payload.products.length, 2);
 assert.strictEqual(payload.products[0].productName, decorated[0].title);
 assert.strictEqual(payload.products[0].quantity, 2);
 assert(payload.price.startsWith("¥"), "order payload should include display price");
+
+const contentServiceSource = fs.readFileSync(
+  path.join(root, "miniprogram/services/content.js"),
+  "utf8",
+);
+assert(
+  contentServiceSource.includes('"/assets/seed/product-postcard.jpg"') &&
+    contentServiceSource.includes('"/assets/photos/ai-oujiang-postcards.jpg"'),
+  "legacy seed product photos should map to bundled assets",
+);
 
 console.log("product marketplace page ok");

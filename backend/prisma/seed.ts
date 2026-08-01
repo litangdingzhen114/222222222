@@ -744,7 +744,7 @@ async function seedProducts() {
       '袋',
       200,
       '5斤/袋',
-      img('product-rice.jpg'),
+      '/assets/photos/ricefish-paddy.jpg',
     ],
     [
       'product-fish',
@@ -754,9 +754,9 @@ async function seedProducts() {
       '盒',
       80,
       '礼盒装',
-      img('product-fish.jpg'),
+      '/assets/photos/ricefish-harvest.jpg',
     ],
-    ['product-tea', '溪畔绿茶', 'cat-gift', 8800, '罐', 90, '120g/罐', img('product-tea.jpg')],
+    ['product-tea', '溪畔绿茶', 'cat-gift', 8800, '罐', 90, '120g/罐', '/assets/photos/qingtian-tashan.jpg'],
     [
       'product-rice-cake',
       '手作米糕',
@@ -765,7 +765,7 @@ async function seedProducts() {
       '盒',
       150,
       '6枚/盒',
-      img('product-rice-cake.jpg'),
+      '/assets/photos/ricefish-drying.jpg',
     ],
     [
       'product-postcard',
@@ -775,7 +775,7 @@ async function seedProducts() {
       '套',
       180,
       '6张/套',
-      img('product-postcard.jpg'),
+      '/assets/photos/ai-oujiang-postcards.jpg',
     ],
     [
       'product-guide-map',
@@ -785,7 +785,7 @@ async function seedProducts() {
       '份',
       300,
       '单份装',
-      img('product-guide-map.jpg'),
+      '/assets/photos/ai-map-tianpu-station.jpg',
     ],
   ] as const;
   for (const [id, name, categoryId, price, unit, stock, specification, coverImage] of products) {

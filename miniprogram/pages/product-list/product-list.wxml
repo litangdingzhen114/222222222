@@ -203,8 +203,10 @@
           <text>合计</text>
           <view><text>¥</text>{{selectedTotalText}}</view>
         </view>
-        <button class="detail-cart-button" bindtap="onDetailAdd">加入购物车</button>
-        <button class="detail-buy-button" bindtap="onBuyNow">立即预订</button>
+        <view class="detail-button-row">
+          <button class="detail-cart-button" bindtap="onDetailAdd">加入购物车</button>
+          <button class="detail-buy-button" bindtap="onBuyNow">立即预订</button>
+        </view>
       </view>
     </view>
   </view>
@@ -257,20 +259,45 @@
         </view>
 
         <view class="checkout-section">
-          <view class="field-label">联系方式</view>
+          <view class="checkout-title">收货信息</view>
+          <view class="form-help">真实购买需要预留姓名、手机号和履约日期，后台确认库存后联系支付与发货。</view>
+          <view class="field-label">联系人姓名</view>
           <input
             class="checkout-input"
-            value="{{contact}}"
-            placeholder="手机号或微信号"
+            value="{{contactName}}"
+            placeholder="请输入收货人或自提人姓名"
             placeholder-class="checkout-placeholder"
-            bindinput="onContactInput"
+            bindinput="onContactNameInput"
           />
+          <view class="field-label field-gap">联系电话</view>
+          <input
+            class="checkout-input"
+            type="number"
+            value="{{contactPhone}}"
+            placeholder="请输入手机号，便于后台确认"
+            placeholder-class="checkout-placeholder"
+            bindinput="onContactPhoneInput"
+          />
+          <view class="field-label field-gap">{{deliveryType === 'pickup' ? '自提日期' : '配送日期'}}</view>
+          <picker mode="date" value="{{deliveryDate}}" start="{{minDeliveryDate}}" bindchange="onDeliveryDateChange">
+            <view class="date-picker">
+              <text>{{deliveryDate}}</text>
+              <text>选择日期</text>
+            </view>
+          </picker>
+          <view wx:if="{{deliveryType === 'pickup'}}" class="pickup-card">
+            <view>
+              <view class="pickup-title">自提地点</view>
+              <view class="pickup-desc">{{pickupSite}}</view>
+            </view>
+            <text>到村取货</text>
+          </view>
           <block wx:if="{{deliveryType === 'express'}}">
             <view class="field-label field-gap">配送地址</view>
             <textarea
               class="checkout-textarea address"
               value="{{address}}"
-              placeholder="填写区县、街道和门牌信息"
+              placeholder="填写省市区、街道、门牌号，后台会确认是否可配送"
               placeholder-class="checkout-placeholder"
               bindinput="onAddressInput"
             ></textarea>

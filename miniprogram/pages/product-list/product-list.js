@@ -11,6 +11,7 @@ const {
 
 const CART_STORAGE_KEY = "hailin-product-cart-v1";
 const DEFAULT_PRODUCT_IMAGE = "/assets/photos/ai-product-honey.jpg";
+const PICKUP_SITE = "海林村游客中心 / 共富集市";
 let memoryCart = [];
 
 const PRODUCT_CATEGORIES = [
@@ -40,6 +41,14 @@ function numberValue(value, fallback = 0) {
 
 function priceText(value) {
   return numberValue(value).toFixed(2);
+}
+
+function dateTextAfter(days = 1) {
+  const date = new Date();
+  date.setDate(date.getDate() + days);
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${date.getFullYear()}-${month}-${day}`;
 }
 
 function inferCategory(product) {
@@ -188,14 +197,21 @@ function buildOrderPayload(cart, form) {
     orderType: "product",
     service: "海林村农产品预订",
     item,
-    date: todayText(),
+    date: form.deliveryDate || todayText(),
     people: summary.count,
     quantity: summary.count,
-    contact: String(form.contact || "").trim(),
+    contactName: String(form.contactName || "").trim(),
+    contactPhone: String(form.contactPhone || "").trim(),
+    contact: [form.contactName, form.contactPhone]
+      .map((value) => String(value || "").trim())
+      .filter(Boolean)
+      .join(" "),
     remark: String(form.remark || "").trim(),
     price: `¥${summary.totalText}`,
     deliveryType: delivery.id,
     deliveryText: delivery.name,
+    deliveryDate: form.deliveryDate || todayText(),
+    pickupSite: delivery.id === "pickup" ? PICKUP_SITE : "",
     address:
       delivery.id === "express" ? String(form.address || "").trim() : "",
     productId: cart.length === 1 ? first.productId : "",
@@ -235,7 +251,11 @@ const pageConfig = {
     cartCount: 0,
     cartTotalText: "0.00",
     deliveryType: "pickup",
-    contact: "",
+    pickupSite: PICKUP_SITE,
+    minDeliveryDate: dateTextAfter(1),
+    deliveryDate: dateTextAfter(1),
+    contactName: "",
+    contactPhone: "",
     address: "",
     remark: "",
     submitting: false,
@@ -244,7 +264,10 @@ const pageConfig = {
   onLoad(options = {}) {
     const profile = loadUserCenter().profile || {};
     const cart = readCart();
-    this.setData({ contact: profile.contact || "" });
+    this.setData({
+      contactName: profile.nickname && profile.nickname !== "微信游客" ? profile.nickname : "",
+      contactPhone: profile.contact || "",
+    });
     this.applyCart(cart);
     this.loadPage(options);
   },
@@ -469,8 +492,16 @@ const pageConfig = {
     this.setData({ deliveryType: event.currentTarget.dataset.id || "pickup" });
   },
 
-  onContactInput(event) {
-    this.setData({ contact: event.detail.value || "" });
+  onContactNameInput(event) {
+    this.setData({ contactName: event.detail.value || "" });
+  },
+
+  onContactPhoneInput(event) {
+    this.setData({ contactPhone: event.detail.value || "" });
+  },
+
+  onDeliveryDateChange(event) {
+    this.setData({ deliveryDate: event.detail.value || this.data.minDeliveryDate });
   },
 
   onAddressInput(event) {
@@ -487,10 +518,20 @@ const pageConfig = {
 
   onSubmitOrder() {
     if (!this.data.cart.length || this.data.submitting) return;
-    const contact = String(this.data.contact || "").trim();
+    const contactName = String(this.data.contactName || "").trim();
+    const contactPhone = String(this.data.contactPhone || "").trim();
     const address = String(this.data.address || "").trim();
-    if (!contact) {
-      quickToast("请填写手机号或微信号");
+    const deliveryDate = String(this.data.deliveryDate || "").trim();
+    if (!contactName) {
+      quickToast("请填写收货人姓名");
+      return;
+    }
+    if (!contactPhone) {
+      quickToast("请填写联系电话");
+      return;
+    }
+    if (!deliveryDate) {
+      quickToast("请选择取货或配送日期");
       return;
     }
     if (this.data.deliveryType === "express" && !address) {
@@ -500,7 +541,9 @@ const pageConfig = {
 
     const payload = buildOrderPayload(this.data.cart, {
       deliveryType: this.data.deliveryType,
-      contact,
+      contactName,
+      contactPhone,
+      deliveryDate,
       address,
       remark: this.data.remark,
     });

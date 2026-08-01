@@ -97,6 +97,12 @@ const legacySceneImages = {
   "/assets/scenes/overseas-cafe.png": "/assets/photos/ai-overseas-cafe.jpg",
   "/assets/scenes/ricefish-banquet.png": "/assets/photos/ricefish-drying.jpg",
   "/assets/scenes/creek-tea.png": "/assets/photos/qingtian-tashan.jpg",
+  "/assets/seed/product-rice.jpg": "/assets/photos/ricefish-paddy.jpg",
+  "/assets/seed/product-fish.jpg": "/assets/photos/ricefish-harvest.jpg",
+  "/assets/seed/product-tea.jpg": "/assets/photos/qingtian-tashan.jpg",
+  "/assets/seed/product-rice-cake.jpg": "/assets/photos/ricefish-drying.jpg",
+  "/assets/seed/product-postcard.jpg": "/assets/photos/ai-oujiang-postcards.jpg",
+  "/assets/seed/product-guide-map.jpg": "/assets/photos/ai-map-tianpu-station.jpg",
 };
 
 function cleanImage(value) {
