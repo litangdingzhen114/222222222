@@ -134,6 +134,19 @@ assert(
     !mapJs.includes('iconPath: "/assets/map/poi.png"'),
   "map page should render category-specific sticker marker icons",
 );
+assert(
+  mapJs.includes("width: isActive ? 68 : 54") &&
+    mapJs.includes("height: isActive ? 80 : 64"),
+  "map marker sticker icons should render large enough to show illustrated landmarks",
+);
+
+function pngSize(fileName) {
+  const buffer = fs.readFileSync(path.join(root, "miniprogram/assets/map", fileName));
+  return {
+    width: buffer.readUInt32BE(16),
+    height: buffer.readUInt32BE(20),
+  };
+}
 
 [
   "marker-scenic.png",
@@ -151,6 +164,11 @@ assert(
   assert(
     fs.existsSync(path.join(root, "miniprogram/assets/map", filename)),
     `${filename} should exist for map markers`,
+  );
+  assert.deepStrictEqual(
+    pngSize(filename),
+    { width: 112, height: 132 },
+    `${filename} should use the illustrated tour-map marker canvas`,
   );
 });
 

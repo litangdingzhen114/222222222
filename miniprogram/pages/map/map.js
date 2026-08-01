@@ -190,11 +190,11 @@ function buildMarkers(points, activeId) {
       longitude: point.longitude,
       title: point.title,
       iconPath: point.markerIconPath || markerIconPath(point),
-      width: isActive ? 58 : 46,
-      height: isActive ? 68 : 54,
+      width: isActive ? 68 : 54,
+      height: isActive ? 80 : 64,
       anchor: {
         x: 0.5,
-        y: 0.94,
+        y: 0.96,
       },
       callout: {
         content: point.title,
