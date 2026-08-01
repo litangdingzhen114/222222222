@@ -1,6 +1,6 @@
 <view class="page mine-page safe-bottom">
   <view class="mine-hero">
-    <image class="mine-hero-photo" src="/assets/photos/ricefish-paddy.jpg" mode="aspectFill"></image>
+    <image class="mine-hero-photo" src="https://www.hailin.store/assets/photos/ricefish-paddy.jpg" mode="aspectFill"></image>
     <view class="mine-hero-shade"></view>
     <view class="mine-capsule"></view>
   </view>

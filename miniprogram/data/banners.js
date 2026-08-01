@@ -6,7 +6,7 @@ module.exports = [
     tag: '海林民宿 · 周末慢住',
     imageClass: 'banner-oujiang',
     icon: '宿',
-    imageUrl: '/assets/photos/ai-map-tianpu-station.jpg'
+    imageUrl: 'https://www.hailin.store/assets/photos/ai-map-tianpu-station.jpg'
   },
   {
     id: 'banner-xunye-cafe',
@@ -15,7 +15,7 @@ module.exports = [
     tag: '村咖 · 咖啡茶歇',
     imageClass: 'banner-ricefish',
     icon: '啡',
-    imageUrl: '/assets/photos/ai-xunye-cafe.jpg'
+    imageUrl: 'https://www.hailin.store/assets/photos/ai-xunye-cafe.jpg'
   },
   {
     id: 'banner-homestay-tea',
@@ -24,7 +24,7 @@ module.exports = [
     tag: '溪谷茶歇 · 小院时光',
     imageClass: 'banner-stone',
     icon: '茶',
-    imageUrl: '/assets/photos/ai-overseas-cafe.jpg'
+    imageUrl: 'https://www.hailin.store/assets/photos/ai-overseas-cafe.jpg'
   },
   {
     id: 'banner-cafe-route',
@@ -33,6 +33,6 @@ module.exports = [
     tag: '慢游路线 · 民宿村咖',
     imageClass: 'banner-evening',
     icon: '线',
-    imageUrl: '/assets/photos/ai-map-hailin-creek.jpg'
+    imageUrl: 'https://www.hailin.store/assets/photos/ai-map-hailin-creek.jpg'
   }
 ];

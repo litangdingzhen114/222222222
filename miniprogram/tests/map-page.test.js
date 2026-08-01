@@ -3,6 +3,7 @@ const fs = require("fs");
 const path = require("path");
 
 const root = path.resolve(__dirname, "..", "..");
+const photoBase = "https://www.hailin.store/assets/photos";
 const appConfig = require("../app.json");
 const mapPoints = require("../data/mapPoints");
 const spots = require("../data/spots");
@@ -70,7 +71,7 @@ assert(
   mapPoints.some(
     (point) =>
       point.title === "田铺驿站" &&
-      point.imageUrl === "/assets/photos/ai-map-tianpu-station.jpg",
+      point.imageUrl === `${photoBase}/ai-map-tianpu-station.jpg`,
   ),
   "map should include Tianpu station with a generated display image",
 );
@@ -78,7 +79,7 @@ assert(
   mapPoints.some(
     (point) =>
       point.title === "海林·溪谷" &&
-      point.imageUrl === "/assets/photos/ai-map-hailin-creek.jpg",
+      point.imageUrl === `${photoBase}/ai-map-hailin-creek.jpg`,
   ),
   "map should include Hailin creek valley with a generated display image",
 );
@@ -87,7 +88,7 @@ assert(
     (point) =>
       point.id === "chenrongkao-tree" &&
       point.title === "陈嵘栲古树" &&
-      point.imageUrl === "/assets/photos/ai-chenrongkao-tree.jpg" &&
+      point.imageUrl === `${photoBase}/ai-chenrongkao-tree.jpg` &&
       point.refId === "ancient-tree",
   ),
   "map should include the Chenrongkao village tree as a focusable scenic point",

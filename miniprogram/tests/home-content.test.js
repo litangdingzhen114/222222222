@@ -3,6 +3,7 @@ const fs = require("fs");
 const path = require("path");
 
 const root = path.resolve(__dirname, "..", "..");
+const photoBase = "https://www.hailin.store/assets/photos";
 const banners = require("../data/banners");
 const gridPages = require("../data/homeGrids");
 const products = require("../data/products");
@@ -55,12 +56,12 @@ assert.strictEqual(
 );
 assert(
   banners[0].title.includes("民宿") &&
-    banners[0].imageUrl === "/assets/photos/ai-map-tianpu-station.jpg",
+    banners[0].imageUrl === `${photoBase}/ai-map-tianpu-station.jpg`,
   "first banner should use the Tianpu homestay image",
 );
 assert(
   banners[1].title.includes("寻野 cafe") &&
-    banners[1].imageUrl === "/assets/photos/ai-xunye-cafe.jpg",
+    banners[1].imageUrl === `${photoBase}/ai-xunye-cafe.jpg`,
   "second banner should feature the village cafe image",
 );
 assert(
@@ -337,7 +338,7 @@ assert(
 );
 assert(
   foodWxml.includes("寻野 cafe") &&
-    foodWxml.includes("/assets/photos/ai-xunye-cafe.jpg"),
+    foodWxml.includes(`${photoBase}/ai-xunye-cafe.jpg`),
   "food page should be branded as Xunye cafe and use its generated image",
 );
 assert(
@@ -348,7 +349,7 @@ assert(
   foods.some(
     (item) =>
       item.name === "寻野 cafe" &&
-      item.imageUrl === "/assets/photos/ai-xunye-cafe.jpg",
+      item.imageUrl === `${photoBase}/ai-xunye-cafe.jpg`,
   ),
   "food fallback data should include Xunye cafe with generated image",
 );
@@ -447,7 +448,7 @@ async function assertLegacyFallbackKeepsImages() {
     );
     assert.strictEqual(
       home.banners[0].imageUrl,
-      "/assets/photos/ai-village-gate.jpg",
+      `${photoBase}/ai-village-gate.jpg`,
     );
     assert(
       !JSON.stringify(home).includes("/assets/scenes/"),

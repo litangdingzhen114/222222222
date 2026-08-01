@@ -7,7 +7,7 @@ const foods = require("../data/foods");
 const lives = require("../data/lives");
 const spots = require("../data/spots");
 const routes = require("../data/routes");
-const { request, serviceConfig, serviceModeText } = require("./api");
+const { mediaUrl, request, serviceConfig, serviceModeText } = require("./api");
 
 function isContentFallbackEnabled() {
   return Boolean(
@@ -79,36 +79,45 @@ function firstImage(item) {
 }
 
 const defaultImages = {
-  banner: "/assets/photos/ai-village-gate.jpg",
-  mapPoint: "/assets/photos/ai-village-gate.jpg",
-  food: "/assets/photos/ai-xunye-cafe.jpg",
-  spot: "/assets/photos/ai-village-gate.jpg",
-  route: "/assets/photos/qingtian-city.jpg",
-  product: "/assets/photos/ai-product-honey.jpg",
-  live: "/assets/photos/ai-village-gate.jpg",
+  banner: "https://www.hailin.store/assets/photos/ai-village-gate.jpg",
+  mapPoint: "https://www.hailin.store/assets/photos/ai-village-gate.jpg",
+  food: "https://www.hailin.store/assets/photos/ai-xunye-cafe.jpg",
+  spot: "https://www.hailin.store/assets/photos/ai-village-gate.jpg",
+  route: "https://www.hailin.store/assets/photos/qingtian-city.jpg",
+  product: "https://www.hailin.store/assets/photos/ai-product-honey.jpg",
+  live: "https://www.hailin.store/assets/photos/ai-village-gate.jpg",
 };
 
 const legacySceneImages = {
-  "/assets/scenes/village-gate.png": "/assets/photos/ai-village-gate.jpg",
-  "/assets/scenes/ricefish-field.png": "/assets/photos/ricefish-paddy.jpg",
-  "/assets/scenes/creek-trail.png": "/assets/photos/qingtian-tashan.jpg",
-  "/assets/scenes/tofu-workshop.png": "/assets/photos/ai-tofu-workshop.jpg",
-  "/assets/scenes/overseas-yard.png": "/assets/photos/ai-overseas-cafe.jpg",
-  "/assets/scenes/overseas-cafe.png": "/assets/photos/ai-xunye-cafe.jpg",
-  "/assets/scenes/ricefish-banquet.png": "/assets/photos/ricefish-drying.jpg",
-  "/assets/scenes/creek-tea.png": "/assets/photos/qingtian-tashan.jpg",
-  "/assets/seed/product-rice.jpg": "/assets/photos/ricefish-paddy.jpg",
-  "/assets/seed/product-fish.jpg": "/assets/photos/ricefish-harvest.jpg",
-  "/assets/seed/product-tea.jpg": "/assets/photos/qingtian-tashan.jpg",
-  "/assets/seed/product-rice-cake.jpg": "/assets/photos/ricefish-drying.jpg",
-  "/assets/seed/product-postcard.jpg": "/assets/photos/ai-oujiang-postcards.jpg",
-  "/assets/seed/product-guide-map.jpg": "/assets/photos/ai-map-tianpu-station.jpg",
+  "/assets/scenes/village-gate.png": "https://www.hailin.store/assets/photos/ai-village-gate.jpg",
+  "/assets/scenes/ricefish-field.png": "https://www.hailin.store/assets/photos/ricefish-paddy.jpg",
+  "/assets/scenes/creek-trail.png": "https://www.hailin.store/assets/photos/qingtian-tashan.jpg",
+  "/assets/scenes/tofu-workshop.png": "https://www.hailin.store/assets/photos/ai-tofu-workshop.jpg",
+  "/assets/scenes/overseas-yard.png": "https://www.hailin.store/assets/photos/ai-overseas-cafe.jpg",
+  "/assets/scenes/overseas-cafe.png": "https://www.hailin.store/assets/photos/ai-xunye-cafe.jpg",
+  "/assets/scenes/ricefish-banquet.png": "https://www.hailin.store/assets/photos/ricefish-drying.jpg",
+  "/assets/scenes/creek-tea.png": "https://www.hailin.store/assets/photos/qingtian-tashan.jpg",
+  "/assets/seed/product-rice.jpg": "https://www.hailin.store/assets/photos/ricefish-paddy.jpg",
+  "/assets/seed/product-fish.jpg": "https://www.hailin.store/assets/photos/ricefish-harvest.jpg",
+  "/assets/seed/product-tea.jpg": "https://www.hailin.store/assets/photos/qingtian-tashan.jpg",
+  "/assets/seed/product-rice-cake.jpg": "https://www.hailin.store/assets/photos/ricefish-drying.jpg",
+  "/assets/seed/product-postcard.jpg": "https://www.hailin.store/assets/photos/ai-oujiang-postcards.jpg",
+  "/assets/seed/product-guide-map.jpg": "https://www.hailin.store/assets/photos/ai-map-tianpu-station.jpg",
 };
 
 function cleanImage(value) {
   const image = String(value || "").trim();
   if (!image || image === "null" || image === "undefined") return "";
-  return legacySceneImages[image] || image;
+  const normalized = legacySceneImages[image] || image;
+  if (/^https?:\/\//i.test(normalized)) return normalized;
+  if (
+    normalized.startsWith("/assets/photos/") ||
+    normalized.startsWith("/assets/seed/") ||
+    normalized.startsWith("/media/")
+  ) {
+    return mediaUrl(normalized);
+  }
+  return normalized;
 }
 
 function fallbackItemAt(fallbackValue, index) {

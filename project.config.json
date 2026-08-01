@@ -8,6 +8,10 @@
       },
       {
         "type": "folder",
+        "value": "assets/photos"
+      },
+      {
+        "type": "folder",
         "value": "assets/scenes"
       },
       {

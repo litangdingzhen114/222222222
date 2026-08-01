@@ -72,7 +72,7 @@ const routes = [
     audience: "家庭游客、周边自驾、朋友小聚",
     cost: "人均 80-120 元",
     imageClass: "ph-route",
-    imageUrl: "/assets/photos/ai-village-gate.jpg",
+    imageUrl: "https://www.hailin.store/assets/photos/ai-village-gate.jpg",
     timeline: [
       {
         time: "09:30",
@@ -105,7 +105,7 @@ const routes = [
     audience: "文化游客、摄影团队、研学团",
     cost: "人均 160-220 元",
     imageClass: "ph-village",
-    imageUrl: "/assets/photos/ai-stone-souvenir.jpg",
+    imageUrl: "https://www.hailin.store/assets/photos/ai-stone-souvenir.jpg",
     timeline: [
       {
         time: "09:00",
@@ -143,7 +143,7 @@ const routes = [
     audience: "亲子家庭、学校研学",
     cost: "人均 120-180 元",
     imageClass: "ph-orchard",
-    imageUrl: "/assets/photos/ricefish-paddy.jpg",
+    imageUrl: "https://www.hailin.store/assets/photos/ricefish-paddy.jpg",
     timeline: [
       {
         time: "09:30",
@@ -172,7 +172,7 @@ const routes = [
     audience: "摄影爱好者、旅拍团队",
     cost: "人均 100-180 元",
     imageClass: "ph-rice",
-    imageUrl: "/assets/photos/ai-overseas-cafe.jpg",
+    imageUrl: "https://www.hailin.store/assets/photos/ai-overseas-cafe.jpg",
     timeline: [
       { time: "15:00", title: "侨乡小院", desc: "拍摄屋檐、庭院和手作细节。" },
       { time: "16:00", title: "溪谷步道", desc: "拍摄水边光影和石桥。" },
@@ -192,7 +192,7 @@ const routes = [
     audience: "朋友出游、团队活动",
     cost: "人均 150-240 元",
     imageClass: "ph-food",
-    imageUrl: "/assets/photos/ricefish-drying.jpg",
+    imageUrl: "https://www.hailin.store/assets/photos/ricefish-drying.jpg",
     timeline: [
       { time: "10:00", title: "稻鱼研学区", desc: "认识田鱼和水田生态。" },
       {

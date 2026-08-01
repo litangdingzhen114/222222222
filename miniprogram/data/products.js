@@ -10,7 +10,7 @@ module.exports = [
     specification: "约2.5斤/只",
     imageClass: "ph-product-chicken",
     icon: "鸡",
-    imageUrl: "/assets/photos/ai-product-native-chicken.jpg",
+    imageUrl: "https://www.hailin.store/assets/photos/ai-product-native-chicken.jpg",
   },
   {
     id: "native-eggs",
@@ -23,7 +23,7 @@ module.exports = [
     specification: "30枚/盒",
     imageClass: "ph-product-eggs",
     icon: "蛋",
-    imageUrl: "/assets/photos/ai-product-native-eggs.jpg",
+    imageUrl: "https://www.hailin.store/assets/photos/ai-product-native-eggs.jpg",
   },
   {
     id: "black-pork",
@@ -36,7 +36,7 @@ module.exports = [
     specification: "1斤起订",
     imageClass: "ph-product-pork",
     icon: "肉",
-    imageUrl: "/assets/photos/ai-product-black-pork.jpg",
+    imageUrl: "https://www.hailin.store/assets/photos/ai-product-black-pork.jpg",
   },
   {
     id: "mountain-honey",
@@ -49,6 +49,6 @@ module.exports = [
     specification: "500g/瓶",
     imageClass: "ph-product-honey",
     icon: "蜜",
-    imageUrl: "/assets/photos/ai-product-honey.jpg",
+    imageUrl: "https://www.hailin.store/assets/photos/ai-product-honey.jpg",
   },
 ];

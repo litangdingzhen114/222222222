@@ -8,7 +8,7 @@ module.exports = [
     tags: ['咖啡', '轻食', '简餐'],
     imageClass: 'ph-xunye',
     icon: '啡',
-    imageUrl: '/assets/photos/ai-xunye-cafe.jpg'
+    imageUrl: 'https://www.hailin.store/assets/photos/ai-xunye-cafe.jpg'
   },
   {
     id: 'green-field',
@@ -19,7 +19,7 @@ module.exports = [
     tags: ['青田田鱼', '家宴'],
     imageClass: 'ph-ricefish',
     icon: '鱼',
-    imageUrl: '/assets/photos/ricefish-drying.jpg'
+    imageUrl: 'https://www.hailin.store/assets/photos/ricefish-drying.jpg'
   },
   {
     id: 'homestay-tea',
@@ -30,7 +30,7 @@ module.exports = [
     tags: ['民宿', '轻食', '咖啡'],
     imageClass: 'ph-homestay',
     icon: '宿',
-    imageUrl: '/assets/photos/ai-overseas-cafe.jpg'
+    imageUrl: 'https://www.hailin.store/assets/photos/ai-overseas-cafe.jpg'
   },
   {
     id: 'creek-tea',
@@ -41,6 +41,6 @@ module.exports = [
     tags: ['手作体验', '研学'],
     imageClass: 'ph-workshop',
     icon: '坊',
-    imageUrl: '/assets/photos/ai-tofu-workshop.jpg'
+    imageUrl: 'https://www.hailin.store/assets/photos/ai-tofu-workshop.jpg'
   }
 ];

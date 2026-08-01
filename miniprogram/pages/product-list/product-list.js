@@ -10,7 +10,7 @@ const {
 } = require("../../utils/userCenter");
 
 const CART_STORAGE_KEY = "hailin-product-cart-v1";
-const DEFAULT_PRODUCT_IMAGE = "/assets/photos/ai-product-honey.jpg";
+const DEFAULT_PRODUCT_IMAGE = "https://www.hailin.store/assets/photos/ai-product-honey.jpg";
 const PICKUP_SITE = "海林村游客中心 / 共富集市";
 let memoryCart = [];
 

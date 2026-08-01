@@ -4,14 +4,14 @@ const { featureComing, quickToast } = require("../../utils/mock");
 const PENDING_MAP_POINT_KEY = "hailin_pending_map_point";
 
 const HOME_IMAGE_FALLBACKS = {
-  banners: "/assets/photos/ai-village-gate.jpg",
-  itineraries: "/assets/photos/qingtian-city.jpg",
-  hotRecommends: "/assets/photos/ai-village-gate.jpg",
-  products: "/assets/photos/ai-product-honey.jpg",
-  rankings: "/assets/photos/ai-village-gate.jpg",
-  corridor: "/assets/photos/ai-village-gate.jpg",
-  feedsLeft: "/assets/photos/ai-village-gate.jpg",
-  feedsRight: "/assets/photos/ricefish-paddy.jpg",
+  banners: "https://www.hailin.store/assets/photos/ai-village-gate.jpg",
+  itineraries: "https://www.hailin.store/assets/photos/qingtian-city.jpg",
+  hotRecommends: "https://www.hailin.store/assets/photos/ai-village-gate.jpg",
+  products: "https://www.hailin.store/assets/photos/ai-product-honey.jpg",
+  rankings: "https://www.hailin.store/assets/photos/ai-village-gate.jpg",
+  corridor: "https://www.hailin.store/assets/photos/ai-village-gate.jpg",
+  feedsLeft: "https://www.hailin.store/assets/photos/ai-village-gate.jpg",
+  feedsRight: "https://www.hailin.store/assets/photos/ricefish-paddy.jpg",
 };
 
 function ensureImageList(list, field, fallback) {

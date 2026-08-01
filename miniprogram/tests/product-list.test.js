@@ -113,8 +113,10 @@ const contentServiceSource = fs.readFileSync(
 );
 assert(
   contentServiceSource.includes('"/assets/seed/product-postcard.jpg"') &&
-    contentServiceSource.includes('"/assets/photos/ai-oujiang-postcards.jpg"'),
-  "legacy seed product photos should map to bundled assets",
+    contentServiceSource.includes(
+      '"https://www.hailin.store/assets/photos/ai-oujiang-postcards.jpg"',
+    ),
+  "legacy seed product photos should map to remote photo assets",
 );
 
 console.log("product marketplace page ok");
