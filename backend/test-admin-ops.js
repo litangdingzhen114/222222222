@@ -220,6 +220,21 @@ async function main() {
     });
     assert.strictEqual(createdCategory.status, 201);
     assert.strictEqual(createdCategory.body.data.id, 'test-seasonal');
+    const draftAdminCategories = await requestJson(`http://${HOST}:${PORT}/api/admin/product-categories?keyword=测试时令`, {
+      headers: authHeaders
+    });
+    assert.strictEqual(draftAdminCategories.status, 200);
+    assert(
+      draftAdminCategories.body.data.list.some((item) => item.id === 'test-seasonal'),
+      'admin category list should include draft items for editing'
+    );
+    const draftPublicCategories = await requestJson(`http://${HOST}:${PORT}/api/product-categories?keyword=测试时令`);
+    assert.strictEqual(draftPublicCategories.status, 200);
+    assert.strictEqual(
+      draftPublicCategories.body.data.total,
+      0,
+      'draft category should not be exposed to mini program'
+    );
 
     const updatedCategory = await requestJson(`http://${HOST}:${PORT}/api/admin/product-categories/test-seasonal`, {
       method: 'PATCH',
@@ -235,6 +250,10 @@ async function main() {
     });
     assert.strictEqual(publishedCategory.status, 200);
     assert.strictEqual(publishedCategory.body.data.status, 'PUBLISHED');
+    const publishedPublicCategories = await requestJson(`http://${HOST}:${PORT}/api/v1/product-categories?keyword=测试时令鲜品`);
+    assert.strictEqual(publishedPublicCategories.status, 200);
+    assert.strictEqual(publishedPublicCategories.body.data.total, 1);
+    assert.strictEqual(publishedPublicCategories.body.data.list[0].id, 'test-seasonal');
 
     const offlineCategory = await requestJson(`http://${HOST}:${PORT}/api/admin/product-categories/test-seasonal/offline`, {
       method: 'POST',
@@ -242,6 +261,172 @@ async function main() {
     });
     assert.strictEqual(offlineCategory.status, 200);
     assert.strictEqual(offlineCategory.body.data.status, 'OFFLINE');
+    const offlinePublicCategories = await requestJson(`http://${HOST}:${PORT}/api/product-categories?keyword=测试时令鲜品`);
+    assert.strictEqual(offlinePublicCategories.status, 200);
+    assert.strictEqual(
+      offlinePublicCategories.body.data.total,
+      0,
+      'offline category should not be exposed to mini program'
+    );
+
+    const createdProduct = await requestJson(`http://${HOST}:${PORT}/api/admin/products`, {
+      method: 'POST',
+      headers: authHeaders,
+      body: JSON.stringify({
+        data: {
+          id: 'test-admin-native-chicken',
+          name: '后台联调土鸡',
+          subtitle: '后台新增草稿商品',
+          coverImage: '/assets/photos/ai-product-native-chicken.jpg',
+          categoryId: 'farm',
+          price: 16800,
+          stock: 12,
+          unit: '只',
+          specification: '约 3 斤/只',
+          status: 'DRAFT'
+        }
+      })
+    });
+    assert.strictEqual(createdProduct.status, 201);
+    assert.strictEqual(createdProduct.body.data.status, 'DRAFT');
+    const draftAdminProducts = await requestJson(`http://${HOST}:${PORT}/api/admin/products?keyword=后台联调土鸡`, {
+      headers: authHeaders
+    });
+    assert.strictEqual(draftAdminProducts.status, 200);
+    assert.strictEqual(draftAdminProducts.body.data.total, 1);
+    const draftPublicProducts = await requestJson(`http://${HOST}:${PORT}/api/v1/products?keyword=后台联调土鸡`);
+    assert.strictEqual(draftPublicProducts.status, 200);
+    assert.strictEqual(
+      draftPublicProducts.body.data.total,
+      0,
+      'draft product should not appear in mini program v1 products'
+    );
+    const draftLegacyProducts = await requestJson(`http://${HOST}:${PORT}/api/hailin/products`);
+    assert.strictEqual(draftLegacyProducts.status, 200);
+    assert(
+      !draftLegacyProducts.body.data.some((item) => item.id === 'test-admin-native-chicken'),
+      'draft product should not appear in legacy mini program products'
+    );
+
+    const publishedProduct = await requestJson(`http://${HOST}:${PORT}/api/admin/products/test-admin-native-chicken/publish`, {
+      method: 'POST',
+      headers: authHeaders
+    });
+    assert.strictEqual(publishedProduct.status, 200);
+    assert.strictEqual(publishedProduct.body.data.status, 'ON_SALE');
+    const publicPublishedProducts = await requestJson(`http://${HOST}:${PORT}/api/v1/products?keyword=后台联调土鸡`);
+    assert.strictEqual(publicPublishedProducts.status, 200);
+    assert.strictEqual(publicPublishedProducts.body.data.total, 1);
+    assert.strictEqual(publicPublishedProducts.body.data.list[0].name, '后台联调土鸡');
+    assert.strictEqual(publicPublishedProducts.body.data.list[0].price, 16800);
+
+    const updatedProduct = await requestJson(`http://${HOST}:${PORT}/api/admin/products/test-admin-native-chicken`, {
+      method: 'PATCH',
+      headers: authHeaders,
+      body: JSON.stringify({
+        data: {
+          name: '后台联调散养土鸡',
+          subtitle: '后台修改后小程序应同步',
+          price: 18800,
+          stock: 8
+        }
+      })
+    });
+    assert.strictEqual(updatedProduct.status, 200);
+    assert.strictEqual(updatedProduct.body.data.name, '后台联调散养土鸡');
+    const publicUpdatedProducts = await requestJson(`http://${HOST}:${PORT}/api/hailin/products`);
+    assert.strictEqual(publicUpdatedProducts.status, 200);
+    const publicUpdatedProduct = publicUpdatedProducts.body.data.find(
+      (item) => item.id === 'test-admin-native-chicken'
+    );
+    assert(publicUpdatedProduct, 'published product should be visible in legacy mini program products');
+    assert.strictEqual(publicUpdatedProduct.name, '后台联调散养土鸡');
+    assert.strictEqual(publicUpdatedProduct.price, 18800);
+    assert.strictEqual(publicUpdatedProduct.stock, 8);
+
+    const offlineProduct = await requestJson(`http://${HOST}:${PORT}/api/admin/products/test-admin-native-chicken/offline`, {
+      method: 'POST',
+      headers: authHeaders
+    });
+    assert.strictEqual(offlineProduct.status, 200);
+    assert.strictEqual(offlineProduct.body.data.status, 'OFF_SALE');
+    const publicOfflineProducts = await requestJson(`http://${HOST}:${PORT}/api/v1/products?keyword=后台联调散养土鸡`);
+    assert.strictEqual(publicOfflineProducts.status, 200);
+    assert.strictEqual(
+      publicOfflineProducts.body.data.total,
+      0,
+      'offline product should be hidden from mini program products'
+    );
+
+    const createdMapPoint = await requestJson(`http://${HOST}:${PORT}/api/admin/map-points`, {
+      method: 'POST',
+      headers: authHeaders,
+      body: JSON.stringify({
+        data: {
+          id: 'test-admin-map-point',
+          name: '后台联调观景台',
+          type: 'SCENIC_SPOT',
+          imageUrl: '/assets/photos/ai-map-hailin-creek.jpg',
+          longitude: 120.2199,
+          latitude: 28.2148,
+          description: '后台新增草稿点位',
+          businessHours: '09:00-18:00',
+          status: 'DRAFT'
+        }
+      })
+    });
+    assert.strictEqual(createdMapPoint.status, 201);
+    const draftPublicMapPoints = await requestJson(`http://${HOST}:${PORT}/api/v1/map-points?keyword=后台联调观景台`);
+    assert.strictEqual(draftPublicMapPoints.status, 200);
+    assert.strictEqual(draftPublicMapPoints.body.data.total, 0);
+
+    const publishedMapPoint = await requestJson(`http://${HOST}:${PORT}/api/admin/map-points/test-admin-map-point/publish`, {
+      method: 'POST',
+      headers: authHeaders
+    });
+    assert.strictEqual(publishedMapPoint.status, 200);
+    assert.strictEqual(publishedMapPoint.body.data.status, 'PUBLISHED');
+    const publicPublishedMapPoints = await requestJson(`http://${HOST}:${PORT}/api/v1/map-points?keyword=后台联调观景台`);
+    assert.strictEqual(publicPublishedMapPoints.status, 200);
+    assert.strictEqual(publicPublishedMapPoints.body.data.total, 1);
+    assert.strictEqual(publicPublishedMapPoints.body.data.list[0].imageUrl, '/assets/photos/ai-map-hailin-creek.jpg');
+
+    const updatedMapPoint = await requestJson(`http://${HOST}:${PORT}/api/admin/map-points/test-admin-map-point`, {
+      method: 'PATCH',
+      headers: authHeaders,
+      body: JSON.stringify({
+        data: {
+          name: '后台联调溪谷观景点',
+          description: '后台修改后地图卡片应同步',
+          imageUrl: '/assets/photos/ai-map-tianpu-station.jpg'
+        }
+      })
+    });
+    assert.strictEqual(updatedMapPoint.status, 200);
+    assert.strictEqual(updatedMapPoint.body.data.name, '后台联调溪谷观景点');
+    const publicUpdatedMapPoints = await requestJson(`http://${HOST}:${PORT}/api/hailin/map-points`);
+    assert.strictEqual(publicUpdatedMapPoints.status, 200);
+    const publicUpdatedMapPoint = publicUpdatedMapPoints.body.data.find(
+      (item) => item.id === 'test-admin-map-point'
+    );
+    assert(publicUpdatedMapPoint, 'published map point should be visible in legacy mini program map points');
+    assert.strictEqual(publicUpdatedMapPoint.name, '后台联调溪谷观景点');
+    assert.strictEqual(publicUpdatedMapPoint.description, '后台修改后地图卡片应同步');
+    assert.strictEqual(publicUpdatedMapPoint.imageUrl, '/assets/photos/ai-map-tianpu-station.jpg');
+
+    const offlineMapPoint = await requestJson(`http://${HOST}:${PORT}/api/admin/map-points/test-admin-map-point/offline`, {
+      method: 'POST',
+      headers: authHeaders
+    });
+    assert.strictEqual(offlineMapPoint.status, 200);
+    assert.strictEqual(offlineMapPoint.body.data.status, 'OFFLINE');
+    const publicOfflineMapPoints = await requestJson(`http://${HOST}:${PORT}/api/v1/map-points?keyword=后台联调溪谷观景点`);
+    assert.strictEqual(publicOfflineMapPoints.status, 200);
+    assert.strictEqual(
+      publicOfflineMapPoints.body.data.total,
+      0,
+      'offline map point should be hidden from mini program map points'
+    );
 
     const productOrder = await requestJson(`http://${HOST}:${PORT}/api/hailin/orders`, {
       method: 'POST',
@@ -526,6 +711,42 @@ async function main() {
     assert(audit.body.data.items.some((item) => item.action === 'home-content.updated'), 'home content update should be audited');
     assert(audit.body.data.items.some((item) => item.action === 'lives-content.updated'), 'live content update should be audited');
     assert(audit.body.data.items.some((item) => item.action === 'resource-content.updated'), 'resource content update should be audited');
+    assert(
+      audit.body.data.items.some(
+        (item) =>
+          item.action === 'resource.created' &&
+          item.targetType === 'products' &&
+          item.targetId === 'test-admin-native-chicken',
+      ),
+      'product creation should be audited'
+    );
+    assert(
+      audit.body.data.items.some(
+        (item) =>
+          item.action === 'resource.updated' &&
+          item.targetType === 'products' &&
+          item.targetId === 'test-admin-native-chicken',
+      ),
+      'product publish/update/offline should be audited'
+    );
+    assert(
+      audit.body.data.items.some(
+        (item) =>
+          item.action === 'resource.created' &&
+          item.targetType === 'map-points' &&
+          item.targetId === 'test-admin-map-point',
+      ),
+      'map point creation should be audited'
+    );
+    assert(
+      audit.body.data.items.some(
+        (item) =>
+          item.action === 'resource.updated' &&
+          item.targetType === 'map-points' &&
+          item.targetId === 'test-admin-map-point',
+      ),
+      'map point publish/update/offline should be audited'
+    );
     assert(audit.body.data.items.some((item) => item.action === 'order.created'), 'public order creation should be audited');
     assert(audit.body.data.items.some((item) => item.action === 'order.fulfillment.updated'), 'order fulfillment update should be audited');
     assert(audit.body.data.items.some((item) => item.action === 'orders.csv.exported'), 'order export should be audited');

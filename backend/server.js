@@ -2358,18 +2358,26 @@ function normalizedAdminResourceItem(resourceKey, item, index = 0) {
   return base;
 }
 
+function isDeletedResourceItem(item) {
+  const status = cleanText(item?.status, 40).toUpperCase();
+  return item?.enabled === false || status === 'DISABLED' || status === 'DELETED' || item?.deletedAt;
+}
+
+function adminContentItems(resourceKey) {
+  return readContentResourceEnvelope(resourceKey).items.filter((item) => !isDeletedResourceItem(item));
+}
+
 function publicContentItems(resourceKey) {
-  return readContentResourceEnvelope(resourceKey).items.filter(
-    (item) =>
-      item.enabled !== false &&
-      item.status !== 'disabled' &&
-      item.status !== 'DELETED' &&
-      !item.deletedAt,
-  );
+  return adminContentItems(resourceKey).filter((item) => {
+    const status = cleanText(item.status, 40).toUpperCase();
+    if (!status) return true;
+    if (resourceKey === 'products') return ['ON_SALE', 'SOLD_OUT'].includes(status);
+    return status === 'PUBLISHED';
+  });
 }
 
 function normalizedAdminResourceItems(resourceKey) {
-  return publicContentItems(resourceKey).map((item, index) =>
+  return adminContentItems(resourceKey).map((item, index) =>
     normalizedAdminResourceItem(resourceKey, item, index),
   );
 }

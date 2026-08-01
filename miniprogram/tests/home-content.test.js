@@ -282,6 +282,12 @@ assert(
   "home page should load service card data",
 );
 assert(
+  homeJs.includes("getLocalHomeFallback") &&
+    homeJs.includes("initialHomeData") &&
+    homeJs.includes(".catch(() =>"),
+  "home page should render local content immediately and recover when backend requests fail",
+);
+assert(
   homeJs.includes("navigateByDataset"),
   "home page should share navigation behavior",
 );

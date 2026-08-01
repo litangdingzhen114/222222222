@@ -1,4 +1,7 @@
-const { loadHomeData } = require("../../services/content");
+const {
+  getLocalHomeFallback,
+  loadHomeData,
+} = require("../../services/content");
 const { featureComing, quickToast } = require("../../utils/mock");
 
 const PENDING_MAP_POINT_KEY = "hailin_pending_map_point";
@@ -69,23 +72,33 @@ function normalizeHomeImages(data) {
   };
 }
 
+function buildHomeViewData(data) {
+  const safeData = normalizeHomeImages(data || getLocalHomeFallback());
+  const feeds = safeData.feeds || [];
+  return {
+    banners: safeData.banners || [],
+    gridPages: safeData.gridPages || [],
+    products: safeData.products || [],
+    hotRecommends: safeData.hotRecommends || [],
+    itineraries: safeData.itineraries || [],
+    serviceCards: safeData.serviceCards || [],
+    rankings: safeData.rankings || [],
+    corridor: safeData.corridor || [],
+    feedsLeft: feeds.filter((_, index) => index % 2 === 0),
+    feedsRight: feeds.filter((_, index) => index % 2 === 1),
+    notice: safeData.notice || "",
+    weather: safeData.weather || "",
+    serviceMode: safeData.serviceMode || "",
+    locationText: safeData.locationText || "",
+  };
+}
+
+const initialHomeData = buildHomeViewData(getLocalHomeFallback());
+
 Page({
   data: {
-    banners: [],
-    gridPages: [],
-    products: [],
-    hotRecommends: [],
-    itineraries: [],
-    serviceCards: [],
-    rankings: [],
-    corridor: [],
-    feedsLeft: [],
-    feedsRight: [],
+    ...initialHomeData,
     gridCurrent: 0,
-    notice: "",
-    weather: "",
-    serviceMode: "",
-    locationText: "",
   },
 
   onLoad() {
@@ -93,26 +106,14 @@ Page({
   },
 
   loadPageData() {
-    loadHomeData().then((data) => {
-      const safeData = normalizeHomeImages(data);
-      const feeds = safeData.feeds || [];
-      this.setData({
-        banners: safeData.banners || [],
-        gridPages: safeData.gridPages || [],
-        products: safeData.products || [],
-        hotRecommends: safeData.hotRecommends || [],
-        itineraries: safeData.itineraries || [],
-        serviceCards: safeData.serviceCards || [],
-        rankings: safeData.rankings || [],
-        corridor: safeData.corridor || [],
-        feedsLeft: feeds.filter((_, index) => index % 2 === 0),
-        feedsRight: feeds.filter((_, index) => index % 2 === 1),
-        notice: safeData.notice || "",
-        weather: safeData.weather || "",
-        serviceMode: safeData.serviceMode || "",
-        locationText: safeData.locationText || "",
+    this.setData(buildHomeViewData(getLocalHomeFallback()));
+    loadHomeData()
+      .then((data) => {
+        this.setData(buildHomeViewData(data));
+      })
+      .catch(() => {
+        this.setData(buildHomeViewData(getLocalHomeFallback()));
       });
-    });
   },
 
   onHomeImageError(event) {

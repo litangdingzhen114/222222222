@@ -479,7 +479,11 @@ function adaptHome(remoteValue, fallbackValue) {
 }
 
 function loadHomeData() {
-  const fallback = {
+  return withContentFallback("home", getLocalHomeFallback(), adaptHome);
+}
+
+function getLocalHomeFallback() {
+  return {
     banners,
     gridPages,
     products,
@@ -495,8 +499,6 @@ function loadHomeData() {
     serviceMode: serviceModeText(),
     locationText: serviceConfig.locationText,
   };
-
-  return withContentFallback("home", fallback, adaptHome);
 }
 
 function loadMapPoints() {
@@ -602,6 +604,7 @@ function cancelOrder(id, clientId, note) {
 }
 
 module.exports = {
+  getLocalHomeFallback,
   loadHomeData,
   loadMapPoints,
   loadMapDirections,

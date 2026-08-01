@@ -10,7 +10,9 @@ module.exports = {
   useDevApiInDevtools: false,
   requestTimeout: 3000,
   reviewMode: false,
-  contentFallbackEnabled: false,
+  // 生产接口不可达、备案未生效或微信合法域名未通过时，先展示本地审核友好内容，
+  // 后台连通后会自动用远端数据覆盖，避免首页出现空壳。
+  contentFallbackEnabled: true,
   legacyApiFallbackEnabled: true,
 
   endpoints: {
