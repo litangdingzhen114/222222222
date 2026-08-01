@@ -101,6 +101,7 @@ async function main() {
       STORAGE_DIR: storageDir,
       ADMIN_TOKEN,
       ADMIN_USER: 'ops-admin',
+      VERCEL: '1',
       KIMI_API_KEY: '',
       MOONSHOT_API_KEY: '',
       RATE_LIMIT_MAX: '1000',
@@ -111,6 +112,16 @@ async function main() {
 
   try {
     await waitForBackend();
+
+    const demoLogin = await requestJson(`http://${HOST}:${PORT}/api/admin/auth/login`, {
+      method: 'POST',
+      body: JSON.stringify({
+        username: 'ops-admin',
+        password: '123456'
+      })
+    });
+    assert.strictEqual(demoLogin.status, 200);
+    assert.strictEqual(demoLogin.body.data.accessToken, ADMIN_TOKEN);
 
     const booking = await requestJson(`http://${HOST}:${PORT}/api/hailin/bookings`, {
       method: 'POST',

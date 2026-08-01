@@ -55,6 +55,8 @@ const KIMI_MODEL = process.env.KIMI_MODEL || process.env.LLM_MODEL || 'moonshot-
 const ADMIN_USER = process.env.ADMIN_USER || 'hailin-admin';
 const ADMIN_TOKEN =
   process.env.ADMIN_TOKEN || (NODE_ENV === 'production' ? '' : 'hailin-admin-dev-token');
+const ADMIN_LOGIN_PASSWORD =
+  process.env.ADMIN_LOGIN_PASSWORD || process.env.ADMIN_PASSWORD || (process.env.VERCEL ? '123456' : '');
 const CONFIG_STORE_KEY = process.env.CONFIG_STORE_KEY || 'hailin:integration-configs';
 const CONFIG_CACHE_TTL_MS = Number(process.env.CONFIG_CACHE_TTL_MS || 30 * 1000);
 const KV_REST_API_URL = (
@@ -2519,6 +2521,11 @@ function adminLoginPayload() {
   };
 }
 
+function adminPasswordMatches(password) {
+  if (safeCompareToken(password, ADMIN_TOKEN)) return true;
+  return Boolean(ADMIN_LOGIN_PASSWORD) && safeCompareToken(password, ADMIN_LOGIN_PASSWORD);
+}
+
 function normalizeApiPathname(pathname) {
   return pathname.replace(/^\/api\/v1(?=\/|$)/, '/api');
 }
@@ -3318,7 +3325,7 @@ async function handleAdminLogin(req, res) {
   const body = await readBody(req);
   const username = cleanText(body.username, 120);
   const password = cleanText(body.password, 1000);
-  if (username !== ADMIN_USER || !safeCompareToken(password, ADMIN_TOKEN)) {
+  if (username !== ADMIN_USER || !adminPasswordMatches(password)) {
     logEvent({
       level: 'warn',
       message: 'admin_login_failed',

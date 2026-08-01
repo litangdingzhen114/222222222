@@ -64,6 +64,16 @@ async function main() {
 
   const vercelConfig = JSON.parse(fs.readFileSync(path.join(ROOT, 'vercel.json'), 'utf8'));
   const rewriteSources = vercelConfig.rewrites.map((rewrite) => rewrite.source);
+  const adminV1Index = rewriteSources.indexOf('/api/v1/admin/:path*');
+  const authV1Index = rewriteSources.indexOf('/api/v1/auth/:path*');
+  const externalV1Index = rewriteSources.indexOf('/api/v1/:path*');
+  assert.ok(adminV1Index !== -1, 'Vercel should route v1 admin API to the bundled backend function');
+  assert.ok(authV1Index !== -1, 'Vercel should route v1 auth refresh API to the bundled backend function');
+  assert.ok(externalV1Index !== -1, 'Vercel should still proxy public v1 APIs to the production backend');
+  assert.ok(
+    adminV1Index < externalV1Index && authV1Index < externalV1Index,
+    'Vercel should match admin/auth v1 routes before the external production API proxy',
+  );
   assert.ok(
     rewriteSources.includes('/api/(.*)'),
     'Vercel should route API requests to the backend function',
