@@ -7,12 +7,14 @@
 文件：`miniprogram/config/service.js`
 
 ```js
-apiBaseUrl: "https://www.hailin.store";
+apiBaseUrl: "https://api.hailin.store";
+devtoolsApiBaseUrl: "https://www.hailin.store";
+apiFallbackBaseUrls: ["https://www.hailin.store"];
 ```
 
-当前 Vercel 演示版后台继续使用 `https://www.hailin.store/admin/`。小程序 API 域名默认指向
-`www.hailin.store`，由 Vercel 代理或当前轻量后端处理请求，避免开发者工具被本机代理 Fake-IP 干扰。
-阿里云独立后端 `https://api.hailin.store` 当前等待 ICP/HTTPS 完整放通后再作为直连生产 API 使用。
+正式主链路是阿里云独立后端 `https://api.hailin.store`。在 `api.hailin.store` 备案、HTTPS
+和微信合法域名完全放通前，`https://www.hailin.store` 只作为临时演示兜底，避免开发者工具或审核演示因为
+`api` 子域名握手失败而整页不可用。
 
 本地开发可以使用：
 
@@ -74,7 +76,13 @@ Kimi 官方文档：https://platform.moonshot.cn/docs
 
 ## 后台管理
 
-访问：
+正式访问：
+
+```text
+https://api.hailin.store/admin/
+```
+
+临时演示访问：
 
 ```text
 https://www.hailin.store/admin/
@@ -130,4 +138,4 @@ POST /api/admin/lives/reset
 
 ## 预约和反馈
 
-预约、反馈、订单和操作日志由 NestJS + Prisma 写入 PostgreSQL；Redis 用于限流、幂等和第三方 token 缓存。旧 JSON 存储仅作为 Vercel 轻量后台兼容方案，不作为生产数据闭环。
+预约、反馈、订单和操作日志由 NestJS + Prisma 写入 PostgreSQL；Redis 用于限流、幂等和第三方 token 缓存。旧 JSON 存储仅作为临时轻量兼容方案，不作为生产数据闭环。

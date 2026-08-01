@@ -86,8 +86,8 @@ npm run db:seed
 
 DNS 建议：
 
-- `www.hailin.store` 指向 Vercel 管理后台展示域名
-- `api.hailin.store` 指向阿里云 ECS 公网 IP
+- `api.hailin.store` 指向阿里云 ECS 公网 IP，作为正式 API 和后台主入口
+- `www.hailin.store` 当前只作为临时演示/图片资源兜底；最终可改为指向阿里云 Nginx 或对象存储/CDN
 
 证书可以使用 Certbot。证书路径需匹配 `backend/nginx/hailin.production.conf`：
 
@@ -102,6 +102,8 @@ DNS 建议：
 https://api.hailin.store
 https://www.hailin.store
 ```
+
+`api.hailin.store` 备案/HTTPS 未放通前，小程序可以临时走 `www.hailin.store`。放通后应把 `api.hailin.store` 设为主请求域名，`www` 只保留短期兜底或静态资源用途。
 
 ## 6. 健康检查
 
@@ -142,4 +144,4 @@ docker compose -f docker-compose.production.yml start api
 
 ## 8. 当前上线策略
 
-Vercel 继续用于 `www.hailin.store/admin/` 的展示和轻量管理；长期运营数据应切到 NestJS + PostgreSQL + Redis 闭环。生产环境默认关闭微信登录和萤石云 mock；缺少正式凭证时，对应接口应返回等待配置或服务暂不可用，不伪造正式接入成功。只有本地预览或临时审核包可以显式开启开发 fallback。
+正式运营以阿里云 ECS 上的 NestJS + PostgreSQL + Redis 闭环为准。`www.hailin.store` 只用于 `api.hailin.store` 未放通时的临时演示兜底，不作为长期后台和数据存储方案。生产环境默认关闭微信登录和萤石云 mock；缺少正式凭证时，对应接口应返回等待配置或服务暂不可用，不伪造正式接入成功。只有本地预览或临时审核包可以显式开启开发 fallback。

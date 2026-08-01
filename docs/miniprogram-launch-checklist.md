@@ -1,11 +1,11 @@
 # 微信小程序上线检查清单
 
-## 当前生产域名
+## 当前域名策略
 
-- 当前小程序 API：`https://www.hailin.store`（当前可用的 Vercel 展示与 API 域名）
-- Vercel 演示 API：`https://www.hailin.store`
-- Vercel 管理后台：`https://www.hailin.store/admin/`
-- 阿里云后端直连域名：`https://api.hailin.store`（等待 ICP/HTTPS 完整放通后切换）
+- 正式主后端：`https://api.hailin.store`（阿里云 ECS，等待 ICP/HTTPS 完整放通）
+- 临时演示兜底：`https://www.hailin.store`（仅在 `api.hailin.store` 不可用时使用）
+- 后台正式入口：`https://api.hailin.store/admin/`（随阿里云后端发布）
+- 过渡后台入口：`https://www.hailin.store/admin/`（只用于演示，不作为长期生产）
 
 ## 阿里云 ECS
 
@@ -30,25 +30,34 @@ docker compose -f docker-compose.production.yml up -d --build
 docker compose -f docker-compose.production.yml run --rm migrator
 ```
 
-7. 配置 HTTPS 证书。当前演示域名先确认：
+7. 配置 HTTPS 证书。`api.hailin.store` 未放通前，临时演示域名先确认：
 
 ```bash
 curl https://www.hailin.store/health
 curl https://www.hailin.store/api/v1/home
 ```
 
-`api.hailin.store` 完成 ICP/HTTPS 放通后，再补充确认 `curl https://api.hailin.store/health`。
+`api.hailin.store` 完成 ICP/HTTPS 放通后，补充确认：
+
+```bash
+curl https://api.hailin.store/health
+curl https://api.hailin.store/api/v1/home
+```
 
 ## 微信公众平台
 
 在“小程序后台 - 开发管理 - 开发设置 - 服务器域名”配置：
 
-- `request 合法域名`：`https://www.hailin.store`
-- `uploadFile 合法域名`：`https://www.hailin.store`
-- `downloadFile 合法域名`：`https://www.hailin.store`
+- 当前临时演示：
+  - `request 合法域名`：`https://www.hailin.store`
+  - `uploadFile 合法域名`：`https://www.hailin.store`
+  - `downloadFile 合法域名`：`https://www.hailin.store`
+- 正式切换后：
+  - `request 合法域名`：`https://api.hailin.store`
+  - `uploadFile 合法域名`：`https://api.hailin.store`
+  - `downloadFile 合法域名`：`https://api.hailin.store`
 
-`https://www.hailin.store` 可作为后台展示域名继续保留；小程序请求以
-`https://www.hailin.store` 为准。`api.hailin.store` 完成备案与 HTTPS 后可作为直连 API 备用域名。
+`https://www.hailin.store` 只做临时演示和图片资源兜底。`api.hailin.store` 完成备案与 HTTPS 后，小程序请求主链路切回阿里云。
 
 发布前确认：
 

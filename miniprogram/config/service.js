@@ -6,8 +6,8 @@ module.exports = {
   // 上线后端域名。真机和正式版必须使用 HTTPS，并配置到微信 request 合法域名。
   // 小程序端不保存 AI key、直播密钥或管理后台 token，统一由后端代理。
   apiBaseUrl: "https://api.hailin.store",
-  // 微信开发者工具偶发会受本机代理/Fake-IP 影响导致 api 子域名握手中断；
-  // www 域名只做 HTTPS 入口兜底，实际请求仍会转发到阿里云后端。
+  // 临时演示兜底：api.hailin.store 完成备案/HTTPS 放通前，开发者工具和失败重试可走 www。
+  // www 当前仍是过渡入口，不作为最终正式后端；正式主链路仍以 api.hailin.store 为准。
   devtoolsApiBaseUrl: "https://www.hailin.store",
   apiFallbackBaseUrls: ["https://www.hailin.store"],
   devApiBaseUrl: "http://127.0.0.1:8787",
