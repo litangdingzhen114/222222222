@@ -354,7 +354,7 @@
 
 .poi-image-wrap {
   position: relative;
-  height: 210rpx;
+  height: 330rpx;
   overflow: hidden;
   border-radius: 16rpx;
   background: #DCEDEA;
@@ -362,14 +362,14 @@
 
 .poi-image {
   width: 100%;
-  height: 210rpx;
+  height: 100%;
 }
 
 .poi-image-fallback {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 210rpx;
+  height: 330rpx;
   color: #315A4E;
   font-size: 28rpx;
   font-weight: 900;

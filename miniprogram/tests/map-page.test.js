@@ -96,6 +96,10 @@ assert(
   "map point sheet should show a location image",
 );
 assert(
+  mapWxss.includes("height: 330rpx") && mapWxss.includes("height: 100%"),
+  "map point sheet image should use a less compressed photo ratio",
+);
+assert(
   mapWxml.includes("activeSubTag === item.value") &&
     mapWxml.includes("data-tag=\"{{item.value}}\""),
   "map subtag overlay should keep compact labels mapped to full filter values",

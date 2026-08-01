@@ -140,6 +140,19 @@ assert(
   ),
   "agricultural products should use generated product photos",
 );
+assert(
+  recommend.corridor.length >= 6,
+  "Hailin corridor should keep enough village and experience entries",
+);
+assert(
+  recommend.corridor.every(
+    (item) =>
+      !["土鸡", "土鸡蛋", "黑猪肉", "土蜂蜜", "散养"].some((keyword) =>
+        item.title.includes(keyword),
+      ),
+  ),
+  "Hailin corridor should not mix agricultural products into the village gallery",
+);
 
 recommend.itineraries.forEach((item) => {
   assert(
