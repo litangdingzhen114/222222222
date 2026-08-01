@@ -33,6 +33,6 @@ export class AdminLoginDto {
 
   @ApiProperty()
   @IsString()
-  @MinLength(8)
+  @MinLength(6)
   password!: string;
 }
