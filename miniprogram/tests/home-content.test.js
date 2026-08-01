@@ -50,14 +50,26 @@ assert(
 );
 assert.strictEqual(
   banners[0].id,
-  "banner-chenrongkao",
-  "home first banner should feature the Chenrongkao village tree",
+  "banner-homestay",
+  "home first banner should feature the homestay experience",
 );
 assert(
-  banners[0].subtitle.includes("350") &&
-    banners[0].subtitle.includes("陈嵘栲") &&
-    banners[0].imageUrl === "/assets/photos/ai-chenrongkao-tree.jpg",
-  "Chenrongkao banner should use sourced facts and the generated tree image",
+  banners[0].title.includes("民宿") &&
+    banners[0].imageUrl === "/assets/photos/ai-map-tianpu-station.jpg",
+  "first banner should use the Tianpu homestay image",
+);
+assert(
+  banners[1].title.includes("寻野 cafe") &&
+    banners[1].imageUrl === "/assets/photos/ai-xunye-cafe.jpg",
+  "second banner should feature the village cafe image",
+);
+assert(
+  banners.every((item) =>
+    ["民宿", "村咖", "cafe", "咖啡", "茶歇", "慢住", "溪谷"].some((keyword) =>
+      `${item.title} ${item.subtitle} ${item.tag}`.includes(keyword),
+    ),
+  ),
+  "home banners should stay focused on homestay and village cafe content",
 );
 assert(
   recommend.hotRecommends.length >= 6,
@@ -241,6 +253,10 @@ const backendServer = fs.readFileSync(
   path.join(root, "backend/server.js"),
   "utf8",
 );
+const backendSeed = fs.readFileSync(
+  path.join(root, "backend/prisma/seed.ts"),
+  "utf8",
+);
 const homeDataSnapshot = JSON.stringify({
   banners,
   recommend,
@@ -295,6 +311,12 @@ assert(
 assert(
   backendServer.includes("serviceCards: recommend.serviceCards"),
   "backend home defaults should include service cards",
+);
+assert(
+  backendSeed.includes("海口镇海林村民宿慢住") &&
+    backendSeed.includes("寻野 cafe 村咖开坐") &&
+    !backendSeed.includes("周末采摘预约开放"),
+  "backend seed banners should be aligned to homestay and village cafe content",
 );
 assert(
   !homeDataSnapshot.includes("/assets/scenes/"),

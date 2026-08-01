@@ -58,27 +58,41 @@ async function seedHome() {
     where: { id: 'banner-hailin-spring' },
     create: {
       id: 'banner-hailin-spring',
-      title: '海林村春日慢游',
-      imageUrl: img('banner-spring.jpg'),
-      linkType: BannerLinkType.SCENIC_SPOT,
-      linkValue: 'spot-rice-field',
+      title: '海口镇海林村民宿慢住',
+      imageUrl: '/assets/photos/ai-map-tianpu-station.jpg',
+      linkType: BannerLinkType.MINI_PROGRAM_PAGE,
+      linkValue: '/pages/mine-feature/mine-feature?id=stay',
       sort: 1,
       status: ContentStatus.PUBLISHED,
     },
-    update: { status: ContentStatus.PUBLISHED, imageUrl: img('banner-spring.jpg'), sort: 1 },
+    update: {
+      title: '海口镇海林村民宿慢住',
+      status: ContentStatus.PUBLISHED,
+      imageUrl: '/assets/photos/ai-map-tianpu-station.jpg',
+      linkType: BannerLinkType.MINI_PROGRAM_PAGE,
+      linkValue: '/pages/mine-feature/mine-feature?id=stay',
+      sort: 1,
+    },
   });
   await prisma.banner.upsert({
     where: { id: 'banner-hailin-farm' },
     create: {
       id: 'banner-hailin-farm',
-      title: '周末采摘预约开放',
-      imageUrl: img('banner-farm.jpg'),
-      linkType: BannerLinkType.ACTIVITY,
-      linkValue: 'activity-harvest',
+      title: '寻野 cafe 村咖开坐',
+      imageUrl: '/assets/photos/ai-xunye-cafe.jpg',
+      linkType: BannerLinkType.MINI_PROGRAM_PAGE,
+      linkValue: '/pages/food/food',
       sort: 2,
       status: ContentStatus.PUBLISHED,
     },
-    update: { status: ContentStatus.PUBLISHED, imageUrl: img('banner-farm.jpg'), sort: 2 },
+    update: {
+      title: '寻野 cafe 村咖开坐',
+      status: ContentStatus.PUBLISHED,
+      imageUrl: '/assets/photos/ai-xunye-cafe.jpg',
+      linkType: BannerLinkType.MINI_PROGRAM_PAGE,
+      linkValue: '/pages/food/food',
+      sort: 2,
+    },
   });
 
   const shortcuts = [
