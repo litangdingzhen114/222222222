@@ -109,7 +109,7 @@ const pageOne = [
     title: "AR合影",
     icon: "AR",
     iconPath: "/assets/icons/ar.png",
-    toast: "AR合影功能完善中，暂不进入详情页",
+    toast: "AR合影服务即将开放，当前可先查看拍摄推荐",
   },
 ];
 

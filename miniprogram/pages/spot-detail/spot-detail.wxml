@@ -121,7 +121,7 @@
 
 <view wx:elif="{{developing}}" class="page developing-page">
   <view class="developing-card">
-    <view class="developing-title">详情页开发中</view>
-    <view class="developing-copy">该点位资料还在整理，当前仅开放寻野 cafe、陈嵘栲古树、田铺驿站和海林·溪谷。</view>
+    <view class="developing-title">更多介绍即将更新</view>
+    <view class="developing-copy">该点位资料正在整理，可先查看地图位置、路线推荐或咨询游客服务。</view>
   </view>
 </view>

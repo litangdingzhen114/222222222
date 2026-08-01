@@ -631,7 +631,7 @@ Page({
     if (!point) return;
     if (point.refType === "spot" && point.refId) {
       if (!hasFeaturedPlaceDetail(point.refId)) {
-        quickToast("该详情页正在完善中");
+        quickToast("更多介绍即将更新");
         return;
       }
       wx.navigateTo({

@@ -156,8 +156,8 @@ assert.strictEqual(
   "AR photo entry should not navigate to a placeholder detail page",
 );
 assert(
-  arPhotoEntry.toast && arPhotoEntry.toast.includes("完善中"),
-  "AR photo entry should explain that the feature is still being completed",
+  arPhotoEntry.toast && arPhotoEntry.toast.includes("即将开放"),
+  "AR photo entry should use production-friendly coming soon copy",
 );
 assert(
   fs.existsSync(

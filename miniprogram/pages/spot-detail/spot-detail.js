@@ -119,7 +119,7 @@ Page({
   },
 
   showDeveloping() {
-    quickToast('该详情页正在完善中');
+    quickToast('更多介绍即将更新');
     if (typeof getCurrentPages === 'function' && getCurrentPages().length > 1) {
       setTimeout(() => wx.navigateBack({ delta: 1 }), 500);
       return;
@@ -161,7 +161,7 @@ Page({
 
   onNearbyTap(event) {
     if (!hasFeaturedPlaceDetail(event.currentTarget.dataset.id)) {
-      quickToast('该详情页正在完善中');
+      quickToast('更多介绍即将更新');
       return;
     }
     wx.redirectTo({

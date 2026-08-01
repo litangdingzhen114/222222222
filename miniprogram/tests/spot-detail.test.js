@@ -68,7 +68,7 @@ assert(
 );
 
 assert(detailJs.includes("hasFeaturedPlaceDetail"), "detail page should gate unfinished point details");
-assert(detailJs.includes("该详情页正在完善中"), "unfinished detail pages should clearly say they are in progress");
+assert(detailJs.includes("更多介绍即将更新"), "unfinished detail pages should use production-friendly update copy");
 assert(detailJs.includes("mergeSpot"), "detail page should preserve local rich copy when backend data is sparse");
 assert(detailWxml.includes("place-hero"), "detail page should use an image-led hero");
 assert(detailWxml.includes("这里值得停下"), "detail page should render editorial story section");

@@ -1466,7 +1466,7 @@ function homePayload() {
     corridor: recommend.corridor,
     feeds: recommend.feeds,
     notice: '今日推荐：先到游客中心确认停车与讲解，再走溪谷步道，午餐预约海林田鱼家宴',
-    weather: '小程序信息正在完善中，当前为 Demo 体验阶段，内容将持续更新',
+    weather: '海林村文旅信息持续更新中，实际服务以村庄公告和现场确认为准',
     serviceMode: '真实服务已连接',
     locationText: LOCATION_TEXT,
   };

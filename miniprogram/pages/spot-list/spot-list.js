@@ -51,7 +51,7 @@ Page({
   onSpotTap(event) {
     const id = event.currentTarget.dataset.id;
     if (!hasFeaturedPlaceDetail(id)) {
-      quickToast('该详情页正在完善中');
+      quickToast('更多介绍即将更新');
       return;
     }
     wx.navigateTo({
