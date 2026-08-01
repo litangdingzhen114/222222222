@@ -16,6 +16,7 @@ const pageBase = path.join(root, "miniprogram/pages/map/map");
 
 const mapJs = fs.readFileSync(`${pageBase}.js`, "utf8");
 const mapWxml = fs.readFileSync(`${pageBase}.wxml`, "utf8");
+const mapWxss = fs.readFileSync(`${pageBase}.wxss`, "utf8");
 
 assert(
   !mapJs.includes("建设中"),
@@ -95,6 +96,16 @@ assert(
   "map point sheet should show a location image",
 );
 assert(
+  mapWxml.includes("activeSubTag === item.value") &&
+    mapWxml.includes("data-tag=\"{{item.value}}\""),
+  "map subtag overlay should keep compact labels mapped to full filter values",
+);
+assert(
+  mapWxss.includes("flex: 1 1 0") &&
+    mapWxss.includes("white-space: nowrap"),
+  "map subtag overlay should fit all filter chips without clipping text",
+);
+assert(
   mapJs.includes("normalizeMapPoints"),
   "map page should normalize backend map point payloads",
 );
@@ -116,6 +127,16 @@ assert(
 assert(
   mapFeatures.routeSuggestions.length >= 3,
   "map should provide multiple route suggestions",
+);
+assert(
+  mapFeatures.subTags.every((tag) => tag.label && tag.value),
+  "sub tag filters should expose compact labels and stable values",
+);
+assert(
+  mapFeatures.subTags.some(
+    (tag) => tag.label === "打卡点" && tag.value === "网红打卡点",
+  ),
+  "long map tag labels should be shortened for the native map overlay",
 );
 
 const spotIds = new Set(spots.map((item) => item.id));

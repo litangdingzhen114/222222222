@@ -201,23 +201,28 @@
 
 .subtag-float {
   position: absolute;
-  left: 22rpx;
-  right: 22rpx;
+  left: 18rpx;
+  right: 18rpx;
   top: 22rpx;
   display: flex;
-  gap: 12rpx;
+  gap: 8rpx;
   overflow: hidden;
 }
 
 .subtag-item {
-  flex: 0 0 auto;
-  padding: 10rpx 18rpx;
-  border: 3rpx solid rgba(15, 107, 103, 0.36);
+  flex: 1 1 0;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 9rpx 2rpx;
+  border: 2rpx solid rgba(15, 107, 103, 0.36);
   border-radius: 8rpx;
   background: rgba(251, 255, 252, 0.92);
   color: #193C3A;
-  font-size: 24rpx;
+  font-size: 22rpx;
   font-weight: 800;
+  line-height: 1.1;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .subtag-item.active {

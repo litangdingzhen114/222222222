@@ -70,12 +70,12 @@
       <cover-view class="subtag-float">
         <cover-view
           wx:for="{{subTags}}"
-          wx:key="*this"
-          class="subtag-item {{activeSubTag === item ? 'active' : ''}}"
-          data-tag="{{item}}"
+          wx:key="value"
+          class="subtag-item {{activeSubTag === item.value ? 'active' : ''}}"
+          data-tag="{{item.value}}"
           bindtap="onSubTagTap"
         >
-          {{item}}
+          {{item.label}}
         </cover-view>
       </cover-view>
 

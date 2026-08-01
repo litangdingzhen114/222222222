@@ -14,12 +14,12 @@ const categories = [
 ];
 
 const subTags = [
-  "全部",
-  "核心景区",
-  "乡村景点",
-  "非遗点位",
-  "网红打卡点",
-  "便民服务",
+  { label: "全部", value: "全部" },
+  { label: "核心区", value: "核心景区" },
+  { label: "乡村点", value: "乡村景点" },
+  { label: "非遗点", value: "非遗点位" },
+  { label: "打卡点", value: "网红打卡点" },
+  { label: "便民点", value: "便民服务" },
 ];
 
 const mapTools = [
