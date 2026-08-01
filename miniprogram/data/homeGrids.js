@@ -14,6 +14,14 @@ const pageOne = [
     url: "/pages/live-list/live-list",
   },
   {
+    id: "xunye-cafe",
+    title: "寻野 cafe",
+    icon: "啡",
+    iconPath: "/assets/icons/map-food.png",
+    url: "/pages/food/food",
+    openType: "switchTab",
+  },
+  {
     id: "stay",
     title: "民宿预订",
     icon: "宿",
@@ -22,7 +30,7 @@ const pageOne = [
   },
   {
     id: "venue",
-    title: "场地预约",
+    title: "场地活动",
     icon: "场",
     iconPath: "/assets/icons/booking.png",
     url: "/pages/mine-feature/mine-feature?id=venue",
@@ -33,13 +41,6 @@ const pageOne = [
     icon: "问",
     iconPath: "/assets/icons/ai.png",
     url: "/pages/ai-guide/ai-guide",
-  },
-  {
-    id: "activity",
-    title: "场地活动",
-    icon: "活",
-    iconPath: "/assets/icons/ticket.png",
-    url: "/pages/mine-feature/mine-feature?id=activity",
   },
   {
     id: "map",
@@ -87,27 +88,12 @@ const pageOne = [
     url: "/pages/spot-list/spot-list",
   },
   {
-    id: "parking",
-    title: "找停车场",
-    icon: "停",
-    iconPath: "/assets/icons/parking.png",
-    url: "/pages/map/map",
-    openType: "switchTab",
-  },
-  {
-    id: "toilet",
-    title: "找公厕",
-    icon: "厕",
+    id: "public-service",
+    title: "便民服务",
+    icon: "服",
     iconPath: "/assets/icons/toilet.png",
     url: "/pages/map/map",
     openType: "switchTab",
-  },
-  {
-    id: "live",
-    title: "海林慢直播",
-    icon: "播",
-    iconPath: "/assets/icons/live.png",
-    url: "/pages/live-list/live-list",
   },
 ];
 
@@ -148,13 +134,6 @@ const pageTwo = [
     icon: "侨",
     iconPath: "/assets/icons/overseas.png",
     url: "/pages/spot-detail/spot-detail?id=museum",
-  },
-  {
-    id: "pay",
-    title: "乡心支付",
-    icon: "付",
-    iconPath: "/assets/icons/pay.png",
-    url: "/pages/product-list/product-list",
   },
   {
     id: "culture",

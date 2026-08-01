@@ -81,7 +81,7 @@ function firstImage(item) {
 const defaultImages = {
   banner: "/assets/photos/ai-village-gate.jpg",
   mapPoint: "/assets/photos/ai-village-gate.jpg",
-  food: "/assets/photos/ricefish-drying.jpg",
+  food: "/assets/photos/ai-xunye-cafe.jpg",
   spot: "/assets/photos/ai-village-gate.jpg",
   route: "/assets/photos/qingtian-city.jpg",
   product: "/assets/photos/ai-product-honey.jpg",
@@ -94,7 +94,7 @@ const legacySceneImages = {
   "/assets/scenes/creek-trail.png": "/assets/photos/qingtian-tashan.jpg",
   "/assets/scenes/tofu-workshop.png": "/assets/photos/ai-tofu-workshop.jpg",
   "/assets/scenes/overseas-yard.png": "/assets/photos/ai-overseas-cafe.jpg",
-  "/assets/scenes/overseas-cafe.png": "/assets/photos/ai-overseas-cafe.jpg",
+  "/assets/scenes/overseas-cafe.png": "/assets/photos/ai-xunye-cafe.jpg",
   "/assets/scenes/ricefish-banquet.png": "/assets/photos/ricefish-drying.jpg",
   "/assets/scenes/creek-tea.png": "/assets/photos/qingtian-tashan.jpg",
   "/assets/seed/product-rice.jpg": "/assets/photos/ricefish-paddy.jpg",

@@ -99,11 +99,7 @@
 }
 
 .bowl {
-  position: absolute;
-  right: 18rpx;
-  bottom: 18rpx;
-  width: 330rpx;
-  height: 250rpx;
+  display: none;
 }
 
 .bowl-body {

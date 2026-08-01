@@ -1512,7 +1512,7 @@ const LEGACY_SCENE_IMAGES = {
   '/assets/scenes/creek-trail.png': '/assets/photos/qingtian-tashan.jpg',
   '/assets/scenes/tofu-workshop.png': '/assets/photos/ai-tofu-workshop.jpg',
   '/assets/scenes/overseas-yard.png': '/assets/photos/ai-overseas-cafe.jpg',
-  '/assets/scenes/overseas-cafe.png': '/assets/photos/ai-overseas-cafe.jpg',
+  '/assets/scenes/overseas-cafe.png': '/assets/photos/ai-xunye-cafe.jpg',
   '/assets/scenes/ricefish-banquet.png': '/assets/photos/ricefish-drying.jpg',
   '/assets/scenes/creek-tea.png': '/assets/photos/qingtian-tashan.jpg',
 };
@@ -2068,9 +2068,9 @@ function normalizedAdminResourceItem(resourceKey, item, index = 0) {
   if (resourceKey === 'foods') {
     return {
       ...base,
-      name: cleanText(item.name || item.title, 120) || '海林美食',
-      coverImage: image || '/assets/photos/ricefish-drying.jpg',
-      images: arrayValue(item.images).length ? arrayValue(item.images) : image ? [image] : [],
+      name: cleanText(item.name || item.title, 120) || '寻野 cafe',
+      coverImage: image || '/assets/photos/ai-xunye-cafe.jpg',
+      images: arrayValue(item.images).length ? arrayValue(item.images) : image ? [image] : ['/assets/photos/ai-xunye-cafe.jpg'],
       description: cleanText(item.description || item.desc || item.summary, 1200),
       businessHours: cleanText(item.businessHours || item.openTime, 120),
       avgPrice: moneyValueToCents(item.avgPrice || item.price || item.perCapita),
@@ -2357,8 +2357,8 @@ function localGuideReply(question) {
   if (text.includes('路线') || text.includes('怎么玩')) {
     return '推荐“瓯江山村半日游”：村口会客点集合，沿溪谷步道慢行，中午安排海林田鱼家宴，下午可做青田石纹手作。';
   }
-  if (text.includes('美食') || text.includes('吃') || text.includes('田鱼')) {
-    return '海林村可以把青田田鱼、山泉豆腐、溪畔茶点和侨乡咖啡作为主线。第一次来建议先预约田鱼家宴，再去溪边茶点慢坐。';
+  if (text.includes('美食') || text.includes('吃') || text.includes('田鱼') || text.toLowerCase().includes('cafe')) {
+    return '海林村可以把寻野 cafe、青田田鱼、山泉豆腐和一村一宴作为主线。第一次来建议先去寻野 cafe 慢坐，再按人数预约田鱼家宴。';
   }
   if (text.includes('直播') || text.includes('摄像头')) {
     return '慢直播已按村口会客点、稻鱼田、溪谷步道和侨乡小院组织点位。真实摄像头或 HLS 地址可以由后端替换 liveUrl。';

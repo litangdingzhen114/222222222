@@ -47,7 +47,7 @@
       },
       {
         "pagePath": "pages/food/food",
-        "text": "寻味美食",
+        "text": "寻野 cafe",
         "iconPath": "assets/tabbar/food.png",
         "selectedIconPath": "assets/tabbar/food-active.png"
       },

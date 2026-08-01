@@ -36,7 +36,7 @@ function buildLocalReply(question) {
     question.includes("吃") ||
     question.includes("田鱼")
   ) {
-    return "青田地域味道可以突出田鱼、山泉豆腐、时令笋蔬和农家家宴。海林村可优先看“田鱼家宴”“溪畔茶点”“侨乡小食”这几类。";
+    return "青田地域味道可以突出田鱼、山泉豆腐、时令笋蔬和农家家宴。海林村可优先看“寻野 cafe”“田鱼家宴”“一村一宴”这几类。";
   }
   if (question.includes("直播") || question.includes("摄像头")) {
     return "慢直播建议接入村口广场、溪谷步道、稻鱼田和侨乡会客厅四类点位。当前页面支持后端返回 liveUrl 或 hlsUrl 后直接播放。";

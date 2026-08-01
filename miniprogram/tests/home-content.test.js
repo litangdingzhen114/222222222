@@ -9,6 +9,7 @@ const products = require("../data/products");
 const recommend = require("../data/recommend");
 const routes = require("../data/routes");
 const spots = require("../data/spots");
+const foods = require("../data/foods");
 const appConfig = require("../app.json");
 
 const pageSet = new Set(appConfig.pages.map((page) => `/${page}`));
@@ -60,22 +61,39 @@ assert(
 const priorityGridIds = gridPages[0].items.slice(0, 7).map((item) => item.id);
 assert.deepStrictEqual(
   priorityGridIds,
-  ["farm-order", "monitor", "stay", "venue", "ai", "activity", "map"],
-  "home first grid should prioritize farm products, monitoring, stay/venue and AI guide",
+  ["farm-order", "monitor", "xunye-cafe", "stay", "venue", "ai", "map"],
+  "home first grid should prioritize farm products, monitoring, Xunye cafe, stay/venue and AI guide",
 );
 const gridItems = gridPages.flatMap((page) => page.items);
 const gridTitles = gridItems.map((item) => item.title);
 assert(
-  ["海林故事", "侨乡故事", "青田石韵", "稻鱼体验", "出行服务", "交通指南"].every(
+  [
+    "海林故事",
+    "侨乡故事",
+    "青田石韵",
+    "稻鱼体验",
+    "出行服务",
+    "交通指南",
+    "海林慢直播",
+    "找停车场",
+    "找公厕",
+    "乡心支付",
+  ].every(
     (title) => !gridTitles.includes(title),
   ),
   "home grid should merge overlapping culture and travel entries",
 );
 assert(
-  ["海林侨乡", "石韵稻鱼", "交通出行"].every((title) =>
+  ["海林侨乡", "石韵稻鱼", "交通出行", "寻野 cafe", "便民服务"].every((title) =>
     gridTitles.includes(title),
   ),
   "home grid should keep merged culture and travel entries",
+);
+assert(
+  fs.existsSync(
+    path.join(root, "miniprogram/assets/photos/ai-xunye-cafe.jpg"),
+  ),
+  "Xunye cafe should use a generated cafe image asset",
 );
 assert.strictEqual(
   new Set(gridItems.map((item) => item.id)).size,
@@ -144,6 +162,14 @@ const homeWxss = fs.readFileSync(
   path.join(root, "miniprogram/pages/home/home.wxss"),
   "utf8",
 );
+const foodWxml = fs.readFileSync(
+  path.join(root, "miniprogram/pages/food/food.wxml"),
+  "utf8",
+);
+const foodJson = fs.readFileSync(
+  path.join(root, "miniprogram/pages/food/food.json"),
+  "utf8",
+);
 const backendServer = fs.readFileSync(
   path.join(root, "backend/server.js"),
   "utf8",
@@ -193,6 +219,27 @@ assert(
 assert(
   !homeDataSnapshot.includes("/assets/scenes/"),
   "home cards should use photo assets instead of old scene placeholders",
+);
+assert(
+  appConfig.tabBar.list.some((item) => item.text === "寻野 cafe"),
+  "tab bar should expose Xunye cafe instead of the old food label",
+);
+assert(
+  foodWxml.includes("寻野 cafe") &&
+    foodWxml.includes("/assets/photos/ai-xunye-cafe.jpg"),
+  "food page should be branded as Xunye cafe and use its generated image",
+);
+assert(
+  foodJson.includes("寻野 cafe"),
+  "food page navigation title should use Xunye cafe",
+);
+assert(
+  foods.some(
+    (item) =>
+      item.name === "寻野 cafe" &&
+      item.imageUrl === "/assets/photos/ai-xunye-cafe.jpg",
+  ),
+  "food fallback data should include Xunye cafe with generated image",
 );
 
 function loadContentServiceWithWx(wxMock) {

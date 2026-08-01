@@ -8,11 +8,11 @@ Page({
     foods: fallbackFoods,
     keyword: '',
     activeFilter: '全部类别',
-    filters: ['全部类别', '青田田鱼', '溪畔茶点', '侨乡', '研学'],
+    filters: ['全部类别', '咖啡', '轻食', '青田田鱼', '研学'],
     featureCards: [
-      { id: 'rank', title: '田鱼榜单', icon: '榜', iconPath: '/assets/icons/ricefish.png' },
-      { id: 'map', title: '美食地图', icon: '图', iconPath: '/assets/icons/map-food.png' },
-      { id: 'special', title: '侨乡小食', icon: '侨', iconPath: '/assets/icons/overseas.png' },
+      { id: 'cafe', title: '咖啡菜单', icon: '啡', iconPath: '/assets/icons/map-food.png' },
+      { id: 'map', title: '到店导航', icon: '图', iconPath: '/assets/icons/traffic.png' },
+      { id: 'special', title: '乡野轻食', icon: '轻', iconPath: '/assets/icons/overseas.png' },
       { id: 'banquet', title: '一村一宴', icon: '宴', iconPath: '/assets/icons/banquet.png' }
     ]
   },
@@ -46,7 +46,7 @@ Page({
       wx.navigateTo({ url: '/pages/mine-feature/mine-feature?id=mall' });
       return;
     }
-    const filter = id === 'special' ? '侨乡' : '青田田鱼';
+    const filter = id === 'special' ? '轻食' : '咖啡';
     this.setData({
       activeFilter: filter,
       foods: this.filterFoods(this.data.allFoods, this.data.keyword, filter)

@@ -1,15 +1,15 @@
 <view class="page food-page">
   <view class="food-nav">
     <view class="food-back"></view>
-    <view class="food-page-title">寻味海林地图</view>
+    <view class="food-page-title">寻野 cafe</view>
     <view class="food-capsule"></view>
   </view>
 
   <view class="food-banner">
-    <image class="food-banner-photo" src="/assets/photos/ricefish-drying.jpg" mode="aspectFill"></image>
+    <image class="food-banner-photo" src="/assets/photos/ai-xunye-cafe.jpg" mode="aspectFill"></image>
     <view class="food-banner-copy">
-      <view class="food-banner-title">寻味海林</view>
-      <view class="food-banner-subtitle">品味乡野</view>
+      <view class="food-banner-title">寻野 cafe</view>
+      <view class="food-banner-subtitle">溪谷咖啡与乡野轻食</view>
     </view>
     <view class="bowl">
       <view class="bowl-body"></view>
@@ -31,7 +31,7 @@
 
   <view class="food-search">
     <text class="food-search-icon">⌕</text>
-    <input placeholder="搜索田鱼、茶点、咖啡" placeholder-class="food-placeholder" bindinput="onSearchInput" />
+    <input placeholder="搜索咖啡、轻食、田鱼" placeholder-class="food-placeholder" bindinput="onSearchInput" />
   </view>
 
   <scroll-view class="filter-scroll" scroll-x="{{true}}" enable-flex="{{true}}">

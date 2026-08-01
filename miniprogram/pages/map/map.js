@@ -43,8 +43,8 @@ const pointTypeView = {
   FOOD: {
     type: "美食",
     subType: "核心景区",
-    actionText: "寻味美食",
-    imageUrl: "/assets/photos/ricefish-drying.jpg",
+    actionText: "寻野 cafe",
+    imageUrl: "/assets/photos/ai-xunye-cafe.jpg",
   },
   FARM: {
     type: "体验",
