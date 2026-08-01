@@ -101,6 +101,15 @@ async function main() {
     !/支付订单|待支付|已支付|商城订单|成交金额|今日成交|退款中|已退款/.test(adminOrderSources),
     'admin order workspace should use preorder/offline-confirmation copy for personal mini program',
   );
+
+  const adminApiSource = fs.readFileSync(
+    path.join(ROOT, 'backend/admin-src/src/api.ts'),
+    'utf8',
+  );
+  assert(
+    !adminApiSource.includes('https://api.hailin.store'),
+    'admin dashboard should use same-origin API routes while api.hailin.store DNS/SSL is not ready',
+  );
 }
 
 main()
