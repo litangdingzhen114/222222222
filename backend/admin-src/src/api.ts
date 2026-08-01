@@ -363,7 +363,7 @@ function mapOrder(record: RawOrder): OrderRecord {
     clientId: record.userId,
     type: 'product',
     featureId: items[0]?.productName,
-    service: '农特产商城',
+    service: '农品预订',
     item: itemName || record.orderNo || record.id,
     date: dateText(record.createdAt),
     people: quantity || undefined,
@@ -735,12 +735,11 @@ export async function fetchExportBlob(
   if (collection === 'orders') {
     const result = await listOrders({ ...params, page: 1, pageSize: 100 });
     return csvBlob(
-      ['orderNo', 'item', 'status', 'paymentStatus', 'price', 'contact', 'createdAt'],
+      ['orderNo', 'item', 'status', 'price', 'contact', 'createdAt'],
       result.items.map((item) => ({
         orderNo: item.orderNo,
         item: item.item,
         status: item.status,
-        paymentStatus: item.paymentStatus,
         price: item.price,
         contact: item.contact,
         createdAt: item.createdAt,

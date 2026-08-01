@@ -59,11 +59,11 @@ export function DashboardPage() {
       tag: '预约'
     },
     {
-      title: '待发货订单',
+      title: '待处理农品',
       value: metrics.pendingShipments,
       unit: '单',
-      to: '/orders?status=PAID',
-      tag: '商城'
+      to: '/orders?status=PENDING_PAYMENT',
+      tag: '农品'
     },
     {
       title: '待回复反馈',
@@ -84,9 +84,9 @@ export function DashboardPage() {
   const trendColumns: ColumnsType<DashboardTrendPoint> = [
     { title: '日期', dataIndex: 'date', width: 120 },
     { title: '新增用户', dataIndex: 'newUsers', width: 100 },
-    { title: '支付订单', dataIndex: 'orderCount', width: 100 },
+    { title: '预订单数', dataIndex: 'orderCount', width: 100 },
     {
-      title: '成交金额',
+      title: '预估金额',
       dataIndex: 'orderAmount',
       width: 160,
       render: (value: number) => formatMoney(value)
@@ -116,8 +116,8 @@ export function DashboardPage() {
         </Col>
         <Col xs={24} sm={12} xl={6}>
           <Card>
-            <Statistic title="今日成交" value={formatMoney(metrics.todayOrderAmount)} prefix={<ShoppingCartOutlined />} />
-            <Text type="secondary">{metrics.todayOrderCount} 笔支付订单</Text>
+            <Statistic title="今日预订" value={formatMoney(metrics.todayOrderAmount)} prefix={<ShoppingCartOutlined />} />
+            <Text type="secondary">{metrics.todayOrderCount} 笔农品意向</Text>
           </Card>
         </Col>
         <Col xs={24} sm={12} xl={6}>
@@ -157,7 +157,7 @@ export function DashboardPage() {
 
       <Row gutter={[16, 16]}>
         <Col xs={24} xl={15}>
-          <Card title="近七日交易与用户">
+          <Card title="近七日预订与用户">
             <Table
               rowKey="date"
               dataSource={charts.trend}
@@ -168,9 +168,9 @@ export function DashboardPage() {
           </Card>
         </Col>
         <Col xs={24} xl={9}>
-          <Card title="订单状态分布">
+          <Card title="预订状态分布">
             <List
-              locale={{ emptyText: '暂无订单' }}
+              locale={{ emptyText: '暂无预订' }}
               dataSource={charts.orderStatusDistribution}
               renderItem={(item) => (
                 <List.Item>
@@ -232,9 +232,9 @@ export function DashboardPage() {
 
       <Card>
         <Space wrap>
-          <Tag color="green">累计成交 {formatMoney(metrics.totalOrderAmount)}</Tag>
-          <Tag>累计支付订单 {metrics.totalOrderCount} 单</Tag>
-          <Tag icon={<CalendarOutlined />}>预约、订单和反馈数据均来自 PostgreSQL</Tag>
+          <Tag color="green">累计预估 {formatMoney(metrics.totalOrderAmount)}</Tag>
+          <Tag>累计农品预订 {metrics.totalOrderCount} 单</Tag>
+          <Tag icon={<CalendarOutlined />}>预约、预订和反馈数据均来自 PostgreSQL</Tag>
         </Space>
       </Card>
     </Space>

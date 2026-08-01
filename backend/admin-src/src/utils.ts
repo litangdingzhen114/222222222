@@ -107,9 +107,9 @@ export function statusColor(status?: string) {
 export function auditActionText(action?: string) {
   return {
     'booking.created': '提交预约',
-    'order.created': '提交订单',
-    'order.cancelled': '取消订单',
-    'order.fulfillment.updated': '更新订单履约',
+    'order.created': '提交预订',
+    'order.cancelled': '取消预订',
+    'order.fulfillment.updated': '更新预订处理',
     'feedback.created': '提交反馈',
     'booking.status.updated': '更新预约状态',
     'feedback.status.updated': '更新反馈状态',

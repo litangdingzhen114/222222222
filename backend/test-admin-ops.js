@@ -211,6 +211,7 @@ async function main() {
     });
     assert.strictEqual(productOrder.status, 201);
     assert.strictEqual(productOrder.body.data.status, 'new');
+    assert.strictEqual(productOrder.body.data.paymentStatus, 'OFFLINE_CONFIRMATION');
     assert(productOrder.body.data.orderNo, 'order should generate order number');
 
     const adminOrders = await requestJson(`http://${HOST}:${PORT}/api/admin/orders?type=product`, {
@@ -221,6 +222,15 @@ async function main() {
     assert.strictEqual(adminOrders.body.data.stats.total, 1);
     assert.strictEqual(adminOrders.body.data.stats.new, 1);
     assert.strictEqual(adminOrders.body.data.stats.actionRequired, 1);
+
+    const pendingAdminOrders = await requestJson(`http://${HOST}:${PORT}/api/admin/orders?type=product&status=PENDING_PAYMENT`, {
+      headers: authHeaders
+    });
+    assert.strictEqual(pendingAdminOrders.status, 200);
+    assert.strictEqual(pendingAdminOrders.body.data.total, 1);
+    assert.strictEqual(pendingAdminOrders.body.data.list[0].status, 'PENDING_PAYMENT');
+    assert.strictEqual(pendingAdminOrders.body.data.list[0].paymentStatus, 'OFFLINE_CONFIRMATION');
+    assert.strictEqual(pendingAdminOrders.body.data.list[0].paidAmount, 0);
 
     const confirmedOrder = await requestJson(`http://${HOST}:${PORT}/api/admin/orders/${productOrder.body.data.id}/fulfillment`, {
       method: 'PATCH',
@@ -269,7 +279,7 @@ async function main() {
     });
     assert.strictEqual(orderCsvResponse.status, 200);
     assert.match(orderCsvResponse.headers.get('content-type'), /text\/csv/);
-    assert.match(orderCsvResponse.headers.get('content-disposition'), /hailin-orders/);
+    assert.match(orderCsvResponse.headers.get('content-disposition'), /hailin-preorders/);
     const orderCsv = await orderCsvResponse.text();
     assert(orderCsv.includes(productOrder.body.data.orderNo), 'order CSV should include order number');
     assert(orderCsv.includes('SF1234567890'), 'order CSV should include shipment tracking number');

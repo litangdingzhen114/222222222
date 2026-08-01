@@ -88,6 +88,19 @@ async function main() {
     rewriteSources.includes('/health'),
     'Vercel should route health checks to the backend function',
   );
+
+  const adminOrderSources = [
+    'backend/admin-src/src/App.tsx',
+    'backend/admin-src/src/pages/DashboardPage.tsx',
+    'backend/admin-src/src/pages/OrdersPage.tsx',
+    'backend/admin-src/src/types.ts',
+  ]
+    .map((file) => fs.readFileSync(path.join(ROOT, file), 'utf8'))
+    .join('\n');
+  assert(
+    !/支付订单|待支付|已支付|商城订单|成交金额|今日成交|退款中|已退款/.test(adminOrderSources),
+    'admin order workspace should use preorder/offline-confirmation copy for personal mini program',
+  );
 }
 
 main()

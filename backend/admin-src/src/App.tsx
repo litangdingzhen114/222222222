@@ -46,7 +46,7 @@ const navItems: Array<{
     icon: <DashboardOutlined />,
     label: '数据概览',
     title: '数据概览',
-    subtitle: '用户、订单、预约、反馈和内容运营趋势',
+    subtitle: '用户、预订、预约、反馈和内容运营趋势',
     roles: ['CONTENT_OPERATOR', 'MALL_OPERATOR', 'ADMIN', 'SUPER_ADMIN']
   },
   {
@@ -76,9 +76,9 @@ const navItems: Array<{
   {
     key: '/orders',
     icon: <ShoppingCartOutlined />,
-    label: '商城订单',
-    title: '商城订单',
-    subtitle: '订单状态、支付状态、发货状态和售后处理',
+    label: '农品预订',
+    title: '农品预订',
+    subtitle: '预订意向、后台确认、备货配送和自提核销',
     roles: ['MALL_OPERATOR', 'ADMIN', 'SUPER_ADMIN']
   },
   {
@@ -86,7 +86,7 @@ const navItems: Array<{
     icon: <CalendarOutlined />,
     label: '采摘预约',
     title: '采摘预约',
-    subtitle: '预约项目、时段、订单确认和核销',
+    subtitle: '预约项目、时段、后台确认和核销',
     roles: ['CONTENT_OPERATOR', 'ADMIN', 'SUPER_ADMIN']
   },
   {

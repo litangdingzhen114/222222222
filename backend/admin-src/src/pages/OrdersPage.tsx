@@ -12,16 +12,16 @@ const { Text } = Typography;
 const pageSize = 10;
 
 const orderTypeText: Record<string, string> = {
-  product: '实物商品',
-  service: '村游服务',
-  ticket: '票券课程',
-  stay: '民宿订单',
+  product: '农品预订',
+  service: '到村服务',
+  ticket: '活动课程',
+  stay: '民宿预订',
   venue: '场地预约'
 };
 
 const nextStatusMap: Record<string, Record<string, string[]>> = {
   product: {
-    PENDING_PAYMENT: ['CANCELLED'],
+    PENDING_PAYMENT: ['PAID', 'CANCELLED'],
     PAID: ['PROCESSING', 'CANCELLED', 'REFUNDING'],
     PROCESSING: ['SHIPPED', 'CANCELLED', 'REFUNDING'],
     SHIPPED: ['COMPLETED', 'REFUNDING'],
@@ -104,7 +104,7 @@ function OrderDetailDrawer({
 
   return (
     <Drawer
-      title={record?.item || record?.service || '订单详情'}
+      title={record?.item || record?.service || '预订详情'}
       width={620}
       open={open}
       onClose={onClose}
@@ -114,13 +114,13 @@ function OrderDetailDrawer({
       {record ? (
         <Space direction="vertical" size={18} className="page-stack">
           <Descriptions column={1} bordered size="small">
-            <Descriptions.Item label="订单号">{record.orderNo || record.id}</Descriptions.Item>
+            <Descriptions.Item label="预订单号">{record.orderNo || record.id}</Descriptions.Item>
             <Descriptions.Item label="类型">{orderTypeText[record.type || 'service'] || record.type}</Descriptions.Item>
             <Descriptions.Item label="服务">{record.service || '-'}</Descriptions.Item>
             <Descriptions.Item label="项目">{record.item || '-'}</Descriptions.Item>
             <Descriptions.Item label="日期">{record.date || '-'}</Descriptions.Item>
             <Descriptions.Item label="人数/份数">{record.people || '-'}</Descriptions.Item>
-            <Descriptions.Item label="价格">{record.price || '-'}</Descriptions.Item>
+            <Descriptions.Item label="预估金额">{record.price || '-'}</Descriptions.Item>
             <Descriptions.Item label="联系方式">{record.contact || '-'}</Descriptions.Item>
             <Descriptions.Item label="游客备注">{record.remark || '无'}</Descriptions.Item>
             <Descriptions.Item label="游客标识">{record.clientId || '-'}</Descriptions.Item>
@@ -134,11 +134,11 @@ function OrderDetailDrawer({
             </Form.Item>
             {showLogistics ? (
               <Space className="toolbar" align="start">
-                <Form.Item label="物流公司" name="carrier" rules={[{ required: true, message: '请填写物流公司' }]}>
-                  <Input placeholder="顺丰 / 中通 / 到村自提" />
+                <Form.Item label="配送/取货方式" name="carrier" rules={[{ required: true, message: '请填写配送或取货方式' }]}>
+                  <Input placeholder="到村自提 / 同城配送 / 顺丰" />
                 </Form.Item>
-                <Form.Item label="快递单号" name="trackingNo" rules={[{ required: true, message: '请填写快递单号' }]}>
-                  <Input placeholder="快递单号或自提码" />
+                <Form.Item label="单号/自提码" name="trackingNo" rules={[{ required: true, message: '请填写单号或自提码' }]}>
+                  <Input placeholder="自提码、配送单号或备注编号" />
                 </Form.Item>
               </Space>
             ) : null}
@@ -148,9 +148,9 @@ function OrderDetailDrawer({
               </Form.Item>
             ) : null}
             <Form.Item label="处理备注" name="note">
-              <Input.TextArea rows={4} placeholder="记录发货、核销、改期、取消原因或服务安排" />
+              <Input.TextArea rows={4} placeholder="记录库存确认、备货、配送、自提、取消原因或服务安排" />
             </Form.Item>
-            <Button type="primary" htmlType="submit" loading={saving}>保存履约</Button>
+            <Button type="primary" htmlType="submit" loading={saving}>保存处理结果</Button>
           </Form>
 
           <div className="history-panel">
@@ -162,7 +162,7 @@ function OrderDetailDrawer({
                 children: (
                   <Space direction="vertical" size={2}>
                     <Space wrap>
-                      <Tag>{entry.type === 'created' ? '提交订单' : '状态流转'}</Tag>
+                      <Tag>{entry.type === 'created' ? '提交预订' : '状态流转'}</Tag>
                       <Text>{statusText(entry.fromStatus)} → {statusText(entry.toStatus)}</Text>
                     </Space>
                     <Text type="secondary">{formatDate(entry.at)} · {entry.by || '-'}</Text>
@@ -197,12 +197,12 @@ export function OrdersPage() {
   const mutation = useMutation({
     mutationFn: ({ id, values }: { id: string; values: FulfillmentForm }) => updateOrderFulfillment(id, values),
     onSuccess: async () => {
-      message.success('订单履约已更新');
+      message.success('预订处理已更新');
       setDetail(null);
       await queryClient.invalidateQueries({ queryKey: ['orders'] });
       await queryClient.invalidateQueries({ queryKey: ['summary'] });
     },
-    onError: (error) => message.error(error instanceof Error ? error.message : '订单处理失败')
+    onError: (error) => message.error(error instanceof Error ? error.message : '预订处理失败')
   });
 
   const stats = query.data?.stats || {};
@@ -210,8 +210,8 @@ export function OrdersPage() {
 
   const exportData = async () => {
     const blob = await fetchExportBlob('orders', { status, type, q });
-    downloadBlob(blob, 'hailin-orders.csv');
-    message.success('订单 CSV 已导出');
+    downloadBlob(blob, 'hailin-preorders.csv');
+    message.success('农品预订 CSV 已导出');
   };
 
   const setParam = (key: string, value: string | number) => {
@@ -224,7 +224,7 @@ export function OrdersPage() {
 
   const columns = useMemo<ColumnsType<OrderRecord>>(() => [
     {
-      title: '订单',
+      title: '预订',
       render: (_, record) => (
         <Space direction="vertical" size={0}>
           <strong>{record.item || record.service || '-'}</strong>
@@ -250,7 +250,7 @@ export function OrdersPage() {
     {
       title: '操作',
       width: 110,
-      render: (_, record) => <Button type="link" onClick={() => setDetail(record)}>履约</Button>
+      render: (_, record) => <Button type="link" onClick={() => setDetail(record)}>处理</Button>
     }
   ], []);
 
@@ -264,7 +264,7 @@ export function OrdersPage() {
         </Col>
         <Col xs={12} lg={6}>
           <Card>
-            <Statistic title="待支付" value={stats.PENDING_PAYMENT || 0} suffix="单" />
+            <Statistic title="待确认" value={stats.PENDING_PAYMENT || 0} suffix="单" />
           </Card>
         </Col>
         <Col xs={12} lg={6}>
@@ -286,7 +286,7 @@ export function OrdersPage() {
           <Input.Search
             allowClear
             defaultValue={q}
-            placeholder="搜索订单号、项目、联系人或备注"
+            placeholder="搜索预订单号、项目、联系人或备注"
             onSearch={(value) => setParam('q', value.trim())}
             className="search-box"
           />

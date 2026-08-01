@@ -1286,7 +1286,7 @@ function createOrder(body, req) {
     createdAt: now,
     updatedAt: now,
     status: 'new',
-    paymentStatus: 'offline_confirm',
+    paymentStatus: 'OFFLINE_CONFIRMATION',
     logistics: {
       carrier: '',
       trackingNo: '',
@@ -1306,7 +1306,7 @@ function createOrder(body, req) {
         by: 'public',
         fromStatus: '',
         toStatus: 'new',
-        note: '游客提交订单',
+        note: '游客提交预订意向',
         requestId: req?.requestId || '',
       },
     ],
@@ -2670,7 +2670,9 @@ function adminDashboard() {
       pendingReservations: bookings.filter((item) =>
         ['new', 'confirmed', 'processing'].includes(item.status),
       ).length,
-      pendingShipments: orders.filter((item) => item.status === 'pending_shipment').length,
+      pendingShipments: orders.filter((item) =>
+        ['new', 'confirmed', 'pending_shipment'].includes(item.status),
+      ).length,
       todayOrderAmount: todayOrders.reduce((sum, item) => sum + parseMoneyToCents(item.price), 0),
       todayOrderCount: todayOrders.length,
       totalOrderAmount: orders.reduce((sum, item) => sum + parseMoneyToCents(item.price), 0),
@@ -2837,8 +2839,18 @@ function bookingAsReservationOrder(record) {
   };
 }
 
+function queryWithMappedStatus(query, mapper) {
+  const next = new URLSearchParams(query);
+  const status = cleanText(next.get('status'), 40);
+  if (status) next.set('status', mapper(status));
+  return next;
+}
+
 function listReservationOrders(query) {
-  return mapPageItems(listAdminRecords('bookings.json', query), bookingAsReservationOrder);
+  return mapPageItems(
+    listAdminRecords('bookings.json', queryWithMappedStatus(query, reservationStatusToLegacy)),
+    bookingAsReservationOrder,
+  );
 }
 
 function legacyFeedbackStatus(status) {
@@ -2886,8 +2898,11 @@ function listFeedbackRecords(query) {
 }
 
 function filterOrders(query, admin = false) {
-  const status = cleanText(query.get('status'), 40);
   const type = cleanText(query.get('orderType'), 40) || cleanText(query.get('type'), 40);
+  const requestedStatus = cleanText(query.get('status'), 40);
+  const status = admin && requestedStatus
+    ? orderStatusToLegacy(requestedStatus, type || 'product')
+    : requestedStatus;
   const clientId = cleanText(query.get('clientId'), 120);
   const search = cleanText(query.get('q'), 120);
 
@@ -2957,11 +2972,9 @@ function orderAsApiRecord(record) {
     freightAmount: 0,
     discountAmount: 0,
     payableAmount: amount,
-    paidAmount: legacyOrderStatus(record.status) === 'PENDING_PAYMENT' ? 0 : amount,
+    paidAmount: normalizePositiveInt(record.paidAmount, 0, 0, 999999999),
     status: legacyOrderStatus(record.status),
-    paymentStatus:
-      record.paymentStatus ||
-      (legacyOrderStatus(record.status) === 'PENDING_PAYMENT' ? 'UNPAID' : 'PAID'),
+    paymentStatus: record.paymentStatus || 'OFFLINE_CONFIRMATION',
     shippingStatus:
       record.status === 'shipped'
         ? 'SHIPPED'
@@ -3019,7 +3032,7 @@ function orderListStats(records) {
   }
 
   stats.actionRequired =
-    stats.new + stats.pendingShipment + stats.pendingVerify + stats.pendingService;
+    stats.new + stats.confirmed + stats.pendingShipment + stats.pendingVerify + stats.pendingService;
   return stats;
 }
 
@@ -3608,9 +3621,10 @@ async function handleAdminRequest(req, res, url, route) {
     appendAudit(req, `${type}.csv.exported`, type, 'export', {
       format: 'csv',
     });
+    const exportFileName = type === 'orders' ? 'preorders' : type;
     sendText(req, res, 200, csv, {
       'Content-Type': 'text/csv; charset=utf-8',
-      'Content-Disposition': `attachment; filename="hailin-${type}.csv"`,
+      'Content-Disposition': `attachment; filename="hailin-${exportFileName}.csv"`,
     });
     return;
   }
@@ -3796,7 +3810,7 @@ async function handleAdminRequest(req, res, url, route) {
   if (orderRefunding) {
     const order = updateOrderFulfillment(
       orderRefunding[1],
-      { status: 'confirmed', note: '标记退款中' },
+      { status: 'confirmed', note: '标记售后沟通' },
       req,
     );
     appendAudit(req, 'order.refunding', 'order', order.id, { orderNo: order.orderNo });
@@ -3808,7 +3822,7 @@ async function handleAdminRequest(req, res, url, route) {
   if (orderRefunded) {
     const order = updateOrderFulfillment(
       orderRefunded[1],
-      { status: 'completed', note: '标记已退款' },
+      { status: 'completed', note: '标记售后完成' },
       req,
     );
     appendAudit(req, 'order.refunded', 'order', order.id, { orderNo: order.orderNo });

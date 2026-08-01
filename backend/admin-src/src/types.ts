@@ -37,13 +37,13 @@ export type StatusOption = {
 
 export const bookingStatusOptions: StatusOption[] = [
   { value: '', label: '全部' },
-  { value: 'PENDING_PAYMENT', label: '待支付' },
-  { value: 'PAID', label: '已支付' },
+  { value: 'PENDING_PAYMENT', label: '待确认' },
+  { value: 'PAID', label: '待服务' },
   { value: 'CONFIRMED', label: '已确认' },
   { value: 'COMPLETED', label: '已完成' },
   { value: 'CANCELLED', label: '已取消' },
-  { value: 'REFUNDING', label: '退款中' },
-  { value: 'REFUNDED', label: '已退款' },
+  { value: 'REFUNDING', label: '售后沟通' },
+  { value: 'REFUNDED', label: '售后完成' },
 ];
 
 export const feedbackStatusOptions: StatusOption[] = [
@@ -56,20 +56,20 @@ export const feedbackStatusOptions: StatusOption[] = [
 
 export const orderStatusOptions: StatusOption[] = [
   { value: '', label: '全部' },
-  { value: 'PENDING_PAYMENT', label: '待支付' },
-  { value: 'PAID', label: '已支付' },
-  { value: 'PROCESSING', label: '处理中' },
-  { value: 'SHIPPED', label: '已发货' },
+  { value: 'PENDING_PAYMENT', label: '待确认' },
+  { value: 'PAID', label: '已确认' },
+  { value: 'PROCESSING', label: '备货中' },
+  { value: 'SHIPPED', label: '配送/可取' },
   { value: 'COMPLETED', label: '已完成' },
   { value: 'CANCELLED', label: '已取消' },
-  { value: 'REFUNDING', label: '退款中' },
-  { value: 'REFUNDED', label: '已退款' },
+  { value: 'REFUNDING', label: '售后沟通' },
+  { value: 'REFUNDED', label: '售后完成' },
   { value: 'CLOSED', label: '已关闭' },
 ];
 
 export const orderTypeOptions: StatusOption[] = [
   { value: '', label: '全部类型' },
-  { value: 'product', label: '商城订单' },
+  { value: 'product', label: '农品预订' },
 ];
 
 export const statusLabels: Record<string, string> = {
@@ -88,19 +88,21 @@ export const statusLabels: Record<string, string> = {
   expired: '已过期',
   resolved: '已解决',
   archived: '已归档',
-  PENDING_PAYMENT: '待支付',
-  PAID: '已支付',
-  PROCESSING: '处理中',
-  SHIPPED: '已发货',
+  PENDING_PAYMENT: '待确认',
+  PAID: '已确认',
+  PROCESSING: '备货中',
+  SHIPPED: '配送/可取',
   COMPLETED: '已完成',
   CANCELLED: '已取消',
-  REFUNDING: '退款中',
-  REFUNDED: '已退款',
+  REFUNDING: '售后沟通',
+  REFUNDED: '售后完成',
   CLOSED: '已关闭',
-  UNPAID: '未支付',
-  PAYING: '支付中',
-  FAILED: '支付失败',
-  NOT_SHIPPED: '未发货',
+  UNPAID: '待确认',
+  PAYING: '确认中',
+  FAILED: '确认失败',
+  OFFLINE_CONFIRMATION: '线下确认',
+  offline_confirm: '线下确认',
+  NOT_SHIPPED: '未发出',
   RECEIVED: '已收货',
   PENDING: '待处理',
   REPLIED: '已回复',
@@ -108,8 +110,8 @@ export const statusLabels: Record<string, string> = {
 
 export const statusTransitions: Record<RecordKind, Record<string, string[]>> = {
   bookings: {
-    PENDING_PAYMENT: ['CANCELLED'],
-    PAID: ['CONFIRMED', 'CANCELLED', 'REFUNDING'],
+    PENDING_PAYMENT: ['CONFIRMED', 'CANCELLED'],
+    PAID: ['COMPLETED', 'CANCELLED', 'REFUNDING'],
     CONFIRMED: ['COMPLETED', 'CANCELLED', 'REFUNDING'],
     COMPLETED: [],
     CANCELLED: [],
