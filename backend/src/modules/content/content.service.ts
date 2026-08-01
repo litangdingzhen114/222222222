@@ -476,7 +476,7 @@ export class ContentService {
       FOOD: {
         type: '美食',
         subType: '核心景区',
-        actionText: '寻野 cafe',
+        actionText: '土狗咖啡',
         imageUrl: '/assets/photos/ai-xunye-cafe.jpg',
         targetUrl: '/pages/food/food',
       },

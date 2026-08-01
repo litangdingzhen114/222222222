@@ -71,6 +71,7 @@ async function main() {
   assert(apiSource.includes('fetchBackupBlob'), 'admin dashboard should download JSON backup');
   assert(apiSource.includes("'/home'"), 'admin dashboard should load formal home content');
   assert(apiSource.includes("'/cameras'"), 'admin dashboard should load live stream content');
+  assert(apiSource.includes('/admin/naming-profile'), 'admin dashboard should manage naming profiles');
   assert(apiSource.includes('scenic-spots'), 'admin dashboard should manage scenic resources');
   assert(apiSource.includes("('orders'"), 'admin dashboard should manage order fulfillment');
   assert(auditPage.includes('fetchBackupBlob'), 'admin dashboard should expose one-click backup');
@@ -88,6 +89,7 @@ async function main() {
   assert(ordersPage.includes('trackingNo'), 'admin dashboard should handle shipment tracking numbers');
   assert(ordersPage.includes("fetchExportBlob('orders'"), 'admin dashboard should export orders');
   assert(systemPage.includes('getConfigStatus'), 'system page should render formal config status');
+  assert(systemPage.includes('内容命名方案'), 'system page should render naming profile switch');
   assert(bookingsPage.includes('rowSelection'), 'admin dashboard should support table row selection');
   assert(detailDrawer.includes('maskContact'), 'admin dashboard should mask contact info in tables');
 
@@ -148,14 +150,50 @@ async function main() {
     const unauthorizedAudit = await requestJson(`http://${HOST}:${PORT}/api/admin/audit`);
     assert.strictEqual(unauthorizedAudit.status, 401);
 
-    const authHeaders = { Authorization: `Bearer ${ADMIN_TOKEN}` };
+  const authHeaders = { Authorization: `Bearer ${ADMIN_TOKEN}` };
 
-    const sharedAsset = await request(`http://${HOST}:${PORT}/assets/photos/ai-village-gate.jpg`);
-    assert.strictEqual(sharedAsset.status, 200);
-    assert.match(sharedAsset.headers.get('content-type'), /image\/jpeg/);
+  const sharedAsset = await request(`http://${HOST}:${PORT}/assets/photos/ai-village-gate.jpg`);
+  assert.strictEqual(sharedAsset.status, 200);
+  assert.match(sharedAsset.headers.get('content-type'), /image\/jpeg/);
 
-    const adminSpotList = await requestJson(`http://${HOST}:${PORT}/api/admin/scenic-spots?pageSize=5`, {
-      headers: authHeaders
+  const namingProfile = await requestJson(`http://${HOST}:${PORT}/api/admin/naming-profile`, {
+    headers: authHeaders
+  });
+  assert.strictEqual(namingProfile.status, 200);
+  assert.strictEqual(namingProfile.body.data.mode, 'huanghu');
+  assert.strictEqual(namingProfile.body.data.activeProfile.placeName, '黄湖林场');
+  assert.strictEqual(namingProfile.body.data.activeProfile.cafeName, '土狗咖啡');
+
+  const defaultNamedHome = await requestJson(`http://${HOST}:${PORT}/api/hailin/home`);
+  assert.strictEqual(defaultNamedHome.status, 200);
+  const defaultNamedHomeText = JSON.stringify(defaultNamedHome.body.data);
+  assert(defaultNamedHomeText.includes('黄湖林场'), 'public home should use Huanghu naming by default');
+  assert(defaultNamedHomeText.includes('土狗咖啡'), 'public home should use Tugou cafe naming by default');
+  assert(!defaultNamedHomeText.includes('海口镇海林村'), 'public home should hide legacy place wording by default');
+
+  const legacyNaming = await requestJson(`http://${HOST}:${PORT}/api/admin/naming-profile`, {
+    method: 'PUT',
+    headers: authHeaders,
+    body: JSON.stringify({ mode: 'hailin' })
+  });
+  assert.strictEqual(legacyNaming.status, 200);
+  assert.strictEqual(legacyNaming.body.data.mode, 'hailin');
+  const legacyNamedHome = await requestJson(`http://${HOST}:${PORT}/api/hailin/home`);
+  assert.strictEqual(legacyNamedHome.status, 200);
+  const legacyNamedHomeText = JSON.stringify(legacyNamedHome.body.data);
+  assert(legacyNamedHomeText.includes('海林村'), 'naming profile should switch legacy place wording back');
+  assert(legacyNamedHomeText.includes('寻野 cafe'), 'naming profile should switch legacy cafe wording back');
+
+  const restoredNaming = await requestJson(`http://${HOST}:${PORT}/api/admin/naming-profile`, {
+    method: 'PUT',
+    headers: authHeaders,
+    body: JSON.stringify({ mode: 'huanghu' })
+  });
+  assert.strictEqual(restoredNaming.status, 200);
+  assert.strictEqual(restoredNaming.body.data.mode, 'huanghu');
+
+  const adminSpotList = await requestJson(`http://${HOST}:${PORT}/api/admin/scenic-spots?pageSize=5`, {
+    headers: authHeaders
     });
     assert.strictEqual(adminSpotList.status, 200);
     assert(Array.isArray(adminSpotList.body.data.list));

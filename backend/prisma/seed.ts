@@ -21,7 +21,7 @@ const img = (name: string) => `/assets/seed/${name}`;
 async function main() {
   const username = process.env.SEED_ADMIN_USERNAME ?? 'hailin-admin';
   const password = process.env.SEED_ADMIN_PASSWORD ?? 'ChangeMe-Only-For-Local-2026';
-  const displayName = process.env.SEED_ADMIN_DISPLAY_NAME ?? '海林村超级管理员';
+  const displayName = process.env.SEED_ADMIN_DISPLAY_NAME ?? '黄湖林场超级管理员';
   if (process.env.NODE_ENV === 'production' && password === 'ChangeMe-Only-For-Local-2026') {
     throw new Error('生产环境必须通过 SEED_ADMIN_PASSWORD 配置强管理员密码');
   }
@@ -58,7 +58,7 @@ async function seedHome() {
     where: { id: 'banner-hailin-spring' },
     create: {
       id: 'banner-hailin-spring',
-      title: '海口镇海林村民宿慢住',
+      title: '黄湖林场民宿慢住',
       imageUrl: '/assets/photos/ai-map-tianpu-station.jpg',
       linkType: BannerLinkType.MINI_PROGRAM_PAGE,
       linkValue: '/pages/mine-feature/mine-feature?id=stay',
@@ -66,7 +66,7 @@ async function seedHome() {
       status: ContentStatus.PUBLISHED,
     },
     update: {
-      title: '海口镇海林村民宿慢住',
+      title: '黄湖林场民宿慢住',
       status: ContentStatus.PUBLISHED,
       imageUrl: '/assets/photos/ai-map-tianpu-station.jpg',
       linkType: BannerLinkType.MINI_PROGRAM_PAGE,
@@ -78,7 +78,7 @@ async function seedHome() {
     where: { id: 'banner-hailin-farm' },
     create: {
       id: 'banner-hailin-farm',
-      title: '寻野 cafe 村咖开坐',
+      title: '土狗咖啡 村咖开坐',
       imageUrl: '/assets/photos/ai-xunye-cafe.jpg',
       linkType: BannerLinkType.MINI_PROGRAM_PAGE,
       linkValue: '/pages/food/food',
@@ -86,7 +86,7 @@ async function seedHome() {
       status: ContentStatus.PUBLISHED,
     },
     update: {
-      title: '寻野 cafe 村咖开坐',
+      title: '土狗咖啡 村咖开坐',
       status: ContentStatus.PUBLISHED,
       imageUrl: '/assets/photos/ai-xunye-cafe.jpg',
       linkType: BannerLinkType.MINI_PROGRAM_PAGE,
@@ -117,7 +117,7 @@ async function seedScenicSpots() {
   const spots = [
     {
       id: 'spot-rice-field',
-      name: '青田鱼稻田',
+      name: '黄湖稻鱼田',
       subtitle: '稻浪与鱼塘相邻的村口风景',
       summary: '适合拍照、散步和亲子观察的田园片区。',
       tags: ['田园', '亲子', '摄影'],
@@ -137,7 +137,7 @@ async function seedScenicSpots() {
     },
     {
       id: 'spot-village-hall',
-      name: '海林村文化礼堂',
+      name: '黄湖林场文化礼堂',
       subtitle: '村史展示和游客服务的复合空间',
       summary: '了解村庄文化、公告活动和便民服务的入口。',
       tags: ['文化', '服务'],
@@ -174,7 +174,7 @@ async function seedScenicSpots() {
         coverImage: img(`${spot.id}.jpg`),
         images: [img(`${spot.id}-1.jpg`), img(`${spot.id}-2.jpg`)],
         content: `${spot.summary}\n\n建议游客预留 30-60 分钟，按现场导览和开放状态游览。`,
-        address: '海林村',
+        address: '黄湖林场',
         openingHours: '08:30-18:00',
         phone: '0571-00000000',
         ticketInfo: '免费开放，部分体验项目需预约',
@@ -275,7 +275,7 @@ async function seedServicesAndMap(spotIds: string[]) {
       coverImage: img('homestay-creek.jpg'),
       images: [img('homestay-room.jpg')],
       description: '靠近溪岸慢行道的村居民宿，适合周末家庭入住。',
-      address: '海林村溪岸路 12 号',
+      address: '黄湖林场溪岸路 12 号',
       phone: '0571-00000011',
       businessHours: '全天入住，14:00 后办理',
       priceFrom: 28800,
@@ -288,11 +288,11 @@ async function seedServicesAndMap(spotIds: string[]) {
     where: { id: 'food-tea-house' },
     create: {
       id: 'food-tea-house',
-      name: '寻野 cafe',
+      name: '土狗咖啡',
       coverImage: '/assets/photos/ai-xunye-cafe.jpg',
       images: ['/assets/photos/ai-xunye-cafe.jpg'],
       description: '供应乡野咖啡、米糕轻食和农家简餐，可作为溪谷路线休息点。',
-      address: '海林村溪谷慢行道旁',
+      address: '黄湖林场溪谷慢行道旁',
       phone: '0571-00000012',
       businessHours: '10:00-20:00',
       avgPrice: 3500,
@@ -300,11 +300,11 @@ async function seedServicesAndMap(spotIds: string[]) {
       status: ContentStatus.PUBLISHED,
     },
     update: {
-      name: '寻野 cafe',
+      name: '土狗咖啡',
       coverImage: '/assets/photos/ai-xunye-cafe.jpg',
       images: ['/assets/photos/ai-xunye-cafe.jpg'],
       description: '供应乡野咖啡、米糕轻食和农家简餐，可作为溪谷路线休息点。',
-      address: '海林村溪谷慢行道旁',
+      address: '黄湖林场溪谷慢行道旁',
       businessHours: '10:00-20:00',
       avgPrice: 3500,
       tags: ['咖啡', '轻食', '简餐'],
@@ -314,13 +314,13 @@ async function seedServicesAndMap(spotIds: string[]) {
   const mapPoints = [
     {
       id: 'mp-village-gate',
-      name: '海林村口会客点',
+      name: '黄湖林场入口会客点',
       type: MapPointType.SERVICE_CENTER,
       longitude: '120.2184000',
       latitude: '28.2136000',
-      address: '海口镇海林村入口',
+      address: '黄湖林场入口',
       imageUrl: '/assets/photos/ai-village-gate.jpg',
-      description: '海口镇海林村入口服务点，可承接游客咨询、路线导览和活动集合。',
+      description: '黄湖林场入口服务点，可承接游客咨询、路线导览和活动集合。',
       businessHours: '08:30-18:00',
       sort: 1,
     },
@@ -330,7 +330,7 @@ async function seedServicesAndMap(spotIds: string[]) {
       type: MapPointType.SERVICE_CENTER,
       longitude: '120.2196000',
       latitude: '28.2148000',
-      address: '海林村田铺驿站',
+      address: '黄湖林场田铺驿站',
       imageUrl: '/assets/photos/ai-map-tianpu-station.jpg',
       description: '田铺驿站可作为到村集合、休息补给、农品提货和活动签到点。',
       businessHours: '08:30-18:30',
@@ -339,13 +339,13 @@ async function seedServicesAndMap(spotIds: string[]) {
     },
     {
       id: 'mp-hailin-creek-valley',
-      name: '海林·溪谷',
+      name: '黄湖溪谷',
       type: MapPointType.SCENIC_SPOT,
       longitude: '120.2229000',
       latitude: '28.2112000',
-      address: '海林村溪谷活动区',
+      address: '黄湖林场溪谷活动区',
       imageUrl: '/assets/photos/ai-map-hailin-creek.jpg',
-      description: '海林溪谷串联亲水慢行、石桥、竹林和户外活动空间，适合露营、团建和亲子活动。',
+      description: '黄湖溪谷串联亲水慢行、石桥、竹林和户外活动空间，适合露营、团建和亲子活动。',
       businessHours: '全天开放',
       relatedEntityType: 'SCENIC_SPOT',
       relatedEntityId: 'spot-waterfront',
@@ -357,9 +357,9 @@ async function seedServicesAndMap(spotIds: string[]) {
       type: MapPointType.SCENIC_SPOT,
       longitude: '120.2206000',
       latitude: '28.2152000',
-      address: '海林村稻鱼田观景口',
+      address: '黄湖林场稻鱼田观景口',
       imageUrl: '/assets/photos/ricefish-paddy.jpg',
-      description: '以青田稻鱼共生为灵感的田园观景点，适合研学和亲子摄影。',
+      description: '以黄湖稻鱼共生为灵感的田园观景点，适合研学和亲子摄影。',
       businessHours: '08:00-18:30',
       relatedEntityType: 'SCENIC_SPOT',
       relatedEntityId: 'spot-rice-field',
@@ -371,7 +371,7 @@ async function seedServicesAndMap(spotIds: string[]) {
       type: MapPointType.SCENIC_SPOT,
       longitude: '120.2221000',
       latitude: '28.2118000',
-      address: '海林村溪谷步道入口',
+      address: '黄湖林场溪谷步道入口',
       imageUrl: '/assets/photos/qingtian-tashan.jpg',
       description: '沿山溪设置的慢行步道，串联茶歇、石桥和林荫休息点。',
       businessHours: '全天开放',
@@ -381,13 +381,13 @@ async function seedServicesAndMap(spotIds: string[]) {
     },
     {
       id: 'mp-village-museum',
-      name: '海林村情馆',
+      name: '黄湖林场展陈馆',
       type: MapPointType.SCENIC_SPOT,
       longitude: '120.2168000',
       latitude: '28.2143000',
-      address: '海林村文化礼堂旁',
+      address: '黄湖林场文化礼堂旁',
       imageUrl: '/assets/photos/ai-village-gate.jpg',
-      description: '展示海林村区位、村情、侨乡联系和文旅服务信息的公共空间。',
+      description: '展示黄湖林场区位、村情、侨乡联系和文旅服务信息的公共空间。',
       businessHours: '09:00-17:00',
       relatedEntityType: 'SCENIC_SPOT',
       relatedEntityId: 'spot-village-hall',
@@ -395,13 +395,13 @@ async function seedServicesAndMap(spotIds: string[]) {
     },
     {
       id: 'mp-stone-workshop',
-      name: '青田石纹手作点',
+      name: '古树年轮拓印点',
       type: MapPointType.FARM,
       longitude: '120.2193000',
       latitude: '28.2109000',
-      address: '海林村手作体验点',
+      address: '黄湖林场手作体验点',
       imageUrl: '/assets/photos/ai-tofu-workshop.jpg',
-      description: '以青田石色与纹理为视觉灵感的手作体验点，可对接研学课程。',
+      description: '以古树年轮色与纹理为视觉灵感的手作体验点，可对接研学课程。',
       businessHours: '09:30-16:30',
       relatedEntityType: 'ACTIVITY',
       relatedEntityId: 'activity-workshop',
@@ -413,7 +413,7 @@ async function seedServicesAndMap(spotIds: string[]) {
       type: MapPointType.FARM,
       longitude: '120.2234000',
       latitude: '28.2161000',
-      address: '海林村稻鱼研学田',
+      address: '黄湖林场稻鱼研学田',
       imageUrl: '/assets/photos/ricefish-paddy.jpg',
       description: '适合研学团队开展识稻、识鱼、水田生态等农事课堂。',
       businessHours: '09:00-16:30',
@@ -427,9 +427,9 @@ async function seedServicesAndMap(spotIds: string[]) {
       type: MapPointType.OTHER,
       longitude: '120.2189000',
       latitude: '28.2172000',
-      address: '海林村共富市集',
+      address: '黄湖林场共富市集',
       imageUrl: '/assets/photos/ai-stone-souvenir.jpg',
-      description: '展示海林村土鸡、土鸡蛋、黑猪肉、土蜂蜜和共富摊位，可对接真实后台库存。',
+      description: '展示黄湖林场土鸡、土鸡蛋、黑猪肉、土蜂蜜和共富摊位，可对接真实后台库存。',
       businessHours: '09:00-18:00',
       relatedEntityType: 'PRODUCT',
       sort: 7,
@@ -440,7 +440,7 @@ async function seedServicesAndMap(spotIds: string[]) {
       type: MapPointType.HOMESTAY,
       longitude: '120.2156000',
       latitude: '28.2126000',
-      address: '海林村溪谷慢住区',
+      address: '黄湖林场溪谷慢住区',
       imageUrl: '/assets/photos/ai-overseas-cafe.jpg',
       description: '面向周末游客的溪谷慢住空间，后续可接真实房态和预订系统。',
       businessHours: '14:00后入住',
@@ -448,11 +448,11 @@ async function seedServicesAndMap(spotIds: string[]) {
     },
     {
       id: 'mp-ricefish-banquet',
-      name: '寻野 cafe',
+      name: '土狗咖啡',
       type: MapPointType.FOOD,
       longitude: '120.2175000',
       latitude: '28.2116000',
-      address: '海林村溪谷慢行道旁',
+      address: '黄湖林场溪谷慢行道旁',
       imageUrl: '/assets/photos/ai-xunye-cafe.jpg',
       description: '溪谷边的乡野咖啡、米糕轻食和农家简餐，可作为路线中途休息点。',
       businessHours: '10:00-20:00',
@@ -464,7 +464,7 @@ async function seedServicesAndMap(spotIds: string[]) {
       type: MapPointType.SERVICE_CENTER,
       longitude: '120.2192000',
       latitude: '28.2138000',
-      address: '海林村游客中心',
+      address: '黄湖林场游客中心',
       imageUrl: '/assets/photos/ai-village-gate.jpg',
       description: '提供咨询、讲解预约、农品预购和便民服务，服务信息由后台统一维护。',
       businessHours: '08:30-18:00',
@@ -488,7 +488,7 @@ async function seedServicesAndMap(spotIds: string[]) {
       type: MapPointType.PARKING,
       longitude: '120.2182000',
       latitude: '28.2123000',
-      address: '海林村口临时停车场',
+      address: '黄湖林场口临时停车场',
       imageUrl: '/assets/photos/ai-village-gate.jpg',
       description: '村口临时停车场，节假日请按现场指引有序停放。',
       businessHours: '全天开放',
@@ -500,7 +500,7 @@ async function seedServicesAndMap(spotIds: string[]) {
       type: MapPointType.CAMERA,
       longitude: '120.2198000',
       latitude: '28.2151000',
-      address: '海林村田园慢直播点',
+      address: '黄湖林场田园慢直播点',
       imageUrl: '/assets/photos/ricefish-paddy.jpg',
       description: '支持后端返回萤石云、HLS 或 live-player 地址后展示真实画面。',
       businessHours: '全天在线',
@@ -567,7 +567,7 @@ async function seedServicesAndMap(spotIds: string[]) {
 
 async function seedReservations() {
   const farmIds = ['farm-strawberry', 'farm-tea', 'farm-ricefish'];
-  const names = ['海林草莓园', '溪畔茶园', '鱼稻共生体验田'];
+  const names = ['黄湖林场草莓园', '溪畔茶园', '鱼稻共生体验田'];
   for (let index = 0; index < farmIds.length; index += 1) {
     await prisma.farm.upsert({
       where: { id: farmIds[index] },
@@ -577,7 +577,7 @@ async function seedReservations() {
         coverImage: img(`${farmIds[index]}.jpg`),
         images: [img(`${farmIds[index]}-1.jpg`)],
         description: `${names[index]}提供预约制采摘和农事体验。`,
-        address: '海林村农事体验区',
+        address: '黄湖林场农事体验区',
         phone: '0571-00000020',
         businessHours: '09:00-17:30',
         status: ContentStatus.PUBLISHED,
@@ -636,7 +636,7 @@ async function seedReservations() {
 
 async function seedActivities() {
   const activities = [
-    ['activity-harvest', '海林村夏日采摘节', '亲子家庭参与的时令采摘和农事课堂。', 3000],
+    ['activity-harvest', '黄湖林场夏日采摘节', '亲子家庭参与的时令采摘和农事课堂。', 3000],
     ['activity-night-market', '溪畔周末夜市', '本地茶点、手作和小型音乐活动。', 0],
     ['activity-study', '鱼稻共生研学课', '面向研学团队的田园观察课程。', 4800],
   ] as const;
@@ -651,7 +651,7 @@ async function seedActivities() {
         images: [img(`${id}-1.jpg`)],
         summary,
         content: `${summary}\n\n请通过小程序报名，名额有限，报名成功后以系统记录为准。`,
-        location: '海林村游客服务中心',
+        location: '黄湖林场游客服务中心',
         longitude: '120.1815000',
         latitude: '30.2669000',
         startAt: new Date(Date.UTC(2026, 7, 1 + index, 1, 0, 0)),
@@ -670,7 +670,7 @@ async function seedActivities() {
 
 async function seedCameras() {
   const cameras = [
-    ['camera-rice-field', '鱼稻田慢直播', 'DEV-RICE-FIELD', '青田鱼稻田'],
+    ['camera-rice-field', '鱼稻田慢直播', 'DEV-RICE-FIELD', '黄湖稻鱼田'],
     ['camera-creek', '古桥溪畔慢直播', 'DEV-CREEK', '古桥溪畔'],
     ['camera-service', '游客中心广场直播', 'DEV-SERVICE', '游客服务中心'],
   ] as const;
@@ -752,7 +752,7 @@ async function seedProducts() {
     ],
     [
       'product-honey',
-      '海林土蜂蜜',
+      '黄湖林场土蜂蜜',
       'cat-honey',
       5900,
       '瓶',
@@ -762,7 +762,7 @@ async function seedProducts() {
     ],
     [
       'product-rice',
-      '海林村生态米',
+      '黄湖林场生态米',
       'cat-farm',
       3900,
       '袋',
@@ -827,10 +827,10 @@ async function seedProducts() {
       create: {
         id,
         name,
-        subtitle: '海林村运营团队推荐',
+        subtitle: '黄湖林场运营团队推荐',
         coverImage,
         images: [coverImage],
-        detail: `${name}来自海林村文旅运营推荐，库存、规格、物流和售后说明由后台持续维护。`,
+        detail: `${name}来自黄湖林场文旅运营推荐，库存、规格、物流和售后说明由后台持续维护。`,
         categoryId,
         price,
         originalPrice: price + 1000,
@@ -842,10 +842,10 @@ async function seedProducts() {
       },
       update: {
         name,
-        subtitle: '海林村运营团队推荐',
+        subtitle: '黄湖林场运营团队推荐',
         coverImage,
         images: [coverImage],
-        detail: `${name}来自海林村文旅运营推荐，库存、规格、物流和售后说明由后台持续维护。`,
+        detail: `${name}来自黄湖林场文旅运营推荐，库存、规格、物流和售后说明由后台持续维护。`,
         categoryId,
         price,
         originalPrice: price + 1000,
@@ -864,8 +864,8 @@ async function seedArticles() {
     [
       'article-intro',
       ArticleType.VILLAGE_INTRO,
-      '海林村介绍',
-      '了解海林村的田园风貌、公共服务和文旅资源。',
+      '黄湖林场介绍',
+      '了解黄湖林场的田园风貌、公共服务和文旅资源。',
     ],
     [
       'article-notice',

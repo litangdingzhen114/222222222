@@ -51,7 +51,7 @@ priorityIds.forEach((id) => {
 });
 
 assert(
-  spots.some((item) => item.id === "creek-trail" && item.name === "海林·溪谷"),
+  spots.some((item) => item.id === "creek-trail" && item.name === "黄湖溪谷"),
   "creek detail should use the user-facing Hailin valley name",
 );
 assert(
@@ -63,7 +63,7 @@ assert(
   "Tianpu station map point should open its polished detail",
 );
 assert(
-  mapPoints.some((point) => point.title === "寻野 cafe" && point.refId === "xunye-cafe"),
+  mapPoints.some((point) => point.title === "土狗咖啡" && point.refId === "xunye-cafe"),
   "Xunye cafe map point should open its polished detail",
 );
 

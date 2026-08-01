@@ -111,7 +111,7 @@ Page({
 
   onFullscreen() {
     if (this.data.videoUrl) {
-      quickToast('正在播放海林实时视频');
+      quickToast('正在播放黄湖林场实时视频');
       return;
     }
     quickToast('视频源暂不可用，当前显示封面');

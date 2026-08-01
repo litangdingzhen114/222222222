@@ -13,7 +13,7 @@
       </view>
       <view class="profile-info">
         <view class="nickname">{{user.nickname}}</view>
-        <view class="profile-sub">{{user.intro || '欢迎来到青田海口镇海林村文旅服务平台'}}</view>
+        <view class="profile-sub">{{user.intro || '欢迎来到黄湖林场文旅服务平台'}}</view>
       </view>
       <view class="edit-profile" bindtap="onEditProfile">修改个人资料</view>
     </view>
@@ -78,8 +78,8 @@
     <button class="logout-btn" bindtap="onLogout">退出登录</button>
 
     <view class="footer-info">
-      <view>海林村村民委员会</view>
-      <view>海口镇海林村文旅运营中心</view>
+      <view>黄湖林场村民委员会</view>
+      <view>黄湖林场文旅运营中心</view>
       <view>订单与游客服务由后台运营中心维护</view>
     </view>
   </view>

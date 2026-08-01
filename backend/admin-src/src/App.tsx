@@ -193,8 +193,8 @@ function AdminLayout() {
         <div className="brand-block">
           <img className="brand-logo" src={brandLogo} alt="" />
           <div className="brand-text">
-            <strong>海林村文旅后台</strong>
-            <span>Hailin Admin</span>
+            <strong>黄湖林场文旅后台</strong>
+            <span>Huanghu Admin</span>
           </div>
         </div>
         <Menu

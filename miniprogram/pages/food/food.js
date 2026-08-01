@@ -9,7 +9,7 @@ Page({
     foods: fallbackFoods,
     keyword: '',
     activeFilter: '全部类别',
-    filters: ['全部类别', '咖啡', '轻食', '民宿', '青田田鱼', '研学'],
+    filters: ['全部类别', '咖啡', '轻食', '民宿', '稻田田鱼', '研学'],
     featureCards: [
       { id: 'cafe', title: '咖啡菜单', icon: '啡', iconPath: '/assets/icons/map-food.png' },
       { id: 'map', title: '到店导航', icon: '图', iconPath: '/assets/icons/traffic.png' },

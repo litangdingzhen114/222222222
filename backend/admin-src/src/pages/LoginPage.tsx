@@ -34,10 +34,10 @@ export function LoginPage() {
       <section className="login-shell">
         <Card className="login-card">
           <div className="login-brand">
-            <img className="brand-logo large" src={brandLogo} alt="海林村文旅后台" />
+            <img className="brand-logo large" src={brandLogo} alt="黄湖林场文旅后台" />
             <div>
-              <Title level={2}>海林村文旅后台</Title>
-              <Text type="secondary">海林村数字文旅运营中心</Text>
+              <Title level={2}>黄湖林场文旅后台</Title>
+              <Text type="secondary">黄湖林场数字文旅运营中心</Text>
             </div>
           </div>
           <Form form={form} layout="vertical" onFinish={submit} autoComplete="off">
@@ -73,7 +73,7 @@ export function LoginPage() {
         <div className="login-visual-panel" aria-hidden="true">
           <img src={loginVisual} alt="" />
           <div className="login-visual-caption">
-            <strong>海林村数字文旅运营中心</strong>
+            <strong>黄湖林场数字文旅运营中心</strong>
             <span>山水村落与游客服务的日常中枢</span>
           </div>
         </div>

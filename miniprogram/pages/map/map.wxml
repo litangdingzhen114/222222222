@@ -65,7 +65,7 @@
       enable-zoom="{{true}}"
       enable-scroll="{{true}}"
     >
-      <cover-view class="map-weather">瓯江 · 青田 · 海林</cover-view>
+      <cover-view class="map-weather">瓯江 · 黄湖林场 · 黄湖林场</cover-view>
 
       <cover-view class="subtag-float">
         <cover-view
@@ -105,7 +105,7 @@
         <cover-view class="poi-close" bindtap="onCloseSheet">×</cover-view>
         <cover-view class="poi-image-wrap">
           <cover-image wx:if="{{activePoint.imageUrl}}" class="poi-image" src="{{activePoint.imageUrl}}" mode="aspectFill"></cover-image>
-          <cover-view wx:else class="poi-image-fallback">海林点位</cover-view>
+          <cover-view wx:else class="poi-image-fallback">黄湖林场点位</cover-view>
           <cover-view class="poi-image-label">{{activePoint.subType}}</cover-view>
         </cover-view>
         <cover-view class="poi-content">

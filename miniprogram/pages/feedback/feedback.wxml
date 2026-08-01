@@ -1,7 +1,7 @@
 <view class="page page-pad feedback-page">
   <view class="feedback-hero">
     <view class="feedback-title">意见反馈</view>
-    <view class="feedback-desc">把游玩中遇到的问题、内容纠错或合作需求发给海林村文旅服务后台。</view>
+    <view class="feedback-desc">把游玩中遇到的问题、内容纠错或合作需求发给黄湖林场文旅服务后台。</view>
   </view>
 
   <view class="promise-grid">

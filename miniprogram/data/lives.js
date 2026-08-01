@@ -1,7 +1,7 @@
 module.exports = [
   {
     id: 'square',
-    title: '海林村口会客点',
+    title: '黄湖林场入口会客点',
     viewers: 128,
     desc: '接入真实摄像头后，可展示村口游客中心与村庄晨昏。',
     imageClass: 'ph-oujiang',
@@ -13,7 +13,7 @@ module.exports = [
     id: 'rice-view',
     title: '稻鱼田观景点',
     viewers: 236,
-    desc: '展示青田稻鱼共生灵感下的田园风景与农事活动。',
+    desc: '展示黄湖稻鱼共生灵感下的田园风景与农事活动。',
     imageClass: 'ph-ricefish',
     icon: '鱼',
     coverUrl: 'https://www.hailin.store/assets/photos/ricefish-paddy.jpg',

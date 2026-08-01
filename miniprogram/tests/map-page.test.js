@@ -78,7 +78,7 @@ assert(
 assert(
   mapPoints.some(
     (point) =>
-      point.title === "海林·溪谷" &&
+      point.title === "黄湖溪谷" &&
       point.imageUrl === `${photoBase}/ai-map-hailin-creek.jpg`,
   ),
   "map should include Hailin creek valley with a generated display image",

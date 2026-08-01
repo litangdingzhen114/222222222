@@ -1,7 +1,7 @@
 module.exports = [
   {
     id: 'xunye-cafe',
-    name: '寻野 cafe',
+    name: '土狗咖啡',
     perCapita: '35元',
     distance: '0.6公里',
     desc: '溪谷边的乡野咖啡、米糕轻食和农家简餐，到店可看山水和田埂。',
@@ -12,11 +12,11 @@ module.exports = [
   },
   {
     id: 'green-field',
-    name: '海林田鱼家宴',
+    name: '稻田田鱼家宴',
     perCapita: '88元',
     distance: '0.6公里',
-    desc: '以青田田鱼、山泉豆腐和当季笋蔬为核心的村宴菜单',
-    tags: ['青田田鱼', '家宴'],
+    desc: '以稻田田鱼、山泉豆腐和当季笋蔬为核心的村宴菜单',
+    tags: ['稻田田鱼', '家宴'],
     imageClass: 'ph-ricefish',
     icon: '鱼',
     imageUrl: 'https://www.hailin.store/assets/photos/ricefish-drying.jpg'

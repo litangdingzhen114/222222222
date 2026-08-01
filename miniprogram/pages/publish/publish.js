@@ -6,7 +6,7 @@ Page({
     title: '',
     content: '',
     imagePath: '',
-    topics: ['稻鱼体验', '青田石韵', '溪谷漫步', '侨乡故事', '共富集市'],
+    topics: ['稻鱼体验', '古树年轮', '溪谷漫步', '侨乡故事', '共富集市'],
     topicIndex: 0
   },
 

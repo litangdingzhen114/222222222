@@ -231,7 +231,7 @@ function publishNote(payload) {
   const note = {
     id: `note-${Date.now()}`,
     title: String(payload.title || '').trim(),
-    topic: payload.topic || '海林村游记',
+    topic: payload.topic || '黄湖林场游记',
     summary: content.length > 64 ? `${content.slice(0, 64)}...` : content,
     content,
     imagePath: payload.imagePath || '',

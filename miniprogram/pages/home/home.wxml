@@ -140,7 +140,7 @@
       </view>
     </view>
 
-    <section-title title="海林农品预购" moreText="更多" bind:moretap="onMoreProducts"></section-title>
+    <section-title title="黄湖林场农品预购" moreText="更多" bind:moretap="onMoreProducts"></section-title>
     <view class="product-panel card">
       <view class="product-head">
         <view>
@@ -155,7 +155,7 @@
       </scroll-view>
     </view>
 
-    <section-title title="海林必打卡榜单"></section-title>
+    <section-title title="黄湖林场必打卡榜单"></section-title>
     <scroll-view scroll-x="{{true}}" class="ranking-scroll" enable-flex="{{true}}">
       <view class="ranking-row">
         <view wx:for="{{rankings}}" wx:key="id" class="ranking-card card" data-title="{{item.title}}" bindtap="onRankingTap">
@@ -174,7 +174,7 @@
       </view>
     </scroll-view>
 
-    <section-title title="海林长廊"></section-title>
+    <section-title title="黄湖林场长廊"></section-title>
     <scroll-view scroll-x="{{true}}" class="corridor-scroll" enable-flex="{{true}}">
       <view class="corridor-row">
         <view wx:for="{{corridor}}" wx:key="id" class="corridor-card">

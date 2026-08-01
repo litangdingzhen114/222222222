@@ -7,28 +7,28 @@ const serviceOptions = [
   {
     id: 'guide',
     title: '村游讲解',
-    service: '海林村讲解服务',
-    desc: '村情馆、稻鱼田、溪谷步道、青田石纹手作点讲解。',
+    service: '黄湖林场讲解服务',
+    desc: '村情馆、稻鱼田、溪谷步道、古树年轮拓印点讲解。',
     tag: '60-90 分钟'
   },
   {
     id: 'activity',
     title: '研学课程',
-    service: '海林村研学课程',
-    desc: '稻鱼共生、青田石纹、侨乡故事和自然观察课程。',
+    service: '黄湖林场研学课程',
+    desc: '稻鱼共生、古树年轮、侨乡故事和自然观察课程。',
     tag: '亲子/学校'
   },
   {
     id: 'tour',
     title: '村游套餐',
-    service: '海林村村游套餐',
+    service: '黄湖林场村游套餐',
     desc: '集合、讲解、餐食、手作和返程建议一并安排。',
     tag: '半日/一日'
   },
   {
     id: 'venue',
     title: '场地活动',
-    service: '海林村场地预约',
+    service: '黄湖林场场地预约',
     desc: '会客点、研学教室、溪谷草坪和共富集市场地。',
     tag: '团队可用'
   }

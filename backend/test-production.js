@@ -78,7 +78,7 @@ async function main() {
 
     const adminHtml = await request(`http://${HOST}:${PORT}/admin/`);
     assert.strictEqual(adminHtml.status, 200);
-    assert.match(await adminHtml.text(), /海林村文旅后台/);
+    assert.match(await adminHtml.text(), /黄湖林场文旅后台/);
 
     const unauthorized = await requestJson(`http://${HOST}:${PORT}/api/admin/summary`);
     assert.strictEqual(unauthorized.status, 401);
@@ -145,7 +145,7 @@ async function main() {
         clientId: 'client-production',
         orderType: 'ticket',
         featureId: 'ticket',
-        service: '海林村活动票券',
+        service: '黄湖林场活动票券',
         item: '稻鱼田体验票',
         date: '2026-07-11',
         people: 2,

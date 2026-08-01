@@ -25,7 +25,7 @@ const pointTasks = [
     id: "publish",
     title: "发布一篇游记",
     points: 8,
-    desc: "记录一次海林村游玩体验",
+    desc: "记录一次黄湖林场游玩体验",
   },
   {
     id: "favorite",
@@ -46,10 +46,10 @@ const bookingFeatures = {
     id: "mall",
     type: "booking",
     title: "农品预购",
-    heroTag: "海林农品",
+    heroTag: "黄湖林场农品",
     subtitle:
-      "预订海林村土鸡、土鸡蛋、黑猪肉、土蜂蜜等本地农产品，后台确认库存、提货和配送。",
-    service: "海林村农品预购",
+      "预订黄湖林场土鸡、土鸡蛋、黑猪肉、土蜂蜜等本地农产品，后台确认库存、提货和配送。",
+    service: "黄湖林场农品预购",
     actionText: "提交预购意向",
     chips: ["土鸡预订", "土蜂蜜", "到村自提"],
     formLabels: {
@@ -75,7 +75,7 @@ const bookingFeatures = {
         price: "68元/斤",
       },
       {
-        title: "海林土蜂蜜",
+        title: "黄湖林场土蜂蜜",
         desc: "山野花香，500g瓶装，可做农品礼盒搭配",
         price: "59元/瓶",
       },
@@ -86,8 +86,8 @@ const bookingFeatures = {
     type: "booking",
     title: "活动票券",
     heroTag: "票券预约",
-    subtitle: "预约稻鱼体验、手作课、溪谷夜游等海林村主题活动。",
-    service: "海林村活动票券",
+    subtitle: "预约稻鱼体验、手作课、溪谷夜游等黄湖林场主题活动。",
+    service: "黄湖林场活动票券",
     actionText: "预订票券",
     chips: ["亲子友好", "可团队", "到场核销"],
     formLabels: {
@@ -103,7 +103,7 @@ const bookingFeatures = {
         price: "49元/人",
       },
       {
-        title: "青田石拓印课",
+        title: "古树文化拓印课",
         desc: "识石纹、拓印和带走文创小品",
         price: "59元/人",
       },
@@ -119,8 +119,8 @@ const bookingFeatures = {
     type: "booking",
     title: "村游订单",
     heroTag: "一日村游",
-    subtitle: "把景点、餐食、讲解和交通串成一次完整的海林村行程。",
-    service: "海林村村游订单",
+    subtitle: "把景点、餐食、讲解和交通串成一次完整的黄湖林场行程。",
+    service: "黄湖林场村游订单",
     actionText: "提交村游需求",
     chips: ["半日游", "一日游", "亲子研学"],
     formLabels: {
@@ -137,7 +137,7 @@ const bookingFeatures = {
       },
       {
         title: "侨乡文化一日线",
-        desc: "侨乡故事、青田石手作、稻鱼宴和溪谷步道",
+        desc: "侨乡故事、古树年轮手作、稻鱼宴和溪谷步道",
         price: "168元/人",
       },
       {
@@ -153,7 +153,7 @@ const bookingFeatures = {
     title: "讲解跟拍",
     heroTag: "讲解影像",
     subtitle: "为村情馆、稻鱼田、溪谷步道和侨乡老屋预约讲解员与跟拍。",
-    service: "海林村讲解跟拍",
+    service: "黄湖林场讲解跟拍",
     actionText: "预约讲解跟拍",
     chips: ["村民讲解", "手机跟拍", "亲子路线"],
     formLabels: {
@@ -181,8 +181,8 @@ const bookingFeatures = {
     type: "booking",
     title: "民宿订单",
     heroTag: "乡宿预订",
-    subtitle: "预约海林村及周边民宿，适合家庭、研学队伍和团建留宿。",
-    service: "海林村民宿订单",
+    subtitle: "预约黄湖林场及周边民宿，适合家庭、研学队伍和团建留宿。",
+    service: "黄湖林场民宿订单",
     actionText: "提交住宿需求",
     chips: ["亲子房", "团队房", "早餐可配"],
     formLabels: {
@@ -214,8 +214,8 @@ const bookingFeatures = {
     type: "booking",
     title: "研学报名",
     heroTag: "课程报名",
-    subtitle: "报名稻鱼共生、青田石纹、侨乡故事和乡村治理主题研学。",
-    service: "海林村研学报名",
+    subtitle: "报名稻鱼共生、古树年轮、侨乡故事和乡村治理主题研学。",
+    service: "黄湖林场研学报名",
     actionText: "提交报名",
     chips: ["课程包", "讲师带队", "可开票"],
     formLabels: {
@@ -231,7 +231,7 @@ const bookingFeatures = {
         price: "78元/人",
       },
       {
-        title: "青田石纹课",
+        title: "古树年轮课",
         desc: "石纹观察、拓印和文创带回",
         price: "88元/人",
       },
@@ -248,7 +248,7 @@ const bookingFeatures = {
     title: "场地预约",
     heroTag: "空间预约",
     subtitle: "预约村口会客点、研学教室、溪谷草坪和共富集市场地。",
-    service: "海林村场地预约",
+    service: "黄湖林场场地预约",
     actionText: "提交场地预约",
     chips: ["活动布置", "可讲解", "可餐饮"],
     formLabels: {
@@ -280,8 +280,8 @@ const bookingFeatures = {
     type: "booking",
     title: "团建定制",
     heroTag: "团队方案",
-    subtitle: "为企业、学校和社群定制海林村团建、研学和共富交流路线。",
-    service: "海林村团建定制",
+    subtitle: "为企业、学校和社群定制黄湖林场团建、研学和共富交流路线。",
+    service: "黄湖林场团建定制",
     actionText: "提交定制需求",
     chips: ["企业团建", "党建共建", "研学交流"],
     formLabels: {
@@ -383,7 +383,7 @@ const serviceEnhancements = {
     highlights: [
       {
         title: "村民讲解",
-        desc: "围绕村情馆、田鱼、青田石和侨乡故事进行讲解。",
+        desc: "围绕村情馆、田鱼、古树文化和侨乡故事进行讲解。",
       },
       { title: "手机跟拍", desc: "适合家庭、团队和小红书式打卡记录。" },
       { title: "亲子任务卡", desc: "孩子可以边走边完成观察和问答任务。" },
@@ -403,7 +403,7 @@ const serviceEnhancements = {
     highlights: [
       { title: "溪谷慢住", desc: "适合把夜游、茶叙和第二天早晨慢行接起来。" },
       { title: "亲子/团队可配", desc: "可备注房型、早餐、停车和接送需求。" },
-      { title: "周末友好", desc: "把海林村从半日游延展成两天一晚。" },
+      { title: "周末友好", desc: "把黄湖林场从半日游延展成两天一晚。" },
     ],
     process: [
       "提交住宿需求",
@@ -419,7 +419,7 @@ const serviceEnhancements = {
   activity: {
     highlights: [
       { title: "稻鱼课堂", desc: "从水田生态、农具和田鱼观察切入。" },
-      { title: "石纹手作", desc: "看青田石纹理，完成拓印或香囊作品。" },
+      { title: "石纹手作", desc: "看古树年轮理，完成拓印或香囊作品。" },
       { title: "可接团队", desc: "适合学校、亲子营和研学机构定制。" },
     ],
     process: [
@@ -493,7 +493,7 @@ const featureMap = {
     id: "notes",
     type: "list",
     title: "我的游记",
-    subtitle: "查看自己发布的海林村游记，也可以继续发布新的村游记录。",
+    subtitle: "查看自己发布的黄湖林场游记，也可以继续发布新的村游记录。",
     actionText: "发布游记",
   },
   favorites: {
@@ -507,7 +507,7 @@ const featureMap = {
     id: "likes",
     type: "list",
     title: "我的点赞",
-    subtitle: "看过并点赞的海林内容，方便下次继续浏览。",
+    subtitle: "看过并点赞的黄湖林场内容，方便下次继续浏览。",
     actionText: "继续发现",
   },
   ...bookingFeatures,
@@ -525,7 +525,7 @@ const featureMap = {
     type: "coupon",
     title: "优惠券",
     heroTag: "游客权益",
-    subtitle: "领取并使用海林村餐饮、手作、讲解和民宿优惠。",
+    subtitle: "领取并使用黄湖林场餐饮、手作、讲解和民宿优惠。",
     chips: ["稻鱼宴", "手作体验", "讲解抵扣"],
     coupons,
   },
@@ -534,7 +534,7 @@ const featureMap = {
     type: "points",
     title: "积分",
     heroTag: "游客成长",
-    subtitle: "签到、发布游记、完善资料和预约服务都能获得海林积分。",
+    subtitle: "签到、发布游记、完善资料和预约服务都能获得黄湖林场积分。",
     chips: ["可兑换", "任务积分", "签到奖励"],
     tasks: pointTasks,
   },
@@ -559,7 +559,7 @@ const featureMap = {
     id: "publish",
     type: "publish",
     title: "发布游记",
-    subtitle: "写下你在海林村的游玩路线、照片点位和体验建议。",
+    subtitle: "写下你在黄湖林场的游玩路线、照片点位和体验建议。",
   },
 };
 

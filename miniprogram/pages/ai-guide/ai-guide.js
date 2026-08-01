@@ -15,7 +15,7 @@ Page({
       "半日路线",
       "亲子研学",
       "田鱼家宴",
-      "青田石手作",
+      "古树年轮手作",
       "停车场在哪",
       "直播点位",
       "民宿推荐",
@@ -27,7 +27,7 @@ Page({
         role: "assistant",
         source: "local",
         content:
-          "您好，我是海林村导览助手小林，可以帮您推荐路线、美食、公共服务点、住宿和青田地域文化。",
+          "您好，我是黄湖林场导览助手小林，可以帮您推荐路线、美食、公共服务点、住宿和黄湖林场文化。",
       },
     ],
   },
@@ -74,7 +74,7 @@ Page({
       id: `msg-${nextIndex + 1}`,
       role: "assistant",
       source: "loading",
-      content: "小林正在整理青田海林村导览建议...",
+      content: "小林正在整理黄湖林场村导览建议...",
     };
     const messages = this.data.messages.concat(userMessage, loadingMessage);
 

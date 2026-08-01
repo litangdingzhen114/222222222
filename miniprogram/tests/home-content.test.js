@@ -46,7 +46,7 @@ assert(
   "home should have enough banner stories for a real first screen",
 );
 assert(
-  banners.some((item) => item.title.includes("海口镇海林村")),
+  banners.some((item) => item.title.includes("黄湖林场")),
   "banners should make the location explicit",
 );
 assert.strictEqual(
@@ -60,7 +60,7 @@ assert(
   "first banner should use the Tianpu homestay image",
 );
 assert(
-  banners[1].title.includes("寻野 cafe") &&
+  banners[1].title.includes("土狗咖啡") &&
     banners[1].imageUrl === `${photoBase}/ai-xunye-cafe.jpg`,
   "second banner should feature the village cafe image",
 );
@@ -98,13 +98,13 @@ assert.strictEqual(
 );
 assert(
   [
-    "海林故事",
+    "黄湖林场故事",
     "侨乡故事",
-    "青田石韵",
+    "古树年轮",
     "稻鱼体验",
     "出行服务",
     "交通指南",
-    "海林慢直播",
+    "黄湖林场慢直播",
     "找停车场",
     "找公厕",
     "乡心支付",
@@ -112,7 +112,7 @@ assert(
     "交通出行",
     "AI旅拍",
     "旅拍合影",
-    "海林侨乡",
+    "黄湖林场侨乡",
     "文化云",
     "非遗地图",
     "溪谷老街",
@@ -127,7 +127,7 @@ assert(
   "home grid should merge overlapping culture and travel entries",
 );
 assert(
-  ["村树陈嵘栲", "AR合影", "寻野 cafe", "便民服务", "热门景点"].every((title) =>
+  ["村树陈嵘栲", "AR合影", "土狗咖啡", "便民服务", "热门景点"].every((title) =>
     gridTitles.includes(title),
   ),
   "home grid should keep merged culture and travel entries",
@@ -303,7 +303,7 @@ assert(
   "home page should render service section",
 );
 assert(
-  homeWxml.includes("海林农品预购"),
+  homeWxml.includes("黄湖林场农品预购"),
   "home page should render agricultural preorder section",
 );
 assert(
@@ -327,8 +327,8 @@ assert(
   "backend home defaults should include service cards",
 );
 assert(
-  backendSeed.includes("海口镇海林村民宿慢住") &&
-    backendSeed.includes("寻野 cafe 村咖开坐") &&
+  backendSeed.includes("黄湖林场民宿慢住") &&
+    backendSeed.includes("土狗咖啡 村咖开坐") &&
     !backendSeed.includes("周末采摘预约开放"),
   "backend seed banners should be aligned to homestay and village cafe content",
 );
@@ -337,22 +337,22 @@ assert(
   "home cards should use photo assets instead of old scene placeholders",
 );
 assert(
-  appConfig.tabBar.list.some((item) => item.text === "寻野 cafe"),
+  appConfig.tabBar.list.some((item) => item.text === "土狗咖啡"),
   "tab bar should expose Xunye cafe instead of the old food label",
 );
 assert(
-  foodWxml.includes("寻野 cafe") &&
+  foodWxml.includes("土狗咖啡") &&
     foodWxml.includes(`${photoBase}/ai-xunye-cafe.jpg`),
   "food page should be branded as Xunye cafe and use its generated image",
 );
 assert(
-  foodJson.includes("寻野 cafe"),
+  foodJson.includes("土狗咖啡"),
   "food page navigation title should use Xunye cafe",
 );
 assert(
   foods.some(
     (item) =>
-      item.name === "寻野 cafe" &&
+      item.name === "土狗咖啡" &&
       item.imageUrl === `${photoBase}/ai-xunye-cafe.jpg`,
   ),
   "food fallback data should include Xunye cafe with generated image",

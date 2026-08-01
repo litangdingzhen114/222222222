@@ -1,7 +1,7 @@
 <view class="page page-pad publish-page">
   <view class="publish-hero">
-    <view class="publish-title">发布海林游记</view>
-    <view class="publish-sub">记录路线、照片点位、餐食体验或服务建议，帮助后来游客更好地逛海林。</view>
+    <view class="publish-title">发布黄湖林场游记</view>
+    <view class="publish-sub">记录路线、照片点位、餐食体验或服务建议，帮助后来游客更好地逛黄湖林场。</view>
   </view>
 
   <view class="publish-card card">

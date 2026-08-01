@@ -16,7 +16,7 @@
 
   <view wx:else class="empty-card">
     <view class="empty-title">这里还没有内容</view>
-    <view class="empty-desc">去逛逛海林村，喜欢的景点、路线和游记会回到这里。</view>
+    <view class="empty-desc">去逛逛黄湖林场，喜欢的景点、路线和游记会回到这里。</view>
   </view>
 
   <button class="primary-action" bindtap="onPrimaryTap">{{meta.actionText}}</button>

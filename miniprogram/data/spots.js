@@ -1,7 +1,7 @@
 const spotDetails = {
   "ancient-tree": {
     kicker: "村树记忆",
-    lead: "海林村的老树不是一个拍照背景，而是一段村庄记忆的坐标。",
+    lead: "黄湖林场的老树不是一个拍照背景，而是一段村庄记忆的坐标。",
     mood: "在树荫下停一会儿，听讲解员把古树、村路和村庄变化串起来。",
     stats: [
       { label: "树龄", value: "约350年" },
@@ -9,13 +9,13 @@ const spotDetails = {
       { label: "适合", value: "自然教育" },
     ],
     story: [
-      "陈嵘栲古树被海林村视作“村树”，公开资料中提到其树龄约 350 年，胸围约 310 厘米、胸径近 1 米。",
+      "陈嵘栲古树被黄湖林场视作“村树”，公开资料中提到其树龄约 350 年，胸围约 310 厘米、胸径近 1 米。",
       "它适合作为到村后的第一段自然讲解：从一棵树讲到山水生态、村庄迁居、村民生活和古树保护。",
     ],
     experience: [
       { title: "古树合影", desc: "以树冠和村道为背景，适合拍一张到村纪念照。" },
       { title: "自然课堂", desc: "讲解古树保护、乡土树种和村庄生态。" },
-      { title: "慢游起点", desc: "从古树继续走向田铺驿站和海林·溪谷。" },
+      { title: "慢游起点", desc: "从古树继续走向田铺驿站和黄湖溪谷。" },
     ],
     itinerary: [
       { time: "10分钟", title: "看树冠", desc: "先观察树形、冠幅和周边环境。" },
@@ -23,7 +23,7 @@ const spotDetails = {
       { time: "5分钟", title: "拍合影", desc: "用广角收进树冠、山景和村道。" },
     ],
     highlights: [
-      "陈嵘栲古树约 350 年树龄，被海林村视作村树与村庄记忆的标志。",
+      "陈嵘栲古树约 350 年树龄，被黄湖林场视作村树与村庄记忆的标志。",
       "公开报道中提到它胸围约 310 厘米、胸径近 1 米、树高约 20 米、冠幅约 18 米。",
       "它是已知较大的陈嵘栲个体，适合作为自然教育、古树保护和村庄故事讲解点。",
     ],
@@ -35,7 +35,7 @@ const spotDetails = {
     services: [
       {
         title: "预约讲解",
-        desc: "安排村民讲解员讲述古树、村庄生态和海林村故事。",
+        desc: "安排村民讲解员讲述古树、村庄生态和黄湖林场故事。",
         url: "/pages/mine-feature/mine-feature?id=guide",
       },
       {
@@ -46,14 +46,14 @@ const spotDetails = {
       },
       {
         title: "路线推荐",
-        desc: "把古树打卡、田铺驿站和海林溪谷串成半日慢游。",
+        desc: "把古树打卡、田铺驿站和黄湖溪谷串成半日慢游。",
         url: "/pages/route-list/route-list",
       },
     ],
   },
   "xunye-cafe": {
     kicker: "溪谷村咖",
-    lead: "把一杯咖啡放进山水之间，作为海林慢游的中途停靠。",
+    lead: "把一杯咖啡放进山水之间，作为黄湖林场慢游的中途停靠。",
     mood: "适合走完溪谷后坐下来，喝咖啡、吃米糕，翻看当天拍到的山水照片。",
     stats: [
       { label: "人均", value: "约35元" },
@@ -61,7 +61,7 @@ const spotDetails = {
       { label: "适合", value: "茶歇慢坐" },
     ],
     story: [
-      "寻野 cafe 是海林村咖啡与乡野轻食的展示点，内容围绕溪谷、田埂、米糕和村内休闲空间展开。",
+      "土狗咖啡 是黄湖林场咖啡与乡野轻食的展示点，内容围绕溪谷、田埂、米糕和村内休闲空间展开。",
       "它不只是“美食列表”里的一个条目，而是路线里的休息节点：游客可以在这里等人、点单、看风景，也能继续衔接民宿和溪谷活动。",
     ],
     experience: [
@@ -72,7 +72,7 @@ const spotDetails = {
     itinerary: [
       { time: "到店", title: "先点一杯", desc: "咖啡、米糕或乡野轻食按当天供应为准。" },
       { time: "20分钟", title: "窗边慢坐", desc: "休息、拍照、整理下一段路线。" },
-      { time: "离店", title: "顺路去溪谷", desc: "继续去海林·溪谷或田铺驿站集合。" },
+      { time: "离店", title: "顺路去溪谷", desc: "继续去黄湖溪谷或田铺驿站集合。" },
     ],
     highlights: [
       "村咖适合作为半日游的休息点，把餐饮、茶歇和村内慢游连起来。",
@@ -105,7 +105,7 @@ const spotDetails = {
   },
   "tianpu-station": {
     kicker: "会客驿站",
-    lead: "田铺驿站是到村后的集合点、休息点，也是海林村活动的日常中枢。",
+    lead: "田铺驿站是到村后的集合点、休息点，也是黄湖林场活动的日常中枢。",
     mood: "白墙、木平台和溪谷休闲区形成一处更精美的乡村会客空间。",
     stats: [
       { label: "距离", value: "0.3公里" },
@@ -113,7 +113,7 @@ const spotDetails = {
       { label: "适合", value: "团队到访" },
     ],
     story: [
-      "田铺驿站承担游客集合、休息、咨询、农品自提和活动签到等复合功能，是海林村把公共服务做得更友好的一个节点。",
+      "田铺驿站承担游客集合、休息、咨询、农品自提和活动签到等复合功能，是黄湖林场把公共服务做得更友好的一个节点。",
       "页面素材以精美房子和休闲平台为主，不把它做成普通服务表，而是呈现“先到这里，再进入村庄体验”的第一站感受。",
     ],
     experience: [
@@ -157,7 +157,7 @@ const spotDetails = {
   },
   "rice-view": {
     highlights: [
-      "围绕青田稻鱼共生做生态讲解，适合亲子研学和摄影拍摄。",
+      "围绕黄湖稻鱼共生做生态讲解，适合亲子研学和摄影拍摄。",
       "傍晚光线柔和，田埂、鱼群和村落背景更容易出片。",
       "可接农事体验、投喂观察、田鱼家宴等内容。",
     ],
@@ -186,7 +186,7 @@ const spotDetails = {
   },
   "creek-trail": {
     kicker: "溪谷慢行",
-    lead: "海林·溪谷适合把亲水、散步、茶歇和小型活动放在同一条慢游线里。",
+    lead: "黄湖溪谷适合把亲水、散步、茶歇和小型活动放在同一条慢游线里。",
     mood: "不赶景点，沿着水声慢慢走，才是这里最舒服的打开方式。",
     stats: [
       { label: "建议", value: "45-60分钟" },
@@ -194,7 +194,7 @@ const spotDetails = {
       { label: "适合", value: "家庭团建" },
     ],
     story: [
-      "海林·溪谷把溪流、石桥、竹林和休闲平台串在一起，适合亲子、轻徒步、茶歇和小型户外活动。",
+      "黄湖溪谷把溪流、石桥、竹林和休闲平台串在一起，适合亲子、轻徒步、茶歇和小型户外活动。",
       "它更像村庄里的慢生活段落：可以作为路线的中段散步，也可以作为民宿入住后的傍晚活动。",
     ],
     experience: [
@@ -237,8 +237,8 @@ const spotDetails = {
   },
   museum: {
     highlights: [
-      "集中展示海林村区位、侨乡联系、村庄治理和农文旅业态。",
-      "适合作为研学开场，先建立对海口镇海林村的整体认识。",
+      "集中展示黄湖林场区位、侨乡联系、村庄治理和农文旅业态。",
+      "适合作为研学开场，先建立对黄湖林场的整体认识。",
       "后续可接后台公告、活动预约和村庄动态内容。",
     ],
     visitTips: [
@@ -266,7 +266,7 @@ const spotDetails = {
   },
   workshop: {
     highlights: [
-      "以青田石纹、印章文化和村游纪念章为核心体验。",
+      "以古树年轮、印章文化和村游纪念章为核心体验。",
       "课程成果可带走，适合亲子、研学和企业团建。",
       "可联动共富集市售卖手作体验、土蜂蜜、土鸡蛋和农品礼盒。",
     ],
@@ -278,7 +278,7 @@ const spotDetails = {
     services: [
       {
         title: "活动票券",
-        desc: "预约青田石纹拓印、香囊和纪念章课程。",
+        desc: "预约古树年轮拓印、香囊和纪念章课程。",
         url: "/pages/mine-feature/mine-feature?id=ticket",
       },
       {
@@ -304,7 +304,7 @@ const spots = [
     openTime: "全天开放",
     duration: "约 20 分钟",
     distance: "0.3公里",
-    desc: "陈嵘栲古树是海林村的村树，公开报道显示树龄约 350 年，胸围约 310 厘米、胸径近 1 米、树高约 20 米、冠幅约 18 米。它适合作为到村后的自然教育与古树保护讲解点。",
+    desc: "陈嵘栲古树是黄湖林场的村树，公开报道显示树龄约 350 年，胸围约 310 厘米、胸径近 1 米、树高约 20 米、冠幅约 18 米。它适合作为到村后的自然教育与古树保护讲解点。",
     images: ["ph-oujiang", "ph-village", "ph-creek"],
     coverUrl: "https://www.hailin.store/assets/photos/ai-chenrongkao-tree.jpg",
     imageUrls: [
@@ -322,7 +322,7 @@ const spots = [
     openTime: "08:30-18:30",
     duration: "约 30 分钟",
     distance: "0.3公里",
-    desc: "田铺驿站是海林村到访集合、休息补给、农品自提和活动签到的会客空间，适合作为进村后的第一站。",
+    desc: "田铺驿站是黄湖林场到访集合、休息补给、农品自提和活动签到的会客空间，适合作为进村后的第一站。",
     images: ["ph-homestay", "ph-creek", "ph-village"],
     coverUrl: "https://www.hailin.store/assets/photos/ai-map-tianpu-station.jpg",
     imageUrls: [
@@ -334,13 +334,13 @@ const spots = [
   },
   {
     id: "xunye-cafe",
-    name: "寻野 cafe",
+    name: "土狗咖啡",
     category: "美食",
     tags: ["村咖", "咖啡", "乡野轻食"],
     openTime: "10:00-20:00",
     duration: "约 40 分钟",
     distance: "0.6公里",
-    desc: "溪谷边的乡野咖啡、米糕轻食和农家简餐，是海林慢游路线里的茶歇停靠点。",
+    desc: "溪谷边的乡野咖啡、米糕轻食和农家简餐，是黄湖林场慢游路线里的茶歇停靠点。",
     images: ["ph-xunye", "ph-homestay", "ph-creek"],
     coverUrl: "https://www.hailin.store/assets/photos/ai-xunye-cafe.jpg",
     imageUrls: [
@@ -358,7 +358,7 @@ const spots = [
     openTime: "08:00-18:30",
     duration: "约 40 分钟",
     distance: "0.5公里",
-    desc: "青田以田鱼和稻鱼共生闻名，海林村的田园内容可围绕“看得见的生态课堂”展开。晴天傍晚光线柔和，适合亲子研学和摄影团队。",
+    desc: "黄湖林场以田鱼和稻鱼共生闻名，黄湖林场的田园内容可围绕“看得见的生态课堂”展开。晴天傍晚光线柔和，适合亲子研学和摄影团队。",
     images: ["ph-ricefish", "ph-rice", "ph-route"],
     coverUrl: "https://www.hailin.store/assets/photos/ricefish-terrace.jpg",
     imageUrls: [
@@ -370,7 +370,7 @@ const spots = [
   },
   {
     id: "creek-trail",
-    name: "海林·溪谷",
+    name: "黄湖溪谷",
     category: "自然风光",
     tags: ["自然风光", "亲子体验", "免费"],
     openTime: "全天开放",
@@ -388,13 +388,13 @@ const spots = [
   },
   {
     id: "museum",
-    name: "海林村情馆",
+    name: "黄湖林场展陈馆",
     category: "人文历史",
     tags: ["人文历史", "研学", "免费"],
     openTime: "09:00-17:00",
     duration: "约 45 分钟",
     distance: "0.4公里",
-    desc: "村情馆用于展示海林村区位、村庄治理、侨乡联系、农文旅业态和活动公告，是后续接真实后台内容的核心入口。",
+    desc: "村情馆用于展示黄湖林场区位、村庄治理、侨乡联系、农文旅业态和活动公告，是后续接真实后台内容的核心入口。",
     images: ["ph-museum", "ph-stone", "ph-homestay"],
     coverUrl: "https://www.hailin.store/assets/photos/ai-village-gate.jpg",
     imageUrls: [
@@ -406,13 +406,13 @@ const spots = [
   },
   {
     id: "workshop",
-    name: "青田石纹手作点",
+    name: "古树年轮拓印点",
     category: "亲子体验",
     tags: ["非遗体验", "亲子体验", "预约"],
     openTime: "09:30-16:30",
     duration: "约 1.5 小时",
     distance: "0.9公里",
-    desc: "手作点以青田石的青灰、纹理和印章文化为视觉灵感，提供拓印、香囊、村游纪念章等体验，适合亲子、研学和团建预约。",
+    desc: "手作点以古树文化的青灰、纹理和印章文化为视觉灵感，提供拓印、香囊、村游纪念章等体验，适合亲子、研学和团建预约。",
     images: ["ph-stone", "ph-product-stone", "ph-workshop"],
     coverUrl: "https://www.hailin.store/assets/photos/ai-stone-souvenir.jpg",
     imageUrls: [

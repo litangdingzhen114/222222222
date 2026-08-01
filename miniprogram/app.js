@@ -3,8 +3,8 @@ const { ensureSession } = require('./services/session');
 
 App({
   globalData: {
-    appName: '一部手机游海林村',
-    villageName: '海林村'
+    appName: '一部手机游黄湖林场',
+    villageName: '黄湖林场'
   },
 
   onLaunch() {

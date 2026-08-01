@@ -15,7 +15,7 @@ const pageOne = [
   },
   {
     id: "xunye-cafe",
-    title: "寻野 cafe",
+    title: "土狗咖啡",
     icon: "啡",
     iconPath: "/assets/icons/map-food.png",
     url: "/pages/food/food",
@@ -60,7 +60,7 @@ const pageOne = [
   },
   {
     id: "hailin-creek",
-    title: "海林溪谷",
+    title: "黄湖溪谷",
     icon: "溪",
     iconPath: "/assets/icons/old-street.png",
     url: "/pages/map/map",

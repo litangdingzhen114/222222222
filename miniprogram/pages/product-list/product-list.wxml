@@ -2,7 +2,7 @@
   <view class="market-head">
     <view class="market-head-row">
       <view>
-        <view class="market-kicker">海林村共富集市</view>
+        <view class="market-kicker">黄湖林场共富集市</view>
         <view class="market-title">农产品预订购买</view>
       </view>
       <button class="order-entry" bindtap="onViewOrders" aria-label="查看我的订单">

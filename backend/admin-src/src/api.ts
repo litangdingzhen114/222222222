@@ -16,6 +16,8 @@ import type {
   LiveContentEnvelope,
   LiveItem,
   LoginResponse,
+  NamingProfile,
+  NamingProfileMode,
   OrderRecord,
   ResourceContentEnvelope,
   ResourceContentSummary,
@@ -467,6 +469,17 @@ export function getConfigStatus() {
 
 export function getIntegrationConfigs() {
   return apiRequest<IntegrationConfigsResponse>('/admin/integration-configs');
+}
+
+export function getNamingProfile() {
+  return apiRequest<NamingProfile>('/admin/naming-profile');
+}
+
+export function updateNamingProfile(payload: { mode: NamingProfileMode }) {
+  return apiRequest<NamingProfile>('/admin/naming-profile', {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  });
 }
 
 export function updateIntegrationConfig(

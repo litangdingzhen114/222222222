@@ -11,7 +11,7 @@ const {
 
 const CART_STORAGE_KEY = "hailin-product-cart-v1";
 const DEFAULT_PRODUCT_IMAGE = "https://www.hailin.store/assets/photos/ai-product-honey.jpg";
-const PICKUP_SITE = "海林村游客中心 / 共富集市";
+const PICKUP_SITE = "黄湖林场游客中心 / 共富集市";
 let memoryCart = [];
 
 const PRODUCT_CATEGORIES = [
@@ -69,7 +69,7 @@ function decorateProduct(product, index = 0) {
   const stock = Math.max(0, Math.floor(numberValue(product.stock, 0)));
   const price = numberValue(product.price, 0);
   const categoryKey = inferCategory(product);
-  const title = product.title || product.name || "海林村农品";
+  const title = product.title || product.name || "黄湖林场农品";
   const tags = [
     product.specification || "农户直供",
     product.unit ? `按${product.unit}预订` : "到村可取",
@@ -79,7 +79,7 @@ function decorateProduct(product, index = 0) {
     ...product,
     id: product.id || product.productId || `product-${index}`,
     title,
-    subtitle: product.subtitle || "海林村农户当季供应",
+    subtitle: product.subtitle || "黄湖林场农户当季供应",
     imageUrl: product.imageUrl || product.coverImage || DEFAULT_PRODUCT_IMAGE,
     priceNumber: price,
     priceText: price.toFixed(2),
@@ -186,7 +186,7 @@ function buildOrderPayload(cart, form) {
   const item =
     cart.length === 1
       ? first.title
-      : `${first.title || "海林村农品"}等 ${cart.length} 款农品`;
+      : `${first.title || "黄湖林场农品"}等 ${cart.length} 款农品`;
   const delivery =
     DELIVERY_OPTIONS.find((option) => option.id === form.deliveryType) ||
     DELIVERY_OPTIONS[0];
@@ -195,7 +195,7 @@ function buildOrderPayload(cart, form) {
     featureId: "mall",
     type: "product",
     orderType: "product",
-    service: "海林村农产品预订",
+    service: "黄湖林场农产品预订",
     item,
     date: form.deliveryDate || todayText(),
     people: summary.count,

@@ -8,6 +8,7 @@ import {
   LinkOutlined,
   SaveOutlined,
   SafetyCertificateOutlined,
+  SwapOutlined,
 } from '@ant-design/icons';
 import {
   Alert,
@@ -20,6 +21,7 @@ import {
   Input,
   List,
   Row,
+  Segmented,
   Space,
   Statistic,
   Tag,
@@ -30,10 +32,17 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   getConfigStatus,
   getIntegrationConfigs,
+  getNamingProfile,
   testIntegrationConfig,
   updateIntegrationConfig,
+  updateNamingProfile,
 } from '../api';
-import type { ConfigStatusItem, IntegrationConfigField, IntegrationConfigGroup } from '../types';
+import type {
+  ConfigStatusItem,
+  IntegrationConfigField,
+  IntegrationConfigGroup,
+  NamingProfileMode,
+} from '../types';
 import { useEffect, type ReactNode } from 'react';
 
 const { Text } = Typography;
@@ -227,6 +236,105 @@ function ConfigGroupForm({ group }: { group: IntegrationConfigGroup }) {
   );
 }
 
+function NamingProfileCard() {
+  const [form] = Form.useForm<{ mode: NamingProfileMode }>();
+  const queryClient = useQueryClient();
+  const { data, isLoading } = useQuery({
+    queryKey: ['naming-profile'],
+    queryFn: getNamingProfile,
+  });
+  const watchedMode = Form.useWatch('mode', form);
+  const selectedMode = watchedMode || data?.mode || 'huanghu';
+  const selectedProfile = data?.profiles?.[selectedMode] || data?.activeProfile;
+
+  useEffect(() => {
+    if (data?.mode) form.setFieldsValue({ mode: data.mode });
+  }, [data, form]);
+
+  const saveMutation = useMutation({
+    mutationFn: (values: { mode: NamingProfileMode }) => updateNamingProfile(values),
+    onSuccess: async () => {
+      message.success('命名方案已保存');
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['naming-profile'] }),
+        queryClient.invalidateQueries({ queryKey: ['dashboard'] }),
+        queryClient.invalidateQueries({ queryKey: ['summary'] }),
+      ]);
+    },
+    onError: (error) => message.error(errorText(error)),
+  });
+
+  return (
+    <Card
+      title={
+        <Space>
+          <SwapOutlined />
+          <span>内容命名方案</span>
+        </Space>
+      }
+      loading={isLoading}
+      extra={
+        selectedProfile ? (
+          <Tag color={selectedMode === 'huanghu' ? 'green' : 'blue'}>{selectedProfile.label}</Tag>
+        ) : null
+      }
+    >
+      <Alert
+        showIcon
+        type="info"
+        message="切换后会统一影响小程序和后台接口展示"
+        description="原始内容仍保存在后台 JSON 中，切换方案不会删除数据；保存后刷新小程序预览即可看到新名称。"
+        style={{ marginBottom: 16 }}
+      />
+      <Form
+        form={form}
+        layout="vertical"
+        initialValues={{ mode: data?.mode || 'huanghu' }}
+        onFinish={(values) => saveMutation.mutate(values)}
+      >
+        <Form.Item name="mode" label="当前方案" rules={[{ required: true }]}>
+          <Segmented
+            block
+            options={[
+              { label: '黄湖林场 / 土狗咖啡', value: 'huanghu' },
+              { label: '海林青田 / 寻野 cafe', value: 'hailin' },
+            ]}
+          />
+        </Form.Item>
+      </Form>
+      <Descriptions column={{ xs: 1, md: 2 }} bordered size="small">
+        <Descriptions.Item label="小程序名称">
+          {selectedProfile?.appTitle || '-'}
+        </Descriptions.Item>
+        <Descriptions.Item label="地点主名">
+          {selectedProfile?.placeName || '-'}
+        </Descriptions.Item>
+        <Descriptions.Item label="溪谷名称">
+          {selectedProfile?.creekName || '-'}
+        </Descriptions.Item>
+        <Descriptions.Item label="村咖名称">
+          {selectedProfile?.cafeName || '-'}
+        </Descriptions.Item>
+      </Descriptions>
+      <Space wrap style={{ marginTop: 16 }}>
+        <Button
+          type="primary"
+          icon={<SaveOutlined />}
+          loading={saveMutation.isPending}
+          onClick={() => form.submit()}
+        >
+          保存方案
+        </Button>
+        {data?.updatedAt ? (
+          <Text type="secondary">
+            最近更新：{new Date(data.updatedAt).toLocaleString()} {data.updatedBy || ''}
+          </Text>
+        ) : null}
+      </Space>
+    </Card>
+  );
+}
+
 export function SystemPage() {
   const { data, isLoading } = useQuery({ queryKey: ['config-status'], queryFn: getConfigStatus });
   const { data: integrationData, isLoading: integrationLoading } = useQuery({
@@ -299,6 +407,8 @@ export function SystemPage() {
           description="可以在下方填写正式凭证。密钥不会回显明文，保存后只展示脱敏预览；没有凭证的服务仍会保持等待配置或 fallback 状态。"
         />
       ) : null}
+
+      <NamingProfileCard />
 
       <Card title="API 凭证配置" loading={integrationLoading}>
         {integrationData?.persistence ? (

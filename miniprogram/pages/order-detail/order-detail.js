@@ -53,12 +53,12 @@ const statusHints = {
   confirmed: '后台已确认订单，将继续安排履约资源。',
   pending_shipment: '商家正在备货，发货后会同步快递单号。',
   shipped: '商品已发出，可复制快递单号查看物流。',
-  received: '商品已签收，感谢支持海林村共富集市。',
+  received: '商品已签收，感谢支持黄湖林场共富集市。',
   pending_service: '请按约定时间到达集合点，工作人员会提前联系。',
   in_service: '服务正在进行中，后续状态会继续同步。',
   pending_verify: '到场后向工作人员出示核销码完成入场。',
   verified: '票券已核销，可在订单进度中查看核销记录。',
-  completed: '订单已完成，欢迎再次预约海林村服务。',
+  completed: '订单已完成，欢迎再次预约黄湖林场服务。',
   cancelled: '订单已取消，如需调整可重新预约。',
   expired: '订单已过期，如仍需服务请重新提交。'
 };
@@ -144,7 +144,7 @@ function decorate(order) {
   return {
     ...order,
     type,
-    title: order.item || order.service || '海林村服务',
+    title: order.item || order.service || '黄湖林场服务',
     statusKey,
     statusText: statusLabels[statusKey] || order.status || '待确认',
     statusClass: statusClassMap[statusKey] || 'status-waiting',

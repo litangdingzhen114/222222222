@@ -81,6 +81,29 @@ const RATE_LIMIT_WINDOW_MS = Number(process.env.RATE_LIMIT_WINDOW_MS || 60 * 100
 const RATE_LIMIT_MAX = Number(process.env.RATE_LIMIT_MAX || 240);
 const ADMIN_RATE_LIMIT_MAX = Number(process.env.ADMIN_RATE_LIMIT_MAX || 600);
 const INTEGRATION_CONFIG_FILE = 'integration-configs.json';
+const NAMING_PROFILE_FILE = 'naming-profile.json';
+const NAMING_PROFILE_DEFAULTS = {
+  huanghu: {
+    id: 'huanghu',
+    label: '黄湖林场方案',
+    appTitle: '一部手机游黄湖林场',
+    placeName: '黄湖林场',
+    villageName: '黄湖林场',
+    regionName: '黄湖林场',
+    creekName: '黄湖溪谷',
+    cafeName: '土狗咖啡',
+  },
+  hailin: {
+    id: 'hailin',
+    label: '海林青田方案',
+    appTitle: '一部手机游青田海林',
+    placeName: '海林村',
+    villageName: '海林村',
+    regionName: '青田',
+    creekName: '海林·溪谷',
+    cafeName: '寻野 cafe',
+  },
+};
 const INTEGRATION_GROUPS = [
   {
     service: 'wechat',
@@ -215,8 +238,8 @@ const productCategories = [
   { id: 'course', name: '研学体验', icon: '研', sort: 4, status: 'PUBLISHED' },
 ];
 
-const LOCATION_TEXT = '浙江省丽水市青田县海口镇海林村';
-const REGION_KEYWORDS = ['瓯江', '青田石', '田鱼', '侨乡', '山水村落'];
+const LOCATION_TEXT = '黄湖林场';
+const REGION_KEYWORDS = ['黄湖林场', '陈嵘栲古树', '田鱼', '森林溪谷', '山水村落'];
 const BOOKING_STATUSES = ['new', 'confirmed', 'processing', 'completed', 'cancelled'];
 const FEEDBACK_STATUSES = ['new', 'processing', 'resolved', 'archived'];
 const ORDER_TYPES = ['product', 'service', 'ticket', 'stay', 'venue'];
@@ -423,7 +446,7 @@ function securityHeaders(extra = {}) {
 }
 
 function sendJson(req, res, statusCode, payload) {
-  const body = JSON.stringify(payload);
+  const body = JSON.stringify(applyNamingProfileToResponse(req, payload));
   res.writeHead(statusCode, {
     ...corsHeaders(req),
     ...securityHeaders(),
@@ -588,6 +611,196 @@ function writeJsonObject(fileName, payload) {
   const tempPath = `${filePath}.${process.pid}.${Date.now()}.tmp`;
   fs.writeFileSync(tempPath, JSON.stringify(payload, null, 2), 'utf8');
   fs.renameSync(tempPath, filePath);
+}
+
+function normalizeNamingProfile(raw) {
+  const stored = raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {};
+  const requestedMode = cleanText(stored.mode, 40);
+  const mode = Object.prototype.hasOwnProperty.call(NAMING_PROFILE_DEFAULTS, requestedMode)
+    ? requestedMode
+    : 'huanghu';
+  const storedProfiles =
+    stored.profiles && typeof stored.profiles === 'object' && !Array.isArray(stored.profiles)
+      ? stored.profiles
+      : {};
+  const profiles = {};
+
+  Object.entries(NAMING_PROFILE_DEFAULTS).forEach(([key, defaults]) => {
+    const override =
+      storedProfiles[key] &&
+      typeof storedProfiles[key] === 'object' &&
+      !Array.isArray(storedProfiles[key])
+        ? storedProfiles[key]
+        : {};
+    profiles[key] = {
+      ...defaults,
+      label: cleanText(override.label, 40) || defaults.label,
+      appTitle: cleanText(override.appTitle, 40) || defaults.appTitle,
+      placeName: cleanText(override.placeName, 40) || defaults.placeName,
+      villageName: cleanText(override.villageName, 40) || defaults.villageName,
+      regionName: cleanText(override.regionName, 40) || defaults.regionName,
+      creekName: cleanText(override.creekName, 40) || defaults.creekName,
+      cafeName: cleanText(override.cafeName, 40) || defaults.cafeName,
+    };
+  });
+
+  return {
+    mode,
+    profiles,
+    activeProfile: profiles[mode],
+    updatedAt: cleanText(stored.updatedAt, 40),
+    updatedBy: cleanText(stored.updatedBy, 80),
+  };
+}
+
+function readNamingProfile() {
+  return normalizeNamingProfile(readJsonObject(NAMING_PROFILE_FILE));
+}
+
+function saveNamingProfile(req, body) {
+  const input =
+    body && typeof body === 'object' && !Array.isArray(body) && body.data
+      ? body.data
+      : body;
+  const current = readNamingProfile();
+  const next = normalizeNamingProfile({
+    ...current,
+    ...(input && typeof input === 'object' && !Array.isArray(input) ? input : {}),
+    profiles: {
+      ...current.profiles,
+      ...((input && typeof input === 'object' && !Array.isArray(input) && input.profiles) || {}),
+    },
+    updatedAt: new Date().toISOString(),
+    updatedBy: ADMIN_USER,
+  });
+
+  writeJsonObject(NAMING_PROFILE_FILE, next);
+  appendAudit(req, 'naming-profile.updated', 'system', 'naming-profile', {
+    mode: next.mode,
+    placeName: next.activeProfile.placeName,
+    cafeName: next.activeProfile.cafeName,
+  });
+  return readNamingProfile();
+}
+
+function activeNamingProfileValues() {
+  const profile = readNamingProfile();
+  return profile.activeProfile || NAMING_PROFILE_DEFAULTS.huanghu;
+}
+
+function namingReplacementPairs(values) {
+  if (values.id === 'hailin') {
+    return [
+      ['一部手机游黄湖林场', values.appTitle],
+      ['黄湖溪谷', values.creekName],
+      ['土狗咖啡', values.cafeName],
+      ['黄湖林场慢直播', '海林慢直播'],
+      ['黄湖林场农品', '海林农品'],
+      ['黄湖林场长廊', '海林长廊'],
+      ['稻田田鱼', '青田田鱼'],
+      ['古树年轮拓印', '青田石纹手作'],
+      ['古树年轮手作', '青田石手作'],
+      ['古树年轮', '青田石韵'],
+      ['古树文化', '青田石'],
+      ['黄湖林场', values.placeName],
+    ];
+  }
+
+  return [
+    ['一部手机游青田海林', values.appTitle],
+    ['一部手机游海林村', values.appTitle],
+    ['浙江省丽水市青田县海口镇海林村', values.placeName],
+    ['丽水市青田县海口镇海林村', values.placeName],
+    ['青田县海口镇海林村', values.placeName],
+    ['青田海口镇海林村', values.placeName],
+    ['青田海口镇', values.placeName],
+    ['海口镇海林村', values.placeName],
+    ['青田·海林', values.placeName],
+    ['青田海林', values.placeName],
+    ['寻野 cafe', values.cafeName],
+    ['寻野 Cafe', values.cafeName],
+    ['寻野 café', values.cafeName],
+    ['寻野 Café', values.cafeName],
+    ['寻野咖啡', values.cafeName],
+    ['寻野cafe', values.cafeName],
+    ['寻野', values.cafeName],
+    ['海林·溪谷', values.creekName],
+    ['海林溪谷', values.creekName],
+    ['海林慢直播', `${values.placeName}慢直播`],
+    ['海林农品', `${values.placeName}农品`],
+    ['海林长廊', `${values.placeName}长廊`],
+    ['海林田鱼', '稻田田鱼'],
+    ['青田田鱼', '稻田田鱼'],
+    ['青田石韵', '古树年轮'],
+    ['青田石纹手作', '古树年轮拓印'],
+    ['青田石纹', '古树年轮'],
+    ['青田石手作', '古树年轮手作'],
+    ['青田石', '古树文化'],
+    ['海口镇', values.placeName],
+    ['海林村', values.placeName],
+    ['海林', values.placeName],
+    ['青田', values.placeName],
+  ];
+}
+
+function replaceNamingText(text, values) {
+  let next = text;
+  namingReplacementPairs(values).forEach(([from, to]) => {
+    if (from && to && next.includes(from)) {
+      next = next.split(from).join(to);
+    }
+  });
+  return next;
+}
+
+function transformNamingValue(value, values) {
+  if (typeof value === 'string') return replaceNamingText(value, values);
+  if (Array.isArray(value)) return value.map((item) => transformNamingValue(item, values));
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, item]) => [key, transformNamingValue(item, values)]),
+    );
+  }
+  return value;
+}
+
+function shouldApplyNamingProfile(req) {
+  if (!req || !req.url) return false;
+  const pathname = new URL(req.url, `http://${req.headers.host || `${HOST}:${PORT}`}`).pathname;
+  const apiPathname = normalizeApiPathname(pathname);
+  if (!apiPathname.startsWith('/api/')) return false;
+
+  const excludedPrefixes = [
+    '/api/admin/auth',
+    '/api/admin/me',
+    '/api/admin/session',
+    '/api/admin/config-status',
+    '/api/admin/integration-configs',
+    '/api/admin/naming-profile',
+    '/api/auth',
+    '/api/health',
+  ];
+  if (excludedPrefixes.some((prefix) => apiPathname.startsWith(prefix))) return false;
+
+  return (
+    apiPathname.startsWith('/api/hailin') ||
+    apiPathname.startsWith('/api/home') ||
+    apiPathname.startsWith('/api/map-points') ||
+    apiPathname.startsWith('/api/foods') ||
+    apiPathname.startsWith('/api/scenic-spots') ||
+    apiPathname.startsWith('/api/travel-routes') ||
+    apiPathname.startsWith('/api/products') ||
+    apiPathname.startsWith('/api/product-categories') ||
+    apiPathname.startsWith('/api/cameras') ||
+    apiPathname.startsWith('/api/ai-guide') ||
+    apiPathname.startsWith('/api/admin')
+  );
+}
+
+function applyNamingProfileToResponse(req, payload) {
+  const values = activeNamingProfileValues();
+  if (!values || !shouldApplyNamingProfile(req)) return payload;
+  return transformNamingValue(payload, values);
 }
 
 function integrationGroupDefinition(service) {
@@ -943,7 +1156,7 @@ async function testAmapIntegration() {
   try {
     const url = new URL('/v3/config/district', baseUrl);
     url.searchParams.set('key', apiKey);
-    url.searchParams.set('keywords', '青田县');
+    url.searchParams.set('keywords', '黄湖林场');
     url.searchParams.set('subdistrict', '0');
     const response = await fetch(url, { signal: AbortSignal.timeout(10000) });
     const result = await response.json().catch(() => ({}));
@@ -1171,7 +1384,7 @@ function validateBooking(body) {
   }
 
   return {
-    service: cleanText(body.service, 80) || '海林村讲解服务',
+    service: cleanText(body.service, 80) || '黄湖林场讲解服务',
     date: cleanText(body.date, 40) || new Date().toISOString().slice(0, 10),
     people,
     contact,
@@ -1246,8 +1459,8 @@ function validateOrder(body) {
     clientId,
     type,
     featureId,
-    service: cleanText(body.service, 100) || '海林村文旅服务',
-    item: cleanText(body.item || body.title || body.service, 120) || '海林村文旅服务',
+    service: cleanText(body.service, 100) || '黄湖林场文旅服务',
+    item: cleanText(body.item || body.title || body.service, 120) || '黄湖林场文旅服务',
     date: cleanText(body.date, 40) || new Date().toISOString().slice(0, 10),
     people,
     contact,
@@ -1467,8 +1680,8 @@ function homePayload() {
     rankings: recommend.rankings,
     corridor: recommend.corridor,
     feeds: recommend.feeds,
-    notice: '今日推荐：先到游客中心确认停车与讲解，再走溪谷步道，午餐预约海林田鱼家宴',
-    weather: '海林村文旅信息持续更新中，实际服务以村庄公告和现场确认为准',
+    notice: '今日推荐：先到游客中心确认停车与讲解，再走溪谷步道，午餐预约稻田田鱼家宴',
+    weather: '黄湖林场文旅信息持续更新中，实际服务以运营公告和现场确认为准',
     serviceMode: '真实服务已连接',
     locationText: LOCATION_TEXT,
   };
@@ -1722,7 +1935,7 @@ function sanitizeLiveItem(input, fallback = {}, index = 0) {
       : Number(raw.latitude);
   return {
     id,
-    title: cleanText(raw.title, 100) || cleanText(fallback.title, 100) || '海林慢直播',
+    title: cleanText(raw.title, 100) || cleanText(fallback.title, 100) || '黄湖林场慢直播',
     viewers: normalizePositiveInt(raw.viewers, Number(fallback.viewers) || 0, 0, 999999),
     desc: cleanText(raw.desc, 500) || cleanText(fallback.desc, 500),
     imageClass: cleanText(raw.imageClass, 80) || cleanText(fallback.imageClass, 80),
@@ -2040,7 +2253,7 @@ function normalizedAdminResourceItem(resourceKey, item, index = 0) {
   if (resourceKey === 'spots') {
     return {
       ...base,
-      name: cleanText(item.name || item.title, 120) || '海林景点',
+      name: cleanText(item.name || item.title, 120) || '黄湖林场景点',
       subtitle: cleanText(item.subtitle || item.category, 160),
       coverImage: image || '/assets/photos/ai-village-gate.jpg',
       images: arrayValue(item.images).length ? arrayValue(item.images) : arrayValue(item.imageUrls),
@@ -2056,7 +2269,7 @@ function normalizedAdminResourceItem(resourceKey, item, index = 0) {
   if (resourceKey === 'routes') {
     return {
       ...base,
-      name: cleanText(item.name || item.title, 120) || '海林路线',
+      name: cleanText(item.name || item.title, 120) || '黄湖林场路线',
       coverImage: image || '/assets/photos/qingtian-city.jpg',
       summary: cleanText(item.summary || item.subtitle || item.reason, 500),
       content: cleanText(item.content || item.reason || item.route, 2000),
@@ -2070,7 +2283,7 @@ function normalizedAdminResourceItem(resourceKey, item, index = 0) {
   if (resourceKey === 'foods') {
     return {
       ...base,
-      name: cleanText(item.name || item.title, 120) || '寻野 cafe',
+      name: cleanText(item.name || item.title, 120) || '土狗咖啡',
       coverImage: image || '/assets/photos/ai-xunye-cafe.jpg',
       images: arrayValue(item.images).length ? arrayValue(item.images) : image ? [image] : ['/assets/photos/ai-xunye-cafe.jpg'],
       description: cleanText(item.description || item.desc || item.summary, 1200),
@@ -2083,7 +2296,7 @@ function normalizedAdminResourceItem(resourceKey, item, index = 0) {
   if (resourceKey === 'map-points') {
     return {
       ...base,
-      name: cleanText(item.name || item.title, 120) || '海林点位',
+      name: cleanText(item.name || item.title, 120) || '黄湖林场点位',
       type: mapPointTypeValue(item.type),
       imageUrl: image || '/assets/photos/ai-village-gate.jpg',
       longitude: Number(item.longitude || 120.2184),
@@ -2101,7 +2314,7 @@ function normalizedAdminResourceItem(resourceKey, item, index = 0) {
   if (resourceKey === 'products') {
     return {
       ...base,
-      name: cleanText(item.name || item.title, 120) || '海林农特产',
+      name: cleanText(item.name || item.title, 120) || '黄湖林场农特产',
       subtitle: cleanText(item.subtitle || item.desc, 160),
       coverImage: image || '/assets/photos/ai-fish-keychain.jpg',
       images: arrayValue(item.images).length ? arrayValue(item.images) : image ? [image] : [],
@@ -2298,7 +2511,7 @@ function liveItemFromCamera(data, fallback = {}, index = 0) {
     {
       ...fallback,
       id,
-      title: cleanText(data.name, 100) || cleanText(fallback.title, 100) || '海林慢直播',
+      title: cleanText(data.name, 100) || cleanText(fallback.title, 100) || '黄湖林场慢直播',
       coverUrl: cleanText(data.coverImage, 500) || cleanText(fallback.coverUrl, 500),
       desc: cleanText(data.description, 500) || cleanText(fallback.desc, 500),
       enabled: status !== 'DISABLED',
@@ -2357,21 +2570,21 @@ function deleteAdminCamera(req, id) {
 function localGuideReply(question) {
   const text = String(question || '');
   if (text.includes('路线') || text.includes('怎么玩')) {
-    return '推荐“瓯江山村半日游”：村口会客点集合，沿溪谷步道慢行，中午安排海林田鱼家宴，下午可做青田石纹手作。';
+    return '推荐“黄湖林场半日慢游”：村口会客点集合，沿溪谷步道慢行，中午安排稻田田鱼家宴，下午看陈嵘栲古树。';
   }
   if (text.includes('美食') || text.includes('吃') || text.includes('田鱼') || text.toLowerCase().includes('cafe')) {
-    return '海林村可以把寻野 cafe、青田田鱼、山泉豆腐和民宿茶歇作为主线。第一次来建议先去寻野 cafe 慢坐，再按人数预约田鱼家宴或溪谷民宿茶歇。';
+    return '黄湖林场可以把土狗咖啡、稻田田鱼、山泉豆腐和民宿茶歇作为主线。第一次来建议先去土狗咖啡慢坐，再按人数预约田鱼家宴或溪谷民宿茶歇。';
   }
   if (text.includes('直播') || text.includes('摄像头')) {
     return '慢直播已按村口会客点、稻鱼田、溪谷步道和侨乡小院组织点位。真实摄像头或 HLS 地址可以由后端替换 liveUrl。';
   }
   if (text.includes('停车') || text.includes('导航')) {
-    return '建议先导航到海口镇海林村游客中心，停车点和公共服务点可在全域旅游地图里查看。节假日以现场交通指引为准。';
+    return '建议先导航到黄湖林场游客中心，停车点和公共服务点可在全域旅游地图里查看。节假日以现场交通指引为准。';
   }
   if (text.includes('住宿') || text.includes('民宿')) {
     return '住宿可以优先包装溪谷慢住和侨乡小院，后续接入房态后，可把可订日期、房型和订单状态同步到小程序。';
   }
-  return '我是海林村 AI 导游小林。你可以问我路线、美食、停车、慢直播、研学、民宿和青田地域文化。';
+  return '我是黄湖林场 AI 导游小林。你可以问我路线、美食、停车、慢直播、研学、民宿和黄湖林场文化。';
 }
 
 function buildAiPrompt(body) {
@@ -2412,8 +2625,8 @@ async function askKimi(body) {
 
   const prompt = buildAiPrompt(body);
   const instructions = [
-    '你是浙江省丽水市青田县海口镇海林村小程序里的 AI 导游。',
-    '回答要短、实用、适合游客阅读。优先围绕瓯江、青田石、田鱼、侨乡、山水村落和海林村服务点。',
+    '你是黄湖林场小程序里的 AI 导游。',
+    '回答要短、实用、适合游客阅读。优先围绕黄湖林场、陈嵘栲古树、田鱼、森林溪谷、山水村落和公共服务点。',
     '不要编造具体营业执照、电话、价格或实时余位。涉及预约、价格、直播、房态时提示以后端实时信息为准。',
   ].join('\n');
 
@@ -2498,7 +2711,7 @@ function adminProfile() {
   return {
     id: 'legacy-admin',
     username: ADMIN_USER,
-    displayName: '海林村管理员',
+    displayName: '黄湖林场管理员',
     role: 'SUPER_ADMIN',
     status: 'ACTIVE',
     createdAt: '2026-01-01T00:00:00.000Z',
@@ -3384,6 +3597,15 @@ async function handleAdminRequest(req, res, url, route) {
   }
   if (route === 'GET /api/admin/config-status') {
     sendJson(req, res, 200, { data: adminConfigStatus() });
+    return;
+  }
+  if (route === 'GET /api/admin/naming-profile') {
+    sendJson(req, res, 200, { data: readNamingProfile() });
+    return;
+  }
+  if (route === 'PUT /api/admin/naming-profile') {
+    const body = await readBody(req);
+    sendJson(req, res, 200, { data: saveNamingProfile(req, body), message: '命名方案已保存' });
     return;
   }
   if (route === 'GET /api/admin/integration-configs') {

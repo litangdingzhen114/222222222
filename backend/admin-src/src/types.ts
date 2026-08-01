@@ -379,6 +379,27 @@ export type ConfigStatus = {
   items: ConfigStatusItem[];
 };
 
+export type NamingProfileMode = 'huanghu' | 'hailin';
+
+export type NamingProfileItem = {
+  id: NamingProfileMode;
+  label: string;
+  appTitle: string;
+  placeName: string;
+  villageName: string;
+  regionName: string;
+  creekName: string;
+  cafeName: string;
+};
+
+export type NamingProfile = {
+  mode: NamingProfileMode;
+  profiles: Record<NamingProfileMode, NamingProfileItem>;
+  activeProfile: NamingProfileItem;
+  updatedAt?: string;
+  updatedBy?: string;
+};
+
 export type IntegrationConfigField = {
   key: string;
   label: string;

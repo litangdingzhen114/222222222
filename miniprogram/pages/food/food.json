@@ -1,5 +1,5 @@
 {
-  "navigationBarTitleText": "寻野 cafe",
+  "navigationBarTitleText": "土狗咖啡",
   "navigationStyle": "custom",
   "usingComponents": {
     "food-card": "/components/food-card/food-card"
