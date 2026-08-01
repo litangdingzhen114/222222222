@@ -2,10 +2,10 @@
 
 ## 当前生产域名
 
-- 当前小程序 API：`https://www.hailin.store`（Vercel 代理到阿里云 API）
+- 当前小程序 API：`https://www.hailin.store`（当前可用的 Vercel 展示与 API 域名）
 - Vercel 演示 API：`https://www.hailin.store`
 - Vercel 管理后台：`https://www.hailin.store/admin/`
-- 阿里云后端健康检查：`https://api.hailin.store/api/v1/health`
+- 阿里云后端直连域名：`https://api.hailin.store`（等待 ICP/HTTPS 完整放通后切换）
 
 ## 阿里云 ECS
 
@@ -30,12 +30,14 @@ docker compose -f docker-compose.production.yml up -d --build
 docker compose -f docker-compose.production.yml run --rm migrator
 ```
 
-7. 配置 HTTPS 证书，确认：
+7. 配置 HTTPS 证书。当前演示域名先确认：
 
 ```bash
-curl https://api.hailin.store/health
-curl https://api.hailin.store/api/v1/health
+curl https://www.hailin.store/health
+curl https://www.hailin.store/api/v1/home
 ```
+
+`api.hailin.store` 完成 ICP/HTTPS 放通后，再补充确认 `curl https://api.hailin.store/health`。
 
 ## 微信公众平台
 
@@ -46,7 +48,7 @@ curl https://api.hailin.store/api/v1/health
 - `downloadFile 合法域名`：`https://www.hailin.store`
 
 `https://www.hailin.store` 可作为后台展示域名继续保留；小程序请求以
-`https://www.hailin.store` 为准，Vercel 再代理到阿里云 `api.hailin.store`。
+`https://www.hailin.store` 为准。`api.hailin.store` 完成备案与 HTTPS 后可作为直连 API 备用域名。
 
 发布前确认：
 

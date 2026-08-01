@@ -780,7 +780,16 @@ async function seedProducts() {
       '礼盒装',
       '/assets/photos/ricefish-harvest.jpg',
     ],
-    ['product-tea', '溪畔绿茶', 'cat-gift', 8800, '罐', 90, '120g/罐', '/assets/photos/qingtian-tashan.jpg'],
+    [
+      'product-tea',
+      '溪畔绿茶',
+      'cat-gift',
+      8800,
+      '罐',
+      90,
+      '120g/罐',
+      '/assets/photos/qingtian-tashan.jpg',
+    ],
     [
       'product-rice-cake',
       '手作米糕',

@@ -2,8 +2,8 @@
 
 ## 上线前配置
 
-1. 准备 HTTPS API 域名：当前小程序使用阿里云生产 API `https://api.hailin.store`，Vercel 后台展示域保留为 `https://www.hailin.store`。
-2. 在微信公众平台配置 request 合法域名。
+1. 准备 HTTPS API 域名：当前小程序先使用 `https://www.hailin.store`，Vercel 后台展示域同样保留为 `https://www.hailin.store`。
+2. 在微信公众平台配置 request 合法域名；`https://api.hailin.store` 等 ICP/HTTPS 完整放通后再作为直连 API 域名。
 3. 在服务器创建 `backend/.env`。
 4. 设置强随机 `ADMIN_TOKEN`，不要使用开发默认 Token。
 5. 设置 `KIMI_API_KEY` 或 `MOONSHOT_API_KEY`。

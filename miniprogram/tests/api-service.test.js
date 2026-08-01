@@ -40,7 +40,7 @@ function createRetryWxMock() {
       return { platform: "devtools" };
     },
     getStorageSync(key) {
-      if (key === "hailin-api-base-url") return "https://www.hailin.store";
+      if (key === "hailin-api-base-url") return "https://api.hailin.store";
       return "";
     },
     request(options) {
@@ -65,16 +65,16 @@ function createRetryWxMock() {
 (async () => {
   const devWx = createWxMock("devtools", "");
   let api = loadApi(devWx);
-  assert.strictEqual(api.resolveApiBaseUrl(), "https://api.hailin.store");
+  assert.strictEqual(api.resolveApiBaseUrl(), "https://www.hailin.store");
   assert.strictEqual(api.serviceModeText(), "线上服务已连接");
   assert.strictEqual(
     api.mediaUrl("/media/hailin-live.mp4"),
-    "https://api.hailin.store/media/hailin-live.mp4",
+    "https://www.hailin.store/media/hailin-live.mp4",
   );
   assert.deepStrictEqual(await api.request("/api/check"), { ok: true });
   assert.strictEqual(
     devWx.lastRequest().url,
-    "https://api.hailin.store/api/check",
+    "https://www.hailin.store/api/check",
   );
   assert.strictEqual(devWx.lastRequest().timeout, 3000);
   assert.strictEqual(devWx.lastRequest().header.Authorization, undefined);
@@ -104,16 +104,16 @@ function createRetryWxMock() {
   assert.strictEqual(retryWx.requests().length, 2);
   assert.strictEqual(
     retryWx.requests()[0].url,
-    "https://www.hailin.store/api/v1/ai-guide/chat",
+    "https://api.hailin.store/api/v1/ai-guide/chat",
   );
   assert.strictEqual(
     retryWx.requests()[1].url,
-    "https://api.hailin.store/api/v1/ai-guide/chat",
+    "https://www.hailin.store/api/v1/ai-guide/chat",
   );
 
   const deviceWx = createWxMock("ios", "");
   api = loadApi(deviceWx);
-  assert.strictEqual(api.resolveApiBaseUrl(), "https://api.hailin.store");
+  assert.strictEqual(api.resolveApiBaseUrl(), "https://www.hailin.store");
 
   delete global.wx;
   console.log("api service environment selection ok");

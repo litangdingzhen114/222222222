@@ -93,7 +93,7 @@ Page({
         this.playAssistantReply(loadingMessage.id, {
           source: "error",
           reply:
-            "小林没有连上 AI 服务。请确认小程序 request 合法域名包含 https://api.hailin.store；如果开发工具里保存过自定义后端地址，请清空后重试。后台 Kimi Key 正常保存后这里会直接回复。",
+            "小林没有连上 AI 服务。请确认小程序 request 合法域名包含 https://www.hailin.store；如果开发工具里保存过自定义后端地址，请清空后重试。后台 Kimi Key 正常保存后这里会直接回复。",
         });
       });
   },
