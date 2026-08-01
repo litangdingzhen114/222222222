@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, Req } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AdminRole, OrderStatus } from '@prisma/client';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
@@ -12,6 +12,7 @@ import {
   ReplyFeedbackDto,
   ShipOrderDto,
   UpdateIntegrationConfigDto,
+  UpdateNamingProfileDto,
 } from './dto/admins.dto';
 
 @ApiBearerAuth()
@@ -44,6 +45,38 @@ export class AdminsController {
   @Get('integration-configs')
   integrationConfigs(@CurrentUser() principal: AuthPrincipal) {
     return this.admins.integrationConfigs(principal);
+  }
+
+  @Get('naming-profile')
+  namingProfile(@CurrentUser() principal: AuthPrincipal) {
+    return this.admins.namingProfile(principal);
+  }
+
+  @Patch('naming-profile')
+  updateNamingProfilePatch(
+    @CurrentUser() principal: AuthPrincipal,
+    @Body() dto: UpdateNamingProfileDto,
+    @Req() request: RequestWithContext,
+  ) {
+    return this.admins.updateNamingProfile(principal, dto, request.requestId);
+  }
+
+  @Post('naming-profile')
+  updateNamingProfilePost(
+    @CurrentUser() principal: AuthPrincipal,
+    @Body() dto: UpdateNamingProfileDto,
+    @Req() request: RequestWithContext,
+  ) {
+    return this.admins.updateNamingProfile(principal, dto, request.requestId);
+  }
+
+  @Put('naming-profile')
+  updateNamingProfilePut(
+    @CurrentUser() principal: AuthPrincipal,
+    @Body() dto: UpdateNamingProfileDto,
+    @Req() request: RequestWithContext,
+  ) {
+    return this.admins.updateNamingProfile(principal, dto, request.requestId);
   }
 
   @Patch('integration-configs/:service')

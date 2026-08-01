@@ -1,6 +1,7 @@
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Observable, map } from 'rxjs';
+import { Observable, mergeMap } from 'rxjs';
+import { NamingProfileService } from '../../modules/naming-profile/naming-profile.service';
 import { SKIP_RESPONSE_WRAP_KEY } from '../constants/metadata.constants';
 import { RequestWithContext } from '../interfaces/http.interface';
 
@@ -14,7 +15,10 @@ export interface ApiResponse<T> {
 
 @Injectable()
 export class ResponseInterceptor<T> implements NestInterceptor<T, ApiResponse<T> | T> {
-  constructor(private readonly reflector: Reflector) {}
+  constructor(
+    private readonly reflector: Reflector,
+    private readonly namingProfile: NamingProfileService,
+  ) {}
 
   intercept(context: ExecutionContext, next: CallHandler<T>): Observable<ApiResponse<T> | T> {
     const skip = this.reflector.getAllAndOverride<boolean>(SKIP_RESPONSE_WRAP_KEY, [
@@ -27,13 +31,19 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, ApiResponse<T>
 
     const request = context.switchToHttp().getRequest<RequestWithContext>();
     return next.handle().pipe(
-      map((data) => ({
-        code: 0,
-        message: 'success',
-        data,
-        requestId: request.requestId ?? '',
-        timestamp: Date.now(),
-      })),
+      mergeMap(async (data) => {
+        const path = request.originalUrl || request.url || '';
+        const responseData = this.namingProfile.shouldTransformPath(path)
+          ? await this.namingProfile.transformResponse(data)
+          : data;
+        return {
+          code: 0,
+          message: 'success',
+          data: responseData,
+          requestId: request.requestId ?? '',
+          timestamp: Date.now(),
+        };
+      }),
     );
   }
 }

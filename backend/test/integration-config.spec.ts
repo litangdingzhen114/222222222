@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { AdminRole, TokenSubjectType } from '@prisma/client';
 import { PrismaService } from '../src/database/prisma.service';
 import { IntegrationConfigService } from '../src/modules/integration-config/integration-config.service';
+import { NamingProfileService } from '../src/modules/naming-profile/naming-profile.service';
 
 const superAdmin = {
   id: 'admin-super',
@@ -105,6 +106,63 @@ function buildService(records: ConfigRecord[] = []) {
   return { service, prisma, tx, store };
 }
 
+function buildNamingProfileService(records: ConfigRecord[] = []) {
+  const store: ConfigRecord[] = [...records];
+  const tx = {
+    integrationConfig: {
+      upsert: jest.fn(
+        ({
+          where,
+          create,
+          update,
+        }: {
+          where: { service_key: { service: string; key: string } };
+          create: ConfigRecord;
+          update: Partial<ConfigRecord>;
+        }) => {
+          const index = store.findIndex(
+            (record) =>
+              record.service === where.service_key.service && record.key === where.service_key.key,
+          );
+          const now = new Date('2026-07-29T00:00:00.000Z');
+          if (index >= 0) {
+            store[index] = { ...store[index], ...update, updatedAt: now };
+            return store[index];
+          }
+          const next = {
+            id: `${create.service}-${create.key}`,
+            ...create,
+            createdAt: now,
+            updatedAt: now,
+          };
+          store.push(next);
+          return next;
+        },
+      ),
+    },
+    auditLog: { create: jest.fn() },
+  };
+  const prisma = {
+    integrationConfig: {
+      findUnique: jest.fn(
+        ({ where }: { where: { service_key: { service: string; key: string } } }) => {
+          const record = store.find(
+            (item) =>
+              item.service === where.service_key.service && item.key === where.service_key.key,
+          );
+          if (!record) return null;
+          return {
+            ...record,
+            updatedBy: { username: 'hailin-admin', displayName: '黄湖管理员' },
+          };
+        },
+      ),
+    },
+    $transaction: jest.fn((callback: (txArg: typeof tx) => Promise<unknown>) => callback(tx)),
+  } as unknown as PrismaService;
+  return { service: new NamingProfileService(prisma), prisma, tx, store };
+}
+
 describe('后台 API Key 配置链路', () => {
   it('保存密钥后加密入库，并且业务读取优先使用数据库配置', async () => {
     const { service, store } = buildService();
@@ -150,5 +208,39 @@ describe('后台 API Key 配置链路', () => {
     await expect(
       service.updateGroup('wechat', { WECHAT_APP_ID: { value: 'wx-db-appid' } }, [], superAdmin),
     ).rejects.toThrow(BadRequestException);
+  });
+});
+
+describe('内容命名方案配置链路', () => {
+  it('默认使用黄湖林场方案并统一转换接口文本', async () => {
+    const { service } = buildNamingProfileService();
+    const profile = await service.getProfile(true);
+    expect(profile.mode).toBe('huanghu');
+
+    const transformed = await service.transformResponse({
+      title: '海林村春日慢游',
+      cafe: '寻野 cafe',
+      scenic: '青田石韵',
+    });
+    expect(transformed).toEqual({
+      title: '黄湖林场春日慢游',
+      cafe: '土狗咖啡',
+      scenic: '古树年轮',
+    });
+  });
+
+  it('后台切换方案会落库并写入审计日志', async () => {
+    const { service, store, tx } = buildNamingProfileService();
+    const result = await service.updateProfile('hailin', superAdmin, 'request-naming');
+
+    expect(result.mode).toBe('hailin');
+    expect(store[0]?.service).toBe('content');
+    expect(store[0]?.key).toBe('CONTENT_NAMING_PROFILE');
+    expect(store[0]?.value).toContain('"mode":"hailin"');
+    const auditCalls = tx.auditLog.create.mock.calls as Array<
+      [{ data: { action: string; requestId?: string } }]
+    >;
+    expect(auditCalls[0][0].data.action).toBe('naming-profile.updated');
+    expect(auditCalls[0][0].data.requestId).toBe('request-naming');
   });
 });

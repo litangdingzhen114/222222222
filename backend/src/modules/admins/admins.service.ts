@@ -16,12 +16,14 @@ import { PrismaService } from '../../database/prisma.service';
 import { RedisService } from '../../database/redis.service';
 import { AuthPrincipal } from '../auth/auth.types';
 import { IntegrationConfigService } from '../integration-config/integration-config.service';
+import { NamingProfileService } from '../naming-profile/naming-profile.service';
 import {
   AdminResourceMutationDto,
   AdminResourceQueryDto,
   ReplyFeedbackDto,
   ShipOrderDto,
   UpdateIntegrationConfigDto,
+  UpdateNamingProfileDto,
 } from './dto/admins.dto';
 
 interface CrudDelegate {
@@ -46,6 +48,7 @@ export class AdminsService {
     private readonly config: ConfigService,
     private readonly redis: RedisService,
     private readonly integrationConfig: IntegrationConfigService,
+    private readonly namingProfileService: NamingProfileService,
   ) {}
 
   async overview(principal: AuthPrincipal) {
@@ -315,6 +318,20 @@ export class AdminsService {
   async integrationConfigs(principal: AuthPrincipal) {
     this.assertAdmin(principal, 'admin');
     return { groups: await this.integrationConfig.listGroups() };
+  }
+
+  async namingProfile(principal: AuthPrincipal) {
+    this.assertAdmin(principal, 'admin');
+    return this.namingProfileService.getProfile(true);
+  }
+
+  async updateNamingProfile(
+    principal: AuthPrincipal,
+    dto: UpdateNamingProfileDto,
+    requestId?: string,
+  ) {
+    this.assertAdmin(principal, 'admin');
+    return this.namingProfileService.updateProfile(dto.mode, principal, requestId);
   }
 
   async updateIntegrationConfig(

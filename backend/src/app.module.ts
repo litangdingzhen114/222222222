@@ -23,6 +23,7 @@ import { EngagementModule } from './modules/engagement/engagement.module';
 import { HealthModule } from './modules/health/health.module';
 import { IntegrationConfigModule } from './modules/integration-config/integration-config.module';
 import { LegacyModule } from './modules/legacy/legacy.module';
+import { NamingProfileModule } from './modules/naming-profile/naming-profile.module';
 import { PaymentsModule } from './modules/payments/payments.module';
 import { ReservationsModule } from './modules/reservations/reservations.module';
 import { UploadsModule } from './modules/uploads/uploads.module';
@@ -56,6 +57,7 @@ import { UsersModule } from './modules/users/users.module';
     DatabaseModule,
     RedisModule,
     IntegrationConfigModule,
+    NamingProfileModule,
     AuthModule,
     UsersModule,
     ContentModule,

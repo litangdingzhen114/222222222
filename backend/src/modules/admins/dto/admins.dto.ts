@@ -1,5 +1,6 @@
-import { IsArray, IsObject, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsIn, IsObject, IsOptional, IsString } from 'class-validator';
 import { PageQueryDto } from '../../../common/dto/page.dto';
+import { NamingProfileMode } from '../../../common/utils/naming-profile.util';
 
 export class AdminResourceQueryDto extends PageQueryDto {
   @IsString()
@@ -54,4 +55,9 @@ export class UpdateIntegrationConfigDto {
   @IsString({ each: true })
   @IsOptional()
   clearKeys?: string[];
+}
+
+export class UpdateNamingProfileDto {
+  @IsIn(['huanghu', 'hailin'])
+  mode!: NamingProfileMode;
 }
