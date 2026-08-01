@@ -2,13 +2,77 @@ const fallbackSpots = require('../../data/spots');
 const { loadSpots } = require('../../services/content');
 const { findById, quickToast } = require('../../utils/mock');
 const { isFavorite, toggleFavorite } = require('../../utils/userCenter');
+const { hasFeaturedPlaceDetail } = require('../../utils/placeDetails');
+
+function mergeSpot(localSpot, remoteSpot) {
+  if (!localSpot && !remoteSpot) return null;
+  return {
+    ...(remoteSpot || {}),
+    ...(localSpot || {}),
+    stats: (localSpot && localSpot.stats) || (remoteSpot && remoteSpot.stats) || [],
+    story: (localSpot && localSpot.story) || (remoteSpot && remoteSpot.story) || [],
+    experience:
+      (localSpot && localSpot.experience) ||
+      (remoteSpot && remoteSpot.experience) ||
+      [],
+    itinerary:
+      (localSpot && localSpot.itinerary) ||
+      (remoteSpot && remoteSpot.itinerary) ||
+      [],
+    highlights:
+      (localSpot && localSpot.highlights) ||
+      (remoteSpot && remoteSpot.highlights) ||
+      [],
+    visitTips:
+      (localSpot && localSpot.visitTips) ||
+      (remoteSpot && remoteSpot.visitTips) ||
+      [],
+    services:
+      (localSpot && localSpot.services) || (remoteSpot && remoteSpot.services) || [],
+  };
+}
+
+function buildDisplaySpot(spot) {
+  const stats = spot.stats && spot.stats.length
+    ? spot.stats
+    : [
+        { label: '开放', value: spot.openTime || '以公告为准' },
+        { label: '停留', value: spot.duration || '灵活安排' },
+        { label: '距离', value: spot.distance || '村内点位' },
+      ];
+  const story = spot.story && spot.story.length ? spot.story : [spot.desc || '该点位信息正在持续完善。'];
+  const experience = spot.experience && spot.experience.length
+    ? spot.experience
+    : (spot.highlights || []).slice(0, 3).map((item, index) => ({
+        title: ['看点', '体验', '衔接'][index] || '玩法',
+        desc: item,
+      }));
+  const itinerary = spot.itinerary && spot.itinerary.length
+    ? spot.itinerary
+    : [
+        { time: '到达', title: '先看环境', desc: spot.desc || '确认现场开放情况。' },
+        { time: '停留', title: '慢慢体验', desc: spot.duration || '按现场情况灵活安排。' },
+      ];
+
+  return {
+    ...spot,
+    kicker: spot.kicker || spot.category || '海林点位',
+    lead: spot.lead || spot.desc || '海林村重点到访点位。',
+    mood: spot.mood || '建议把它放进一条慢游路线里，而不是匆匆打卡。',
+    stats,
+    story,
+    experience,
+    itinerary,
+  };
+}
 
 Page({
   data: {
     spot: null,
     heroImages: [],
     favorite: false,
-    nearby: []
+    nearby: [],
+    developing: false
   },
 
   onLoad(options) {
@@ -16,8 +80,13 @@ Page({
   },
 
   loadSpot(id) {
+    const detailId = String(id || '');
+    if (!hasFeaturedPlaceDetail(detailId)) {
+      this.showDeveloping();
+      return;
+    }
     loadSpots().then((spots) => {
-      const spot = findById(spots, id) || findById(fallbackSpots, id);
+      const spot = mergeSpot(findById(fallbackSpots, id), findById(spots, id));
       this.applySpot(spot, spots);
     });
   },
@@ -29,19 +98,33 @@ Page({
       return;
     }
 
+    const displaySpot = buildDisplaySpot(spot);
     const imageClasses = spot.images || [];
     const heroImages = (spot.imageUrls || []).map((url, index) => ({
       key: url,
       url,
       imageClass: imageClasses[index] || imageClasses[0]
     }));
+    const allNearby = fallbackSpots
+      .filter((item) => item.id !== spot.id && hasFeaturedPlaceDetail(item.id))
+      .slice(0, 3);
 
     this.setData({
-      spot,
+      spot: displaySpot,
       heroImages: heroImages.length ? heroImages : imageClasses.map((imageClass, index) => ({ key: `${imageClass}-${index}`, imageClass })),
       favorite: isFavorite(`/pages/spot-detail/spot-detail?id=${spot.id}`),
-      nearby: spots.filter((item) => item.id !== spot.id).slice(0, 3)
+      nearby: allNearby.length ? allNearby : spots.filter((item) => item.id !== spot.id).slice(0, 3),
+      developing: false
     });
+  },
+
+  showDeveloping() {
+    quickToast('该详情页正在完善中');
+    if (typeof getCurrentPages === 'function' && getCurrentPages().length > 1) {
+      setTimeout(() => wx.navigateBack({ delta: 1 }), 500);
+      return;
+    }
+    this.setData({ developing: true });
   },
 
   onFavorite() {
@@ -77,6 +160,10 @@ Page({
   },
 
   onNearbyTap(event) {
+    if (!hasFeaturedPlaceDetail(event.currentTarget.dataset.id)) {
+      quickToast('该详情页正在完善中');
+      return;
+    }
     wx.redirectTo({
       url: `/pages/spot-detail/spot-detail?id=${event.currentTarget.dataset.id}`
     });

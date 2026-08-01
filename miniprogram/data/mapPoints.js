@@ -45,6 +45,8 @@ module.exports = [
     actionText: "场地预约",
     latitude: 28.2148,
     longitude: 120.2196,
+    refType: "spot",
+    refId: "tianpu-station",
     targetUrl: "/pages/mine-feature/mine-feature?id=venue",
   },
   {
@@ -187,6 +189,8 @@ module.exports = [
     actionText: "寻野 cafe",
     latitude: 28.2116,
     longitude: 120.2175,
+    refType: "spot",
+    refId: "xunye-cafe",
     targetUrl: "/pages/food/food",
   },
   {

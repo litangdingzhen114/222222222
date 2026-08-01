@@ -1,5 +1,27 @@
 const spotDetails = {
   "ancient-tree": {
+    kicker: "村树记忆",
+    lead: "海林村的老树不是一个拍照背景，而是一段村庄记忆的坐标。",
+    mood: "在树荫下停一会儿，听讲解员把古树、村路和村庄变化串起来。",
+    stats: [
+      { label: "树龄", value: "约350年" },
+      { label: "树高", value: "约20米" },
+      { label: "适合", value: "自然教育" },
+    ],
+    story: [
+      "陈嵘栲古树被海林村视作“村树”，公开资料中提到其树龄约 350 年，胸围约 310 厘米、胸径近 1 米。",
+      "它适合作为到村后的第一段自然讲解：从一棵树讲到山水生态、村庄迁居、村民生活和古树保护。",
+    ],
+    experience: [
+      { title: "古树合影", desc: "以树冠和村道为背景，适合拍一张到村纪念照。" },
+      { title: "自然课堂", desc: "讲解古树保护、乡土树种和村庄生态。" },
+      { title: "慢游起点", desc: "从古树继续走向田铺驿站和海林·溪谷。" },
+    ],
+    itinerary: [
+      { time: "10分钟", title: "看树冠", desc: "先观察树形、冠幅和周边环境。" },
+      { time: "15分钟", title: "听故事", desc: "听村庄记忆、古树保护和乡土生态。" },
+      { time: "5分钟", title: "拍合影", desc: "用广角收进树冠、山景和村道。" },
+    ],
     highlights: [
       "陈嵘栲古树约 350 年树龄，被海林村视作村树与村庄记忆的标志。",
       "公开报道中提到它胸围约 310 厘米、胸径近 1 米、树高约 20 米、冠幅约 18 米。",
@@ -26,6 +48,110 @@ const spotDetails = {
         title: "路线推荐",
         desc: "把古树打卡、田铺驿站和海林溪谷串成半日慢游。",
         url: "/pages/route-list/route-list",
+      },
+    ],
+  },
+  "xunye-cafe": {
+    kicker: "溪谷村咖",
+    lead: "把一杯咖啡放进山水之间，作为海林慢游的中途停靠。",
+    mood: "适合走完溪谷后坐下来，喝咖啡、吃米糕，翻看当天拍到的山水照片。",
+    stats: [
+      { label: "人均", value: "约35元" },
+      { label: "营业", value: "10:00-20:00" },
+      { label: "适合", value: "茶歇慢坐" },
+    ],
+    story: [
+      "寻野 cafe 是海林村咖啡与乡野轻食的展示点，内容围绕溪谷、田埂、米糕和村内休闲空间展开。",
+      "它不只是“美食列表”里的一个条目，而是路线里的休息节点：游客可以在这里等人、点单、看风景，也能继续衔接民宿和溪谷活动。",
+    ],
+    experience: [
+      { title: "咖啡茶歇", desc: "咖啡、米糕和当季轻食，适合路线中途补给。" },
+      { title: "窗边看山", desc: "用村咖空间承接溪谷和田园慢游的节奏。" },
+      { title: "民宿联动", desc: "可与溪谷民宿、场地预约和团建茶歇一起组合。" },
+    ],
+    itinerary: [
+      { time: "到店", title: "先点一杯", desc: "咖啡、米糕或乡野轻食按当天供应为准。" },
+      { time: "20分钟", title: "窗边慢坐", desc: "休息、拍照、整理下一段路线。" },
+      { time: "离店", title: "顺路去溪谷", desc: "继续去海林·溪谷或田铺驿站集合。" },
+    ],
+    highlights: [
+      "村咖适合作为半日游的休息点，把餐饮、茶歇和村内慢游连起来。",
+      "菜单可后续接后台配置，展示咖啡、米糕、轻食和团体茶歇。",
+      "与民宿和场地预约联动，方便团队安排下午茶或小型活动。",
+    ],
+    visitTips: [
+      "实际营业时间和菜单以后台发布和现场公示为准。",
+      "周末团队建议提前备注人数、座位和茶歇需求。",
+      "如需开发票或团体结算，可在游客服务中提交需求。",
+    ],
+    services: [
+      {
+        title: "查看菜单",
+        desc: "浏览村咖、轻食、田鱼和民宿茶歇内容。",
+        url: "/pages/food/food",
+        openType: "switchTab",
+      },
+      {
+        title: "场地预约",
+        desc: "提交团体茶歇、围炉、团建和活动空间需求。",
+        url: "/pages/mine-feature/mine-feature?id=venue",
+      },
+      {
+        title: "问问小林",
+        desc: "让智能助手帮你把村咖放进行程里。",
+        url: "/pages/ai-guide/ai-guide",
+      },
+    ],
+  },
+  "tianpu-station": {
+    kicker: "会客驿站",
+    lead: "田铺驿站是到村后的集合点、休息点，也是海林村活动的日常中枢。",
+    mood: "白墙、木平台和溪谷休闲区形成一处更精美的乡村会客空间。",
+    stats: [
+      { label: "距离", value: "0.3公里" },
+      { label: "功能", value: "集合补给" },
+      { label: "适合", value: "团队到访" },
+    ],
+    story: [
+      "田铺驿站承担游客集合、休息、咨询、农品自提和活动签到等复合功能，是海林村把公共服务做得更友好的一个节点。",
+      "页面素材以精美房子和休闲平台为主，不把它做成普通服务表，而是呈现“先到这里，再进入村庄体验”的第一站感受。",
+    ],
+    experience: [
+      { title: "集合签到", desc: "团队到达后可在这里确认讲解、路线和活动安排。" },
+      { title: "休闲停靠", desc: "露台、坐席和溪谷视野适合短暂停留。" },
+      { title: "农品自提", desc: "预订农品后可作为到村领取和核销点。" },
+    ],
+    itinerary: [
+      { time: "抵达", title: "驿站集合", desc: "确认停车、讲解和当天活动。" },
+      { time: "15分钟", title: "露台休息", desc: "拍照、补水、等齐团队。" },
+      { time: "出发", title: "走向溪谷", desc: "从驿站进入溪谷、村咖或研学路线。" },
+    ],
+    highlights: [
+      "田铺驿站可作为游客到村的第一处会客点，承接咨询、签到和休息。",
+      "适合和讲解预约、场地预约、农品自提、慢直播素材拍摄组合使用。",
+      "视觉上突出精美房子、露台和溪谷休闲感，避免做成单纯服务点。",
+    ],
+    visitTips: [
+      "团队到访建议把田铺驿站设置为集合点。",
+      "如需场地、茶歇或农品提货，请提前在预约页备注。",
+      "营业和开放安排以村里运营公告为准。",
+    ],
+    services: [
+      {
+        title: "场地预约",
+        desc: "预约驿站会客、露台茶歇和团队签到空间。",
+        url: "/pages/mine-feature/mine-feature?id=venue",
+      },
+      {
+        title: "讲解预约",
+        desc: "从驿站出发，串联村树、溪谷和村咖。",
+        url: "/pages/mine-feature/mine-feature?id=guide",
+      },
+      {
+        title: "导航到达",
+        desc: "在地图上定位田铺驿站。",
+        url: "/pages/map/map",
+        openType: "switchTab",
       },
     ],
   },
@@ -59,6 +185,28 @@ const spotDetails = {
     ],
   },
   "creek-trail": {
+    kicker: "溪谷慢行",
+    lead: "海林·溪谷适合把亲水、散步、茶歇和小型活动放在同一条慢游线里。",
+    mood: "不赶景点，沿着水声慢慢走，才是这里最舒服的打开方式。",
+    stats: [
+      { label: "建议", value: "45-60分钟" },
+      { label: "场景", value: "亲水慢行" },
+      { label: "适合", value: "家庭团建" },
+    ],
+    story: [
+      "海林·溪谷把溪流、石桥、竹林和休闲平台串在一起，适合亲子、轻徒步、茶歇和小型户外活动。",
+      "它更像村庄里的慢生活段落：可以作为路线的中段散步，也可以作为民宿入住后的傍晚活动。",
+    ],
+    experience: [
+      { title: "溪边慢走", desc: "沿溪看水声、竹影和石桥，适合放慢节奏。" },
+      { title: "户外茶歇", desc: "配合村咖、民宿和场地预约做轻活动。" },
+      { title: "亲子观察", desc: "观察植物、水流和乡村公共空间。" },
+    ],
+    itinerary: [
+      { time: "10分钟", title: "入口集合", desc: "确认天气、路面和返程方向。" },
+      { time: "30分钟", title: "沿溪慢行", desc: "经过石桥、竹林和亲水空间。" },
+      { time: "15分钟", title: "茶歇收尾", desc: "回到村咖或驿站休息。" },
+    ],
     highlights: [
       "沿溪慢行，串联石桥、林荫休息点和茶歇空间。",
       "适合家庭散步、轻徒步、露营小活动和慢直播点位展示。",
@@ -167,6 +315,42 @@ const spots = [
     icon: "树",
   },
   {
+    id: "tianpu-station",
+    name: "田铺驿站",
+    category: "公共服务",
+    tags: ["会客驿站", "集合点", "场地预约"],
+    openTime: "08:30-18:30",
+    duration: "约 30 分钟",
+    distance: "0.3公里",
+    desc: "田铺驿站是海林村到访集合、休息补给、农品自提和活动签到的会客空间，适合作为进村后的第一站。",
+    images: ["ph-homestay", "ph-creek", "ph-village"],
+    coverUrl: "https://www.hailin.store/assets/photos/ai-map-tianpu-station.jpg",
+    imageUrls: [
+      "https://www.hailin.store/assets/photos/ai-map-tianpu-station.jpg",
+      "https://www.hailin.store/assets/photos/ai-overseas-cafe.jpg",
+      "https://www.hailin.store/assets/photos/ai-village-gate.jpg",
+    ],
+    icon: "驿",
+  },
+  {
+    id: "xunye-cafe",
+    name: "寻野 cafe",
+    category: "美食",
+    tags: ["村咖", "咖啡", "乡野轻食"],
+    openTime: "10:00-20:00",
+    duration: "约 40 分钟",
+    distance: "0.6公里",
+    desc: "溪谷边的乡野咖啡、米糕轻食和农家简餐，是海林慢游路线里的茶歇停靠点。",
+    images: ["ph-xunye", "ph-homestay", "ph-creek"],
+    coverUrl: "https://www.hailin.store/assets/photos/ai-xunye-cafe.jpg",
+    imageUrls: [
+      "https://www.hailin.store/assets/photos/ai-xunye-cafe.jpg",
+      "https://www.hailin.store/assets/photos/ai-overseas-cafe.jpg",
+      "https://www.hailin.store/assets/photos/ai-map-hailin-creek.jpg",
+    ],
+    icon: "咖",
+  },
+  {
     id: "rice-view",
     name: "稻鱼田观景点",
     category: "自然风光",
@@ -186,7 +370,7 @@ const spots = [
   },
   {
     id: "creek-trail",
-    name: "溪谷慢行步道",
+    name: "海林·溪谷",
     category: "自然风光",
     tags: ["自然风光", "亲子体验", "免费"],
     openTime: "全天开放",

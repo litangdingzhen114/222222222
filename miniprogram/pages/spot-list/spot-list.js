@@ -1,10 +1,12 @@
 const fallbackSpots = require('../../data/spots');
 const { loadSpots } = require('../../services/content');
+const { quickToast } = require('../../utils/mock');
+const { hasFeaturedPlaceDetail, detailUrl } = require('../../utils/placeDetails');
 
 Page({
   data: {
     keyword: '',
-    categories: ['全部', '自然风光', '人文历史', '亲子体验', '免费'],
+    categories: ['全部', '自然风光', '美食', '公共服务', '人文历史', '亲子体验', '免费'],
     activeCategory: '全部',
     allSpots: fallbackSpots,
     spots: fallbackSpots
@@ -47,8 +49,13 @@ Page({
   },
 
   onSpotTap(event) {
+    const id = event.currentTarget.dataset.id;
+    if (!hasFeaturedPlaceDetail(id)) {
+      quickToast('该详情页正在完善中');
+      return;
+    }
     wx.navigateTo({
-      url: `/pages/spot-detail/spot-detail?id=${event.currentTarget.dataset.id}`
+      url: detailUrl(id)
     });
   }
 });

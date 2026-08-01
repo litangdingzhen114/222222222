@@ -1,63 +1,89 @@
 <view wx:if="{{spot}}" class="page spot-detail-page safe-bottom">
-  <swiper class="spot-hero-swiper" indicator-dots="{{true}}" indicator-color="rgba(255,253,248,0.48)" indicator-active-color="#FBFFFC">
+  <swiper class="place-hero" indicator-dots="{{true}}" indicator-color="rgba(255,253,248,0.42)" indicator-active-color="#FBFFFC">
     <swiper-item wx:for="{{heroImages}}" wx:key="key">
-      <view class="spot-hero {{item.imageClass}}">
-        <image wx:if="{{item.url}}" class="spot-hero-img" src="{{item.url}}" mode="aspectFill"></image>
-        <text wx:if="{{!item.url}}" class="spot-hero-word">{{spot.icon}}</text>
+      <view class="place-hero-slide {{item.imageClass}}">
+        <image wx:if="{{item.url}}" class="place-hero-img" src="{{item.url}}" mode="aspectFill"></image>
+        <view class="place-hero-mask"></view>
+        <view class="place-hero-copy">
+          <view class="place-kicker">{{spot.kicker}}</view>
+          <view class="place-name">{{spot.name}}</view>
+          <view class="place-lead">{{spot.lead}}</view>
+        </view>
       </view>
     </swiper-item>
   </swiper>
 
   <view class="detail-content">
-    <view class="detail-card card">
-      <view class="detail-title-row">
-        <view class="detail-name">{{spot.name}}</view>
-        <view class="detail-distance">{{spot.distance}}</view>
+    <view class="arrival-card">
+      <view class="arrival-left">
+        <view class="arrival-label">到访信息</view>
+        <view class="arrival-mood">{{spot.mood}}</view>
       </view>
-      <view class="detail-tags">
-        <text wx:for="{{spot.tags}}" wx:key="*this">{{item}}</text>
-      </view>
-      <view class="info-row">
-        <text class="info-label">开放时间</text>
-        <text class="info-value">{{spot.openTime}}</text>
-      </view>
-      <view class="info-row">
-        <text class="info-label">建议游玩</text>
-        <text class="info-value">{{spot.duration}}</text>
+      <view class="arrival-distance">{{spot.distance}}</view>
+    </view>
+
+    <view class="stat-grid">
+      <view wx:for="{{spot.stats}}" wx:key="label" class="stat-card">
+        <view class="stat-label">{{item.label}}</view>
+        <view class="stat-value">{{item.value}}</view>
       </view>
     </view>
 
-    <view class="intro-card card">
-      <section-title title="景点介绍"></section-title>
-      <view class="intro-text">{{spot.desc}}</view>
-      <view class="action-row">
-        <button class="outline-btn detail-action" bindtap="onAudioGuide">语音讲解</button>
-        <button class="primary-btn detail-action" bindtap="onNavigate">导航</button>
+    <view class="story-panel">
+      <view class="section-heading">
+        <text class="section-mark">穗</text>
+        <text>这里值得停下</text>
+      </view>
+      <view wx:for="{{spot.story}}" wx:key="*this" class="story-copy">{{item}}</view>
+    </view>
+
+    <view class="experience-panel">
+      <view class="section-heading">
+        <text class="section-mark">玩</text>
+        <text>亮点玩法</text>
+      </view>
+      <view class="experience-grid">
+        <view wx:for="{{spot.experience}}" wx:key="title" class="experience-card">
+          <view class="experience-title">{{item.title}}</view>
+          <view class="experience-desc">{{item.desc}}</view>
+        </view>
       </view>
     </view>
 
-    <section-title wx:if="{{spot.highlights && spot.highlights.length}}" title="亮点玩法"></section-title>
-    <view wx:if="{{spot.highlights && spot.highlights.length}}" class="highlight-list">
-      <view wx:for="{{spot.highlights}}" wx:key="*this" class="highlight-item card">
-        <text class="highlight-index">{{index + 1}}</text>
-        <text class="highlight-copy">{{item}}</text>
+    <view wx:if="{{heroImages.length > 1}}" class="gallery-strip">
+      <view wx:for="{{heroImages}}" wx:key="key" wx:if="{{index > 0}}" class="gallery-item {{item.imageClass}}">
+        <image wx:if="{{item.url}}" class="gallery-img" src="{{item.url}}" mode="aspectFill"></image>
       </view>
     </view>
 
-    <view wx:if="{{spot.visitTips && spot.visitTips.length}}" class="tips-card card">
-      <view class="tips-title">到访建议</view>
-      <view wx:for="{{spot.visitTips}}" wx:key="*this" class="tip-row">
-        <text></text>
-        <view>{{item}}</view>
+    <view class="detail-itinerary">
+      <view class="section-heading">
+        <text class="section-mark">线</text>
+        <text>到访节奏</text>
+      </view>
+      <view wx:for="{{spot.itinerary}}" wx:key="title" class="timeline-item">
+        <view class="timeline-time">{{item.time}}</view>
+        <view class="timeline-copy">
+          <view class="timeline-title">{{item.title}}</view>
+          <view class="timeline-desc">{{item.desc}}</view>
+        </view>
       </view>
     </view>
 
-    <section-title wx:if="{{spot.services && spot.services.length}}" title="服务衔接"></section-title>
-    <view wx:if="{{spot.services && spot.services.length}}" class="service-link-list">
+    <view wx:if="{{spot.visitTips && spot.visitTips.length}}" class="notice-panel">
+      <view class="notice-title">到访建议</view>
+      <view wx:for="{{spot.visitTips}}" wx:key="*this" class="notice-row">{{item}}</view>
+    </view>
+
+    <view wx:if="{{spot.services && spot.services.length}}" class="service-panel">
+      <view class="section-heading">
+        <text class="section-mark">接</text>
+        <text>服务衔接</text>
+      </view>
       <view
         wx:for="{{spot.services}}"
         wx:key="title"
-        class="service-link-card card"
+        class="service-link"
         data-url="{{item.url}}"
         data-open-type="{{item.openType}}"
         bindtap="onServiceTap"
@@ -70,21 +96,32 @@
       </view>
     </view>
 
-    <section-title title="周边推荐"></section-title>
-    <view class="nearby-row">
-      <view wx:for="{{nearby}}" wx:key="id" class="nearby-card card" data-id="{{item.id}}" bindtap="onNearbyTap">
-        <view class="nearby-img {{item.images[0]}}">
-          <image wx:if="{{item.coverUrl}}" class="nearby-photo" src="{{item.coverUrl}}" mode="aspectFill"></image>
-          <text wx:if="{{!item.coverUrl}}">{{item.icon}}</text>
+    <view class="nearby-panel">
+      <view class="section-heading">
+        <text class="section-mark">顺</text>
+        <text>顺路看看</text>
+      </view>
+      <view class="nearby-row">
+        <view wx:for="{{nearby}}" wx:key="id" class="nearby-card" data-id="{{item.id}}" bindtap="onNearbyTap">
+          <view class="nearby-img {{item.images[0]}}">
+            <image wx:if="{{item.coverUrl}}" class="nearby-photo" src="{{item.coverUrl}}" mode="aspectFill"></image>
+          </view>
+          <view class="nearby-title">{{item.name}}</view>
         </view>
-        <view class="nearby-title">{{item.name}}</view>
       </view>
     </view>
   </view>
 
   <view class="bottom-bar">
     <button class="bottom-mini {{favorite ? 'active' : ''}}" bindtap="onFavorite">{{favorite ? '已收藏' : '收藏'}}</button>
-    <button class="bottom-mini" open-type="share">分享</button>
-    <button class="bottom-main" bindtap="onNavigate">去这里</button>
+    <button class="bottom-mini" bindtap="onAudioGuide">问小林</button>
+    <button class="bottom-main" bindtap="onNavigate">导航前往</button>
+  </view>
+</view>
+
+<view wx:elif="{{developing}}" class="page developing-page">
+  <view class="developing-card">
+    <view class="developing-title">详情页开发中</view>
+    <view class="developing-copy">该点位资料还在整理，当前仅开放寻野 cafe、陈嵘栲古树、田铺驿站和海林·溪谷。</view>
   </view>
 </view>

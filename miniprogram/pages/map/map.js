@@ -8,6 +8,7 @@ const {
 } = require("../../data/mapFeatures");
 const { loadMapDirections, loadMapPoints } = require("../../services/content");
 const { quickToast } = require("../../utils/mock");
+const { hasFeaturedPlaceDetail, detailUrl } = require("../../utils/placeDetails");
 
 const pointTypeView = {
   SCENIC_SPOT: {
@@ -629,8 +630,12 @@ Page({
     const point = this.data.activePoint;
     if (!point) return;
     if (point.refType === "spot" && point.refId) {
+      if (!hasFeaturedPlaceDetail(point.refId)) {
+        quickToast("该详情页正在完善中");
+        return;
+      }
       wx.navigateTo({
-        url: `/pages/spot-detail/spot-detail?id=${point.refId}`,
+        url: detailUrl(point.refId),
       });
       return;
     }

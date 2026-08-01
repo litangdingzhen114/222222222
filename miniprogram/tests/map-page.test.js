@@ -52,8 +52,8 @@ assert(
   "map page should control map viewport",
 );
 assert(
-  mapJs.includes("/pages/spot-detail/spot-detail"),
-  "spot points should navigate to spot detail",
+  mapJs.includes("detailUrl(point.refId)"),
+  "spot points should navigate to spot detail through the shared detail URL helper",
 );
 assert(
   mapJs.includes("/pages/route-detail/route-detail"),

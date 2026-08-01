@@ -1,6 +1,7 @@
 const fallbackFoods = require('../../data/foods');
 const { loadFoods } = require('../../services/content');
 const { quickToast } = require('../../utils/mock');
+const { detailUrl } = require('../../utils/placeDetails');
 
 Page({
   data: {
@@ -73,6 +74,10 @@ Page({
     const food = this.data.foods.find((item) => item.id === event.detail.id);
     if (!food) {
       quickToast('美食信息不存在');
+      return;
+    }
+    if (food.id === 'xunye-cafe') {
+      wx.navigateTo({ url: detailUrl(food.id) });
       return;
     }
     wx.navigateTo({ url: `/pages/mine-feature/mine-feature?id=mall&item=${encodeURIComponent(food.name)}` });
