@@ -51,8 +51,8 @@ curl https://api.hailin.store/api/v1/health
 发布前确认：
 
 - `project.config.json` 使用真实 AppID。
-- `project.config.json` 的 `urlCheck` 为 `true`。
-- 微信开发者工具关闭“开发环境不校验请求域名”的依赖。
+- 开发联调阶段 `project.config.json` 可以使用 `urlCheck: false`，避免开发者工具拦截 `https://www.hailin.store`。
+- 提交审核前必须确认微信公众平台已配置 `https://www.hailin.store` 为 request/upload/download 合法域名，真机预览不依赖开发工具域名豁免。
 - 真机预览能正常打开首页、登录、地图、商城、订单、预约、反馈和后台配置内容。
 
 ## 等待正式凭证
