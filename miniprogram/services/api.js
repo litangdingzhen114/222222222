@@ -95,8 +95,16 @@ function resolveApiBaseUrl() {
   return serviceConfig.apiBaseUrl || "";
 }
 
+function resolveRequestBaseUrls() {
+  const primary = resolveApiBaseUrl().trim();
+  const fallback = String(serviceConfig.apiBaseUrl || "").trim();
+  return [primary, fallback].filter((url, index, list) => {
+    return url && list.indexOf(url) === index;
+  });
+}
+
 function hasBackend() {
-  return Boolean(resolveApiBaseUrl().trim());
+  return resolveRequestBaseUrls().length > 0;
 }
 
 function joinUrl(baseUrl, endpoint) {
@@ -119,13 +127,13 @@ function normalizePayload(response) {
 }
 
 function request(endpoint, options = {}) {
-  if (!hasBackend()) {
+  const baseUrls = resolveRequestBaseUrls();
+  if (!baseUrls.length) {
     return Promise.reject(new Error("Backend is not configured"));
   }
 
   const method = options.method || "GET";
   const data = options.data || {};
-  const url = joinUrl(resolveApiBaseUrl(), endpoint);
   const token = getAccessToken();
   const header = {
     "content-type": "application/json",
@@ -133,25 +141,40 @@ function request(endpoint, options = {}) {
   };
   if (token) header.Authorization = `Bearer ${token}`;
 
-  return new Promise((resolve, reject) => {
-    wx.request({
-      url,
-      method,
-      data,
-      timeout: options.timeout || serviceConfig.requestTimeout,
-      header,
-      success(result) {
-        if (result.statusCode >= 200 && result.statusCode < 300) {
-          resolve(normalizePayload(result));
-          return;
-        }
-        reject(new Error(`Request failed with status ${result.statusCode}`));
-      },
-      fail(error) {
-        reject(error);
-      },
+  function run(index, lastError) {
+    const baseUrl = baseUrls[index];
+    if (!baseUrl) {
+      return Promise.reject(lastError || new Error("Backend request failed"));
+    }
+    const url = joinUrl(baseUrl, endpoint);
+
+    return new Promise((resolve, reject) => {
+      wx.request({
+        url,
+        method,
+        data,
+        timeout: options.timeout || serviceConfig.requestTimeout,
+        header,
+        success(result) {
+          if (result.statusCode >= 200 && result.statusCode < 300) {
+            resolve(normalizePayload(result));
+            return;
+          }
+          reject(new Error(`Request failed with status ${result.statusCode}`));
+        },
+        fail(error) {
+          reject(error);
+        },
+      });
+    }).catch((error) => {
+      if (index + 1 < baseUrls.length) {
+        return run(index + 1, error);
+      }
+      return Promise.reject(error);
     });
-  });
+  }
+
+  return run(0);
 }
 
 function getAccessToken() {
@@ -192,6 +215,7 @@ function serviceModeText() {
 module.exports = {
   hasBackend,
   resolveApiBaseUrl,
+  resolveRequestBaseUrls,
   mediaUrl,
   request,
   getAccessToken,

@@ -33,6 +33,35 @@ function createWxMock(platform, storageValue, tokenValue = "") {
   };
 }
 
+function createRetryWxMock() {
+  const requests = [];
+  return {
+    getSystemInfoSync() {
+      return { platform: "devtools" };
+    },
+    getStorageSync(key) {
+      if (key === "hailin-api-base-url") return "https://api.hailin.store";
+      return "";
+    },
+    request(options) {
+      requests.push(options);
+      if (requests.length === 1) {
+        options.fail(new Error("net::ERR_CONNECTION_CLOSED"));
+        return;
+      }
+      options.success({
+        statusCode: 200,
+        data: {
+          data: { ok: true, retried: true },
+        },
+      });
+    },
+    requests() {
+      return requests;
+    },
+  };
+}
+
 (async () => {
   const devWx = createWxMock("devtools", "");
   let api = loadApi(devWx);
@@ -65,6 +94,22 @@ function createWxMock(platform, storageValue, tokenValue = "") {
   api = loadApi(overrideWx);
   assert.strictEqual(api.resolveApiBaseUrl(), "http://192.168.1.8:8787");
   assert.strictEqual(api.serviceModeText(), "自定义服务已连接");
+
+  const retryWx = createRetryWxMock();
+  api = loadApi(retryWx);
+  assert.deepStrictEqual(await api.request("/api/v1/ai-guide/chat"), {
+    ok: true,
+    retried: true,
+  });
+  assert.strictEqual(retryWx.requests().length, 2);
+  assert.strictEqual(
+    retryWx.requests()[0].url,
+    "https://api.hailin.store/api/v1/ai-guide/chat",
+  );
+  assert.strictEqual(
+    retryWx.requests()[1].url,
+    "https://www.hailin.store/api/v1/ai-guide/chat",
+  );
 
   const deviceWx = createWxMock("ios", "");
   api = loadApi(deviceWx);
