@@ -138,6 +138,15 @@ assert.strictEqual(
   "chenrongkao-tree",
   "village tree shortcut should focus the Chenrongkao map point",
 );
+assert.strictEqual(
+  villageTreeEntry.iconPath,
+  "/assets/icons/village-tree.png",
+  "village tree shortcut should use a dedicated tree icon",
+);
+assert(
+  fs.existsSync(path.join(root, "miniprogram/assets/icons/village-tree.png")),
+  "village tree icon asset should exist",
+);
 const arPhotoEntry = gridItems.find((item) => item.id === "photo-memory");
 assert(arPhotoEntry, "AR photo entry should exist");
 assert.strictEqual(

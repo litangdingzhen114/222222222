@@ -99,7 +99,7 @@ const pageOne = [
     id: "village-tree",
     title: "村树陈嵘栲",
     icon: "树",
-    iconPath: "/assets/icons/spots.png",
+    iconPath: "/assets/icons/village-tree.png",
     url: "/pages/map/map",
     openType: "switchTab",
     focusMapPoint: "chenrongkao-tree",
