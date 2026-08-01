@@ -101,7 +101,7 @@ assert(
   "home grid should merge overlapping culture and travel entries",
 );
 assert(
-  ["民俗文化", "旅拍合影", "寻野 cafe", "便民服务", "热门景点"].every((title) =>
+  ["乡宿体验", "旅拍合影", "寻野 cafe", "便民服务", "热门景点"].every((title) =>
     gridTitles.includes(title),
   ),
   "home grid should keep merged culture and travel entries",
@@ -264,14 +264,15 @@ assert(
 );
 assert(
   foods.some(
-    (item) => item.name === "海林民俗小食" && item.tags.includes("民俗"),
+    (item) => item.name === "溪谷民宿茶歇" && item.tags.includes("民宿"),
   ),
-  "food fallback data should include a folk culture item",
+  "food fallback data should include a homestay tea item",
 );
 assert(
   !JSON.stringify(foods).includes("一村一宴") &&
-    !foodWxml.includes("一村一宴"),
-  "food page should replace the old one-village banquet entry with folk culture content",
+    !foodWxml.includes("一村一宴") &&
+    !foodWxml.includes("民俗"),
+  "food page should replace the old one-village banquet entry with homestay content",
 );
 
 function loadContentServiceWithWx(wxMock) {

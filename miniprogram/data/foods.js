@@ -22,15 +22,15 @@ module.exports = [
     imageUrl: '/assets/photos/ricefish-drying.jpg'
   },
   {
-    id: 'folk-snacks',
-    name: '海林民俗小食',
+    id: 'homestay-tea',
+    name: '溪谷民宿茶歇',
     perCapita: '58元',
     distance: '0.8公里',
-    desc: '把青田石纹、侨乡家书和节庆米糕做成民俗茶歇体验。',
-    tags: ['民俗', '轻食', '研学'],
-    imageClass: 'ph-folk',
-    icon: '俗',
-    imageUrl: '/assets/photos/ai-stone-souvenir.jpg'
+    desc: '面向民宿住客的咖啡、米糕和山野茶歇，适合入住前后慢坐。',
+    tags: ['民宿', '轻食', '咖啡'],
+    imageClass: 'ph-homestay',
+    icon: '宿',
+    imageUrl: '/assets/photos/ai-overseas-cafe.jpg'
   },
   {
     id: 'creek-tea',

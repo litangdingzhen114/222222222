@@ -8,12 +8,12 @@ Page({
     foods: fallbackFoods,
     keyword: '',
     activeFilter: '全部类别',
-    filters: ['全部类别', '咖啡', '轻食', '民俗', '青田田鱼', '研学'],
+    filters: ['全部类别', '咖啡', '轻食', '民宿', '青田田鱼', '研学'],
     featureCards: [
       { id: 'cafe', title: '咖啡菜单', icon: '啡', iconPath: '/assets/icons/map-food.png' },
       { id: 'map', title: '到店导航', icon: '图', iconPath: '/assets/icons/traffic.png' },
       { id: 'special', title: '乡野轻食', icon: '轻', iconPath: '/assets/icons/overseas.png' },
-      { id: 'folk', title: '民俗体验', icon: '俗', iconPath: '/assets/icons/culture.png' }
+      { id: 'stay', title: '民宿体验', icon: '宿', iconPath: '/assets/icons/stay.png' }
     ]
   },
 
@@ -42,7 +42,11 @@ Page({
       wx.switchTab({ url: '/pages/map/map' });
       return;
     }
-    const filter = id === 'special' ? '轻食' : id === 'folk' ? '民俗' : '咖啡';
+    if (id === 'stay') {
+      wx.navigateTo({ url: '/pages/mine-feature/mine-feature?id=stay' });
+      return;
+    }
+    const filter = id === 'special' ? '轻食' : '咖啡';
     this.setData({
       activeFilter: filter,
       foods: this.filterFoods(this.data.allFoods, this.data.keyword, filter)

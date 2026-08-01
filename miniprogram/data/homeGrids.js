@@ -96,11 +96,11 @@ const pageOne = [
     url: "/pages/spot-list/spot-list",
   },
   {
-    id: "folk-culture",
-    title: "民俗文化",
-    icon: "俗",
-    iconPath: "/assets/icons/culture.png",
-    url: "/pages/spot-detail/spot-detail?id=museum",
+    id: "stay-experience",
+    title: "乡宿体验",
+    icon: "宿",
+    iconPath: "/assets/icons/stay.png",
+    url: "/pages/mine-feature/mine-feature?id=stay",
   },
   {
     id: "photo-memory",
