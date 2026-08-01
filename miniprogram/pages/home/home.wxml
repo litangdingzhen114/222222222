@@ -52,7 +52,7 @@
           </view>
         </swiper-item>
       </swiper>
-      <view class="grid-dots">
+      <view wx:if="{{gridPages.length > 1}}" class="grid-dots">
         <view wx:for="{{gridPages}}" wx:key="id" class="grid-dot {{gridCurrent === index ? 'active' : ''}}"></view>
       </view>
     </view>

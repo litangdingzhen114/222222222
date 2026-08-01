@@ -22,15 +22,15 @@ module.exports = [
     imageUrl: '/assets/photos/ricefish-drying.jpg'
   },
   {
-    id: 'village-banquet',
-    name: '一村一宴预约',
-    perCapita: '80元',
+    id: 'folk-snacks',
+    name: '海林民俗小食',
+    perCapita: '58元',
     distance: '0.8公里',
-    desc: '把田鱼、山泉豆腐、时蔬和本地米糕合成一桌村宴菜单。',
-    tags: ['青田田鱼', '家宴', '轻食'],
-    imageClass: 'ph-ricefish',
-    icon: '宴',
-    imageUrl: '/assets/photos/ricefish-drying.jpg'
+    desc: '把青田石纹、侨乡家书和节庆米糕做成民俗茶歇体验。',
+    tags: ['民俗', '轻食', '研学'],
+    imageClass: 'ph-folk',
+    icon: '俗',
+    imageUrl: '/assets/photos/ai-stone-souvenir.jpg'
   },
   {
     id: 'creek-tea',

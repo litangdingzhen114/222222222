@@ -66,6 +66,12 @@ assert.deepStrictEqual(
 );
 const gridItems = gridPages.flatMap((page) => page.items);
 const gridTitles = gridItems.map((item) => item.title);
+assert.strictEqual(gridPages.length, 1, "home grid should fit consolidated entries on one page");
+assert.strictEqual(
+  gridItems.length,
+  15,
+  "home grid should keep a complete 3x5 shortcut page after merging",
+);
 assert(
   [
     "海林故事",
@@ -78,13 +84,24 @@ assert(
     "找停车场",
     "找公厕",
     "乡心支付",
+    "海口天气",
+    "交通出行",
+    "AI旅拍",
+    "AR合影",
+    "海林侨乡",
+    "文化云",
+    "非遗地图",
+    "溪谷老街",
+    "团建定制游",
+    "行李无忧",
+    "意见反馈",
   ].every(
     (title) => !gridTitles.includes(title),
   ),
   "home grid should merge overlapping culture and travel entries",
 );
 assert(
-  ["海林侨乡", "石韵稻鱼", "交通出行", "寻野 cafe", "便民服务"].every((title) =>
+  ["民俗文化", "旅拍合影", "寻野 cafe", "便民服务", "热门景点"].every((title) =>
     gridTitles.includes(title),
   ),
   "home grid should keep merged culture and travel entries",
@@ -201,6 +218,10 @@ assert(
   "home page should render agricultural preorder section",
 );
 assert(
+  homeWxml.includes("gridPages.length > 1"),
+  "home grid should hide pagination dots after shortcuts are consolidated to one page",
+);
+assert(
   homeWxss.includes("itinerary-card"),
   "home page should style itinerary cards",
 );
@@ -240,6 +261,17 @@ assert(
       item.imageUrl === "/assets/photos/ai-xunye-cafe.jpg",
   ),
   "food fallback data should include Xunye cafe with generated image",
+);
+assert(
+  foods.some(
+    (item) => item.name === "海林民俗小食" && item.tags.includes("民俗"),
+  ),
+  "food fallback data should include a folk culture item",
+);
+assert(
+  !JSON.stringify(foods).includes("一村一宴") &&
+    !foodWxml.includes("一村一宴"),
+  "food page should replace the old one-village banquet entry with folk culture content",
 );
 
 function loadContentServiceWithWx(wxMock) {

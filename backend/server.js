@@ -2358,7 +2358,7 @@ function localGuideReply(question) {
     return '推荐“瓯江山村半日游”：村口会客点集合，沿溪谷步道慢行，中午安排海林田鱼家宴，下午可做青田石纹手作。';
   }
   if (text.includes('美食') || text.includes('吃') || text.includes('田鱼') || text.toLowerCase().includes('cafe')) {
-    return '海林村可以把寻野 cafe、青田田鱼、山泉豆腐和一村一宴作为主线。第一次来建议先去寻野 cafe 慢坐，再按人数预约田鱼家宴。';
+    return '海林村可以把寻野 cafe、青田田鱼、山泉豆腐和民俗小食体验作为主线。第一次来建议先去寻野 cafe 慢坐，再按人数预约田鱼家宴或民俗茶歇。';
   }
   if (text.includes('直播') || text.includes('摄像头')) {
     return '慢直播已按村口会客点、稻鱼田、溪谷步道和侨乡小院组织点位。真实摄像头或 HLS 地址可以由后端替换 liveUrl。';
