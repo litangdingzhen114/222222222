@@ -103,6 +103,10 @@ assert(
   "map page should expose filtered point quick list",
 );
 assert(
+  mapWxml.includes("黄湖林场导览") && !mapWxml.includes("黄湖林场 · 黄湖林场"),
+  "map overlay location label should not repeat or clip the active naming profile",
+);
+assert(
   mapWxml.includes("poi-image"),
   "map point sheet should show a location image",
 );

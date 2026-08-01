@@ -65,7 +65,7 @@
       enable-zoom="{{true}}"
       enable-scroll="{{true}}"
     >
-      <cover-view class="map-weather">瓯江 · 黄湖林场 · 黄湖林场</cover-view>
+      <cover-view class="map-weather">黄湖林场导览</cover-view>
 
       <cover-view class="subtag-float">
         <cover-view

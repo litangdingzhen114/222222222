@@ -750,7 +750,23 @@ function replaceNamingText(text, values) {
       next = next.split(from).join(to);
     }
   });
-  return next;
+  return collapseDuplicateNamingText(next, values);
+}
+
+function collapseDuplicateNamingText(text, values) {
+  if (values.id !== 'huanghu') return text;
+  const place = values.placeName;
+  return [
+    `${place} · ${place}`,
+    `${place}·${place}`,
+    `${place}、${place}`,
+    `${place}，${place}`,
+    `${place},${place}`,
+    `${place} / ${place}`,
+    `${place}/${place}`,
+    `${place} ${place}`,
+    `${place}${place}`,
+  ].reduce((next, pattern) => next.split(pattern).join(place), text);
 }
 
 function transformNamingValue(value, values) {

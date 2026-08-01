@@ -188,14 +188,18 @@
   top: 112rpx;
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 246rpx;
+  justify-content: flex-start;
+  box-sizing: border-box;
+  width: 276rpx;
   height: 70rpx;
+  padding: 0 20rpx;
+  overflow: hidden;
   border-radius: 12rpx;
   background: #FBFFFC;
   color: #0F6B67;
   font-size: 25rpx;
   font-weight: 900;
+  white-space: nowrap;
   box-shadow: 0 8rpx 18rpx rgba(0, 0, 0, 0.08);
 }
 

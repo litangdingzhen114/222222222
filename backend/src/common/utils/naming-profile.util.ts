@@ -157,10 +157,27 @@ export function namingReplacementPairs(values: NamingProfileValues): Array<[stri
 }
 
 export function replaceNamingText(text: string, values: NamingProfileValues) {
-  return namingReplacementPairs(values).reduce((next, [from, to]) => {
+  const replaced = namingReplacementPairs(values).reduce((next, [from, to]) => {
     if (!from || !to || !next.includes(from)) return next;
     return next.split(from).join(to);
   }, text);
+  return collapseDuplicateNamingText(replaced, values);
+}
+
+function collapseDuplicateNamingText(text: string, values: NamingProfileValues) {
+  if (values.id !== 'huanghu') return text;
+  const place = values.placeName;
+  return [
+    `${place} · ${place}`,
+    `${place}·${place}`,
+    `${place}、${place}`,
+    `${place}，${place}`,
+    `${place},${place}`,
+    `${place} / ${place}`,
+    `${place}/${place}`,
+    `${place} ${place}`,
+    `${place}${place}`,
+  ].reduce((next, pattern) => next.split(pattern).join(place), text);
 }
 
 export function transformNamingValue(value: unknown, values: NamingProfileValues): unknown {
