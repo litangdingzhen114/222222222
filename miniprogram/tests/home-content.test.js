@@ -215,8 +215,12 @@ recommend.itineraries.forEach((item) => {
 
 recommend.serviceCards.forEach((item) => {
   assert(
-    item.title && item.desc && item.actionText,
+    item.title && item.desc && item.actionText && item.iconPath,
     `${item.id} service card needs actionable copy`,
+  );
+  assert(
+    !JSON.stringify(item).includes("Kimi"),
+    `${item.id} service card should not expose internal model provider copy`,
   );
   assertNavigableUrl(item.url, item.title);
   if (item.openType === "switchTab") {
