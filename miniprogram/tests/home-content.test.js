@@ -255,6 +255,14 @@ const homeWxss = fs.readFileSync(
   path.join(root, "miniprogram/pages/home/home.wxss"),
   "utf8",
 );
+const sectionTitleWxml = fs.readFileSync(
+  path.join(root, "miniprogram/components/section-title/section-title.wxml"),
+  "utf8",
+);
+const sectionTitleWxss = fs.readFileSync(
+  path.join(root, "miniprogram/components/section-title/section-title.wxss"),
+  "utf8",
+);
 const foodWxml = fs.readFileSync(
   path.join(root, "miniprogram/pages/food/food.wxml"),
   "utf8",
@@ -303,6 +311,13 @@ assert(
 assert(
   homeWxml.includes("今日这样游"),
   "home page should render itinerary section",
+);
+assert(
+  !sectionTitleWxml.includes("穗") &&
+    !sectionTitleWxml.includes("grain") &&
+    sectionTitleWxml.includes("title-subtitle") &&
+    sectionTitleWxss.includes("letter-spacing: 0"),
+  "home section title should use a clean mature header instead of the old grain glyph",
 );
 assert(
   homeWxml.includes("到村服务"),

@@ -76,6 +76,8 @@ assert(detailWxml.includes("亮点玩法"), "detail page should render play high
 assert(detailWxml.includes("detail-itinerary"), "detail page should render route rhythm instead of a table");
 assert(detailWxml.includes("服务衔接"), "detail page should keep follow-up service links");
 assert(!detailWxml.includes("info-row"), "detail page should not render the old table-like info rows");
+assert(!detailWxml.includes(">穗<"), "detail page should not use the old grain glyph section marker");
+assert(detailWxss.includes("width: 8rpx") && detailWxss.includes("height: 34rpx"), "detail section markers should use a clean accent bar");
 assert(detailWxss.includes("height: 520rpx"), "detail hero should have a mature scenic-photo scale");
 assert(detailWxss.includes("grid-template-columns: repeat(3, 1fr)"), "detail cards should keep stable three-column sizing");
 assert(mapJs.includes("hasFeaturedPlaceDetail(point.refId)"), "map detail button should gate non-priority details");

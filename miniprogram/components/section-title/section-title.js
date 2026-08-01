@@ -7,6 +7,10 @@ Component({
     moreText: {
       type: String,
       value: ''
+    },
+    subtitle: {
+      type: String,
+      value: ''
     }
   },
 

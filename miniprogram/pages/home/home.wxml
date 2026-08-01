@@ -63,7 +63,7 @@
       <text>{{weather}}</text>
     </view>
 
-    <section-title title="今日这样游" moreText="更多路线" bind:moretap="onMoreRoutes"></section-title>
+    <section-title title="今日这样游" subtitle="按半日、一日节奏直接安排行程" moreText="更多路线" bind:moretap="onMoreRoutes"></section-title>
     <scroll-view scroll-x="{{true}}" class="itinerary-scroll" enable-flex="{{true}}">
       <view class="itinerary-row">
         <view
@@ -90,7 +90,7 @@
       </view>
     </scroll-view>
 
-    <section-title title="到村服务"></section-title>
+    <section-title title="到村服务" subtitle="预订、直播、民宿和问答入口"></section-title>
     <view class="service-grid">
       <view
         wx:for="{{serviceCards}}"
@@ -119,7 +119,7 @@
       </view>
     </view>
 
-    <section-title title="热门推荐"></section-title>
+    <section-title title="热门推荐" subtitle="把常用功能放到手边"></section-title>
     <view class="hot-grid">
       <view
         wx:for="{{hotRecommends}}"
@@ -140,7 +140,7 @@
       </view>
     </view>
 
-    <section-title title="黄湖林场农品预购" moreText="更多" bind:moretap="onMoreProducts"></section-title>
+    <section-title title="黄湖林场农品预购" subtitle="个人小程序先做预订登记，后台确认履约" moreText="更多" bind:moretap="onMoreProducts"></section-title>
     <view class="product-panel card">
       <view class="product-head">
         <view>
@@ -155,7 +155,7 @@
       </scroll-view>
     </view>
 
-    <section-title title="黄湖林场必打卡榜单"></section-title>
+    <section-title title="黄湖林场必打卡榜单" subtitle="到村后优先看的点位和体验"></section-title>
     <scroll-view scroll-x="{{true}}" class="ranking-scroll" enable-flex="{{true}}">
       <view class="ranking-row">
         <view wx:for="{{rankings}}" wx:key="id" class="ranking-card card" data-title="{{item.title}}" bindtap="onRankingTap">
@@ -174,7 +174,7 @@
       </view>
     </scroll-view>
 
-    <section-title title="黄湖林场长廊"></section-title>
+    <section-title title="黄湖林场长廊" subtitle="村咖、民宿、溪谷和村树内容集合"></section-title>
     <scroll-view scroll-x="{{true}}" class="corridor-scroll" enable-flex="{{true}}">
       <view class="corridor-row">
         <view wx:for="{{corridor}}" wx:key="id" class="corridor-card">
@@ -187,7 +187,7 @@
       </view>
     </scroll-view>
 
-    <section-title title="精彩推荐"></section-title>
+    <section-title title="精彩推荐" subtitle="后续接入真实运营内容"></section-title>
     <view class="feed-waterfall">
       <view class="feed-col">
         <view wx:for="{{feedsLeft}}" wx:key="id" class="feed-card card" bindtap="onFeedTap">

@@ -1,7 +1,10 @@
 <view class="section-title">
   <view class="title-left">
-    <view class="grain">穗</view>
-    <text class="title-text">{{title}}</text>
+    <view class="title-mark"></view>
+    <view class="title-copy">
+      <text class="title-text">{{title}}</text>
+      <text wx:if="{{subtitle}}" class="title-subtitle">{{subtitle}}</text>
+    </view>
   </view>
   <view wx:if="{{moreText}}" class="title-more" bindtap="onMoreTap">
     <text>{{moreText}}</text>

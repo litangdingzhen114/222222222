@@ -183,9 +183,10 @@
 
 .section-mark {
   flex-shrink: 0;
-  color: #C89C3F;
-  font-size: 30rpx;
-  font-weight: 900;
+  width: 8rpx;
+  height: 34rpx;
+  border-radius: 999rpx;
+  background: #0F6B67;
 }
 
 .story-copy {
