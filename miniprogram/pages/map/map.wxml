@@ -101,29 +101,30 @@
         <cover-view class="route-detail-btn" bindtap="onOpenRouteDetail">查看路线详情</cover-view>
       </cover-view>
 
-      <cover-view wx:if="{{activePoint}}" class="poi-sheet">
-        <cover-view class="poi-close" bindtap="onCloseSheet">×</cover-view>
-        <cover-view class="poi-image-wrap">
-          <cover-image wx:if="{{activePoint.imageUrl && !activePoint.imageFailed}}" class="poi-image" src="{{activePoint.imageUrl}}" mode="aspectFill" binderror="onActivePointImageError"></cover-image>
-          <cover-view wx:else class="poi-image-fallback">海林村点位</cover-view>
-          <cover-view class="poi-image-label">{{activePoint.subType}}</cover-view>
-        </cover-view>
-        <cover-view class="poi-content">
-          <cover-view class="poi-name">{{activePoint.title}}</cover-view>
-          <cover-view class="poi-meta">{{activePoint.type}} · {{activePoint.distance}}</cover-view>
-          <cover-view class="poi-desc">{{activePoint.desc}}</cover-view>
-          <cover-view class="poi-info-row">
-            <cover-view class="poi-info">开放 {{activePoint.openTime}}</cover-view>
-            <cover-view wx:if="{{activePoint.directionText}}" class="poi-info">{{activePoint.directionText}}</cover-view>
-          </cover-view>
-          <cover-view class="poi-tip">{{activePoint.tips}}</cover-view>
-        </cover-view>
-        <cover-view class="poi-actions">
-          <cover-view class="poi-btn outline" bindtap="onViewDetail">详情</cover-view>
-          <cover-view class="poi-btn outline" bindtap="onGoHere">导航</cover-view>
-          <cover-view class="poi-btn primary" bindtap="onPointAction">{{activePoint.actionText}}</cover-view>
-        </cover-view>
-      </cover-view>
     </map>
+
+    <view wx:if="{{activePoint}}" class="poi-sheet">
+      <view class="poi-close" bindtap="onCloseSheet">×</view>
+      <view class="poi-image-wrap">
+        <image wx:if="{{activePoint.imageUrl && !activePoint.imageFailed}}" class="poi-image" src="{{activePoint.imageUrl}}" mode="aspectFill" binderror="onActivePointImageError"></image>
+        <view wx:else class="poi-image-fallback">海林村点位</view>
+        <view class="poi-image-label">{{activePoint.subType}}</view>
+      </view>
+      <view class="poi-content">
+        <view class="poi-name">{{activePoint.title}}</view>
+        <view class="poi-meta">{{activePoint.type}} · {{activePoint.distance}}</view>
+        <view class="poi-desc">{{activePoint.desc}}</view>
+        <view class="poi-info-row">
+          <view class="poi-info">开放 {{activePoint.openTime}}</view>
+          <view wx:if="{{activePoint.directionText}}" class="poi-info">{{activePoint.directionText}}</view>
+        </view>
+        <view class="poi-tip">{{activePoint.tips}}</view>
+      </view>
+      <view class="poi-actions">
+        <view class="poi-btn outline" bindtap="onViewDetail">详情</view>
+        <view class="poi-btn outline" bindtap="onGoHere">导航</view>
+        <view class="poi-btn primary" bindtap="onPointAction">{{activePoint.actionText}}</view>
+      </view>
+    </view>
   </view>
 </view>

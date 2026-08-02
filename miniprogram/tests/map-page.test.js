@@ -117,10 +117,12 @@ assert(
   "map point sheet should collapse to fallback content when a remote image fails",
 );
 assert(
-  mapWxss.includes("height: 238rpx") &&
+  mapWxss.includes("height: 286rpx") &&
+    mapWxml.includes("<image wx:if=\"{{activePoint.imageUrl") &&
+    !mapWxml.includes("<cover-image wx:if=\"{{activePoint.imageUrl") &&
     mapWxml.includes('mode="aspectFill"') &&
     mapWxss.includes("max-height: calc(100% - 220rpx)"),
-  "map point sheet photo should keep a compact stable ratio without overflowing the viewport",
+  "map point sheet photo should use a regular aspectFill image without stretching inside native map cover layers",
 );
 assert(
   mapWxml.includes("activeSubTag === item.value") &&
