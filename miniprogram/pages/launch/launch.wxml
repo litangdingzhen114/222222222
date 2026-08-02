@@ -3,12 +3,9 @@
   <view class="launch-shade"></view>
 
   <view class="launch-content">
-    <view class="brand-mark">
-      <image class="brand-icon" src="/assets/tabbar/home-active.png" mode="aspectFit"></image>
-    </view>
-    <view class="brand-kicker">黄湖林场</view>
-    <view class="brand-title">一部手机游黄湖林场</view>
-    <view class="brand-subtitle">正在准备路线、地图、农品和到村服务</view>
+    <view class="brand-kicker">{{brandKicker}}</view>
+    <view class="brand-title">{{brandTitle}}</view>
+    <view class="brand-subtitle">{{brandSubtitle}}</view>
 
     <view class="progress-card">
       <view class="progress-head">
@@ -26,6 +23,4 @@
       </view>
     </view>
   </view>
-
-  <button class="skip-btn" bindtap="onSkip">直接进入</button>
 </view>

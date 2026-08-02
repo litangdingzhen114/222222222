@@ -1,4 +1,7 @@
-const { warmCriticalResources } = require("../../utils/preload");
+const {
+  getHomePreloadCache,
+  warmCriticalResources,
+} = require("../../utils/preload");
 
 const MIN_SHOW_TIME = 900;
 const ENTER_DELAY = 180;
@@ -9,6 +12,9 @@ function delay(ms) {
 
 Page({
   data: {
+    brandKicker: "文旅导览",
+    brandTitle: "一部手机游",
+    brandSubtitle: "正在准备路线、地图、农品和到村服务",
     progress: 12,
     progressText: "正在准备首页内容",
     steps: [
@@ -21,6 +27,7 @@ Page({
   onLoad() {
     this.entering = false;
     this.startedAt = Date.now();
+    this.applyPreloadedBrand();
     this.startProgressTimer();
     this.bootstrap();
   },
@@ -54,18 +61,37 @@ Page({
   },
 
   bootstrap() {
-    Promise.all([
-      warmCriticalResources({
-        dataTimeout: 2600,
-        imageLimit: 6,
-        imageTimeout: 1200,
-      }),
-      delay(MIN_SHOW_TIME),
-    ])
+    const preload = warmCriticalResources({
+      dataTimeout: 2600,
+      imageLimit: 6,
+      imageTimeout: 1200,
+    }).then((meta) => {
+      this.applyPreloadedBrand();
+      return meta;
+    });
+
+    Promise.all([preload, delay(MIN_SHOW_TIME)])
       .catch(() => [])
       .then(() => {
         this.enterHome();
       });
+  },
+
+  applyPreloadedBrand() {
+    const cachedHome = getHomePreloadCache();
+    const locationText = String(
+      (cachedHome && cachedHome.locationText) ||
+        (cachedHome &&
+          cachedHome.banners &&
+          cachedHome.banners[0] &&
+          cachedHome.banners[0].kicker) ||
+        "",
+    ).trim();
+    if (!locationText) return;
+    this.setData({
+      brandKicker: locationText,
+      brandTitle: `一部手机游${locationText}`,
+    });
   },
 
   enterHome() {
@@ -89,9 +115,5 @@ Page({
         },
       });
     }, ENTER_DELAY);
-  },
-
-  onSkip() {
-    this.enterHome();
   },
 });

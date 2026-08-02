@@ -140,7 +140,7 @@
       </view>
     </view>
 
-    <section-title title="黄湖林场农品预购" subtitle="个人小程序先做预订登记，后台确认履约" moreText="更多" bind:moretap="onMoreProducts"></section-title>
+    <section-title title="{{productSectionTitle}}" subtitle="个人小程序先做预订登记，后台确认履约" moreText="更多" bind:moretap="onMoreProducts"></section-title>
     <view class="product-panel card">
       <view class="product-head">
         <view>
@@ -155,7 +155,7 @@
       </scroll-view>
     </view>
 
-    <section-title title="黄湖林场必打卡榜单" subtitle="到村后优先看的点位和体验"></section-title>
+    <section-title title="{{rankingSectionTitle}}" subtitle="到村后优先看的点位和体验"></section-title>
     <scroll-view scroll-x="{{true}}" class="ranking-scroll" enable-flex="{{true}}">
       <view class="ranking-row">
         <view wx:for="{{rankings}}" wx:key="id" class="ranking-card card" data-title="{{item.title}}" bindtap="onRankingTap">
@@ -174,7 +174,7 @@
       </view>
     </scroll-view>
 
-    <section-title title="黄湖林场长廊" subtitle="村咖、民宿、溪谷和村树内容集合"></section-title>
+    <section-title title="{{corridorSectionTitle}}" subtitle="村咖、民宿、溪谷和村树内容集合"></section-title>
     <scroll-view scroll-x="{{true}}" class="corridor-scroll" enable-flex="{{true}}">
       <view class="corridor-row">
         <view wx:for="{{corridor}}" wx:key="id" class="corridor-card">

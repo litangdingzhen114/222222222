@@ -473,8 +473,12 @@ function adaptHome(remoteValue, fallbackValue) {
     itineraries: routeItems.length ? routeItems : fallbackValue.itineraries,
     notice: source.notice || notices[0]?.title || fallbackValue.notice,
     weather: source.weather || fallbackValue.weather,
-    serviceMode: serviceModeText(),
-    locationText: serviceConfig.locationText,
+    serviceMode: source.serviceMode || serviceModeText(),
+    locationText:
+      source.locationText ||
+      source.placeName ||
+      source.regionName ||
+      serviceConfig.locationText,
   };
 }
 

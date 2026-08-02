@@ -76,6 +76,8 @@ function normalizeHomeImages(data) {
 function buildHomeViewData(data) {
   const safeData = normalizeHomeImages(data || getLocalHomeFallback());
   const feeds = safeData.feeds || [];
+  const locationText = safeData.locationText || "";
+  const sectionPrefix = locationText || "本地";
   return {
     banners: safeData.banners || [],
     gridPages: safeData.gridPages || [],
@@ -90,7 +92,10 @@ function buildHomeViewData(data) {
     notice: safeData.notice || "",
     weather: safeData.weather || "",
     serviceMode: safeData.serviceMode || "",
-    locationText: safeData.locationText || "",
+    locationText,
+    productSectionTitle: `${sectionPrefix}农品预购`,
+    rankingSectionTitle: `${sectionPrefix}必打卡榜单`,
+    corridorSectionTitle: `${sectionPrefix}长廊`,
   };
 }
 

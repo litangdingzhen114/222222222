@@ -255,6 +255,10 @@ const homeWxss = fs.readFileSync(
   path.join(root, "miniprogram/pages/home/home.wxss"),
   "utf8",
 );
+const contentServiceJs = fs.readFileSync(
+  path.join(root, "miniprogram/services/content.js"),
+  "utf8",
+);
 const sectionTitleWxml = fs.readFileSync(
   path.join(root, "miniprogram/components/section-title/section-title.wxml"),
   "utf8",
@@ -324,8 +328,17 @@ assert(
   "home page should render service section",
 );
 assert(
-  homeWxml.includes("黄湖林场农品预购"),
-  "home page should render agricultural preorder section",
+  homeWxml.includes("productSectionTitle") &&
+    homeJs.includes("productSectionTitle") &&
+    homeJs.includes("rankingSectionTitle") &&
+    homeJs.includes("corridorSectionTitle"),
+  "home page should render naming-aware dynamic content sections",
+);
+assert(
+  contentServiceJs.includes("source.locationText ||") &&
+    contentServiceJs.includes("source.placeName ||") &&
+    contentServiceJs.includes("source.regionName ||"),
+  "home content adapter should keep backend naming profile location text",
 );
 assert(
   homeWxml.includes("gridPages.length > 1"),
