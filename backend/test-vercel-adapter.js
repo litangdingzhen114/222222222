@@ -66,13 +66,44 @@ async function main() {
   const rewriteSources = vercelConfig.rewrites.map((rewrite) => rewrite.source);
   const adminV1Index = rewriteSources.indexOf('/api/v1/admin/:path*');
   const authV1Index = rewriteSources.indexOf('/api/v1/auth/:path*');
-  const externalV1Index = rewriteSources.indexOf('/api/v1/:path*');
+  const publicV1Index = rewriteSources.indexOf('/api/v1/:path*');
+  const legacyHailinIndex = rewriteSources.indexOf('/api/hailin/:path*');
+  const uploadIndex = rewriteSources.indexOf('/uploads/:path*');
   assert.ok(adminV1Index !== -1, 'Vercel should route v1 admin API to the bundled backend function');
   assert.ok(authV1Index !== -1, 'Vercel should route v1 auth refresh API to the bundled backend function');
-  assert.ok(externalV1Index !== -1, 'Vercel should still proxy public v1 APIs to the production backend');
   assert.ok(
-    adminV1Index < externalV1Index && authV1Index < externalV1Index,
-    'Vercel should match admin/auth v1 routes before the external production API proxy',
+    publicV1Index !== -1,
+    'Vercel should route public v1 APIs to the bundled backend while api.hailin.store is not ready',
+  );
+  assert.ok(
+    legacyHailinIndex !== -1,
+    'Vercel should route legacy mini program APIs to the bundled backend while api.hailin.store is not ready',
+  );
+  assert.ok(
+    uploadIndex !== -1,
+    'Vercel should route upload assets to the bundled backend while api.hailin.store is not ready',
+  );
+  assert.ok(
+    adminV1Index < publicV1Index && authV1Index < publicV1Index,
+    'Vercel should match admin/auth v1 routes before the public v1 fallback route',
+  );
+  const rewritesBySource = Object.fromEntries(
+    vercelConfig.rewrites.map((rewrite) => [rewrite.source, rewrite.destination]),
+  );
+  assert.strictEqual(
+    rewritesBySource['/api/v1/:path*'],
+    '/api/index',
+    'Temporary Vercel fallback should keep public v1 APIs same-origin so admin changes affect the mini program',
+  );
+  assert.strictEqual(
+    rewritesBySource['/api/hailin/:path*'],
+    '/api/index',
+    'Temporary Vercel fallback should keep legacy mini program APIs same-origin',
+  );
+  assert.strictEqual(
+    rewritesBySource['/uploads/:path*'],
+    '/api/index',
+    'Temporary Vercel fallback should keep upload assets same-origin',
   );
   assert.ok(
     rewriteSources.includes('/api/(.*)'),

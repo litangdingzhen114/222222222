@@ -17,15 +17,15 @@
     },
     {
       "source": "/api/v1/:path*",
-      "destination": "https://api.hailin.store/api/v1/:path*"
+      "destination": "/api/index"
     },
     {
       "source": "/api/hailin/:path*",
-      "destination": "https://api.hailin.store/api/hailin/:path*"
+      "destination": "/api/index"
     },
     {
       "source": "/uploads/:path*",
-      "destination": "https://api.hailin.store/uploads/:path*"
+      "destination": "/api/index"
     },
     {
       "source": "/health",
