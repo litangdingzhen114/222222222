@@ -104,6 +104,12 @@ const NAMING_PROFILE_DEFAULTS = {
     cafeName: '寻野 cafe',
   },
 };
+const DEFAULT_NAMING_PROFILE_MODE = Object.prototype.hasOwnProperty.call(
+  NAMING_PROFILE_DEFAULTS,
+  process.env.NAMING_PROFILE_MODE || '',
+)
+  ? process.env.NAMING_PROFILE_MODE
+  : 'hailin';
 const INTEGRATION_GROUPS = [
   {
     service: 'wechat',
@@ -618,7 +624,7 @@ function normalizeNamingProfile(raw) {
   const requestedMode = cleanText(stored.mode, 40);
   const mode = Object.prototype.hasOwnProperty.call(NAMING_PROFILE_DEFAULTS, requestedMode)
     ? requestedMode
-    : 'huanghu';
+    : DEFAULT_NAMING_PROFILE_MODE;
   const storedProfiles =
     stored.profiles && typeof stored.profiles === 'object' && !Array.isArray(stored.profiles)
       ? stored.profiles
@@ -685,7 +691,7 @@ function saveNamingProfile(req, body) {
 
 function activeNamingProfileValues() {
   const profile = readNamingProfile();
-  return profile.activeProfile || NAMING_PROFILE_DEFAULTS.huanghu;
+  return profile.activeProfile || NAMING_PROFILE_DEFAULTS[DEFAULT_NAMING_PROFILE_MODE];
 }
 
 function namingReplacementPairs(values) {

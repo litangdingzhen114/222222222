@@ -212,20 +212,20 @@ describe('后台 API Key 配置链路', () => {
 });
 
 describe('内容命名方案配置链路', () => {
-  it('默认使用黄湖林场方案并统一转换接口文本', async () => {
+  it('默认使用海林青田方案并统一转换接口文本', async () => {
     const { service } = buildNamingProfileService();
     const profile = await service.getProfile(true);
-    expect(profile.mode).toBe('huanghu');
+    expect(profile.mode).toBe('hailin');
 
     const transformed = await service.transformResponse({
-      title: '海林村春日慢游',
-      cafe: '寻野 cafe',
-      scenic: '青田石韵',
-    });
-    expect(transformed).toEqual({
       title: '黄湖林场春日慢游',
       cafe: '土狗咖啡',
       scenic: '古树年轮',
+    });
+    expect(transformed).toEqual({
+      title: '海林村春日慢游',
+      cafe: '寻野 cafe',
+      scenic: '青田石韵',
     });
   });
 

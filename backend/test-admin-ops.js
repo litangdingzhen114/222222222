@@ -160,37 +160,37 @@ async function main() {
     headers: authHeaders
   });
   assert.strictEqual(namingProfile.status, 200);
-  assert.strictEqual(namingProfile.body.data.mode, 'huanghu');
-  assert.strictEqual(namingProfile.body.data.activeProfile.placeName, '黄湖林场');
-  assert.strictEqual(namingProfile.body.data.activeProfile.cafeName, '土狗咖啡');
+  assert.strictEqual(namingProfile.body.data.mode, 'hailin');
+  assert.strictEqual(namingProfile.body.data.activeProfile.placeName, '海林村');
+  assert.strictEqual(namingProfile.body.data.activeProfile.cafeName, '寻野 cafe');
 
   const defaultNamedHome = await requestJson(`http://${HOST}:${PORT}/api/hailin/home`);
   assert.strictEqual(defaultNamedHome.status, 200);
   const defaultNamedHomeText = JSON.stringify(defaultNamedHome.body.data);
-  assert(defaultNamedHomeText.includes('黄湖林场'), 'public home should use Huanghu naming by default');
-  assert(defaultNamedHomeText.includes('土狗咖啡'), 'public home should use Tugou cafe naming by default');
-  assert(!defaultNamedHomeText.includes('海口镇海林村'), 'public home should hide legacy place wording by default');
+  assert(defaultNamedHomeText.includes('海林村'), 'public home should use Hailin naming by default');
+  assert(defaultNamedHomeText.includes('寻野 cafe'), 'public home should use Xunye cafe naming by default');
 
-  const legacyNaming = await requestJson(`http://${HOST}:${PORT}/api/admin/naming-profile`, {
-    method: 'PUT',
-    headers: authHeaders,
-    body: JSON.stringify({ mode: 'hailin' })
-  });
-  assert.strictEqual(legacyNaming.status, 200);
-  assert.strictEqual(legacyNaming.body.data.mode, 'hailin');
-  const legacyNamedHome = await requestJson(`http://${HOST}:${PORT}/api/hailin/home`);
-  assert.strictEqual(legacyNamedHome.status, 200);
-  const legacyNamedHomeText = JSON.stringify(legacyNamedHome.body.data);
-  assert(legacyNamedHomeText.includes('海林村'), 'naming profile should switch legacy place wording back');
-  assert(legacyNamedHomeText.includes('寻野 cafe'), 'naming profile should switch legacy cafe wording back');
-
-  const restoredNaming = await requestJson(`http://${HOST}:${PORT}/api/admin/naming-profile`, {
+  const huanghuNaming = await requestJson(`http://${HOST}:${PORT}/api/admin/naming-profile`, {
     method: 'PUT',
     headers: authHeaders,
     body: JSON.stringify({ mode: 'huanghu' })
   });
+  assert.strictEqual(huanghuNaming.status, 200);
+  assert.strictEqual(huanghuNaming.body.data.mode, 'huanghu');
+  const huanghuNamedHome = await requestJson(`http://${HOST}:${PORT}/api/hailin/home`);
+  assert.strictEqual(huanghuNamedHome.status, 200);
+  const huanghuNamedHomeText = JSON.stringify(huanghuNamedHome.body.data);
+  assert(huanghuNamedHomeText.includes('黄湖林场'), 'naming profile should switch to Huanghu wording');
+  assert(huanghuNamedHomeText.includes('土狗咖啡'), 'naming profile should switch to Tugou cafe wording');
+  assert(!huanghuNamedHomeText.includes('海口镇海林村'), 'public home should hide legacy place wording in Huanghu mode');
+
+  const restoredNaming = await requestJson(`http://${HOST}:${PORT}/api/admin/naming-profile`, {
+    method: 'PUT',
+    headers: authHeaders,
+    body: JSON.stringify({ mode: 'hailin' })
+  });
   assert.strictEqual(restoredNaming.status, 200);
-  assert.strictEqual(restoredNaming.body.data.mode, 'huanghu');
+  assert.strictEqual(restoredNaming.body.data.mode, 'hailin');
 
   const adminSpotList = await requestJson(`http://${HOST}:${PORT}/api/admin/scenic-spots?pageSize=5`, {
     headers: authHeaders

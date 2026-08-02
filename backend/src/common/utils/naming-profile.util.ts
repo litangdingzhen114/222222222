@@ -44,6 +44,7 @@ export const NAMING_PROFILE_DEFAULTS: Record<NamingProfileMode, NamingProfileVal
     cafeName: '寻野 cafe',
   },
 };
+export const DEFAULT_NAMING_PROFILE_MODE: NamingProfileMode = 'hailin';
 
 function cleanText(value: unknown, maxLength = 80) {
   if (typeof value !== 'string') return '';
@@ -51,7 +52,8 @@ function cleanText(value: unknown, maxLength = 80) {
 }
 
 function cleanMode(value: unknown): NamingProfileMode {
-  return value === 'hailin' ? 'hailin' : 'huanghu';
+  if (value === 'huanghu' || value === 'hailin') return value;
+  return DEFAULT_NAMING_PROFILE_MODE;
 }
 
 function cleanProfile(mode: NamingProfileMode, value: unknown): NamingProfileValues {
