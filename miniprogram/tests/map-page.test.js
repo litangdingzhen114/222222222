@@ -78,7 +78,7 @@ assert(
 assert(
   mapPoints.some(
     (point) =>
-      point.title === "黄湖溪谷" &&
+      point.title === "海林·溪谷" &&
       point.imageUrl === `${photoBase}/ai-map-hailin-creek.jpg`,
   ),
   "map should include Hailin creek valley with a generated display image",
@@ -103,7 +103,7 @@ assert(
   "map page should expose filtered point quick list",
 );
 assert(
-  mapWxml.includes("黄湖林场导览") && !mapWxml.includes("黄湖林场 · 黄湖林场"),
+  mapWxml.includes("海林村导览") && !mapWxml.includes("海林村 · 海林村"),
   "map overlay location label should not repeat or clip the active naming profile",
 );
 assert(

@@ -44,7 +44,7 @@ const pointTypeView = {
   FOOD: {
     type: "美食",
     subType: "核心景区",
-    actionText: "土狗咖啡",
+    actionText: "寻野 cafe",
     imageUrl: "https://www.hailin.store/assets/photos/ai-xunye-cafe.jpg",
   },
   FARM: {
@@ -136,7 +136,7 @@ function normalizeMapPoint(point, index) {
   return {
     id: point.id == null ? markerId : point.id,
     markerId,
-    title: point.title || point.name || "黄湖林场点位",
+    title: point.title || point.name || "海林村点位",
     type: isEnumType ? view.type : point.type || view.type,
     subType: point.subType || view.subType,
     distance: point.distance || "村内点位",
@@ -145,7 +145,7 @@ function normalizeMapPoint(point, index) {
       point.description ||
       point.summary ||
       point.address ||
-      "黄湖林场公共导览点位",
+      "海林村公共导览点位",
     imageUrl:
       point.imageUrl || point.coverImage || point.image || view.imageUrl,
     openTime: point.openTime || point.businessHours || "以现场公示为准",
@@ -282,7 +282,7 @@ function isTabUrl(url) {
 
 Page({
   data: {
-    title: "一部手机游黄湖林场",
+    title: "一部手机游海林村",
     categories,
     subTags,
     mapTools,
@@ -397,7 +397,7 @@ Page({
     if (category && category !== "全部") parts.push(category);
     if (subTag && subTag !== "全部") parts.push(subTag);
     if (keyword) parts.push(`搜索“${keyword}”`);
-    const prefix = parts.length ? parts.join(" · ") : "黄湖林场全域";
+    const prefix = parts.length ? parts.join(" · ") : "海林村全域";
     return `${prefix} · ${points.length} 个点位`;
   },
 
@@ -720,7 +720,7 @@ Page({
       latitude: point.latitude,
       longitude: point.longitude,
       name: point.title,
-      address: `黄湖林场 · ${point.title}`,
+      address: `海林村 · ${point.title}`,
       scale: 17,
       fail: () => {
         quickToast("请在真机授权位置服务后导航");

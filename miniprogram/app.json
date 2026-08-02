@@ -23,7 +23,7 @@
     "pages/feedback/feedback"
   ],
   "window": {
-    "navigationBarTitleText": "一部手机游黄湖林场",
+    "navigationBarTitleText": "一部手机游海林村",
     "navigationBarBackgroundColor": "#EEF6F4",
     "navigationBarTextStyle": "black",
     "backgroundColor": "#EEF6F4"
@@ -48,7 +48,7 @@
       },
       {
         "pagePath": "pages/food/food",
-        "text": "土狗咖啡",
+        "text": "寻野 cafe",
         "iconPath": "assets/tabbar/food.png",
         "selectedIconPath": "assets/tabbar/food-active.png"
       },

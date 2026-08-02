@@ -119,17 +119,17 @@ assert(Number(summary.totalText) > 0, "cart summary should calculate amount");
 
 const payload = productPage.buildOrderPayload(cart, {
   deliveryType: "pickup",
-  contactName: "黄湖林场游客",
+  contactName: "海林村游客",
   contactPhone: "13800000000",
   deliveryDate: "2026-08-02",
   remark: "测试提交",
 });
 assert.strictEqual(payload.type, "product");
 assert.strictEqual(payload.featureId, "mall");
-assert.strictEqual(payload.contactName, "黄湖林场游客");
+assert.strictEqual(payload.contactName, "海林村游客");
 assert.strictEqual(payload.contactPhone, "13800000000");
 assert.strictEqual(payload.deliveryDate, "2026-08-02");
-assert(payload.pickupSite.includes("黄湖林场"), "pickup order should keep pickup site");
+assert(payload.pickupSite.includes("海林村"), "pickup order should keep pickup site");
 assert.strictEqual(payload.products.length, 2);
 assert.strictEqual(payload.products[0].productName, decorated[0].title);
 assert.strictEqual(payload.products[0].quantity, 2);

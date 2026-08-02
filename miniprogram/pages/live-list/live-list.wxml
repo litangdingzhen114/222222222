@@ -2,7 +2,7 @@
   <view class="live-head">
     <image class="live-head-photo" src="https://www.hailin.store/assets/photos/ricefish-paddy.jpg" mode="aspectFill"></image>
     <view class="live-head-copy">
-      <view class="live-title">黄湖林场慢直播</view>
+      <view class="live-title">海林村慢直播</view>
       <view class="live-subtitle">用一块屏幕，看看村里的风、田和溪水</view>
     </view>
   </view>

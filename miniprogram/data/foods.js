@@ -1,7 +1,7 @@
 module.exports = [
   {
     id: 'xunye-cafe',
-    name: '土狗咖啡',
+    name: '寻野 cafe',
     perCapita: '35元',
     distance: '0.6公里',
     desc: '溪谷边的乡野咖啡、米糕轻食和农家简餐，到店可看山水和田埂。',

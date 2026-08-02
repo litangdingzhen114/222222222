@@ -1,6 +1,6 @@
 module.exports = {
-  villageName: "黄湖林场",
-  locationText: "黄湖林场",
+  villageName: "海林村",
+  locationText: "海林村",
   regionKeywords: ["瓯江", "古树文化", "田鱼", "侨乡", "山水村落"],
 
   // 上线后端域名。真机和正式版必须使用 HTTPS，并配置到微信 request 合法域名。

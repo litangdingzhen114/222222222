@@ -1,7 +1,7 @@
 <view class="ai-page">
   <view class="ai-head">
     <view class="ai-title">智能助手</view>
-    <view class="ai-subtitle">黄湖林场导览助手小林 · 为您推荐路线、餐饮和公共服务</view>
+    <view class="ai-subtitle">海林村导览助手小林 · 为您推荐路线、餐饮和公共服务</view>
   </view>
 
   <scroll-view class="chat-list" scroll-y scroll-into-view="{{lastMessageId}}">

@@ -40,7 +40,7 @@ module.exports = [
   },
   {
     id: "mountain-honey",
-    title: "黄湖林场土蜂蜜",
+    title: "海林村土蜂蜜",
     subtitle: "山野花香，手工分装",
     price: "59.00",
     categoryId: "farm",

@@ -3,7 +3,7 @@
     <image wx:if="{{feature.heroImage}}" class="feature-hero-img" src="{{feature.heroImage}}" mode="aspectFill"></image>
     <view class="feature-hero-shade"></view>
     <view class="feature-hero-copy">
-      <view class="hero-tag">{{feature.heroTag || '黄湖林场服务'}}</view>
+      <view class="hero-tag">{{feature.heroTag || '海林村服务'}}</view>
       <view class="feature-title">{{feature.title}}</view>
       <view class="feature-subtitle">{{feature.subtitle}}</view>
       <view class="chip-row">
@@ -62,7 +62,7 @@
     <view class="checkin-panel">
       <view class="checkin-date">{{date}}</view>
       <view class="checkin-title">{{checkinDone ? '今天已签到' : '今天还没有签到'}}</view>
-      <view class="checkin-desc">签到会增加 5 积分，积分可在黄湖林场权益中心兑换使用。</view>
+      <view class="checkin-desc">签到会增加 5 积分，积分可在海林村权益中心兑换使用。</view>
       <button class="primary-action" disabled="{{checkinDone}}" bindtap="onCheckIn">{{checkinDone ? '今日已完成' : '立即签到 +5积分'}}</button>
     </view>
   </block>

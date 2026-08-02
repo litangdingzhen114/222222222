@@ -99,7 +99,7 @@ assert.strictEqual(userCenter.getStats(state).likes, 0, 'default likes should be
 
 state = userCenter.saveUserCenter({
   profile: {
-    nickname: '黄湖林场访客',
+    nickname: '海林村访客',
     avatarText: '瓯',
     intro: '喜欢瓯江、稻鱼田和古树文化的小程序游客'
   },
@@ -121,7 +121,7 @@ state = userCenter.saveProfile({
   nickname: '测试游客',
   avatarText: '林',
   contact: '13800000000',
-  intro: '测试黄湖林场用户中心'
+  intro: '测试海林村用户中心'
 });
 assert.strictEqual(state.profile.nickname, '测试游客', 'profile nickname should persist');
 assert.strictEqual(state.completedTasks.profile, true, 'saving profile should complete profile task');
@@ -141,7 +141,7 @@ assert.strictEqual(checkin.ok, true, 'first check-in should succeed');
 assert.strictEqual(repeatCheckin.ok, false, 'same-day check-in should be idempotent');
 
 const order = userCenter.addOrder('guide', {
-  service: '黄湖林场讲解跟拍',
+  service: '海林村讲解跟拍',
   item: '基础讲解',
   date: '2026-07-08',
   people: 2,

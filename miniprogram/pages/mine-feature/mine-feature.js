@@ -32,7 +32,7 @@ function getSelectedCard(feature, index) {
 function buildOrderPreview(feature, card, date, people) {
   const isMall = feature && feature.id === 'mall';
   return {
-    service: (feature && feature.service) || '黄湖林场服务',
+    service: (feature && feature.service) || '海林村服务',
     item: card.title || '请选择服务',
     price: card.price || '后台确认',
     date: date || todayText(),

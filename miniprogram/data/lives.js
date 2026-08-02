@@ -1,7 +1,7 @@
 module.exports = [
   {
     id: 'square',
-    title: '黄湖林场入口会客点',
+    title: '海林村入口会客点',
     viewers: 128,
     desc: '接入真实摄像头后，可展示村口游客中心与村庄晨昏。',
     imageClass: 'ph-oujiang',

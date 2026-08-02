@@ -3,7 +3,7 @@
     <image class="booking-hero-img" src="/assets/photos/ai-chenrongkao-tree.jpg" mode="aspectFill"></image>
     <view class="booking-hero-shade"></view>
     <view class="booking-hero-copy">
-      <view class="booking-kicker">黄湖林场导览</view>
+      <view class="booking-kicker">海林村导览</view>
       <view class="booking-title">把讲解、课程和场地一次约清楚</view>
       <view class="booking-desc">适合亲子、学校、团队和到村访客，提交后由后台确认讲解员、场地与时间。</view>
     </view>

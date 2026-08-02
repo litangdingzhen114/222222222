@@ -56,8 +56,8 @@ function buildDisplaySpot(spot) {
 
   return {
     ...spot,
-    kicker: spot.kicker || spot.category || '黄湖林场点位',
-    lead: spot.lead || spot.desc || '黄湖林场重点到访点位。',
+    kicker: spot.kicker || spot.category || '海林村点位',
+    lead: spot.lead || spot.desc || '海林村重点到访点位。',
     mood: spot.mood || '建议把它放进一条慢游路线里，而不是匆匆打卡。',
     stats,
     story,
@@ -171,7 +171,7 @@ Page({
 
   onShareAppMessage() {
     return {
-      title: this.data.spot ? `黄湖林场${this.data.spot.name}` : '一部手机游黄湖林场',
+      title: this.data.spot ? `海林村${this.data.spot.name}` : '一部手机游海林村',
       path: this.data.spot ? `/pages/spot-detail/spot-detail?id=${this.data.spot.id}` : '/pages/home/home'
     };
   }

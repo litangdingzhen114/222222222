@@ -27,7 +27,7 @@ Page({
         role: "assistant",
         source: "local",
         content:
-          "您好，我是黄湖林场导览助手小林，可以帮您推荐路线、美食、公共服务点、住宿和黄湖林场文化。",
+          "您好，我是海林村导览助手小林，可以帮您推荐路线、美食、公共服务点、住宿和海林村文化。",
       },
     ],
   },
@@ -74,7 +74,7 @@ Page({
       id: `msg-${nextIndex + 1}`,
       role: "assistant",
       source: "loading",
-      content: "小林正在整理黄湖林场村导览建议...",
+      content: "小林正在整理海林村导览建议...",
     };
     const messages = this.data.messages.concat(userMessage, loadingMessage);
 

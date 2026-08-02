@@ -53,7 +53,7 @@ module.exports = {
     },
     {
       id: "hailin-creek",
-      title: "黄湖溪谷",
+      title: "海林·溪谷",
       subtitle: "溪谷步道、石桥和亲水慢行",
       buttonText: "去导航",
       icon: "溪",
@@ -90,7 +90,7 @@ module.exports = {
       label: "深度一日",
       title: "古树年轮一日游",
       time: "约 8 小时",
-      route: "村情馆 - 稻鱼田 - 田鱼家宴 - 石纹工坊 - 土狗咖啡",
+      route: "村情馆 - 稻鱼田 - 田鱼家宴 - 石纹工坊 - 寻野 cafe",
       highlights: ["文化体验", "摄影友好", "餐食完整"],
       imageUrl: "https://www.hailin.store/assets/photos/ai-stone-souvenir.jpg",
       url: "/pages/route-detail/route-detail?id=one-day",
@@ -111,7 +111,7 @@ module.exports = {
     {
       id: "monitor",
       title: "实时监控",
-      desc: "查看黄湖林场慢直播，了解田园、溪谷和村口实时画面。",
+      desc: "查看海林村慢直播，了解田园、溪谷和村口实时画面。",
       status: "直播看景",
       actionText: "查看直播",
       icon: "播",
@@ -159,7 +159,7 @@ module.exports = {
           imageUrl: "https://www.hailin.store/assets/photos/ai-product-black-pork.jpg",
         },
         {
-          title: "黄湖林场土蜂蜜",
+          title: "海林村土蜂蜜",
           imageClass: "ph-product-honey",
           icon: "蜜",
           imageUrl: "https://www.hailin.store/assets/photos/ai-product-honey.jpg",
@@ -178,7 +178,7 @@ module.exports = {
           imageUrl: "https://www.hailin.store/assets/photos/ai-map-tianpu-station.jpg",
         },
         {
-          title: "黄湖溪谷",
+          title: "海林·溪谷",
           imageClass: "ph-creek",
           icon: "溪",
           imageUrl: "https://www.hailin.store/assets/photos/ai-map-hailin-creek.jpg",
@@ -203,14 +203,14 @@ module.exports = {
     },
     {
       id: "creek-valley",
-      title: "黄湖溪谷",
+      title: "海林·溪谷",
       imageClass: "ph-creek",
       icon: "溪",
       imageUrl: "https://www.hailin.store/assets/photos/ai-map-hailin-creek.jpg",
     },
     {
       id: "museum",
-      title: "黄湖林场展陈馆",
+      title: "海林村展陈馆",
       imageClass: "ph-village",
       icon: "馆",
       imageUrl: "https://www.hailin.store/assets/photos/ai-village-gate.jpg",
@@ -224,7 +224,7 @@ module.exports = {
     },
     {
       id: "xunye-cafe",
-      title: "土狗咖啡",
+      title: "寻野 cafe",
       imageClass: "ph-xunye",
       icon: "啡",
       imageUrl: "https://www.hailin.store/assets/photos/ai-xunye-cafe.jpg",
@@ -242,7 +242,7 @@ module.exports = {
     {
       id: "chicken",
       title: "土鸡可以提前预订，到村前让后台确认库存",
-      user: "黄湖林场农品站",
+      user: "海林村农品站",
       imageClass: "ph-product-chicken",
       icon: "鸡",
       imageUrl: "https://www.hailin.store/assets/photos/ai-product-native-chicken.jpg",
@@ -258,7 +258,7 @@ module.exports = {
     {
       id: "monitor",
       title: "先看慢直播：田园、溪谷和集市素材可以循环播放",
-      user: "黄湖林场运营中心",
+      user: "海林村运营中心",
       imageClass: "ph-ricefish",
       icon: "播",
       imageUrl: "https://www.hailin.store/assets/photos/ricefish-paddy.jpg",
@@ -273,7 +273,7 @@ module.exports = {
     },
     {
       id: "creek-valley",
-      title: "黄湖溪谷适合慢行、亲水和户外场地活动",
+      title: "海林·溪谷适合慢行、亲水和户外场地活动",
       user: "溪谷向导",
       imageClass: "ph-creek",
       icon: "溪",
@@ -297,8 +297,8 @@ module.exports = {
     },
     {
       id: "tea",
-      title: "土狗咖啡 的咖啡和乡野轻食，适合行程最后一站",
-      user: "土狗咖啡",
+      title: "寻野 cafe 的咖啡和乡野轻食，适合行程最后一站",
+      user: "寻野 cafe",
       imageClass: "ph-xunye",
       icon: "啡",
       imageUrl: "https://www.hailin.store/assets/photos/ai-xunye-cafe.jpg",
@@ -314,7 +314,7 @@ module.exports = {
     {
       id: "service",
       title: "到村先看服务卡：停车、公厕、讲解和慢直播都能查",
-      user: "黄湖林场游客中心",
+      user: "海林村游客中心",
       imageClass: "ph-village",
       icon: "服",
       imageUrl: "https://www.hailin.store/assets/photos/ai-village-gate.jpg",

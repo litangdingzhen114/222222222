@@ -175,7 +175,7 @@ function adaptBanners(list, fallbackValue) {
   return normalizePageList(list).map((item, index) => ({
     id: item.id || `banner-${index}`,
     title:
-      item.title || fallbackItemAt(fallback, index).title || "黄湖林场欢迎你",
+      item.title || fallbackItemAt(fallback, index).title || "海林村欢迎你",
     subtitle:
       item.subtitle ||
       item.summary ||
@@ -230,7 +230,7 @@ function adaptFoods(remoteValue, fallbackValue) {
     const fallbackItem = fallback[index % Math.max(fallback.length, 1)] || {};
     return {
       id: item.id || fallbackItem.id || `food-${index}`,
-      name: item.name || fallbackItem.name || "黄湖林场乡味",
+      name: item.name || fallbackItem.name || "海林村乡味",
       perCapita: item.avgPrice
         ? `${moneyText(item.avgPrice)}元`
         : fallbackItem.perCapita || "到店咨询",
@@ -260,7 +260,7 @@ function adaptSpots(remoteValue, fallbackValue) {
         item.title ||
         fallbackItem.name ||
         fallbackItem.title ||
-        "黄湖林场景点",
+        "海林村景点",
       category: item.tags?.[0] || fallbackItem.category || "乡村景点",
       tags: item.tags || fallbackItem.tags || [],
       openTime: item.openingHours || fallbackItem.openTime || "",
@@ -278,7 +278,7 @@ function adaptSpots(remoteValue, fallbackValue) {
         item.name ||
         fallbackItem.title ||
         fallbackItem.name ||
-        "黄湖林场景点",
+        "海林村景点",
       subtitle:
         item.subtitle ||
         item.summary ||
@@ -308,7 +308,7 @@ function adaptRoutes(remoteValue, fallbackValue) {
       item.name ||
       fallbackItem.title ||
       fallbackItem.name ||
-      "黄湖林场路线";
+      "海林村路线";
     const timeline =
       Array.isArray(item.timeline) && item.timeline.length
         ? item.timeline
@@ -316,7 +316,7 @@ function adaptRoutes(remoteValue, fallbackValue) {
     return {
       ...fallbackItem,
       id: item.id || fallbackItem.id || `route-${index}`,
-      name: item.name || fallbackItem.name || "黄湖林场路线",
+      name: item.name || fallbackItem.name || "海林村路线",
       title: routeTitle,
       subtitle: item.summary || fallbackItem.subtitle || "",
       reason: item.content || item.summary || fallbackItem.reason || "",
@@ -350,7 +350,7 @@ function adaptProducts(remoteValue, fallbackValue) {
     const fallbackItem = fallback[index % Math.max(fallback.length, 1)] || {};
     return {
       id: item.id || fallbackItem.id || `product-${index}`,
-      title: item.name || item.title || fallbackItem.title || "黄湖林场农特产",
+      title: item.name || item.title || fallbackItem.title || "海林村农特产",
       subtitle: item.subtitle || fallbackItem.subtitle || "",
       price: moneyText(item.price) || fallbackItem.price || "",
       categoryId: item.categoryId || fallbackItem.categoryId || "",
@@ -368,7 +368,7 @@ function localProducts(fallbackValue) {
   return (Array.isArray(fallbackValue) ? fallbackValue : []).map(
     (item, index) => ({
       id: item.id || `local-product-${index}`,
-      title: item.title || item.name || "黄湖林场农特产",
+      title: item.title || item.name || "海林村农特产",
       subtitle: item.subtitle || "",
       price: item.price || "",
       categoryId: item.categoryId || "",
@@ -420,7 +420,7 @@ function adaptLives(remoteValue, fallbackValue) {
     const fallbackItem = fallback[index % Math.max(fallback.length, 1)] || {};
     return {
       id: item.id || fallbackItem.id || `live-${index}`,
-      title: item.name || item.title || fallbackItem.title || "黄湖林场慢直播",
+      title: item.name || item.title || fallbackItem.title || "海林村慢直播",
       viewers: fallbackItem.viewers || 0,
       desc: item.description || fallbackItem.desc || "",
       imageClass: fallbackItem.imageClass || "ph-oujiang",
@@ -499,7 +499,7 @@ function getLocalHomeFallback() {
     feeds: recommend.feeds,
     notice:
       "今日推荐：先到游客中心确认停车与讲解，再走溪谷步道，午餐预约稻田田鱼家宴",
-    weather: "黄湖林场文旅信息持续更新中，实际服务以村庄公告和现场确认为准",
+    weather: "海林村文旅信息持续更新中，实际服务以村庄公告和现场确认为准",
     serviceMode: serviceModeText(),
     locationText: serviceConfig.locationText,
   };
