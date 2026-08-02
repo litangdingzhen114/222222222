@@ -63,6 +63,8 @@ assert(mineJs.includes('/pages/user-list/user-list'), 'stats should navigate to 
 assert(mineJs.includes('/pages/mine-feature/mine-feature'), 'orders and rights should navigate to feature page');
 assert(mineJs.includes('/pages/publish/publish'), 'publish should navigate to publish page');
 assert(mineWxml.includes('avatar-img'), 'mine page should render image avatar before text fallback');
+assert(user.avatarUrl === '/assets/avatar/default-avatar.jpg', 'default visitor should use compressed custom avatar');
+assert(fs.existsSync(path.join(root, 'miniprogram/assets/avatar/default-avatar.jpg')), 'compressed custom avatar asset should exist');
 assert(!profileEditWxml.includes('例如：瓯、海、青'), 'profile edit should not expose demo avatar text copy');
 
 const spotIds = new Set(spots.map((item) => item.id));
@@ -101,6 +103,7 @@ state = userCenter.saveUserCenter({
   profile: {
     nickname: '海林村访客',
     avatarText: '瓯',
+    avatarUrl: '/assets/tabbar/mine-active.png',
     intro: '喜欢瓯江、稻鱼田和古树文化的小程序游客'
   },
   notes: [{ id: 'legacy-note' }],
@@ -111,6 +114,7 @@ state = userCenter.saveUserCenter({
 });
 assert.strictEqual(state.profile.nickname, '微信游客', 'legacy demo profile should be migrated to clean visitor');
 assert.strictEqual(state.profile.avatarText, '', 'legacy text avatar should be removed');
+assert.strictEqual(state.profile.avatarUrl, '/assets/avatar/default-avatar.jpg', 'legacy tabbar avatar should migrate to compressed custom avatar');
 assert.strictEqual(userCenter.getStats(state).notes, 0, 'legacy demo notes should be cleared');
 assert.strictEqual(userCenter.getStats(state).favorites, 0, 'legacy demo favorites should be cleared');
 assert.strictEqual(userCenter.getStats(state).likes, 0, 'legacy demo likes should be cleared');

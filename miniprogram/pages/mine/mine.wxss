@@ -73,8 +73,9 @@
 }
 
 .avatar-img {
-  width: 76rpx;
-  height: 76rpx;
+  width: 142rpx;
+  height: 142rpx;
+  border-radius: 50%;
 }
 
 .profile-info {

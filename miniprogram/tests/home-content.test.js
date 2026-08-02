@@ -263,6 +263,10 @@ const sectionTitleWxml = fs.readFileSync(
   path.join(root, "miniprogram/components/section-title/section-title.wxml"),
   "utf8",
 );
+const sectionTitleJs = fs.readFileSync(
+  path.join(root, "miniprogram/components/section-title/section-title.js"),
+  "utf8",
+);
 const sectionTitleWxss = fs.readFileSync(
   path.join(root, "miniprogram/components/section-title/section-title.wxss"),
   "utf8",
@@ -352,6 +356,30 @@ assert(
   homeWxss.includes("service-card"),
   "home page should style service cards",
 );
+assert(
+  sectionTitleWxml.includes("title-icon") &&
+    sectionTitleJs.includes("resolveSectionIcon") &&
+    sectionTitleWxss.includes("title-icon") &&
+    !sectionTitleWxml.includes("title-mark"),
+  "section titles should use small illustrated markers instead of the old vertical bar",
+);
+[
+  "home.png",
+  "home-active.png",
+  "map.png",
+  "map-active.png",
+  "food.png",
+  "food-active.png",
+  "mine.png",
+  "mine-active.png",
+].forEach((filename) => {
+  const filePath = path.join(root, "miniprogram/assets/tabbar", filename);
+  assert(fs.existsSync(filePath), `${filename} tab bar icon should exist`);
+  const buffer = fs.readFileSync(filePath);
+  assert(buffer.length < 8 * 1024, `${filename} tab bar icon should stay lightweight`);
+  assert.strictEqual(buffer.readUInt32BE(16), 81, `${filename} should keep WeChat tab icon width`);
+  assert.strictEqual(buffer.readUInt32BE(20), 81, `${filename} should keep WeChat tab icon height`);
+});
 assert(
   backendServer.includes("itineraries: recommend.itineraries"),
   "backend home defaults should include itineraries",

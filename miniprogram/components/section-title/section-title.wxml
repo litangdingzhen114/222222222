@@ -1,6 +1,6 @@
 <view class="section-title">
   <view class="title-left">
-    <view class="title-mark"></view>
+    <image class="title-icon" src="{{resolvedIcon}}" mode="aspectFit"></image>
     <view class="title-copy">
       <text class="title-text">{{title}}</text>
       <text wx:if="{{subtitle}}" class="title-subtitle">{{subtitle}}</text>

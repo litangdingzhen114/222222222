@@ -1,7 +1,7 @@
 module.exports = {
   nickname: "微信游客",
   avatarText: "",
-  avatarUrl: "/assets/tabbar/mine-active.png",
+  avatarUrl: "/assets/avatar/default-avatar.jpg",
   stats: [
     { id: "notes", label: "游记", value: 0 },
     { id: "favorites", label: "收藏", value: 0 },

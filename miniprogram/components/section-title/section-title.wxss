@@ -12,13 +12,11 @@
   min-width: 0;
 }
 
-.title-mark {
-  flex: 0 0 8rpx;
-  width: 8rpx;
-  height: 36rpx;
-  margin: 6rpx 16rpx 0 0;
-  border-radius: 999rpx;
-  background: #0F6B67;
+.title-icon {
+  flex: 0 0 48rpx;
+  width: 48rpx;
+  height: 48rpx;
+  margin: 0 14rpx 0 0;
 }
 
 .title-copy {

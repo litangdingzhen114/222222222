@@ -1,7 +1,7 @@
 const defaultProfile = {
   nickname: "微信游客",
   avatarText: "",
-  avatarUrl: "/assets/tabbar/mine-active.png",
+  avatarUrl: "/assets/avatar/default-avatar.jpg",
   contact: "",
   intro: "",
 };

@@ -9,6 +9,7 @@ const {
 const STORAGE_KEY = 'hailin_user_center';
 const CLIENT_ID_KEY = 'hailin_client_id';
 const STORAGE_SCHEMA_VERSION = 2;
+const LEGACY_AVATAR_URLS = new Set(['/assets/tabbar/mine-active.png']);
 const memoryStore = {};
 
 function clone(value) {
@@ -80,6 +81,10 @@ function normalizeState(rawState) {
   const defaults = createDefaultState();
   const raw = rawState && typeof rawState === 'object' ? rawState : {};
   if (raw.schemaVersion !== STORAGE_SCHEMA_VERSION) return defaults;
+  const rawAvatarUrl = String((raw.profile && raw.profile.avatarUrl) || '').trim();
+  const avatarUrl = !rawAvatarUrl || LEGACY_AVATAR_URLS.has(rawAvatarUrl)
+    ? defaults.profile.avatarUrl
+    : rawAvatarUrl;
 
   return {
     ...defaults,
@@ -88,7 +93,7 @@ function normalizeState(rawState) {
       ...defaults.profile,
       ...(raw.profile || {}),
       avatarText: String((raw.profile && raw.profile.avatarText) || '').trim().slice(0, 2),
-      avatarUrl: String((raw.profile && raw.profile.avatarUrl) || defaults.profile.avatarUrl || '').trim()
+      avatarUrl
     },
     notes: Array.isArray(raw.notes) ? raw.notes : defaults.notes,
     favorites: Array.isArray(raw.favorites) ? raw.favorites : defaults.favorites,
