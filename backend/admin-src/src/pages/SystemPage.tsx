@@ -79,6 +79,13 @@ const sourceLabel: Record<IntegrationConfigField['source'], { color: string; tex
   none: { color: 'orange', text: '未填写' },
 };
 
+function environmentLabel(value?: string) {
+  if (value === 'production') return '生产环境';
+  if (value === 'development') return '开发环境';
+  if (value === 'test') return '测试环境';
+  return value || '-';
+}
+
 function errorText(error: unknown) {
   return error instanceof Error ? error.message : '操作失败';
 }
@@ -374,7 +381,7 @@ export function SystemPage() {
 
       <Card title="运行环境" loading={isLoading}>
         <Descriptions column={{ xs: 1, md: 2 }} bordered>
-          <Descriptions.Item label="环境">{data?.environment || '-'}</Descriptions.Item>
+          <Descriptions.Item label="环境">{environmentLabel(data?.environment)}</Descriptions.Item>
           <Descriptions.Item label="对外域名">
             {data?.publicBaseUrl ? (
               <Text code>{data.publicBaseUrl}</Text>
@@ -398,7 +405,7 @@ export function SystemPage() {
           showIcon
           type="warning"
           message="仍有第三方服务等待正式凭证配置"
-          description="可以在下方填写正式凭证。密钥不会回显明文，保存后只展示脱敏预览；没有凭证的服务仍会保持等待配置或 fallback 状态。"
+          description="可以在下方填写正式凭证。密钥不会回显明文，保存后只展示脱敏预览；没有凭证的服务仍会保持等待配置或兜底运行状态。"
         />
       ) : null}
 

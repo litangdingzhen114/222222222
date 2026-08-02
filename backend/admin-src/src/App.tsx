@@ -119,6 +119,16 @@ function canAccess(role: AdminRole | undefined, item: (typeof navItems)[number])
   return Boolean(role && item.roles.includes(role));
 }
 
+function roleLabel(role: AdminRole | undefined) {
+  const labels: Record<AdminRole, string> = {
+    CONTENT_OPERATOR: '内容运营',
+    MALL_OPERATOR: '商城运营',
+    ADMIN: '管理员',
+    SUPER_ADMIN: '超级管理员',
+  };
+  return role ? labels[role] : '-';
+}
+
 function useVisibleNavItems(role: AdminRole | undefined) {
   return navItems.filter((item) => canAccess(role, item));
 }
@@ -226,7 +236,7 @@ function AdminLayout() {
           </div>
           <Space>
             <Tag color="green">{admin?.displayName || admin?.username}</Tag>
-            <Tag>{admin?.role || '-'}</Tag>
+            <Tag>{roleLabel(admin?.role)}</Tag>
             <Button icon={<ReloadOutlined />} onClick={refreshAll}>刷新</Button>
             <Button icon={<LogoutOutlined />} onClick={logout}>退出</Button>
           </Space>
