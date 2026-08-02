@@ -2597,6 +2597,56 @@ function deleteAdminCamera(req, id) {
   return { ok: true };
 }
 
+const AI_GUIDE_BETA_LIMIT_REPLY =
+  '小林目前还是测试版，只能回答下方快捷问题和已配置的路线、美食、停车、慢直播、研学、民宿、古树等内容。这个问题暂时不能可靠回答，可以点快捷问题试试。';
+
+function isSupportedGuideQuestion(question) {
+  const text = String(question || '');
+  const lowerText = text.toLowerCase();
+  if (!text.trim()) return false;
+  return [
+    '路线',
+    '怎么玩',
+    '半日',
+    '一日',
+    '雨',
+    '美食',
+    '吃',
+    '田鱼',
+    '家宴',
+    '咖啡',
+    '直播',
+    '摄像头',
+    '监控',
+    '停车',
+    '导航',
+    '厕所',
+    '服务',
+    '住宿',
+    '民宿',
+    '研学',
+    '亲子',
+    '活动',
+    '讲解',
+    '古树',
+    '陈嵘栲',
+    '村树',
+    '文化',
+    '海林',
+    '黄湖',
+    'ai',
+    'api',
+    '模型',
+    '连上',
+    '智能',
+    '助手',
+    '你是谁',
+    '能问',
+    '可以问',
+    '帮助',
+  ].some((keyword) => lowerText.includes(keyword.toLowerCase()));
+}
+
 function localGuideReply(question) {
   const text = String(question || '');
   if (text.includes('路线') || text.includes('怎么玩')) {
@@ -2614,7 +2664,7 @@ function localGuideReply(question) {
   if (text.includes('住宿') || text.includes('民宿')) {
     return '住宿可以优先包装溪谷慢住和侨乡小院，后续接入房态后，可把可订日期、房型和订单状态同步到小程序。';
   }
-  return '我是黄湖林场 AI 导游小林。你可以问我路线、美食、停车、慢直播、研学、民宿和黄湖林场文化。';
+  return AI_GUIDE_BETA_LIMIT_REPLY;
 }
 
 function buildAiPrompt(body) {
@@ -4344,12 +4394,15 @@ async function handleRequest(req, res) {
       const question = body.message || body.question || '';
       let reply = null;
       let source = 'local';
+      const supportedQuestion = isSupportedGuideQuestion(question);
 
-      try {
-        reply = await askKimi(body);
-        source = reply ? 'kimi' : 'local';
-      } catch (error) {
-        logEvent({ level: 'warn', message: 'kimi_request_failed', detail: error.message });
+      if (supportedQuestion) {
+        try {
+          reply = await askKimi(body);
+          source = reply ? 'kimi' : 'local';
+        } catch (error) {
+          logEvent({ level: 'warn', message: 'kimi_request_failed', detail: error.message });
+        }
       }
 
       const answer = reply || localGuideReply(question);

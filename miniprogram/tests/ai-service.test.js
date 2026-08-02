@@ -63,6 +63,15 @@ function createWxMock(responses) {
   });
   assert.strictEqual(wxMock.requests()[0].timeout, 20000);
 
+  const unsupportedWx = createWxMock([]);
+  ai = loadAi(unsupportedWx);
+  result = await ai.askGuide("111", []);
+  assert.strictEqual(result.source, "beta");
+  assert.ok(result.reply.includes("测试版"));
+  assert.strictEqual(unsupportedWx.requests().length, 0);
+  assert.strictEqual(ai.isSupportedGuideQuestion("民宿推荐"), true);
+  assert.strictEqual(ai.isSupportedGuideQuestion("111"), false);
+
   const fallbackWx = createWxMock([
     { statusCode: 500, data: { message: "v1 temporarily unavailable" } },
     { fail: "proxy unavailable" },
