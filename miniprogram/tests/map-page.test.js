@@ -111,8 +111,16 @@ assert(
   "map point sheet should show a location image",
 );
 assert(
-  mapWxss.includes("height: 330rpx") && mapWxss.includes("height: 100%"),
-  "map point sheet image should use a less compressed photo ratio",
+  mapWxml.includes("onActivePointImageError") &&
+    mapJs.includes("imageFailed: false") &&
+    mapJs.includes("onActivePointImageError"),
+  "map point sheet should collapse to fallback content when a remote image fails",
+);
+assert(
+  mapWxss.includes("height: 238rpx") &&
+    mapWxml.includes('mode="aspectFill"') &&
+    mapWxss.includes("max-height: calc(100% - 220rpx)"),
+  "map point sheet photo should keep a compact stable ratio without overflowing the viewport",
 );
 assert(
   mapWxml.includes("activeSubTag === item.value") &&
@@ -120,10 +128,16 @@ assert(
   "map subtag overlay should keep compact labels mapped to full filter values",
 );
 assert(
-  mapWxss.includes("overflow: visible") &&
-    mapWxss.includes("font-size: 20rpx") &&
+  mapWxss.includes("overflow: hidden") &&
+    mapWxss.includes("font-size: 18rpx") &&
     mapWxss.includes("white-space: nowrap"),
-  "map subtag overlay should fit all filter chips without clipping text",
+  "map subtag overlay should keep filter chips inside the viewport",
+);
+assert(
+  mapWxss.includes("flex-wrap: wrap") &&
+    mapWxss.includes("min-width: 0") &&
+    mapWxss.includes("flex-basis: 100%"),
+  "map point sheet action buttons should wrap instead of spilling off-screen",
 );
 assert(
   mapJs.includes("normalizeMapPoints"),

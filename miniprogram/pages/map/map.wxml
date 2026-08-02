@@ -104,7 +104,7 @@
       <cover-view wx:if="{{activePoint}}" class="poi-sheet">
         <cover-view class="poi-close" bindtap="onCloseSheet">×</cover-view>
         <cover-view class="poi-image-wrap">
-          <cover-image wx:if="{{activePoint.imageUrl}}" class="poi-image" src="{{activePoint.imageUrl}}" mode="aspectFill"></cover-image>
+          <cover-image wx:if="{{activePoint.imageUrl && !activePoint.imageFailed}}" class="poi-image" src="{{activePoint.imageUrl}}" mode="aspectFill" binderror="onActivePointImageError"></cover-image>
           <cover-view wx:else class="poi-image-fallback">海林村点位</cover-view>
           <cover-view class="poi-image-label">{{activePoint.subType}}</cover-view>
         </cover-view>

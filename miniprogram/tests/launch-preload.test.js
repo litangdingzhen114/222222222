@@ -27,7 +27,20 @@ assert(launchJs.includes("warmCriticalResources"), "launch page should warm crit
 assert(launchJs.includes("wx.switchTab"), "launch page should enter the home tab");
 assert(launchJs.includes("MIN_SHOW_TIME"), "launch page should avoid a flash-only loading state");
 assert(launchWxml.includes("progress-bar"), "launch page should show visible loading progress");
-assert(launchWxss.includes("launch-bg"), "launch page should use a visual branded background");
+assert(
+  launchWxml.includes("/assets/launch/launch-bg.jpg"),
+  "launch page should use a bundled lightweight background",
+);
+assert(
+  launchWxml.includes("launch-bg-fallback") && launchWxss.includes("launch-bg-fallback"),
+  "launch page should show a CSS fallback while the image is loading",
+);
+const launchBgPath = path.join(root, "miniprogram/assets/launch/launch-bg.jpg");
+assert(fs.existsSync(launchBgPath), "launch bundled background should exist");
+assert(
+  fs.statSync(launchBgPath).size < 80 * 1024,
+  "launch bundled background should stay small enough for fast first paint",
+);
 assert(preloadJs.includes("loadHomeData"), "preload utility should fetch home data");
 assert(preloadJs.includes("loadMapPoints"), "preload utility should warm map data");
 assert(preloadJs.includes("loadProducts"), "preload utility should warm product data");

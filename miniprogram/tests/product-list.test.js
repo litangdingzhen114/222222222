@@ -83,7 +83,7 @@ assert(
   wxss.includes(".cart-dock") &&
     wxss.includes("display: flex") &&
     wxss.includes("max-width: calc(100vw - 48rpx)") &&
-    wxss.includes("max-width: 36%"),
+    wxss.includes("max-width: 34%"),
   "cart dock and checkout button should stay inside the viewport",
 );
 

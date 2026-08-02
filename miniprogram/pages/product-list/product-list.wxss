@@ -499,7 +499,7 @@
   left: 24rpx;
   display: flex;
   align-items: center;
-  gap: 14rpx;
+  gap: 10rpx;
   box-sizing: border-box;
   max-width: calc(100vw - 48rpx);
   min-height: 94rpx;
@@ -580,15 +580,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: 0 0 178rpx;
+  flex: 0 0 156rpx;
   box-sizing: border-box;
-  max-width: 36%;
+  max-width: 34%;
   height: 70rpx;
-  padding: 0 18rpx;
+  padding: 0 12rpx;
   border-radius: 13rpx;
   background: #d99b43;
   color: #2f2414;
-  font-size: 26rpx;
+  font-size: 24rpx;
   font-weight: 800;
   line-height: 1.2;
   white-space: nowrap;
@@ -618,6 +618,8 @@
   right: 0;
   bottom: 0;
   left: 0;
+  box-sizing: border-box;
+  max-width: 100vw;
   overflow: hidden;
   border-radius: 24rpx 24rpx 0 0;
   background: #fbfffd;
@@ -638,6 +640,7 @@
   justify-content: center;
   min-width: 58rpx;
   width: 58rpx;
+  max-width: 58rpx;
   height: 58rpx;
   padding: 0;
   border-radius: 50%;
@@ -650,7 +653,12 @@
 
 .sheet-close.static {
   position: static;
+  flex: 0 0 58rpx;
   flex-shrink: 0;
+  min-width: 58rpx;
+  max-width: 58rpx;
+  width: 58rpx;
+  padding: 0;
   background: #eef4f2;
   box-shadow: none;
 }
@@ -870,8 +878,13 @@
 
 .cart-sheet-head {
   height: 108rpx;
+  box-sizing: border-box;
   padding: 18rpx 26rpx;
   border-bottom: 1rpx solid #dce7e4;
+}
+
+.cart-sheet-head > view {
+  min-width: 0;
 }
 
 .cart-sheet-title {
@@ -993,10 +1006,14 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14rpx;
   margin-top: 16rpx;
+  overflow: hidden;
 }
 
 .delivery-option {
+  display: block;
   box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
   min-height: 112rpx;
   padding: 18rpx;
   border: 1rpx solid #d4e0dd;
@@ -1011,9 +1028,12 @@
 }
 
 .delivery-name {
+  overflow: hidden;
   color: #294e4a;
   font-size: 25rpx;
   font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .delivery-desc {

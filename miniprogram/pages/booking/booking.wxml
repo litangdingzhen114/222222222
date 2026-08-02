@@ -1,6 +1,6 @@
 <view class="page booking-page safe-bottom">
   <view class="booking-hero">
-    <image class="booking-hero-img" src="/assets/photos/ai-chenrongkao-tree.jpg" mode="aspectFill"></image>
+    <image class="booking-hero-img" src="https://www.hailin.store/assets/photos/ai-chenrongkao-tree.jpg" mode="aspectFill"></image>
     <view class="booking-hero-shade"></view>
     <view class="booking-hero-copy">
       <view class="booking-kicker">海林村导览</view>

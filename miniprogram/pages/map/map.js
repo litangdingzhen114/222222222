@@ -481,6 +481,10 @@ Page({
 
   selectPoint(point) {
     if (!point) return;
+    const activePoint = {
+      ...point,
+      imageFailed: false,
+    };
 
     const filteredPoints = this.data.filteredPoints.some(
       (item) => item.id === point.id,
@@ -488,7 +492,7 @@ Page({
       ? this.data.filteredPoints
       : [point, ...this.data.filteredPoints];
     this.setData({
-      activePoint: point,
+      activePoint,
       center: {
         latitude: point.latitude,
         longitude: point.longitude,
@@ -498,6 +502,16 @@ Page({
       routePanelOpen: false,
       activeRoute: null,
       polylines: [],
+    });
+  },
+
+  onActivePointImageError() {
+    if (!this.data.activePoint) return;
+    this.setData({
+      activePoint: {
+        ...this.data.activePoint,
+        imageFailed: true,
+      },
     });
   },
 

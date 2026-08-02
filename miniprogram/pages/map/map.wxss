@@ -190,7 +190,8 @@
   align-items: center;
   justify-content: flex-start;
   box-sizing: border-box;
-  width: 276rpx;
+  max-width: 360rpx;
+  width: auto;
   height: 70rpx;
   padding: 0 20rpx;
   overflow: hidden;
@@ -205,26 +206,26 @@
 
 .subtag-float {
   position: absolute;
-  left: 18rpx;
-  right: 18rpx;
+  left: 14rpx;
+  right: 14rpx;
   top: 22rpx;
   display: flex;
   flex-wrap: nowrap;
-  gap: 6rpx;
+  gap: 4rpx;
   box-sizing: border-box;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .subtag-item {
   flex: 1 1 0;
   min-width: 0;
   box-sizing: border-box;
-  padding: 9rpx 0;
+  padding: 8rpx 0;
   border: 2rpx solid rgba(15, 107, 103, 0.36);
   border-radius: 8rpx;
   background: rgba(251, 255, 252, 0.92);
   color: #193C3A;
-  font-size: 20rpx;
+  font-size: 18rpx;
   font-weight: 800;
   line-height: 1.1;
   text-align: center;
@@ -335,7 +336,10 @@
   left: 18rpx;
   right: 18rpx;
   bottom: 28rpx;
+  box-sizing: border-box;
+  max-height: calc(100% - 220rpx);
   padding: 14rpx;
+  overflow: hidden;
   border: 2rpx solid rgba(25, 60, 58, 0.08);
   border-radius: 22rpx;
   background: #FBFFFC;
@@ -360,7 +364,7 @@
 
 .poi-image-wrap {
   position: relative;
-  height: 330rpx;
+  height: 238rpx;
   overflow: hidden;
   border-radius: 16rpx;
   background: #DCEDEA;
@@ -375,7 +379,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 330rpx;
+  height: 238rpx;
   color: #315A4E;
   font-size: 28rpx;
   font-weight: 900;
@@ -399,9 +403,13 @@
 
 .poi-name {
   padding-right: 56rpx;
+  overflow: hidden;
   color: #193C3A;
   font-size: 32rpx;
   font-weight: 900;
+  line-height: 1.22;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .poi-meta {
@@ -416,10 +424,14 @@
   color: #315A4E;
   font-size: 24rpx;
   line-height: 1.45;
+  max-height: 70rpx;
+  overflow: hidden;
 }
 
 .poi-info-row {
   display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
   margin-top: 14rpx;
 }
 
@@ -437,23 +449,28 @@
   color: #607F7A;
   font-size: 22rpx;
   line-height: 1.45;
+  max-height: 64rpx;
+  overflow: hidden;
 }
 
 .poi-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 12rpx;
-  margin-top: 20rpx;
+  margin-top: 16rpx;
 }
 
 .poi-btn {
-  flex: 1;
+  flex: 1 1 0;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
   min-width: 0;
-  height: 66rpx;
+  height: 62rpx;
+  padding: 0 8rpx;
   border-radius: 999rpx;
-  font-size: 24rpx;
+  font-size: 22rpx;
   font-weight: 900;
 }
 
@@ -463,6 +480,7 @@
 }
 
 .poi-btn.primary {
+  flex-basis: 100%;
   background: #0F6B67;
   color: #FBFFFC;
 }

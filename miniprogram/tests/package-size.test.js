@@ -37,6 +37,39 @@ function walk(dir, prefix = "") {
 
 const uploadBytes = walk(miniprogramRoot);
 
+function collectFiles(dir, prefix = "", files = []) {
+  for (const name of fs.readdirSync(dir)) {
+    const filePath = path.join(dir, name);
+    const relativePath = prefix ? `${prefix}/${name}` : name;
+    if (isIgnored(relativePath)) continue;
+    const stats = fs.statSync(filePath);
+    if (stats.isDirectory()) {
+      collectFiles(filePath, relativePath, files);
+    } else if (/\.(js|json|wxml|wxss)$/.test(name)) {
+      files.push(filePath);
+    }
+  }
+  return files;
+}
+
+const badIgnoredAssetReferences = collectFiles(miniprogramRoot)
+  .filter((filePath) => !filePath.endsWith("miniprogram/services/content.js"))
+  .map((filePath) => {
+    const source = fs.readFileSync(filePath, "utf8");
+    const relativePath = path.relative(root, filePath);
+    const matches = [];
+    source.split(/\n/).forEach((line, index) => {
+      if (
+        line.includes("/assets/photos/") &&
+        !line.includes("https://www.hailin.store/assets/photos/")
+      ) {
+        matches.push(`${relativePath}:${index + 1}`);
+      }
+    });
+    return matches;
+  })
+  .flat();
+
 assert(
   uploadBytes <= maxUploadBytes,
   `miniprogram upload source should stay under 2MB, got ${(uploadBytes / 1024).toFixed(1)}KB`,
@@ -44,6 +77,11 @@ assert(
 assert(
   ignoredFolders.has("assets/photos"),
   "large photo assets should be loaded from https://www.hailin.store instead of bundled in the upload package",
+);
+assert.deepStrictEqual(
+  badIgnoredAssetReferences,
+  [],
+  "uploaded mini program files must not reference ignored local /assets/photos images",
 );
 
 console.log(`miniprogram upload source size ok: ${(uploadBytes / 1024).toFixed(1)}KB`);

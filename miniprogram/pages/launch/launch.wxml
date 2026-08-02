@@ -1,5 +1,6 @@
 <view class="launch-page">
-  <image class="launch-bg" src="/assets/photos/ai-map-hailin-creek.jpg" mode="aspectFill"></image>
+  <view class="launch-bg-fallback"></view>
+  <image class="launch-bg" src="/assets/launch/launch-bg.jpg" mode="aspectFill"></image>
   <view class="launch-shade"></view>
 
   <view class="launch-content">
