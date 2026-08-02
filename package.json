@@ -27,9 +27,10 @@
     "test:security": "node backend/test-security.js",
     "test:api": "node miniprogram/tests/api-service.test.js",
     "test:ai": "node miniprogram/tests/ai-service.test.js",
+    "test:ai-page": "node miniprogram/tests/ai-guide-page.test.js",
     "test:live": "node miniprogram/tests/live-detail.test.js",
     "test:package-size": "node miniprogram/tests/package-size.test.js",
-    "test": "node backend/test-kimi.js && node backend/test-vercel-adapter.js && node backend/test-production.js && node backend/test-security.js && node backend/test-admin-ops.js && node miniprogram/tests/api-contract.test.js && node miniprogram/tests/home-content.test.js && node miniprogram/tests/launch-preload.test.js && node miniprogram/tests/spot-detail.test.js && node miniprogram/tests/product-list.test.js && node miniprogram/tests/entry-depth.test.js && node miniprogram/tests/mine-page.test.js && node miniprogram/tests/map-page.test.js && node miniprogram/tests/api-service.test.js && node miniprogram/tests/ai-service.test.js && node miniprogram/tests/live-detail.test.js && node miniprogram/tests/package-size.test.js"
+    "test": "node backend/test-kimi.js && node backend/test-vercel-adapter.js && node backend/test-production.js && node backend/test-security.js && node backend/test-admin-ops.js && node miniprogram/tests/api-contract.test.js && node miniprogram/tests/home-content.test.js && node miniprogram/tests/launch-preload.test.js && node miniprogram/tests/spot-detail.test.js && node miniprogram/tests/product-list.test.js && node miniprogram/tests/entry-depth.test.js && node miniprogram/tests/mine-page.test.js && node miniprogram/tests/map-page.test.js && node miniprogram/tests/api-service.test.js && node miniprogram/tests/ai-service.test.js && node miniprogram/tests/ai-guide-page.test.js && node miniprogram/tests/live-detail.test.js && node miniprogram/tests/package-size.test.js"
   },
   "engines": {
     "node": ">=18"

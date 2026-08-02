@@ -11,7 +11,17 @@
       id="{{item.id}}"
       class="message-row {{item.role === 'user' ? 'user' : 'assistant'}}"
     >
-      <view class="avatar">{{item.role === 'user' ? '客' : '林'}}</view>
+      <view class="avatar">
+        <image
+          wx:if="{{item.role === 'user' ? !userAvatarFailed : !assistantAvatarFailed}}"
+          class="avatar-img"
+          src="{{item.role === 'user' ? userAvatarUrl : assistantAvatarUrl}}"
+          mode="aspectFill"
+          data-role="{{item.role}}"
+          binderror="onAvatarError"
+        ></image>
+        <text wx:else>{{item.role === 'user' ? '客' : '林'}}</text>
+      </view>
       <view class="message-bubble">
         <text>{{item.content}}</text>
       </view>

@@ -11,6 +11,10 @@ Page({
     inputValue: "",
     lastMessageId: "msg-0",
     isSending: false,
+    assistantAvatarUrl: "/assets/icons/ai.png",
+    userAvatarUrl: "/assets/avatar/default-avatar.jpg",
+    assistantAvatarFailed: false,
+    userAvatarFailed: false,
     quickQuestions: [
       "半日路线",
       "亲子研学",
@@ -54,6 +58,15 @@ Page({
 
   onSend() {
     this.sendQuestion(this.data.inputValue);
+  },
+
+  onAvatarError(event) {
+    const role = event.currentTarget.dataset.role;
+    if (role === "user") {
+      this.setData({ userAvatarFailed: true });
+      return;
+    }
+    this.setData({ assistantAvatarFailed: true });
   },
 
   sendQuestion(rawQuestion) {
