@@ -740,6 +740,7 @@ function replaceNamingText(text, values) {
 
 function collapseDuplicateNamingText(text, values) {
   const place = values.placeName;
+  const cafe = values.cafeName;
   return [
     `${place} · ${place}`,
     `${place}·${place}`,
@@ -750,7 +751,17 @@ function collapseDuplicateNamingText(text, values) {
     `${place}/${place}`,
     `${place} ${place}`,
     `${place}${place}`,
-  ].reduce((next, pattern) => next.split(pattern).join(place), text);
+    `${cafe}村咖`,
+    `${cafe}咖啡`,
+    `${cafe}${cafe}`,
+  ].reduce((next, pattern) => {
+    const replacement = pattern.includes(cafe) ? cafe : place;
+    let collapsed = next;
+    while (collapsed.includes(pattern)) {
+      collapsed = collapsed.split(pattern).join(replacement);
+    }
+    return collapsed;
+  }, text);
 }
 
 function transformNamingValue(value, values) {

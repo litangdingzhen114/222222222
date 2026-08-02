@@ -220,11 +220,13 @@ describe('内容命名方案配置链路', () => {
     const transformed = await service.transformResponse({
       title: '黄湖林场春日慢游',
       cafe: '土狗咖啡',
+      cafeTitle: '寻野村咖村咖开坐',
       scenic: '古树年轮',
     });
     expect(transformed).toEqual({
       title: '海林村春日慢游',
       cafe: '寻野村咖',
+      cafeTitle: '寻野村咖开坐',
       scenic: '陈嵘栲古树',
     });
   });

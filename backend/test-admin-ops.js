@@ -169,11 +169,13 @@ async function main() {
   const defaultNamedHomeText = JSON.stringify(defaultNamedHome.body.data);
   assert(defaultNamedHomeText.includes('海林村'), 'public home should use Hailin naming by default');
   assert(defaultNamedHomeText.includes('寻野村咖'), 'public home should use 寻野村咖 naming by default');
+  assert(!defaultNamedHomeText.includes('寻野村咖村咖'), 'public home should not duplicate cafe naming');
   const defaultNamedV1Home = await requestJson(`http://${HOST}:${PORT}/api/v1/home`);
   assert.strictEqual(defaultNamedV1Home.status, 200);
   const defaultNamedV1HomeText = JSON.stringify(defaultNamedV1Home.body.data);
   assert(defaultNamedV1HomeText.includes('海林村'), 'v1 home should use Hailin naming by default');
   assert(defaultNamedV1HomeText.includes('寻野村咖'), 'v1 home should use 寻野村咖 naming by default');
+  assert(!defaultNamedV1HomeText.includes('寻野村咖村咖'), 'v1 home should not duplicate cafe naming');
 
   const legacyNaming = await requestJson(`http://${HOST}:${PORT}/api/admin/naming-profile`, {
     method: 'PUT',
@@ -189,6 +191,7 @@ async function main() {
   assert(legacyNamedHomeText.includes('寻野村咖'), 'legacy naming requests should stay on 寻野村咖 wording');
   assert(!legacyNamedHomeText.includes('黄湖林场'), 'public home should not switch to old wording');
   assert(!legacyNamedHomeText.includes('土狗咖啡'), 'public home should not switch to old cafe wording');
+  assert(!legacyNamedHomeText.includes('寻野村咖村咖'), 'legacy naming should not duplicate cafe wording');
 
   const restoredNaming = await requestJson(`http://${HOST}:${PORT}/api/admin/naming-profile`, {
     method: 'PUT',
