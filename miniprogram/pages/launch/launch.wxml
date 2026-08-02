@@ -1,0 +1,31 @@
+<view class="launch-page">
+  <image class="launch-bg" src="/assets/photos/ai-map-hailin-creek.jpg" mode="aspectFill"></image>
+  <view class="launch-shade"></view>
+
+  <view class="launch-content">
+    <view class="brand-mark">
+      <image class="brand-icon" src="/assets/tabbar/home-active.png" mode="aspectFit"></image>
+    </view>
+    <view class="brand-kicker">黄湖林场</view>
+    <view class="brand-title">一部手机游黄湖林场</view>
+    <view class="brand-subtitle">正在准备路线、地图、农品和到村服务</view>
+
+    <view class="progress-card">
+      <view class="progress-head">
+        <text>{{progressText}}</text>
+        <text>{{progress}}%</text>
+      </view>
+      <view class="progress-track">
+        <view class="progress-bar" style="width: {{progress}}%;"></view>
+      </view>
+      <view class="preload-row">
+        <view wx:for="{{steps}}" wx:key="label" class="preload-step {{item.done ? 'done' : ''}}">
+          <view class="step-dot"></view>
+          <text>{{item.label}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <button class="skip-btn" bindtap="onSkip">直接进入</button>
+</view>

@@ -2,6 +2,7 @@ const {
   getLocalHomeFallback,
   loadHomeData,
 } = require("../../services/content");
+const { getHomePreloadCache } = require("../../utils/preload");
 const { featureComing, quickToast } = require("../../utils/mock");
 
 const PENDING_MAP_POINT_KEY = "hailin_pending_map_point";
@@ -102,17 +103,25 @@ Page({
   },
 
   onLoad() {
-    this.loadPageData();
+    const cachedHome = getHomePreloadCache();
+    if (cachedHome) {
+      this.setData(buildHomeViewData(cachedHome));
+    }
+    this.loadPageData({ keepCurrent: Boolean(cachedHome) });
   },
 
-  loadPageData() {
-    this.setData(buildHomeViewData(getLocalHomeFallback()));
+  loadPageData(options = {}) {
+    if (!options.keepCurrent) {
+      this.setData(buildHomeViewData(getLocalHomeFallback()));
+    }
     loadHomeData()
       .then((data) => {
         this.setData(buildHomeViewData(data));
       })
       .catch(() => {
-        this.setData(buildHomeViewData(getLocalHomeFallback()));
+        if (!options.keepCurrent) {
+          this.setData(buildHomeViewData(getLocalHomeFallback()));
+        }
       });
   },
 
