@@ -169,6 +169,11 @@ async function main() {
   const defaultNamedHomeText = JSON.stringify(defaultNamedHome.body.data);
   assert(defaultNamedHomeText.includes('海林村'), 'public home should use Hailin naming by default');
   assert(defaultNamedHomeText.includes('寻野 cafe'), 'public home should use Xunye cafe naming by default');
+  const defaultNamedV1Home = await requestJson(`http://${HOST}:${PORT}/api/v1/home`);
+  assert.strictEqual(defaultNamedV1Home.status, 200);
+  const defaultNamedV1HomeText = JSON.stringify(defaultNamedV1Home.body.data);
+  assert(defaultNamedV1HomeText.includes('海林村'), 'v1 home should use Hailin naming by default');
+  assert(defaultNamedV1HomeText.includes('寻野 cafe'), 'v1 home should use Xunye cafe naming by default');
 
   const huanghuNaming = await requestJson(`http://${HOST}:${PORT}/api/admin/naming-profile`, {
     method: 'PUT',
