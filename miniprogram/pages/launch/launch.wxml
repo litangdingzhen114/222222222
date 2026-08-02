@@ -25,7 +25,6 @@
       <view class="route-track"></view>
       <view wx:for="{{steps}}" wx:key="label" class="route-node {{item.done ? 'done' : ''}}">
         <view class="node-dot"></view>
-        <text>{{item.label}}</text>
       </view>
     </view>
 
@@ -40,7 +39,7 @@
       <view class="progress-track">
         <view class="progress-bar" style="width: {{progress}}%;"></view>
       </view>
-      <view class="launch-footnote">正在同步首页、地图点位和农品预订数据</view>
+      <view class="launch-footnote">山水、田园、村咖和村树，都在前面等你</view>
     </view>
   </view>
 </view>

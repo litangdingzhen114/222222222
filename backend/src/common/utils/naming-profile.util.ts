@@ -1,4 +1,4 @@
-export type NamingProfileMode = 'huanghu' | 'hailin';
+export type NamingProfileMode = 'hailin';
 
 export interface NamingProfileValues {
   id: NamingProfileMode;
@@ -23,25 +23,15 @@ export const NAMING_PROFILE_CONFIG_SERVICE = 'content';
 export const NAMING_PROFILE_CONFIG_KEY = 'CONTENT_NAMING_PROFILE';
 
 export const NAMING_PROFILE_DEFAULTS: Record<NamingProfileMode, NamingProfileValues> = {
-  huanghu: {
-    id: 'huanghu',
-    label: '黄湖林场 / 土狗咖啡',
-    appTitle: '一部手机游黄湖林场',
-    placeName: '黄湖林场',
-    villageName: '黄湖林场',
-    regionName: '黄湖林场',
-    creekName: '黄湖溪谷',
-    cafeName: '土狗咖啡',
-  },
   hailin: {
     id: 'hailin',
-    label: '海林青田 / 寻野 cafe',
+    label: '海林村 / 寻野村咖',
     appTitle: '一部手机游海林村',
     placeName: '海林村',
     villageName: '海林村',
-    regionName: '青田海林',
+    regionName: '海林村',
     creekName: '海林·溪谷',
-    cafeName: '寻野 cafe',
+    cafeName: '寻野村咖',
   },
 };
 export const DEFAULT_NAMING_PROFILE_MODE: NamingProfileMode = 'hailin';
@@ -52,7 +42,7 @@ function cleanText(value: unknown, maxLength = 80) {
 }
 
 function cleanMode(value: unknown): NamingProfileMode {
-  if (value === 'huanghu' || value === 'hailin') return value;
+  if (value === 'hailin') return value;
   return DEFAULT_NAMING_PROFILE_MODE;
 }
 
@@ -82,7 +72,6 @@ export function normalizeNamingProfile(value: unknown): NamingProfileState {
   };
   const mode = cleanMode(input.mode);
   const profiles = {
-    huanghu: cleanProfile('huanghu', input.profiles?.huanghu),
     hailin: cleanProfile('hailin', input.profiles?.hailin),
   };
   return {
@@ -104,26 +93,15 @@ export function parseNamingProfileJson(value: string | null | undefined) {
 }
 
 export function namingReplacementPairs(values: NamingProfileValues): Array<[string, string]> {
-  if (values.id === 'hailin') {
-    return [
-      ['一部手机游黄湖林场', values.appTitle],
-      ['黄湖溪谷', values.creekName],
-      ['土狗咖啡', values.cafeName],
-      ['黄湖林场慢直播', '海林慢直播'],
-      ['黄湖林场农品', '海林农品'],
-      ['黄湖林场长廊', '海林长廊'],
-      ['稻田田鱼', '青田田鱼'],
-      ['古树年轮拓印', '青田石纹手作'],
-      ['古树年轮手作', '青田石手作'],
-      ['古树年轮', '青田石韵'],
-      ['古树文化', '青田石'],
-      ['黄湖林场', values.placeName],
-    ];
-  }
-
   return [
+    ['一部手机游黄湖林场', values.appTitle],
     ['一部手机游青田海林', values.appTitle],
     ['一部手机游海林村', values.appTitle],
+    ['黄湖溪谷', values.creekName],
+    ['黄湖林场慢直播', '海林慢直播'],
+    ['黄湖林场农品', '海林农品'],
+    ['黄湖林场长廊', '海林长廊'],
+    ['黄湖林场', values.placeName],
     ['浙江省丽水市青田县海口镇海林村', values.placeName],
     ['丽水市青田县海口镇海林村', values.placeName],
     ['青田县海口镇海林村', values.placeName],
@@ -132,6 +110,7 @@ export function namingReplacementPairs(values: NamingProfileValues): Array<[stri
     ['海口镇海林村', values.placeName],
     ['青田·海林', values.placeName],
     ['青田海林', values.placeName],
+    ['土狗咖啡', values.cafeName],
     ['寻野 cafe', values.cafeName],
     ['寻野 Cafe', values.cafeName],
     ['寻野 café', values.cafeName],
@@ -144,17 +123,15 @@ export function namingReplacementPairs(values: NamingProfileValues): Array<[stri
     ['海林慢直播', `${values.placeName}慢直播`],
     ['海林农品', `${values.placeName}农品`],
     ['海林长廊', `${values.placeName}长廊`],
-    ['海林田鱼', '稻田田鱼'],
-    ['青田田鱼', '稻田田鱼'],
-    ['青田石韵', '古树年轮'],
-    ['青田石纹手作', '古树年轮拓印'],
-    ['青田石纹', '古树年轮'],
-    ['青田石手作', '古树年轮手作'],
-    ['青田石', '古树文化'],
-    ['海口镇', values.placeName],
-    ['海林村', values.placeName],
-    ['海林', values.placeName],
-    ['青田', values.placeName],
+    ['稻田田鱼', '海林田鱼'],
+    ['青田田鱼', '海林田鱼'],
+    ['青田石韵', '陈嵘栲古树'],
+    ['青田石纹手作', '陈嵘栲古树拓印'],
+    ['青田石纹', '陈嵘栲古树'],
+    ['青田石手作', '陈嵘栲古树手作'],
+    ['古树年轮拓印', '陈嵘栲古树拓印'],
+    ['古树年轮手作', '陈嵘栲古树手作'],
+    ['古树年轮', '陈嵘栲古树'],
   ];
 }
 
@@ -167,7 +144,6 @@ export function replaceNamingText(text: string, values: NamingProfileValues) {
 }
 
 function collapseDuplicateNamingText(text: string, values: NamingProfileValues) {
-  if (values.id !== 'huanghu') return text;
   const place = values.placeName;
   return [
     `${place} · ${place}`,

@@ -457,7 +457,7 @@ export class ContentService {
         type: '公共服务',
         subType: '便民服务',
         actionText: '导航前往',
-        imageUrl: '/assets/photos/qingtian-tashan.jpg',
+        imageUrl: '/assets/photos/hailin-creek-ripple.jpg',
       },
       SERVICE_CENTER: {
         type: '公共服务',
@@ -476,7 +476,7 @@ export class ContentService {
       FOOD: {
         type: '美食',
         subType: '核心景区',
-        actionText: '土狗咖啡',
+        actionText: '寻野村咖',
         imageUrl: '/assets/photos/ai-xunye-cafe.jpg',
         targetUrl: '/pages/food/food',
       },

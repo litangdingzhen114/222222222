@@ -75,7 +75,7 @@ function isSupportedGuideQuestion(question) {
 
 function buildLocalReply(question) {
   if (question.includes("雨") || question.includes("下雨")) {
-    return "雨天建议走轻量慢游：先到村口会客点确认开放信息，再去土狗咖啡或田鱼家宴室内休息；溪谷步道雨后湿滑，只适合短距离观景。";
+    return "雨天建议走轻量慢游：先到村口会客点确认开放信息，再去寻野村咖或田鱼家宴室内休息；溪谷步道雨后湿滑，只适合短距离观景。";
   }
   if (
     question.includes("路线") ||
@@ -93,7 +93,7 @@ function buildLocalReply(question) {
     question.includes("咖啡") ||
     question.toLowerCase().includes("cafe")
   ) {
-    return "海林村地域味道可以突出田鱼、山泉豆腐、时令笋蔬和农家家宴。海林村可优先看“寻野 cafe”“田鱼家宴”“溪谷民宿茶歇”这几类。";
+    return "海林村地域味道可以突出田鱼、山泉豆腐、时令笋蔬和农家家宴。海林村可优先看“寻野村咖”“田鱼家宴”“溪谷民宿茶歇”这几类。";
   }
   if (question.includes("直播") || question.includes("摄像头")) {
     return "慢直播建议接入村口广场、溪谷步道、稻鱼田和侨乡会客厅四类点位。当前页面支持后端返回 liveUrl 或 hlsUrl 后直接播放。";

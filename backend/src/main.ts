@@ -43,7 +43,7 @@ async function bootstrap() {
 
   if (config.get<boolean>('SWAGGER_ENABLED', true)) {
     const documentConfig = new DocumentBuilder()
-      .setTitle('一部手机游黄湖林场 API')
+      .setTitle('一部手机游海林村 API')
       .setDescription('微信小程序、管理后台和第三方服务联调用 RESTful API')
       .setVersion('1.0.0')
       .addBearerAuth()

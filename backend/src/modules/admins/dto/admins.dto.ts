@@ -58,6 +58,6 @@ export class UpdateIntegrationConfigDto {
 }
 
 export class UpdateNamingProfileDto {
-  @IsIn(['huanghu', 'hailin'])
+  @IsIn(['hailin'])
   mode!: NamingProfileMode;
 }

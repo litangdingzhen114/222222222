@@ -336,7 +336,7 @@
 .poi-sheet {
   position: absolute;
   left: 18rpx;
-  right: 18rpx;
+  right: 108rpx;
   bottom: 28rpx;
   z-index: 20;
   box-sizing: border-box;
@@ -351,18 +351,18 @@
 
 .poi-close {
   position: absolute;
-  right: 24rpx;
-  top: 24rpx;
-  z-index: 3;
-  width: 48rpx;
-  height: 48rpx;
+  left: 20rpx;
+  top: 20rpx;
+  z-index: 80;
+  width: 58rpx;
+  height: 58rpx;
   border-radius: 50%;
-  background: rgba(251, 255, 252, 0.92);
+  background: rgba(251, 255, 252, 0.98);
   color: #193C3A;
-  font-size: 34rpx;
-  line-height: 48rpx;
+  font-size: 40rpx;
+  line-height: 54rpx;
   text-align: center;
-  box-shadow: 0 6rpx 18rpx rgba(25, 60, 58, 0.14);
+  box-shadow: 0 10rpx 24rpx rgba(25, 60, 58, 0.2);
 }
 
 .poi-image-wrap {

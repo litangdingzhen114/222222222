@@ -14,14 +14,16 @@ Page({
   data: {
     brandKicker: "文旅导览",
     brandTitle: "一部手机游",
-    brandSubtitle: "正在准备路线、地图、农品和到村服务",
+    brandSubtitle: "溪谷、田园、村咖和古树，等你慢慢遇见",
     progress: 12,
-    progressText: "正在准备首页内容",
-    progressSubText: "先加载首屏，再进入海林村导览",
+    progressText: "欢迎来到海林村",
+    progressSubText: "从村口出发，把一天交给山风和溪水",
     steps: [
       { label: "首页", done: false },
       { label: "地图", done: false },
       { label: "农品", done: false },
+      { label: "直播", done: false },
+      { label: "服务", done: false },
     ],
   },
 
@@ -46,19 +48,23 @@ Page({
           progress: next,
           progressText:
             next > 72
-              ? "正在进入导览"
+              ? "欢迎来到海林村"
               : next > 52
-                ? "正在预热首屏图片"
-                : "正在准备首页内容",
+                ? "山风已经吹到村口"
+                : next > 34
+                  ? "把脚步放慢一点"
+                  : "欢迎来到海林村",
           progressSubText:
             next > 72
-              ? "路线、点位和服务入口已就绪"
+              ? "沿着村道慢慢走，故事就在前面"
               : next > 52
-                ? "压缩图和兜底背景会优先显示"
-                : "先加载首屏，再进入海林村导览",
+                ? "溪水、竹影和田鱼，都会在路上相遇"
+                : next > 34
+                  ? "先看山水，再逛村咖和田园"
+                  : "从村口出发，把一天交给山风和溪水",
           steps: this.data.steps.map((item, index) => ({
             ...item,
-            done: index === 0 || next > 48 + index * 16,
+            done: index === 0 || next > 30 + index * 12,
           })),
         });
       }
@@ -75,8 +81,10 @@ Page({
   bootstrap() {
     const preload = warmCriticalResources({
       dataTimeout: 2600,
-      imageLimit: 6,
-      imageTimeout: 1200,
+      imageLimit: 32,
+      imageTimeout: 900,
+      imageConcurrency: 3,
+      assetBudget: 2200,
     }).then((meta) => {
       this.applyPreloadedBrand();
       return meta;
@@ -112,8 +120,8 @@ Page({
     this.stopProgressTimer();
     this.setData({
       progress: 100,
-      progressText: "准备完成",
-      progressSubText: "马上进入海林村首页",
+      progressText: "欢迎出发",
+      progressSubText: "现在进入海林村，慢慢看见山水与人间",
       steps: this.data.steps.map((item) => ({
         ...item,
         done: true,

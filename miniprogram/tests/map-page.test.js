@@ -226,6 +226,8 @@ assert(
 const spotIds = new Set(spots.map((item) => item.id));
 const routeIds = new Set(routes.map((item) => item.id));
 const appPages = new Set(appConfig.pages.map((page) => `/${page}`));
+const oldScenePlaceholderPattern =
+  /\/assets\/scenes\/(?!hailin-creek-(?:waterfall|ripple)\.jpg)/;
 
 mapPoints.forEach((point) => {
   assert.strictEqual(
@@ -247,7 +249,7 @@ mapPoints.forEach((point) => {
   assert(point.actionText, `${point.title} should expose primary action text`);
   assert(point.imageUrl, `${point.title} should expose display image`);
   assert(
-    !point.imageUrl.includes("/assets/scenes/"),
+    !oldScenePlaceholderPattern.test(point.imageUrl),
     `${point.title} should use a photo asset instead of an old scene placeholder`,
   );
 

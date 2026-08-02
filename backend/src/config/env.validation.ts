@@ -20,7 +20,7 @@ export const envValidationSchema = Joi.object({
   JWT_REFRESH_EXPIRES_IN: Joi.string().default('30d'),
   SEED_ADMIN_USERNAME: Joi.string().default('hailin-admin'),
   SEED_ADMIN_PASSWORD: Joi.string().min(12).default('ChangeMe-Only-For-Local-2026'),
-  SEED_ADMIN_DISPLAY_NAME: Joi.string().default('黄湖林场超级管理员'),
+  SEED_ADMIN_DISPLAY_NAME: Joi.string().default('海林村超级管理员'),
   WECHAT_APP_ID: Joi.string().allow('').default(''),
   WECHAT_APP_SECRET: Joi.string().allow('').default(''),
   WECHAT_API_BASE_URL: Joi.string().uri().default('https://api.weixin.qq.com'),

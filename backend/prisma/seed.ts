@@ -78,7 +78,7 @@ async function seedHome() {
     where: { id: 'banner-hailin-farm' },
     create: {
       id: 'banner-hailin-farm',
-      title: '寻野 cafe 村咖开坐',
+      title: '寻野村咖开坐',
       imageUrl: '/assets/photos/ai-xunye-cafe.jpg',
       linkType: BannerLinkType.MINI_PROGRAM_PAGE,
       linkValue: '/pages/food/food',
@@ -86,7 +86,7 @@ async function seedHome() {
       status: ContentStatus.PUBLISHED,
     },
     update: {
-      title: '寻野 cafe 村咖开坐',
+      title: '寻野村咖开坐',
       status: ContentStatus.PUBLISHED,
       imageUrl: '/assets/photos/ai-xunye-cafe.jpg',
       linkType: BannerLinkType.MINI_PROGRAM_PAGE,
@@ -101,7 +101,7 @@ async function seedHome() {
     ['shortcut-live', '直播看景', 'camera', '/pages/live/index'],
     ['shortcut-farm', '采摘预约', 'apple', '/pages/reservations/index'],
     ['shortcut-shop', '农特产商城', 'shopping-bag', '/pages/shop/index'],
-    ['shortcut-ai', 'AI 导游', 'message-circle', '/pages/ai-guide/index'],
+    ['shortcut-ai', '智能导游', 'message-circle', '/pages/ai-guide/index'],
   ];
   for (let index = 0; index < shortcuts.length; index += 1) {
     const [id, title, icon, linkValue] = shortcuts[index];
@@ -117,7 +117,7 @@ async function seedScenicSpots() {
   const spots = [
     {
       id: 'spot-rice-field',
-      name: '黄湖稻鱼田',
+      name: '海林田鱼田',
       subtitle: '稻浪与鱼塘相邻的村口风景',
       summary: '适合拍照、散步和亲子观察的田园片区。',
       tags: ['田园', '亲子', '摄影'],
@@ -288,7 +288,7 @@ async function seedServicesAndMap(spotIds: string[]) {
     where: { id: 'food-tea-house' },
     create: {
       id: 'food-tea-house',
-      name: '寻野 cafe',
+      name: '寻野村咖',
       coverImage: '/assets/photos/ai-xunye-cafe.jpg',
       images: ['/assets/photos/ai-xunye-cafe.jpg'],
       description: '供应乡野咖啡、米糕轻食和农家简餐，可作为溪谷路线休息点。',
@@ -300,7 +300,7 @@ async function seedServicesAndMap(spotIds: string[]) {
       status: ContentStatus.PUBLISHED,
     },
     update: {
-      name: '寻野 cafe',
+      name: '寻野村咖',
       coverImage: '/assets/photos/ai-xunye-cafe.jpg',
       images: ['/assets/photos/ai-xunye-cafe.jpg'],
       description: '供应乡野咖啡、米糕轻食和农家简餐，可作为溪谷路线休息点。',
@@ -359,7 +359,7 @@ async function seedServicesAndMap(spotIds: string[]) {
       latitude: '28.2152000',
       address: '海林村稻鱼田观景口',
       imageUrl: '/assets/photos/ricefish-paddy.jpg',
-      description: '以黄湖稻鱼共生为灵感的田园观景点，适合研学和亲子摄影。',
+      description: '以海林田鱼文化为灵感的田园观景点，适合研学和亲子摄影。',
       businessHours: '08:00-18:30',
       relatedEntityType: 'SCENIC_SPOT',
       relatedEntityId: 'spot-rice-field',
@@ -372,7 +372,7 @@ async function seedServicesAndMap(spotIds: string[]) {
       longitude: '120.2221000',
       latitude: '28.2118000',
       address: '海林村溪谷步道入口',
-      imageUrl: '/assets/photos/qingtian-tashan.jpg',
+      imageUrl: '/assets/photos/hailin-creek-waterfall.jpg',
       description: '沿山溪设置的慢行步道，串联茶歇、石桥和林荫休息点。',
       businessHours: '全天开放',
       relatedEntityType: 'SCENIC_SPOT',
@@ -448,7 +448,7 @@ async function seedServicesAndMap(spotIds: string[]) {
     },
     {
       id: 'mp-ricefish-banquet',
-      name: '寻野 cafe',
+      name: '寻野村咖',
       type: MapPointType.FOOD,
       longitude: '120.2175000',
       latitude: '28.2116000',
@@ -477,7 +477,7 @@ async function seedServicesAndMap(spotIds: string[]) {
       longitude: '120.2201000',
       latitude: '28.2141000',
       address: '游客中心旁公共卫生间',
-      imageUrl: '/assets/photos/qingtian-tashan.jpg',
+      imageUrl: '/assets/photos/hailin-creek-ripple.jpg',
       description: '靠近游客中心的公共卫生间，开放时间随景区服务时间。',
       businessHours: '08:00-20:00',
       sort: 11,
@@ -670,7 +670,7 @@ async function seedActivities() {
 
 async function seedCameras() {
   const cameras = [
-    ['camera-rice-field', '鱼稻田慢直播', 'DEV-RICE-FIELD', '黄湖稻鱼田'],
+    ['camera-rice-field', '鱼稻田慢直播', 'DEV-RICE-FIELD', '海林田鱼田'],
     ['camera-creek', '古桥溪畔慢直播', 'DEV-CREEK', '古桥溪畔'],
     ['camera-service', '游客中心广场直播', 'DEV-SERVICE', '游客服务中心'],
   ] as const;
@@ -788,7 +788,7 @@ async function seedProducts() {
       '罐',
       90,
       '120g/罐',
-      '/assets/photos/qingtian-tashan.jpg',
+      '/assets/photos/hailin-creek-ripple.jpg',
     ],
     [
       'product-rice-cake',

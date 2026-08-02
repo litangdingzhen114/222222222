@@ -517,7 +517,7 @@ export class IntegrationConfigService {
       this.config.get<string>('AMAP_API_BASE_URL', 'https://restapi.amap.com'),
     );
     const url = new URL('/v3/config/district', baseUrl);
-    url.searchParams.set('keywords', '黄湖林场');
+    url.searchParams.set('keywords', '海林村');
     url.searchParams.set('key', key);
     const result = await this.fetchJson<{ status?: string; info?: string; infocode?: string }>(url);
     if (result.ok && result.json?.status === '1') {

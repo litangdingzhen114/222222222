@@ -8,6 +8,10 @@ const lives = require("../data/lives");
 const spots = require("../data/spots");
 const routes = require("../data/routes");
 const { mediaUrl, request, serviceConfig, serviceModeText } = require("./api");
+const {
+  getContentPreloadCache,
+  setContentPreloadCache,
+} = require("../utils/preloadCache");
 
 function isContentFallbackEnabled() {
   return Boolean(
@@ -83,7 +87,7 @@ const defaultImages = {
   mapPoint: "https://www.hailin.store/assets/photos/ai-village-gate.jpg",
   food: "https://www.hailin.store/assets/photos/ai-xunye-cafe.jpg",
   spot: "https://www.hailin.store/assets/photos/ai-village-gate.jpg",
-  route: "https://www.hailin.store/assets/photos/qingtian-city.jpg",
+  route: "/assets/scenes/hailin-creek-ripple.jpg",
   product: "https://www.hailin.store/assets/photos/ai-product-honey.jpg",
   live: "https://www.hailin.store/assets/photos/ai-village-gate.jpg",
 };
@@ -91,18 +95,22 @@ const defaultImages = {
 const legacySceneImages = {
   "/assets/scenes/village-gate.png": "https://www.hailin.store/assets/photos/ai-village-gate.jpg",
   "/assets/scenes/ricefish-field.png": "https://www.hailin.store/assets/photos/ricefish-paddy.jpg",
-  "/assets/scenes/creek-trail.png": "https://www.hailin.store/assets/photos/qingtian-tashan.jpg",
+  "/assets/scenes/creek-trail.png": "/assets/scenes/hailin-creek-waterfall.jpg",
   "/assets/scenes/tofu-workshop.png": "https://www.hailin.store/assets/photos/ai-tofu-workshop.jpg",
   "/assets/scenes/overseas-yard.png": "https://www.hailin.store/assets/photos/ai-overseas-cafe.jpg",
   "/assets/scenes/overseas-cafe.png": "https://www.hailin.store/assets/photos/ai-xunye-cafe.jpg",
   "/assets/scenes/ricefish-banquet.png": "https://www.hailin.store/assets/photos/ricefish-drying.jpg",
-  "/assets/scenes/creek-tea.png": "https://www.hailin.store/assets/photos/qingtian-tashan.jpg",
+  "/assets/scenes/creek-tea.png": "/assets/scenes/hailin-creek-waterfall.jpg",
   "/assets/seed/product-rice.jpg": "https://www.hailin.store/assets/photos/ricefish-paddy.jpg",
   "/assets/seed/product-fish.jpg": "https://www.hailin.store/assets/photos/ricefish-harvest.jpg",
-  "/assets/seed/product-tea.jpg": "https://www.hailin.store/assets/photos/qingtian-tashan.jpg",
+  "/assets/seed/product-tea.jpg": "/assets/scenes/hailin-creek-ripple.jpg",
   "/assets/seed/product-rice-cake.jpg": "https://www.hailin.store/assets/photos/ricefish-drying.jpg",
   "/assets/seed/product-postcard.jpg": "https://www.hailin.store/assets/photos/ai-oujiang-postcards.jpg",
   "/assets/seed/product-guide-map.jpg": "https://www.hailin.store/assets/photos/ai-map-tianpu-station.jpg",
+  "https://www.hailin.store/assets/photos/qingtian-city.jpg": "/assets/scenes/hailin-creek-waterfall.jpg",
+  "https://www.hailin.store/assets/photos/qingtian-tashan.jpg": "/assets/scenes/hailin-creek-ripple.jpg",
+  "/assets/photos/qingtian-city.jpg": "/assets/scenes/hailin-creek-waterfall.jpg",
+  "/assets/photos/qingtian-tashan.jpg": "/assets/scenes/hailin-creek-ripple.jpg",
 };
 
 function cleanImage(value) {
@@ -486,6 +494,15 @@ function loadHomeData() {
   return withContentFallback("home", getLocalHomeFallback(), adaptHome);
 }
 
+function withShortPreloadCache(key, loader) {
+  const cached = getContentPreloadCache(key);
+  if (cached) return Promise.resolve(cached);
+  return loader().then((data) => {
+    setContentPreloadCache(key, data);
+    return data;
+  });
+}
+
 function getLocalHomeFallback() {
   return {
     banners,
@@ -506,7 +523,9 @@ function getLocalHomeFallback() {
 }
 
 function loadMapPoints() {
-  return withContentFallback("mapPoints", mapPoints, mergeMapPoints);
+  return withShortPreloadCache("mapPoints", () =>
+    withContentFallback("mapPoints", mapPoints, mergeMapPoints),
+  );
 }
 
 function loadMapDirections(pointId, origin, mode = "walking") {
@@ -522,23 +541,33 @@ function loadMapDirections(pointId, origin, mode = "walking") {
 }
 
 function loadFoods() {
-  return withContentFallback("foods", foods, adaptFoods);
+  return withShortPreloadCache("foods", () =>
+    withContentFallback("foods", foods, adaptFoods),
+  );
 }
 
 function loadSpots() {
-  return withContentFallback("spots", spots, adaptSpots);
+  return withShortPreloadCache("spots", () =>
+    withContentFallback("spots", spots, adaptSpots),
+  );
 }
 
 function loadRoutes() {
-  return withContentFallback("routes", routes, adaptRoutes);
+  return withShortPreloadCache("routes", () =>
+    withContentFallback("routes", routes, adaptRoutes),
+  );
 }
 
 function loadProducts() {
-  return withContentFallback("products", products, mergeProducts);
+  return withShortPreloadCache("products", () =>
+    withContentFallback("products", products, mergeProducts),
+  );
 }
 
 function loadLives() {
-  return withContentFallback("lives", lives, adaptLives);
+  return withShortPreloadCache("lives", () =>
+    withContentFallback("lives", lives, adaptLives),
+  );
 }
 
 function normalizePlayUrl(payload) {

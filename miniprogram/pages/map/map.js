@@ -27,7 +27,7 @@ const pointTypeView = {
     type: "公共服务",
     subType: "便民服务",
     actionText: "导航前往",
-    imageUrl: "https://www.hailin.store/assets/photos/qingtian-tashan.jpg",
+    imageUrl: "/assets/scenes/hailin-creek-ripple.jpg",
   },
   SERVICE_CENTER: {
     type: "公共服务",
@@ -44,7 +44,7 @@ const pointTypeView = {
   FOOD: {
     type: "美食",
     subType: "核心景区",
-    actionText: "寻野 cafe",
+    actionText: "寻野村咖",
     imageUrl: "https://www.hailin.store/assets/photos/ai-xunye-cafe.jpg",
   },
   FARM: {

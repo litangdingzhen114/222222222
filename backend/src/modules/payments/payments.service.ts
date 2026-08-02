@@ -126,7 +126,7 @@ export class PaymentsService {
       return {
         orderNo: order.orderNo,
         amount: order.payableAmount,
-        description: `黄湖林场农特产订单 ${order.orderNo}`,
+        description: `海林村农特产订单 ${order.orderNo}`,
       };
     }
     if (type === PaymentOrderType.RESERVATION_ORDER) {
@@ -139,7 +139,7 @@ export class PaymentsService {
       return {
         orderNo: order.orderNo,
         amount: order.amount,
-        description: `黄湖林场预约订单 ${order.orderNo}`,
+        description: `海林村预约订单 ${order.orderNo}`,
       };
     }
     throw new ConflictException('activity payment is reserved for phase one paid events');

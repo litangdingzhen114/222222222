@@ -1,34 +1,12 @@
 <view wx:if="{{live}}" class="page live-detail-page page-pad">
-  <view wx:if="{{videoUrl}}" class="real-player-wrap">
-    <video
-      class="real-player"
-      src="{{videoUrl}}"
-      poster="{{live.coverUrl}}"
-      controls="{{true}}"
-      autoplay="{{true}}"
-      loop="{{true}}"
-      muted="{{true}}"
-      show-center-play-btn="{{true}}"
-      enable-progress-gesture="{{true}}"
-      object-fit="cover"
-      bindtap="onFullscreen"
-      binderror="onVideoError"
-    ></video>
-    <cover-view class="live-time-badge">
-      <cover-view class="live-time-dot"></cover-view>
-      <cover-view class="live-time-text">{{currentTime}}</cover-view>
-    </cover-view>
-  </view>
-
-  <view wx:else class="mock-player {{live.imageClass}}" bindtap="onFullscreen">
-    <image wx:if="{{live.coverUrl}}" class="mock-cover" src="{{live.coverUrl}}" mode="aspectFill"></image>
-    <view class="live-status">
-      <view class="status-dot"></view>
-      <text>点位预览</text>
+  <view class="real-player-wrap portrait-player-wrap">
+    <image class="real-player live-frame" src="{{liveFrameUrl}}" mode="aspectFill"></image>
+    <view class="live-scanline"></view>
+    <view class="live-time-badge">
+      <view class="live-time-dot"></view>
+      <view class="live-time-label">直播中</view>
+      <view class="live-time-text">{{currentTime}}</view>
     </view>
-    <view class="mock-play">▶</view>
-    <view class="mock-caption">直播画面维护中 · 当前展示点位封面</view>
-    <text class="mock-word">{{live.icon}}</text>
   </view>
 
   <view class="live-info-card card">
@@ -39,7 +17,14 @@
 
   <section-title title="周边推荐"></section-title>
   <view class="nearby-row">
-    <view wx:for="{{nearby}}" wx:key="id" class="nearby-card card">
+    <view
+      wx:for="{{nearby}}"
+      wx:key="id"
+      class="nearby-card card"
+      hover-class="nearby-card-hover"
+      data-url="{{item.targetUrl}}"
+      bindtap="onNearbyTap"
+    >
       <view class="nearby-img {{item.imageClass}}">
         <image wx:if="{{item.imageUrl}}" class="nearby-photo" src="{{item.imageUrl}}" mode="aspectFill"></image>
         <text wx:if="{{!item.imageUrl}}">{{item.icon}}</text>

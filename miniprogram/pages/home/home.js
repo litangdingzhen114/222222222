@@ -9,7 +9,7 @@ const PENDING_MAP_POINT_KEY = "hailin_pending_map_point";
 
 const HOME_IMAGE_FALLBACKS = {
   banners: "https://www.hailin.store/assets/photos/ai-village-gate.jpg",
-  itineraries: "https://www.hailin.store/assets/photos/qingtian-city.jpg",
+  itineraries: "/assets/scenes/hailin-creek-ripple.jpg",
   hotRecommends: "https://www.hailin.store/assets/photos/ai-village-gate.jpg",
   products: "https://www.hailin.store/assets/photos/ai-product-honey.jpg",
   rankings: "https://www.hailin.store/assets/photos/ai-village-gate.jpg",

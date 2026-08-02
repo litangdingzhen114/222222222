@@ -379,7 +379,7 @@ export type ConfigStatus = {
   items: ConfigStatusItem[];
 };
 
-export type NamingProfileMode = 'huanghu' | 'hailin';
+export type NamingProfileMode = 'hailin';
 
 export type NamingProfileItem = {
   id: NamingProfileMode;

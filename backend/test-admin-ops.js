@@ -162,32 +162,33 @@ async function main() {
   assert.strictEqual(namingProfile.status, 200);
   assert.strictEqual(namingProfile.body.data.mode, 'hailin');
   assert.strictEqual(namingProfile.body.data.activeProfile.placeName, '海林村');
-  assert.strictEqual(namingProfile.body.data.activeProfile.cafeName, '寻野 cafe');
+  assert.strictEqual(namingProfile.body.data.activeProfile.cafeName, '寻野村咖');
 
   const defaultNamedHome = await requestJson(`http://${HOST}:${PORT}/api/hailin/home`);
   assert.strictEqual(defaultNamedHome.status, 200);
   const defaultNamedHomeText = JSON.stringify(defaultNamedHome.body.data);
   assert(defaultNamedHomeText.includes('海林村'), 'public home should use Hailin naming by default');
-  assert(defaultNamedHomeText.includes('寻野 cafe'), 'public home should use Xunye cafe naming by default');
+  assert(defaultNamedHomeText.includes('寻野村咖'), 'public home should use 寻野村咖 naming by default');
   const defaultNamedV1Home = await requestJson(`http://${HOST}:${PORT}/api/v1/home`);
   assert.strictEqual(defaultNamedV1Home.status, 200);
   const defaultNamedV1HomeText = JSON.stringify(defaultNamedV1Home.body.data);
   assert(defaultNamedV1HomeText.includes('海林村'), 'v1 home should use Hailin naming by default');
-  assert(defaultNamedV1HomeText.includes('寻野 cafe'), 'v1 home should use Xunye cafe naming by default');
+  assert(defaultNamedV1HomeText.includes('寻野村咖'), 'v1 home should use 寻野村咖 naming by default');
 
-  const huanghuNaming = await requestJson(`http://${HOST}:${PORT}/api/admin/naming-profile`, {
+  const legacyNaming = await requestJson(`http://${HOST}:${PORT}/api/admin/naming-profile`, {
     method: 'PUT',
     headers: authHeaders,
     body: JSON.stringify({ mode: 'huanghu' })
   });
-  assert.strictEqual(huanghuNaming.status, 200);
-  assert.strictEqual(huanghuNaming.body.data.mode, 'huanghu');
-  const huanghuNamedHome = await requestJson(`http://${HOST}:${PORT}/api/hailin/home`);
-  assert.strictEqual(huanghuNamedHome.status, 200);
-  const huanghuNamedHomeText = JSON.stringify(huanghuNamedHome.body.data);
-  assert(huanghuNamedHomeText.includes('黄湖林场'), 'naming profile should switch to Huanghu wording');
-  assert(huanghuNamedHomeText.includes('土狗咖啡'), 'naming profile should switch to Tugou cafe wording');
-  assert(!huanghuNamedHomeText.includes('海口镇海林村'), 'public home should hide legacy place wording in Huanghu mode');
+  assert.strictEqual(legacyNaming.status, 200);
+  assert.strictEqual(legacyNaming.body.data.mode, 'hailin');
+  const legacyNamedHome = await requestJson(`http://${HOST}:${PORT}/api/hailin/home`);
+  assert.strictEqual(legacyNamedHome.status, 200);
+  const legacyNamedHomeText = JSON.stringify(legacyNamedHome.body.data);
+  assert(legacyNamedHomeText.includes('海林村'), 'legacy naming requests should stay on Hailin wording');
+  assert(legacyNamedHomeText.includes('寻野村咖'), 'legacy naming requests should stay on 寻野村咖 wording');
+  assert(!legacyNamedHomeText.includes('黄湖林场'), 'public home should not switch to old wording');
+  assert(!legacyNamedHomeText.includes('土狗咖啡'), 'public home should not switch to old cafe wording');
 
   const restoredNaming = await requestJson(`http://${HOST}:${PORT}/api/admin/naming-profile`, {
     method: 'PUT',

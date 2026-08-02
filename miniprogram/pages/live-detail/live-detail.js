@@ -1,29 +1,19 @@
-const { loadLives, loadLivePlayUrl } = require('../../services/content');
+const { loadLives } = require('../../services/content');
 const recommend = require('../../data/recommend');
 const { findById, quickToast } = require('../../utils/mock');
 
-const VIDEO_SOURCE_CANDIDATES = [];
-function uniqueVideoSources(sources) {
-  return sources
-    .map((source) => String(source || '').trim())
-    .filter(Boolean)
-    .filter((source, index, list) => list.indexOf(source) === index);
-}
-
-function preferredLiveVideoUrl(live) {
-  return String((live && (live.hlsUrl || live.liveUrl)) || '').trim();
-}
+const PENDING_MAP_POINT_KEY = 'hailin_pending_map_point';
+const LIVE_GIF_URL = '/assets/live/hailin-village-live.gif';
 
 Page({
   data: {
     live: null,
-    videoUrl: '',
+    liveFrameUrl: LIVE_GIF_URL,
     currentTime: '',
     nearby: recommend.corridor.slice(0, 3)
   },
 
   onLoad(options) {
-    this.videoSourceIndex = -1;
     this.refreshClock();
     this.clockTimer = setInterval(() => {
       this.refreshClock();
@@ -35,8 +25,9 @@ Page({
         live
       });
       if (live) {
-        this.prepareVideo(live);
-        this.refreshPlayUrl(live);
+        this.setData({
+          liveFrameUrl: LIVE_GIF_URL
+        });
       }
     });
   },
@@ -51,75 +42,25 @@ Page({
   refreshClock() {
     const now = new Date();
     const pad = (value) => String(value).padStart(2, '0');
-    const date = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
     const time = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
     this.setData({
-      currentTime: `${date} ${time}`
+      currentTime: time
     });
   },
 
-  prepareVideo(live) {
-    const remoteSource = preferredLiveVideoUrl(live);
-    this.videoSourceCandidates = uniqueVideoSources([
-      remoteSource
-    ]);
-
-    if (remoteSource) {
-      this.useVideoSource(remoteSource);
+  onNearbyTap(event) {
+    const url = String((event.currentTarget.dataset && event.currentTarget.dataset.url) || '').trim();
+    if (!url) {
+      quickToast('更多介绍即将更新');
       return;
     }
-
-    this.setData({ videoUrl: '' });
-  },
-
-  refreshPlayUrl(live) {
-    loadLivePlayUrl(live.id)
-      .then((payload) => {
-        const playUrl = String((payload && payload.playUrl) || '').trim();
-        if (!playUrl) return;
-        this.prepareVideo({
-          ...live,
-          hlsUrl: playUrl
-        });
-      })
-      .catch((error) => {
-        console.warn('load live play url failed', error);
-      });
-  },
-
-  useVideoSource(source) {
-    const candidates = this.videoSourceCandidates && this.videoSourceCandidates.length ? this.videoSourceCandidates : VIDEO_SOURCE_CANDIDATES;
-    this.videoSourceIndex = Math.max(0, candidates.indexOf(source));
-    this.setData({ videoUrl: source });
-  },
-
-  tryNextVideoSource() {
-    const candidates = this.videoSourceCandidates && this.videoSourceCandidates.length ? this.videoSourceCandidates : VIDEO_SOURCE_CANDIDATES;
-    const currentIndex = candidates.indexOf(this.data.videoUrl);
-    const nextIndex = Math.max(this.videoSourceIndex || 0, currentIndex) + 1;
-    const nextSource = candidates[nextIndex];
-    if (nextSource) {
-      this.videoSourceIndex = nextIndex;
-      this.setData({ videoUrl: nextSource });
-      quickToast('正在切换备用视频源');
+    const mapPointMatch = url.match(/^\/pages\/map\/map\?point=([^&]+)$/);
+    if (mapPointMatch) {
+      wx.setStorageSync(PENDING_MAP_POINT_KEY, decodeURIComponent(mapPointMatch[1]));
+      wx.switchTab({ url: '/pages/map/map' });
       return;
     }
-    this.videoSourceIndex = candidates.length;
-    this.setData({ videoUrl: '' });
-    quickToast('视频源暂不可用，已切换为封面预览');
-  },
-
-  onFullscreen() {
-    if (this.data.videoUrl) {
-      quickToast('正在播放海林村实时视频');
-      return;
-    }
-    quickToast('视频源暂不可用，当前显示封面');
-  },
-
-  onVideoError(event) {
-    console.warn('live video error', event.detail);
-    this.tryNextVideoSource();
+    wx.navigateTo({ url });
   }
 
   // 真实直播密钥、萤石云 token 或 HLS 鉴权应由后端维护。

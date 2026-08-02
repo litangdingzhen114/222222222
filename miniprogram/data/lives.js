@@ -13,7 +13,7 @@ module.exports = [
     id: 'rice-view',
     title: '稻鱼田观景点',
     viewers: 236,
-    desc: '展示黄湖稻鱼共生灵感下的田园风景与农事活动。',
+    desc: '展示海林田鱼文化灵感下的田园风景与农事活动。',
     imageClass: 'ph-ricefish',
     icon: '鱼',
     coverUrl: 'https://www.hailin.store/assets/photos/ricefish-paddy.jpg',
@@ -23,10 +23,10 @@ module.exports = [
     id: 'creek',
     title: '溪谷慢行步道',
     viewers: 96,
-    desc: '溪水、石桥和林荫小路的慢直播点位，可接 HLS 地址。',
+    desc: '溪水、石桥和林荫小路的慢直播点位，后续可接入真实摄像头画面。',
     imageClass: 'ph-creek',
     icon: '溪',
-    coverUrl: 'https://www.hailin.store/assets/photos/qingtian-city.jpg',
+    coverUrl: '/assets/scenes/hailin-creek-waterfall.jpg',
     hlsUrl: ''
   },
   {

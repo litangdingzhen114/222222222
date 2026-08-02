@@ -19,6 +19,8 @@ const tabSet = new Set(
 );
 const routeIds = new Set(routes.map((item) => item.id));
 const spotIds = new Set(spots.map((item) => item.id));
+const oldScenePlaceholderPattern =
+  /\/assets\/scenes\/(?!hailin-creek-(?:waterfall|ripple)\.jpg)/;
 
 function assertNavigableUrl(url, label) {
   if (!url) return;
@@ -60,7 +62,7 @@ assert(
   "first banner should use the Tianpu homestay image",
 );
 assert(
-  banners[1].title.includes("寻野 cafe") &&
+  banners[1].title.includes("寻野村咖") &&
     banners[1].imageUrl === `${photoBase}/ai-xunye-cafe.jpg`,
   "second banner should feature the village cafe image",
 );
@@ -111,7 +113,6 @@ assert(
     "海口天气",
     "交通出行",
     "AI旅拍",
-    "旅拍合影",
     "海林村侨乡",
     "文化云",
     "非遗地图",
@@ -127,7 +128,7 @@ assert(
   "home grid should merge overlapping culture and travel entries",
 );
 assert(
-  ["村树陈嵘栲", "AR合影", "寻野 cafe", "便民服务", "热门景点"].every((title) =>
+  ["村树陈嵘栲", "旅拍合影", "寻野村咖", "便民服务", "热门景点"].every((title) =>
     gridTitles.includes(title),
   ),
   "home grid should keep merged culture and travel entries",
@@ -390,31 +391,31 @@ assert(
 );
 assert(
   backendSeed.includes("海林村民宿慢住") &&
-    backendSeed.includes("寻野 cafe 村咖开坐") &&
+    backendSeed.includes("寻野村咖开坐") &&
     !backendSeed.includes("周末采摘预约开放"),
   "backend seed banners should be aligned to homestay and village cafe content",
 );
 assert(
-  !homeDataSnapshot.includes("/assets/scenes/"),
+  !oldScenePlaceholderPattern.test(homeDataSnapshot),
   "home cards should use photo assets instead of old scene placeholders",
 );
 assert(
-  appConfig.tabBar.list.some((item) => item.text === "寻野 cafe"),
+  appConfig.tabBar.list.some((item) => item.text === "寻野村咖"),
   "tab bar should expose Xunye cafe instead of the old food label",
 );
 assert(
-  foodWxml.includes("寻野 cafe") &&
+  foodWxml.includes("寻野村咖") &&
     foodWxml.includes(`${photoBase}/ai-xunye-cafe.jpg`),
   "food page should be branded as Xunye cafe and use its generated image",
 );
 assert(
-  foodJson.includes("寻野 cafe"),
+  foodJson.includes("寻野村咖"),
   "food page navigation title should use Xunye cafe",
 );
 assert(
   foods.some(
     (item) =>
-      item.name === "寻野 cafe" &&
+      item.name === "寻野村咖" &&
       item.imageUrl === `${photoBase}/ai-xunye-cafe.jpg`,
   ),
   "food fallback data should include Xunye cafe with generated image",
@@ -517,7 +518,7 @@ async function assertLegacyFallbackKeepsImages() {
       `${photoBase}/ai-village-gate.jpg`,
     );
     assert(
-      !JSON.stringify(home).includes("/assets/scenes/"),
+      !oldScenePlaceholderPattern.test(JSON.stringify(home)),
       "legacy scene placeholders should be converted to photo assets",
     );
     assert(
@@ -536,8 +537,55 @@ async function assertLegacyFallbackKeepsImages() {
   }
 }
 
+async function assertLegacyLiveCoverImagesAreCleaned() {
+  const wxMock = {
+    getSystemInfoSync() {
+      return { platform: "devtools" };
+    },
+    getStorageSync() {
+      return "";
+    },
+    request(options) {
+      if (options.url.includes("/api/v1/cameras")) {
+        options.fail(new Error("v1 unavailable"));
+        return;
+      }
+      if (options.url.includes("/api/hailin/lives")) {
+        options.success({
+          statusCode: 200,
+          data: [
+            {
+              id: "creek",
+              title: "溪谷慢行步道",
+              coverUrl: "https://www.hailin.store/assets/photos/qingtian-city.jpg",
+              desc: "旧后台保存的城市封面不应继续显示",
+            },
+          ],
+        });
+        return;
+      }
+      options.fail(new Error(`unexpected request: ${options.url}`));
+    },
+  };
+
+  try {
+    const content = loadContentServiceWithWx(wxMock);
+    const lives = await content.loadLives();
+    assert.strictEqual(
+      lives[0].coverUrl,
+      "/assets/scenes/hailin-creek-waterfall.jpg",
+      "legacy modern city live cover should be replaced with creek image",
+    );
+  } finally {
+    delete global.wx;
+    delete require.cache[require.resolve("../services/api")];
+    delete require.cache[require.resolve("../services/content")];
+  }
+}
+
 (async () => {
   await assertLegacyFallbackKeepsImages();
+  await assertLegacyLiveCoverImagesAreCleaned();
   console.log("home content coverage ok");
 })().catch((error) => {
   delete global.wx;

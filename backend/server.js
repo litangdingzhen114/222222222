@@ -45,6 +45,7 @@ const PORT = Number(process.env.PORT || 8787);
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const STORAGE_DIR = resolveStorageDir();
 const LOG_DIR = path.join(STORAGE_DIR, 'logs');
+const LIVE_VIDEO_PUBLIC_PATH = '/media/hailin-village-live.mp4?v=20260802-real-small';
 const PUBLIC_BASE_URL = (process.env.PUBLIC_BASE_URL || '').replace(/\/+$/, '');
 const KIMI_API_KEY = process.env.KIMI_API_KEY || process.env.MOONSHOT_API_KEY || '';
 const KIMI_BASE_URL = (process.env.KIMI_BASE_URL || 'https://api.moonshot.cn/v1').replace(
@@ -83,25 +84,15 @@ const ADMIN_RATE_LIMIT_MAX = Number(process.env.ADMIN_RATE_LIMIT_MAX || 600);
 const INTEGRATION_CONFIG_FILE = 'integration-configs.json';
 const NAMING_PROFILE_FILE = 'naming-profile.json';
 const NAMING_PROFILE_DEFAULTS = {
-  huanghu: {
-    id: 'huanghu',
-    label: '黄湖林场方案',
-    appTitle: '一部手机游黄湖林场',
-    placeName: '黄湖林场',
-    villageName: '黄湖林场',
-    regionName: '黄湖林场',
-    creekName: '黄湖溪谷',
-    cafeName: '土狗咖啡',
-  },
   hailin: {
     id: 'hailin',
-    label: '海林青田方案',
-    appTitle: '一部手机游青田海林',
+    label: '海林村方案',
+    appTitle: '一部手机游海林村',
     placeName: '海林村',
     villageName: '海林村',
-    regionName: '青田',
+    regionName: '海林村',
     creekName: '海林·溪谷',
-    cafeName: '寻野 cafe',
+    cafeName: '寻野村咖',
   },
 };
 const DEFAULT_NAMING_PROFILE_MODE = Object.prototype.hasOwnProperty.call(
@@ -244,8 +235,8 @@ const productCategories = [
   { id: 'course', name: '研学体验', icon: '研', sort: 4, status: 'PUBLISHED' },
 ];
 
-const LOCATION_TEXT = '黄湖林场';
-const REGION_KEYWORDS = ['黄湖林场', '陈嵘栲古树', '田鱼', '森林溪谷', '山水村落'];
+const LOCATION_TEXT = '海林村';
+const REGION_KEYWORDS = ['海林村', '陈嵘栲古树', '田鱼', '溪谷慢游', '山水村落'];
 const BOOKING_STATUSES = ['new', 'confirmed', 'processing', 'completed', 'cancelled'];
 const FEEDBACK_STATUSES = ['new', 'processing', 'resolved', 'archived'];
 const ORDER_TYPES = ['product', 'service', 'ticket', 'stay', 'venue'];
@@ -695,26 +686,15 @@ function activeNamingProfileValues() {
 }
 
 function namingReplacementPairs(values) {
-  if (values.id === 'hailin') {
-    return [
-      ['一部手机游黄湖林场', values.appTitle],
-      ['黄湖溪谷', values.creekName],
-      ['土狗咖啡', values.cafeName],
-      ['黄湖林场慢直播', '海林慢直播'],
-      ['黄湖林场农品', '海林农品'],
-      ['黄湖林场长廊', '海林长廊'],
-      ['稻田田鱼', '青田田鱼'],
-      ['古树年轮拓印', '青田石纹手作'],
-      ['古树年轮手作', '青田石手作'],
-      ['古树年轮', '青田石韵'],
-      ['古树文化', '青田石'],
-      ['黄湖林场', values.placeName],
-    ];
-  }
-
   return [
+    ['一部手机游黄湖林场', values.appTitle],
     ['一部手机游青田海林', values.appTitle],
     ['一部手机游海林村', values.appTitle],
+    ['黄湖溪谷', values.creekName],
+    ['黄湖林场慢直播', '海林慢直播'],
+    ['黄湖林场农品', '海林农品'],
+    ['黄湖林场长廊', '海林长廊'],
+    ['黄湖林场', values.placeName],
     ['浙江省丽水市青田县海口镇海林村', values.placeName],
     ['丽水市青田县海口镇海林村', values.placeName],
     ['青田县海口镇海林村', values.placeName],
@@ -723,6 +703,7 @@ function namingReplacementPairs(values) {
     ['海口镇海林村', values.placeName],
     ['青田·海林', values.placeName],
     ['青田海林', values.placeName],
+    ['土狗咖啡', values.cafeName],
     ['寻野 cafe', values.cafeName],
     ['寻野 Cafe', values.cafeName],
     ['寻野 café', values.cafeName],
@@ -735,17 +716,15 @@ function namingReplacementPairs(values) {
     ['海林慢直播', `${values.placeName}慢直播`],
     ['海林农品', `${values.placeName}农品`],
     ['海林长廊', `${values.placeName}长廊`],
-    ['海林田鱼', '稻田田鱼'],
-    ['青田田鱼', '稻田田鱼'],
-    ['青田石韵', '古树年轮'],
-    ['青田石纹手作', '古树年轮拓印'],
-    ['青田石纹', '古树年轮'],
-    ['青田石手作', '古树年轮手作'],
-    ['青田石', '古树文化'],
-    ['海口镇', values.placeName],
-    ['海林村', values.placeName],
-    ['海林', values.placeName],
-    ['青田', values.placeName],
+    ['稻田田鱼', '海林田鱼'],
+    ['青田田鱼', '海林田鱼'],
+    ['青田石韵', '陈嵘栲古树'],
+    ['青田石纹手作', '陈嵘栲古树拓印'],
+    ['青田石纹', '陈嵘栲古树'],
+    ['青田石手作', '陈嵘栲古树手作'],
+    ['古树年轮拓印', '陈嵘栲古树拓印'],
+    ['古树年轮手作', '陈嵘栲古树手作'],
+    ['古树年轮', '陈嵘栲古树'],
   ];
 }
 
@@ -760,7 +739,6 @@ function replaceNamingText(text, values) {
 }
 
 function collapseDuplicateNamingText(text, values) {
-  if (values.id !== 'huanghu') return text;
   const place = values.placeName;
   return [
     `${place} · ${place}`,
@@ -1178,7 +1156,7 @@ async function testAmapIntegration() {
   try {
     const url = new URL('/v3/config/district', baseUrl);
     url.searchParams.set('key', apiKey);
-    url.searchParams.set('keywords', '黄湖林场');
+    url.searchParams.set('keywords', '海林村');
     url.searchParams.set('subdistrict', '0');
     const response = await fetch(url, { signal: AbortSignal.timeout(10000) });
     const result = await response.json().catch(() => ({}));
@@ -1406,7 +1384,7 @@ function validateBooking(body) {
   }
 
   return {
-    service: cleanText(body.service, 80) || '黄湖林场讲解服务',
+    service: cleanText(body.service, 80) || '海林村讲解服务',
     date: cleanText(body.date, 40) || new Date().toISOString().slice(0, 10),
     people,
     contact,
@@ -1481,8 +1459,8 @@ function validateOrder(body) {
     clientId,
     type,
     featureId,
-    service: cleanText(body.service, 100) || '黄湖林场文旅服务',
-    item: cleanText(body.item || body.title || body.service, 120) || '黄湖林场文旅服务',
+    service: cleanText(body.service, 100) || '海林村文旅服务',
+    item: cleanText(body.item || body.title || body.service, 120) || '海林村文旅服务',
     date: cleanText(body.date, 40) || new Date().toISOString().slice(0, 10),
     people,
     contact,
@@ -1703,7 +1681,7 @@ function homePayload() {
     corridor: recommend.corridor,
     feeds: recommend.feeds,
     notice: '今日推荐：先到游客中心确认停车与讲解，再走溪谷步道，午餐预约稻田田鱼家宴',
-    weather: '黄湖林场文旅信息持续更新中，实际服务以运营公告和现场确认为准',
+    weather: '海林村文旅信息持续更新中，实际服务以运营公告和现场确认为准',
     serviceMode: '真实服务已连接',
     locationText: LOCATION_TEXT,
   };
@@ -1746,12 +1724,18 @@ const MEDIA_LIST_FIELDS = ['images', 'imageUrls'];
 const LEGACY_SCENE_IMAGES = {
   '/assets/scenes/village-gate.png': '/assets/photos/ai-village-gate.jpg',
   '/assets/scenes/ricefish-field.png': '/assets/photos/ricefish-paddy.jpg',
-  '/assets/scenes/creek-trail.png': '/assets/photos/qingtian-tashan.jpg',
+  '/assets/scenes/creek-trail.png': '/assets/photos/hailin-creek-waterfall.jpg',
   '/assets/scenes/tofu-workshop.png': '/assets/photos/ai-tofu-workshop.jpg',
   '/assets/scenes/overseas-yard.png': '/assets/photos/ai-overseas-cafe.jpg',
   '/assets/scenes/overseas-cafe.png': '/assets/photos/ai-xunye-cafe.jpg',
   '/assets/scenes/ricefish-banquet.png': '/assets/photos/ricefish-drying.jpg',
-  '/assets/scenes/creek-tea.png': '/assets/photos/qingtian-tashan.jpg',
+  '/assets/scenes/creek-tea.png': '/assets/photos/hailin-creek-waterfall.jpg',
+  '/assets/scenes/hailin-creek-waterfall.jpg': '/assets/photos/hailin-creek-waterfall.jpg',
+  '/assets/scenes/hailin-creek-ripple.jpg': '/assets/photos/hailin-creek-ripple.jpg',
+  '/assets/photos/qingtian-city.jpg': '/assets/photos/hailin-creek-waterfall.jpg',
+  '/assets/photos/qingtian-tashan.jpg': '/assets/photos/hailin-creek-ripple.jpg',
+  'https://www.hailin.store/assets/photos/qingtian-city.jpg': '/assets/photos/hailin-creek-waterfall.jpg',
+  'https://www.hailin.store/assets/photos/qingtian-tashan.jpg': '/assets/photos/hailin-creek-ripple.jpg',
 };
 
 function hasTextValue(value) {
@@ -1957,12 +1941,12 @@ function sanitizeLiveItem(input, fallback = {}, index = 0) {
       : Number(raw.latitude);
   return {
     id,
-    title: cleanText(raw.title, 100) || cleanText(fallback.title, 100) || '黄湖林场慢直播',
+    title: cleanText(raw.title, 100) || cleanText(fallback.title, 100) || '海林村慢直播',
     viewers: normalizePositiveInt(raw.viewers, Number(fallback.viewers) || 0, 0, 999999),
     desc: cleanText(raw.desc, 500) || cleanText(fallback.desc, 500),
     imageClass: cleanText(raw.imageClass, 80) || cleanText(fallback.imageClass, 80),
     icon: cleanText(raw.icon, 8) || cleanText(fallback.icon, 8) || '播',
-    coverUrl: cleanText(raw.coverUrl, 300) || cleanText(fallback.coverUrl, 300),
+    coverUrl: normalizeMediaValue(raw.coverUrl) || normalizeMediaValue(fallback.coverUrl),
     liveUrl: cleanText(raw.liveUrl, 500),
     hlsUrl: cleanText(raw.hlsUrl, 500),
     enabled: raw.enabled !== false,
@@ -2275,7 +2259,7 @@ function normalizedAdminResourceItem(resourceKey, item, index = 0) {
   if (resourceKey === 'spots') {
     return {
       ...base,
-      name: cleanText(item.name || item.title, 120) || '黄湖林场景点',
+      name: cleanText(item.name || item.title, 120) || '海林村景点',
       subtitle: cleanText(item.subtitle || item.category, 160),
       coverImage: image || '/assets/photos/ai-village-gate.jpg',
       images: arrayValue(item.images).length ? arrayValue(item.images) : arrayValue(item.imageUrls),
@@ -2291,8 +2275,8 @@ function normalizedAdminResourceItem(resourceKey, item, index = 0) {
   if (resourceKey === 'routes') {
     return {
       ...base,
-      name: cleanText(item.name || item.title, 120) || '黄湖林场路线',
-      coverImage: image || '/assets/photos/qingtian-city.jpg',
+      name: cleanText(item.name || item.title, 120) || '海林村路线',
+      coverImage: image || '/assets/photos/hailin-creek-ripple.jpg',
       summary: cleanText(item.summary || item.subtitle || item.reason, 500),
       content: cleanText(item.content || item.reason || item.route, 2000),
       duration: cleanText(item.duration || item.time, 120),
@@ -2305,7 +2289,7 @@ function normalizedAdminResourceItem(resourceKey, item, index = 0) {
   if (resourceKey === 'foods') {
     return {
       ...base,
-      name: cleanText(item.name || item.title, 120) || '土狗咖啡',
+      name: cleanText(item.name || item.title, 120) || '寻野村咖',
       coverImage: image || '/assets/photos/ai-xunye-cafe.jpg',
       images: arrayValue(item.images).length ? arrayValue(item.images) : image ? [image] : ['/assets/photos/ai-xunye-cafe.jpg'],
       description: cleanText(item.description || item.desc || item.summary, 1200),
@@ -2318,7 +2302,7 @@ function normalizedAdminResourceItem(resourceKey, item, index = 0) {
   if (resourceKey === 'map-points') {
     return {
       ...base,
-      name: cleanText(item.name || item.title, 120) || '黄湖林场点位',
+      name: cleanText(item.name || item.title, 120) || '海林村点位',
       type: mapPointTypeValue(item.type),
       imageUrl: image || '/assets/photos/ai-village-gate.jpg',
       longitude: Number(item.longitude || 120.2184),
@@ -2336,7 +2320,7 @@ function normalizedAdminResourceItem(resourceKey, item, index = 0) {
   if (resourceKey === 'products') {
     return {
       ...base,
-      name: cleanText(item.name || item.title, 120) || '黄湖林场农特产',
+      name: cleanText(item.name || item.title, 120) || '海林村农特产',
       subtitle: cleanText(item.subtitle || item.desc, 160),
       coverImage: image || '/assets/photos/ai-fish-keychain.jpg',
       images: arrayValue(item.images).length ? arrayValue(item.images) : image ? [image] : [],
@@ -2476,7 +2460,7 @@ function livePayload(req) {
     .items.filter((item) => item.enabled !== false)
     .map((item) => ({
       ...item,
-      liveUrl: item.liveUrl || (item.hlsUrl ? '' : `${origin}/media/hailin-live.mp4`),
+      liveUrl: item.liveUrl || (item.hlsUrl ? '' : `${origin}${LIVE_VIDEO_PUBLIC_PATH}`),
       hlsUrl: item.hlsUrl || '',
     }));
 }
@@ -2541,7 +2525,7 @@ function liveItemFromCamera(data, fallback = {}, index = 0) {
     {
       ...fallback,
       id,
-      title: cleanText(data.name, 100) || cleanText(fallback.title, 100) || '黄湖林场慢直播',
+      title: cleanText(data.name, 100) || cleanText(fallback.title, 100) || '海林村慢直播',
       coverUrl: cleanText(data.coverImage, 500) || cleanText(fallback.coverUrl, 500),
       desc: cleanText(data.description, 500) || cleanText(fallback.desc, 500),
       enabled: status !== 'DISABLED',
@@ -2633,7 +2617,6 @@ function isSupportedGuideQuestion(question) {
     '村树',
     '文化',
     '海林',
-    '黄湖',
     'ai',
     'api',
     '模型',
@@ -2650,16 +2633,16 @@ function isSupportedGuideQuestion(question) {
 function localGuideReply(question) {
   const text = String(question || '');
   if (text.includes('路线') || text.includes('怎么玩')) {
-    return '推荐“黄湖林场半日慢游”：村口会客点集合，沿溪谷步道慢行，中午安排稻田田鱼家宴，下午看陈嵘栲古树。';
+    return '推荐“海林村半日慢游”：村口会客点集合，沿溪谷步道慢行，中午安排田鱼家宴，下午看陈嵘栲古树。';
   }
   if (text.includes('美食') || text.includes('吃') || text.includes('田鱼') || text.toLowerCase().includes('cafe')) {
-    return '黄湖林场可以把土狗咖啡、稻田田鱼、山泉豆腐和民宿茶歇作为主线。第一次来建议先去土狗咖啡慢坐，再按人数预约田鱼家宴或溪谷民宿茶歇。';
+    return '海林村可以把寻野村咖、田鱼家宴、山泉豆腐和民宿茶歇作为主线。第一次来建议先去寻野村咖慢坐，再按人数预约田鱼家宴或溪谷民宿茶歇。';
   }
   if (text.includes('直播') || text.includes('摄像头')) {
     return '慢直播已按村口会客点、稻鱼田、溪谷步道和侨乡小院组织点位。真实摄像头或 HLS 地址可以由后端替换 liveUrl。';
   }
   if (text.includes('停车') || text.includes('导航')) {
-    return '建议先导航到黄湖林场游客中心，停车点和公共服务点可在全域旅游地图里查看。节假日以现场交通指引为准。';
+    return '建议先导航到海林村游客中心，停车点和公共服务点可在全域旅游地图里查看。节假日以现场交通指引为准。';
   }
   if (text.includes('住宿') || text.includes('民宿')) {
     return '住宿可以优先包装溪谷慢住和侨乡小院，后续接入房态后，可把可订日期、房型和订单状态同步到小程序。';
@@ -2705,8 +2688,8 @@ async function askKimi(body) {
 
   const prompt = buildAiPrompt(body);
   const instructions = [
-    '你是黄湖林场小程序里的 AI 导游。',
-    '回答要短、实用、适合游客阅读。优先围绕黄湖林场、陈嵘栲古树、田鱼、森林溪谷、山水村落和公共服务点。',
+    '你是海林村小程序里的 AI 导游。',
+    '回答要短、实用、适合游客阅读。优先围绕海林村、陈嵘栲古树、田鱼、森林溪谷、山水村落和公共服务点。',
     '不要编造具体营业执照、电话、价格或实时余位。涉及预约、价格、直播、房态时提示以后端实时信息为准。',
   ].join('\n');
 
@@ -2791,7 +2774,7 @@ function adminProfile() {
   return {
     id: 'legacy-admin',
     username: ADMIN_USER,
-    displayName: '黄湖林场管理员',
+    displayName: '海林村管理员',
     role: 'SUPER_ADMIN',
     status: 'ACTIVE',
     createdAt: '2026-01-01T00:00:00.000Z',
@@ -3568,7 +3551,9 @@ function serveMiniProgramAsset(req, res, pathname) {
 
 function serveVideo(req, res) {
   const videoPath = [
+    path.join(ADMIN_DIR, 'media', 'hailin-village-live.mp4'),
     path.join(ADMIN_DIR, 'media', 'hailin-live.mp4'),
+    path.join(ROOT, 'miniprogram', 'assets', 'videos', 'hailin-village-live.mp4'),
     path.join(ROOT, 'miniprogram', 'assets', 'videos', 'hailin-live.mp4'),
   ].find((candidate) => fs.existsSync(candidate));
   if (!videoPath) {
@@ -4332,7 +4317,7 @@ async function handleRequest(req, res) {
       });
       return;
     }
-    if (route === 'GET /media/hailin-live.mp4') {
+    if (route === 'GET /media/hailin-village-live.mp4' || route === 'GET /media/hailin-live.mp4') {
       serveVideo(req, res);
       return;
     }

@@ -153,7 +153,7 @@ function buildNamingProfileService(records: ConfigRecord[] = []) {
           if (!record) return null;
           return {
             ...record,
-            updatedBy: { username: 'hailin-admin', displayName: '黄湖管理员' },
+            updatedBy: { username: 'hailin-admin', displayName: '海林村管理员' },
           };
         },
       ),
@@ -212,7 +212,7 @@ describe('后台 API Key 配置链路', () => {
 });
 
 describe('内容命名方案配置链路', () => {
-  it('默认使用海林青田方案并统一转换接口文本', async () => {
+  it('默认使用海林村方案并统一转换接口文本', async () => {
     const { service } = buildNamingProfileService();
     const profile = await service.getProfile(true);
     expect(profile.mode).toBe('hailin');
@@ -224,8 +224,8 @@ describe('内容命名方案配置链路', () => {
     });
     expect(transformed).toEqual({
       title: '海林村春日慢游',
-      cafe: '寻野 cafe',
-      scenic: '青田石韵',
+      cafe: '寻野村咖',
+      scenic: '陈嵘栲古树',
     });
   });
 

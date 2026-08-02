@@ -10,7 +10,7 @@ module.exports = [
   },
   {
     id: 'banner-xunye-cafe',
-    title: '寻野 cafe 村咖开坐',
+    title: '寻野村咖开坐',
     subtitle: '一杯咖啡、一份米糕，从溪边窗口看见海林村的山野日常',
     tag: '村咖 · 咖啡茶歇',
     imageClass: 'banner-ricefish',
@@ -29,7 +29,7 @@ module.exports = [
   {
     id: 'banner-cafe-route',
     title: '从溪谷走到村咖',
-    subtitle: '海林·溪谷、田铺驿站和寻野 cafe 串成一条轻松慢游线',
+    subtitle: '海林·溪谷、田铺驿站和寻野村咖串成一条轻松慢游线',
     tag: '慢游路线 · 民宿村咖',
     imageClass: 'banner-evening',
     icon: '线',

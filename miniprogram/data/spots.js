@@ -61,7 +61,7 @@ const spotDetails = {
       { label: "适合", value: "茶歇慢坐" },
     ],
     story: [
-      "寻野 cafe 是海林村咖啡与乡野轻食的展示点，内容围绕溪谷、田埂、米糕和村内休闲空间展开。",
+      "寻野村咖是海林村咖啡与乡野轻食的展示点，内容围绕溪谷、田埂、米糕和村内休闲空间展开。",
       "它不只是“美食列表”里的一个条目，而是路线里的休息节点：游客可以在这里等人、点单、看风景，也能继续衔接民宿和溪谷活动。",
     ],
     experience: [
@@ -157,7 +157,7 @@ const spotDetails = {
   },
   "rice-view": {
     highlights: [
-      "围绕黄湖稻鱼共生做生态讲解，适合亲子研学和摄影拍摄。",
+      "围绕海林田鱼文化做生态讲解，适合亲子研学和摄影拍摄。",
       "傍晚光线柔和，田埂、鱼群和村落背景更容易出片。",
       "可接农事体验、投喂观察、田鱼家宴等内容。",
     ],
@@ -258,7 +258,7 @@ const spotDetails = {
         url: "/pages/mine-feature/mine-feature?id=cooperation",
       },
       {
-        title: "AI 导游",
+        title: "智能导游",
         desc: "让小林根据人数和时间生成游玩建议。",
         url: "/pages/ai-guide/ai-guide",
       },
@@ -309,8 +309,8 @@ const spots = [
     coverUrl: "https://www.hailin.store/assets/photos/ai-chenrongkao-tree.jpg",
     imageUrls: [
       "https://www.hailin.store/assets/photos/ai-chenrongkao-tree.jpg",
-      "https://www.hailin.store/assets/photos/qingtian-city.jpg",
-      "https://www.hailin.store/assets/photos/qingtian-tashan.jpg",
+      "/assets/scenes/hailin-creek-waterfall.jpg",
+      "/assets/scenes/hailin-creek-ripple.jpg",
     ],
     icon: "树",
   },
@@ -334,7 +334,7 @@ const spots = [
   },
   {
     id: "xunye-cafe",
-    name: "寻野 cafe",
+    name: "寻野村咖",
     category: "美食",
     tags: ["村咖", "咖啡", "乡野轻食"],
     openTime: "10:00-20:00",
@@ -378,10 +378,10 @@ const spots = [
     distance: "0.7公里",
     desc: "步道沿山溪铺设，串联石桥、茶歇和林荫休息点。路线平缓，适合家庭散步、轻徒步和慢直播点位展示。",
     images: ["ph-creek", "ph-homestay", "ph-village"],
-    coverUrl: "https://www.hailin.store/assets/photos/qingtian-tashan.jpg",
+    coverUrl: "/assets/scenes/hailin-creek-waterfall.jpg",
     imageUrls: [
-      "https://www.hailin.store/assets/photos/qingtian-tashan.jpg",
-      "https://www.hailin.store/assets/photos/qingtian-city.jpg",
+      "/assets/scenes/hailin-creek-waterfall.jpg",
+      "/assets/scenes/hailin-creek-ripple.jpg",
       "https://www.hailin.store/assets/photos/ai-village-gate.jpg",
     ],
     icon: "溪",

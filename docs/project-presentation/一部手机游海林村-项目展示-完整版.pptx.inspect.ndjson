@@ -1,0 +1,42 @@
+{"kind":"deck","id":"pr/uolbla","name":"Deck"}
+{"kind":"layout","layoutId":"241f6363-0cbb-47eb-9795-82066ed72ede","name":"Master","type":"master"}
+{"kind":"layout","layoutId":"a1ca101c-8aec-4a44-8ee3-4d77292bc3ed","name":"Title Slide","type":"title"}
+{"kind":"slide","id":"sl/9cfkpa","slide":1,"title":"Slide 1","textShapes":0}
+{"kind":"image","id":"im/jehsza1o","slide":1,"name":"","alt":"main-01.png","bbox":[0,0,1280,720]}
+{"kind":"notes","id":"nt/9cfkpa","slide":1,"text":"[Sources]\n整页来源：/Users/zz/Desktop/projects/hailin-miniprogram/tmp-ppt-build-final/combined-rendered/main-01.png"}
+{"kind":"slide","id":"sl/450s11","slide":2,"title":"Slide 2","textShapes":0}
+{"kind":"image","id":"im/vyp4fidw","slide":2,"name":"","alt":"main-02.png","bbox":[0,0,1280,720]}
+{"kind":"notes","id":"nt/450s11","slide":2,"text":"[Sources]\n整页来源：/Users/zz/Desktop/projects/hailin-miniprogram/tmp-ppt-build-final/combined-rendered/main-02.png"}
+{"kind":"slide","id":"sl/rulnyd","slide":3,"title":"Slide 3","textShapes":0}
+{"kind":"image","id":"im/xgfutwfu","slide":3,"name":"","alt":"main-03.png","bbox":[0,0,1280,720]}
+{"kind":"notes","id":"nt/rulnyd","slide":3,"text":"[Sources]\n整页来源：/Users/zz/Desktop/projects/hailin-miniprogram/tmp-ppt-build-final/combined-rendered/main-03.png"}
+{"kind":"slide","id":"sl/2nykia","slide":4,"title":"Slide 4","textShapes":0}
+{"kind":"image","id":"im/5wzi5w3i","slide":4,"name":"","alt":"main-04.png","bbox":[0,0,1280,720]}
+{"kind":"notes","id":"nt/2nykia","slide":4,"text":"[Sources]\n整页来源：/Users/zz/Desktop/projects/hailin-miniprogram/tmp-ppt-build-final/combined-rendered/main-04.png"}
+{"kind":"slide","id":"sl/qt3by9","slide":5,"title":"Slide 5","textShapes":0}
+{"kind":"image","id":"im/h0repgny","slide":5,"name":"","alt":"main-05.png","bbox":[0,0,1280,720]}
+{"kind":"notes","id":"nt/qt3by9","slide":5,"text":"[Sources]\n整页来源：/Users/zz/Desktop/projects/hailin-miniprogram/tmp-ppt-build-final/combined-rendered/main-05.png"}
+{"kind":"slide","id":"sl/wciz4g","slide":6,"title":"Slide 6","textShapes":0}
+{"kind":"image","id":"im/3uhofy90","slide":6,"name":"","alt":"main-06.png","bbox":[0,0,1280,720]}
+{"kind":"notes","id":"nt/wciz4g","slide":6,"text":"[Sources]\n整页来源：/Users/zz/Desktop/projects/hailin-miniprogram/tmp-ppt-build-final/combined-rendered/main-06.png"}
+{"kind":"slide","id":"sl/9buc3k","slide":7,"title":"Slide 7","textShapes":0}
+{"kind":"image","id":"im/4z6xgnex","slide":7,"name":"","alt":"main-07.png","bbox":[0,0,1280,720]}
+{"kind":"notes","id":"nt/9buc3k","slide":7,"text":"[Sources]\n整页来源：/Users/zz/Desktop/projects/hailin-miniprogram/tmp-ppt-build-final/combined-rendered/main-07.png"}
+{"kind":"slide","id":"sl/pewh1v","slide":8,"title":"Slide 8","textShapes":0}
+{"kind":"image","id":"im/ml83epsb","slide":8,"name":"","alt":"main-08.png","bbox":[0,0,1280,720]}
+{"kind":"notes","id":"nt/pewh1v","slide":8,"text":"[Sources]\n整页来源：/Users/zz/Desktop/projects/hailin-miniprogram/tmp-ppt-build-final/combined-rendered/main-08.png"}
+{"kind":"slide","id":"sl/6m8c1l","slide":9,"title":"Slide 9","textShapes":0}
+{"kind":"image","id":"im/cn2x87yt","slide":9,"name":"","alt":"admin-01.png","bbox":[0,0,1280,720]}
+{"kind":"notes","id":"nt/6m8c1l","slide":9,"text":"[Sources]\n整页来源：/Users/zz/Desktop/projects/hailin-miniprogram/tmp-ppt-build-final/combined-rendered/admin-01.png"}
+{"kind":"slide","id":"sl/ens063","slide":10,"title":"Slide 10","textShapes":0}
+{"kind":"image","id":"im/m1ozm5gj","slide":10,"name":"","alt":"admin-02.png","bbox":[0,0,1280,720]}
+{"kind":"notes","id":"nt/ens063","slide":10,"text":"[Sources]\n整页来源：/Users/zz/Desktop/projects/hailin-miniprogram/tmp-ppt-build-final/combined-rendered/admin-02.png"}
+{"kind":"slide","id":"sl/ht2fpp","slide":11,"title":"Slide 11","textShapes":0}
+{"kind":"image","id":"im/32xk76ds","slide":11,"name":"","alt":"admin-03.png","bbox":[0,0,1280,720]}
+{"kind":"notes","id":"nt/ht2fpp","slide":11,"text":"[Sources]\n整页来源：/Users/zz/Desktop/projects/hailin-miniprogram/tmp-ppt-build-final/combined-rendered/admin-03.png"}
+{"kind":"slide","id":"sl/6eo9jr","slide":12,"title":"Slide 12","textShapes":0}
+{"kind":"image","id":"im/4jetknet","slide":12,"name":"","alt":"admin-04.png","bbox":[0,0,1280,720]}
+{"kind":"notes","id":"nt/6eo9jr","slide":12,"text":"[Sources]\n整页来源：/Users/zz/Desktop/projects/hailin-miniprogram/tmp-ppt-build-final/combined-rendered/admin-04.png"}
+{"kind":"slide","id":"sl/s2gy0f","slide":13,"title":"Slide 13","textShapes":0}
+{"kind":"image","id":"im/6ds3ilsv","slide":13,"name":"","alt":"admin-05.png","bbox":[0,0,1280,720]}
+{"kind":"notes","id":"nt/s2gy0f","slide":13,"text":"[Sources]\n整页来源：/Users/zz/Desktop/projects/hailin-miniprogram/tmp-ppt-build-final/combined-rendered/admin-05.png"}

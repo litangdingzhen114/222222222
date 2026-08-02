@@ -12,11 +12,19 @@
       },
       {
         "type": "folder",
-        "value": "assets/scenes"
+        "value": "tests"
       },
       {
         "type": "folder",
-        "value": "tests"
+        "value": "assets/live/frames"
+      },
+      {
+        "type": "file",
+        "value": "assets/live/hailin-village-live.mp4"
+      },
+      {
+        "type": "file",
+        "value": "assets/live/hailin-village-live-poster.jpg"
       }
     ],
     "include": []

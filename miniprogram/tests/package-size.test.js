@@ -12,8 +12,14 @@ const ignoredFolders = new Set(
     .filter((item) => item.type === "folder")
     .map((item) => item.value.replace(/^\/+|\/+$/g, "")),
 );
+const ignoredFiles = new Set(
+  ((projectConfig.packOptions && projectConfig.packOptions.ignore) || [])
+    .filter((item) => item.type === "file")
+    .map((item) => item.value.replace(/^\/+|\/+$/g, "")),
+);
 
 function isIgnored(relativePath) {
+  if (ignoredFiles.has(relativePath)) return true;
   return Array.from(ignoredFolders).some((folder) => {
     return relativePath === folder || relativePath.startsWith(`${folder}/`);
   });
@@ -77,6 +83,14 @@ assert(
 assert(
   ignoredFolders.has("assets/photos"),
   "large photo assets should be loaded from https://www.hailin.store instead of bundled in the upload package",
+);
+assert(
+  ignoredFolders.has("assets/live/frames"),
+  "live frame source images should be excluded once the lightweight gif is bundled",
+);
+assert(
+  ignoredFiles.has("assets/live/hailin-village-live.mp4"),
+  "source live mp4 should be excluded from the upload package",
 );
 assert.deepStrictEqual(
   badIgnoredAssetReferences,

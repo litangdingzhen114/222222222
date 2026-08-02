@@ -15,7 +15,7 @@ import {
 import { App, Button, Card, Layout, Menu, Result, Space, Tag, Typography } from 'antd';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
-import { getConfigStatus } from './api';
+import { getConfigStatus, getNamingProfile } from './api';
 import { useAuth } from './auth';
 import brandLogo from './assets/hailin-logo.png';
 import { AuditPage } from './pages/AuditPage';
@@ -163,11 +163,20 @@ function AdminLayout() {
   const queryClient = useQueryClient();
   const { message } = App.useApp();
 
+  const namingQuery = useQuery({
+    queryKey: ['naming-profile'],
+    queryFn: getNamingProfile,
+    staleTime: 30000
+  });
+
   const configQuery = useQuery({
     queryKey: ['config-status'],
     queryFn: getConfigStatus,
     refetchInterval: 30000
   });
+
+  const activeProfile = namingQuery.data?.activeProfile;
+  const placeName = activeProfile?.placeName || '海林村';
 
   const abnormalCount =
     configQuery.data?.items.filter((item) => item.status === 'abnormal').length ?? 0;
@@ -193,8 +202,8 @@ function AdminLayout() {
         <div className="brand-block">
           <img className="brand-logo" src={brandLogo} alt="" />
           <div className="brand-text">
-            <strong>黄湖林场文旅后台</strong>
-            <span>Huanghu Admin</span>
+            <strong>{placeName}文旅后台</strong>
+            <span>数字文旅运营中心</span>
           </div>
         </div>
         <Menu

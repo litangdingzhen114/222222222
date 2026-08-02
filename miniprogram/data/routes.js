@@ -51,7 +51,7 @@ const routeDetails = {
     bookingUrl: "/pages/mine-feature/mine-feature?id=guide",
   },
   food: {
-    included: ["稻鱼生态讲解", "田鱼家宴预约", "共富集市选购", "寻野 cafe 收尾"],
+    included: ["稻鱼生态讲解", "田鱼家宴预约", "共富集市选购", "寻野村咖收尾"],
     prepares: [
       "请提前备注忌口、老人儿童人数和用餐时间。",
       "团队用餐建议至少提前一天确认桌数。",
@@ -129,7 +129,7 @@ const routes = [
       },
       {
         time: "16:30",
-        title: "寻野 cafe 休息",
+        title: "寻野村咖休息",
         desc: "以茶饮和海林村小食结束一天行程。",
       },
     ],
@@ -205,7 +205,7 @@ const routes = [
         title: "共富集市农品",
         desc: "预订土鸡、土鸡蛋、黑猪肉和土蜂蜜。",
       },
-      { time: "15:00", title: "寻野 cafe", desc: "以咖啡、米糕和乡野轻食收尾。" },
+      { time: "15:00", title: "寻野村咖", desc: "以咖啡、米糕和乡野轻食收尾。" },
     ],
   },
 ];

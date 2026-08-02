@@ -42,7 +42,7 @@ export class EzvizAdapter {
     if (!appKey || !appSecret) {
       if (fallbackEnabled) {
         return {
-          playUrl: `/dev-assets/live/${camera.deviceSerial}-${camera.channelNo}.m3u8`,
+          playUrl: '/media/hailin-village-live.mp4?v=20260802-village-live2',
           expireAt: new Date(Date.now() + 10 * 60 * 1000),
           mode: 'development',
         };

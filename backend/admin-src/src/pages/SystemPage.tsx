@@ -244,7 +244,7 @@ function NamingProfileCard() {
     queryFn: getNamingProfile,
   });
   const watchedMode = Form.useWatch('mode', form);
-  const selectedMode = watchedMode || data?.mode || 'huanghu';
+  const selectedMode = watchedMode || data?.mode || 'hailin';
   const selectedProfile = data?.profiles?.[selectedMode] || data?.activeProfile;
 
   useEffect(() => {
@@ -275,31 +275,25 @@ function NamingProfileCard() {
       loading={isLoading}
       extra={
         selectedProfile ? (
-          <Tag color={selectedMode === 'huanghu' ? 'green' : 'blue'}>{selectedProfile.label}</Tag>
+          <Tag color={selectedMode === 'hailin' ? 'green' : 'blue'}>{selectedProfile.label}</Tag>
         ) : null
       }
     >
       <Alert
         showIcon
-        type="info"
-        message="切换后会统一影响小程序和后台接口展示"
-        description="原始内容仍保存在后台 JSON 中，切换方案不会删除数据；保存后刷新小程序预览即可看到新名称。"
+        type="success"
+        message="当前已固定为海林村内容命名"
+        description="后台和小程序接口统一展示海林村、海林·溪谷、寻野村咖等名称。旧缓存或旧数据会在接口返回时自动转换。"
         style={{ marginBottom: 16 }}
       />
       <Form
         form={form}
         layout="vertical"
-        initialValues={{ mode: data?.mode || 'huanghu' }}
+        initialValues={{ mode: data?.mode || 'hailin' }}
         onFinish={(values) => saveMutation.mutate(values)}
       >
         <Form.Item name="mode" label="当前方案" rules={[{ required: true }]}>
-          <Segmented
-            block
-            options={[
-              { label: '黄湖林场 / 土狗咖啡', value: 'huanghu' },
-              { label: '海林青田 / 寻野 cafe', value: 'hailin' },
-            ]}
-          />
+          <Segmented block options={[{ label: '海林村 / 寻野村咖', value: 'hailin' }]} />
         </Form.Item>
       </Form>
       <Descriptions column={{ xs: 1, md: 2 }} bordered size="small">

@@ -47,7 +47,7 @@ export class LlmProvider {
           {
             role: 'system',
             content:
-              '你是黄湖林场小程序 AI 导游，只能基于给定数据库上下文回答，不得虚构开放时间、价格、地点和服务。',
+              '你是海林村小程序 AI 导游，只能基于给定数据库上下文回答，不得虚构开放时间、价格、地点和服务。',
           },
           { role: 'user', content: `问题：${input.question}\n\n数据库上下文：\n${input.context}` },
         ],
@@ -70,7 +70,7 @@ export class LlmProvider {
     if (!context.trim()) {
       return `我暂时没有在系统数据库里找到和“${question}”直接相关的内容，可以换个更具体的问题，比如景点、停车场、美食、采摘或活动。`;
     }
-    return `根据系统里已经配置的黄湖林场数据，和“${question}”相关的信息如下：\n${context}`;
+    return `根据系统里已经配置的海林村数据，和“${question}”相关的信息如下：\n${context}`;
   }
 
   private temperatureFor(model: string) {

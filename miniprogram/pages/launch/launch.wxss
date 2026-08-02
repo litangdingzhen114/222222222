@@ -172,15 +172,15 @@
 .route-preview {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12rpx;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8rpx;
   margin-top: 58rpx;
 }
 
 .route-track {
   position: absolute;
-  left: 30rpx;
-  right: 30rpx;
+  left: 64rpx;
+  right: 64rpx;
   top: 13rpx;
   height: 2rpx;
   background: rgba(251, 255, 252, 0.28);
@@ -192,9 +192,9 @@
   display: flex;
   min-width: 0;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   color: rgba(251, 255, 252, 0.58);
-  font-size: 20rpx;
+  font-size: 18rpx;
   font-weight: 800;
 }
 
@@ -205,14 +205,6 @@
   border: 2rpx solid rgba(251, 255, 252, 0.5);
   border-radius: 50%;
   background: rgba(6, 31, 28, 0.74);
-}
-
-.route-node text {
-  max-width: 160rpx;
-  margin-top: 14rpx;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .route-node.done {

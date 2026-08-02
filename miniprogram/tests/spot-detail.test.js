@@ -63,7 +63,7 @@ assert(
   "Tianpu station map point should open its polished detail",
 );
 assert(
-  mapPoints.some((point) => point.title === "寻野 cafe" && point.refId === "xunye-cafe"),
+  mapPoints.some((point) => point.title === "寻野村咖" && point.refId === "xunye-cafe"),
   "Xunye cafe map point should open its polished detail",
 );
 

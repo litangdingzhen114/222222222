@@ -15,7 +15,7 @@ const pageOne = [
   },
   {
     id: "xunye-cafe",
-    title: "寻野 cafe",
+    title: "寻野村咖",
     icon: "啡",
     iconPath: "/assets/icons/map-food.png",
     url: "/pages/food/food",
@@ -103,10 +103,10 @@ const pageOne = [
   },
   {
     id: "photo-memory",
-    title: "AR合影",
-    icon: "AR",
+    title: "旅拍合影",
+    icon: "拍",
     iconPath: "/assets/icons/ar.png",
-    toast: "AR合影服务即将开放，当前可先查看拍摄推荐",
+    toast: "旅拍合影服务即将开放，当前可先查看拍摄推荐",
   },
 ];
 
