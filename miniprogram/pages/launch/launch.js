@@ -17,6 +17,7 @@ Page({
     brandSubtitle: "正在准备路线、地图、农品和到村服务",
     progress: 12,
     progressText: "正在准备首页内容",
+    progressSubText: "先加载首屏，再进入海林村导览",
     steps: [
       { label: "首页", done: false },
       { label: "地图", done: false },
@@ -43,7 +44,18 @@ Page({
       if (next !== this.data.progress) {
         this.setData({
           progress: next,
-          progressText: next > 52 ? "正在预热首屏图片" : "正在准备首页内容",
+          progressText:
+            next > 72
+              ? "正在进入导览"
+              : next > 52
+                ? "正在预热首屏图片"
+                : "正在准备首页内容",
+          progressSubText:
+            next > 72
+              ? "路线、点位和服务入口已就绪"
+              : next > 52
+                ? "压缩图和兜底背景会优先显示"
+                : "先加载首屏，再进入海林村导览",
           steps: this.data.steps.map((item, index) => ({
             ...item,
             done: index === 0 || next > 48 + index * 16,
@@ -101,6 +113,7 @@ Page({
     this.setData({
       progress: 100,
       progressText: "准备完成",
+      progressSubText: "马上进入海林村首页",
       steps: this.data.steps.map((item) => ({
         ...item,
         done: true,

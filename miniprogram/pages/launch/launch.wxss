@@ -2,7 +2,7 @@
   position: relative;
   min-height: 100vh;
   overflow: hidden;
-  background: #0D332F;
+  background: #092A27;
   color: #FBFFFC;
 }
 
@@ -19,9 +19,8 @@
 
 .launch-bg-fallback {
   background:
-    linear-gradient(180deg, rgba(20, 77, 69, 0.35), rgba(8, 38, 34, 0.95)),
-    radial-gradient(circle at 24% 20%, rgba(240, 199, 101, 0.16), transparent 32%),
-    linear-gradient(135deg, #174f47 0%, #0d332f 52%, #092a27 100%);
+    radial-gradient(circle at 22% 12%, rgba(240, 199, 101, 0.18), transparent 30%),
+    linear-gradient(150deg, #174F47 0%, #0D332F 52%, #071F1D 100%);
 }
 
 .launch-shade {
@@ -30,7 +29,69 @@
   right: 0;
   top: 0;
   bottom: 0;
-  background: linear-gradient(180deg, rgba(10, 42, 39, 0.28), rgba(9, 38, 34, 0.9));
+  background:
+    linear-gradient(180deg, rgba(8, 31, 28, 0.08) 0%, rgba(8, 31, 28, 0.46) 42%, rgba(5, 24, 22, 0.9) 100%),
+    linear-gradient(90deg, rgba(3, 24, 22, 0.64), rgba(3, 24, 22, 0.08) 58%, rgba(3, 24, 22, 0.52));
+}
+
+.launch-vignette {
+  position: absolute;
+  left: -18%;
+  right: -18%;
+  top: -8%;
+  bottom: -10%;
+  border: 1rpx solid rgba(251, 255, 252, 0.08);
+  border-radius: 50%;
+  opacity: 0.62;
+}
+
+.launch-lines {
+  position: absolute;
+  left: 44rpx;
+  right: 44rpx;
+  bottom: 352rpx;
+  height: 220rpx;
+  opacity: 0.72;
+}
+
+.line {
+  position: absolute;
+  height: 2rpx;
+  overflow: hidden;
+  background: rgba(251, 255, 252, 0.18);
+  transform-origin: left center;
+}
+
+.line::after {
+  content: "";
+  position: absolute;
+  left: -90rpx;
+  top: 0;
+  width: 90rpx;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(240, 199, 101, 0.94));
+  animation: lineScan 2200ms ease-in-out infinite;
+}
+
+.line-a {
+  left: 0;
+  top: 34rpx;
+  width: 420rpx;
+  transform: rotate(-8deg);
+}
+
+.line-b {
+  right: 36rpx;
+  top: 106rpx;
+  width: 330rpx;
+  transform: rotate(10deg);
+}
+
+.line-c {
+  left: 64rpx;
+  bottom: 12rpx;
+  width: 460rpx;
+  transform: rotate(3deg);
 }
 
 .launch-content {
@@ -40,95 +101,205 @@
   min-height: 100vh;
   flex-direction: column;
   justify-content: flex-end;
-  padding: 120rpx 44rpx 160rpx;
+  box-sizing: border-box;
+  padding: 110rpx 44rpx 138rpx;
+}
+
+.brand-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 120rpx;
+  color: rgba(251, 255, 252, 0.78);
+}
+
+.brand-wordmark {
+  padding-bottom: 10rpx;
+  border-bottom: 2rpx solid rgba(240, 199, 101, 0.78);
+  font-size: 20rpx;
+  font-weight: 900;
+  letter-spacing: 4rpx;
+}
+
+.brand-index {
+  width: 58rpx;
+  height: 58rpx;
+  border: 1rpx solid rgba(251, 255, 252, 0.3);
+  border-radius: 50%;
+  color: rgba(251, 255, 252, 0.78);
+  font-size: 20rpx;
+  font-weight: 900;
+  line-height: 58rpx;
+  text-align: center;
+}
+
+.brand-block {
+  max-width: 640rpx;
 }
 
 .brand-kicker {
-  margin-top: 34rpx;
-  color: #D8EDE8;
-  font-size: 24rpx;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44rpx;
+  padding: 0 18rpx;
+  border: 1rpx solid rgba(251, 255, 252, 0.18);
+  border-radius: 999rpx;
+  background: rgba(251, 255, 252, 0.12);
+  color: rgba(251, 255, 252, 0.86);
+  font-size: 21rpx;
   font-weight: 800;
 }
 
 .brand-title {
-  margin-top: 12rpx;
+  margin-top: 24rpx;
   max-width: 620rpx;
-  font-size: 48rpx;
+  color: #FBFFFC;
+  font-size: 52rpx;
   font-weight: 900;
   letter-spacing: 0;
-  line-height: 1.18;
+  line-height: 1.12;
 }
 
 .brand-subtitle {
-  margin-top: 18rpx;
+  margin-top: 22rpx;
   max-width: 620rpx;
-  color: rgba(251, 255, 252, 0.86);
-  font-size: 27rpx;
-  line-height: 1.55;
+  color: rgba(251, 255, 252, 0.78);
+  font-size: 25rpx;
+  line-height: 1.58;
+}
+
+.route-preview {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12rpx;
+  margin-top: 58rpx;
+}
+
+.route-track {
+  position: absolute;
+  left: 30rpx;
+  right: 30rpx;
+  top: 13rpx;
+  height: 2rpx;
+  background: rgba(251, 255, 252, 0.28);
+}
+
+.route-node {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  color: rgba(251, 255, 252, 0.58);
+  font-size: 20rpx;
+  font-weight: 800;
+}
+
+.node-dot {
+  width: 26rpx;
+  height: 26rpx;
+  box-sizing: border-box;
+  border: 2rpx solid rgba(251, 255, 252, 0.5);
+  border-radius: 50%;
+  background: rgba(6, 31, 28, 0.74);
+}
+
+.route-node text {
+  max-width: 160rpx;
+  margin-top: 14rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.route-node.done {
+  color: #FBFFFC;
+}
+
+.route-node.done .node-dot {
+  border-color: #F0C765;
+  background: #F0C765;
+  box-shadow: 0 0 0 8rpx rgba(240, 199, 101, 0.12);
 }
 
 .progress-card {
-  margin-top: 58rpx;
-  padding: 28rpx;
-  border: 1rpx solid rgba(251, 255, 252, 0.24);
-  border-radius: 22rpx;
-  background: rgba(251, 255, 252, 0.12);
+  margin-top: 34rpx;
+  padding: 26rpx 26rpx 24rpx;
+  border: 1rpx solid rgba(251, 255, 252, 0.2);
+  border-radius: 24rpx;
+  background: rgba(8, 36, 33, 0.56);
+  box-shadow: 0 24rpx 80rpx rgba(0, 0, 0, 0.24);
 }
 
 .progress-head {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 20rpx;
+}
+
+.progress-label {
   color: #FBFFFC;
   font-size: 24rpx;
   font-weight: 800;
 }
 
+.progress-sub {
+  margin-top: 8rpx;
+  color: rgba(251, 255, 252, 0.62);
+  font-size: 20rpx;
+  line-height: 1.35;
+}
+
+.progress-percent {
+  flex-shrink: 0;
+  color: #FBFFFC;
+  font-size: 28rpx;
+  font-weight: 900;
+}
+
 .progress-track {
-  height: 10rpx;
-  margin-top: 20rpx;
+  position: relative;
+  height: 8rpx;
+  margin-top: 24rpx;
   overflow: hidden;
   border-radius: 999rpx;
-  background: rgba(251, 255, 252, 0.18);
+  background: rgba(251, 255, 252, 0.16);
 }
 
 .progress-bar {
   height: 100%;
   border-radius: 999rpx;
-  background: #F0C765;
+  background: linear-gradient(90deg, #F0C765, #FBFFFC);
   transition: width 180ms ease;
 }
 
-.preload-row {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12rpx;
-  margin-top: 22rpx;
+.launch-footnote {
+  margin-top: 18rpx;
+  color: rgba(251, 255, 252, 0.58);
+  font-size: 19rpx;
+  line-height: 1.35;
 }
 
-.preload-step {
-  display: flex;
-  align-items: center;
-  min-width: 0;
-  gap: 8rpx;
-  color: rgba(251, 255, 252, 0.72);
-  font-size: 21rpx;
-  font-weight: 700;
-}
+@keyframes lineScan {
+  0% {
+    transform: translateX(0);
+    opacity: 0;
+  }
 
-.step-dot {
-  flex-shrink: 0;
-  width: 12rpx;
-  height: 12rpx;
-  border-radius: 50%;
-  background: rgba(251, 255, 252, 0.35);
-}
+  24% {
+    opacity: 1;
+  }
 
-.preload-step.done {
-  color: #FBFFFC;
-}
+  78% {
+    opacity: 1;
+  }
 
-.preload-step.done .step-dot {
-  background: #F0C765;
+  100% {
+    transform: translateX(620rpx);
+    opacity: 0;
+  }
 }

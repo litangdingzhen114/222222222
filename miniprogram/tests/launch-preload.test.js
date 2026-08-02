@@ -28,6 +28,22 @@ assert(launchJs.includes("wx.switchTab"), "launch page should enter the home tab
 assert(launchJs.includes("MIN_SHOW_TIME"), "launch page should avoid a flash-only loading state");
 assert(launchWxml.includes("progress-bar"), "launch page should show visible loading progress");
 assert(
+  launchWxml.includes("brand-wordmark") &&
+    launchWxml.includes("route-preview") &&
+    launchWxml.includes("launch-lines"),
+  "launch page should use a polished branded loading composition",
+);
+assert(
+  !launchWxml.includes(">首<") && !launchWxml.includes("grid-icon"),
+  "launch page should not show leftover large character icon blocks",
+);
+assert(
+  launchWxss.includes("@keyframes lineScan") &&
+    launchWxss.includes("route-node") &&
+    launchWxss.includes("progress-sub"),
+  "launch page should include refined motion and preload states",
+);
+assert(
   launchWxml.includes("/assets/launch/launch-bg.jpg"),
   "launch page should use a bundled lightweight background",
 );
