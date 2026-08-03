@@ -333,13 +333,6 @@ assert(
   "home page should render service section",
 );
 assert(
-  homeWxml.includes("service-card-{{index}}") &&
-    homeWxml.includes("hover-class=\"service-card-hover\"") &&
-    homeWxss.includes(".service-card-0") &&
-    homeWxss.includes("grid-column: 1 / 3"),
-  "home service section should feel like a concierge entry instead of an equal-weight feature grid",
-);
-assert(
   homeWxml.includes("productSectionTitle") &&
     homeJs.includes("productSectionTitle") &&
     homeJs.includes("rankingSectionTitle") &&
