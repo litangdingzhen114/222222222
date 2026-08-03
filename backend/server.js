@@ -442,11 +442,15 @@ function securityHeaders(extra = {}) {
   };
 }
 
-function sendJson(req, res, statusCode, payload) {
+function sendJson(req, res, statusCode, payload, options = {}) {
   const body = JSON.stringify(applyNamingProfileToResponse(req, payload));
+  const extraHeaders = {
+    ...(options.cacheControl ? { 'Cache-Control': options.cacheControl } : {}),
+    ...(options.headers || {}),
+  };
   res.writeHead(statusCode, {
     ...corsHeaders(req),
-    ...securityHeaders(),
+    ...securityHeaders(extraHeaders),
     'Content-Type': 'application/json; charset=utf-8',
     'Content-Length': Buffer.byteLength(body),
     'X-Request-Id': req.requestId,
@@ -4251,11 +4255,15 @@ async function handleRequest(req, res) {
       return;
     }
     if (route === 'GET /api/home') {
-      sendJson(req, res, 200, { data: managedHomePayload() });
+      sendJson(req, res, 200, { data: managedHomePayload() }, {
+        cacheControl: 'public, max-age=15, s-maxage=60, stale-while-revalidate=120',
+      });
       return;
     }
     if (route === 'GET /api/hailin/home') {
-      sendJson(req, res, 200, { data: managedHomePayload() });
+      sendJson(req, res, 200, { data: managedHomePayload() }, {
+        cacheControl: 'public, max-age=15, s-maxage=60, stale-while-revalidate=120',
+      });
       return;
     }
     if (route === 'GET /api/map-points') {

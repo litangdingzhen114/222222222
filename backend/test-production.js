@@ -93,6 +93,15 @@ async function main() {
     assert(Array.isArray(publicRoutes.body.data));
     assert(publicRoutes.body.data.length > 0);
 
+    const publicV1Home = await requestJson(`http://${HOST}:${PORT}/api/v1/home`);
+    assert.strictEqual(publicV1Home.status, 200);
+    assert(Array.isArray(publicV1Home.body.data.banners));
+    assert.match(
+      publicV1Home.headers.get('cache-control') || '',
+      /s-maxage=60/,
+      'public home should allow short edge caching for mini program startup',
+    );
+
     const publicProducts = await requestJson(`http://${HOST}:${PORT}/api/hailin/products`);
     assert.strictEqual(publicProducts.status, 200);
     assert(Array.isArray(publicProducts.body.data));
