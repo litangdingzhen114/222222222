@@ -3,12 +3,13 @@ module.exports = {
   locationText: "海林村",
   regionKeywords: ["瓯江", "古树文化", "田鱼", "侨乡", "山水村落"],
 
-  // 当前可用后端域名。真机和正式版必须使用 HTTPS，并配置到微信 request 合法域名。
+  // 上线后端域名。真机和正式版必须使用 HTTPS，并配置到微信 request 合法域名。
   // 小程序端不保存 AI key、直播密钥或管理后台 token，统一由后端代理。
-  // api.hailin.store 当前 HTTPS 未稳定放通，先以 www 作为主链路，避免首屏请求先超时再 fallback。
+  apiBaseUrl: "https://api.hailin.store",
+  // 临时演示兜底：api.hailin.store 完成备案/HTTPS 放通前，开发者工具和失败重试可走 www。
+  // www 当前仍是过渡入口，不作为最终正式后端；正式主链路仍以 api.hailin.store 为准。
   devtoolsApiBaseUrl: "https://www.hailin.store",
-  apiBaseUrl: "https://www.hailin.store",
-  apiFallbackBaseUrls: ["https://api.hailin.store"],
+  apiFallbackBaseUrls: ["https://www.hailin.store"],
   devApiBaseUrl: "http://127.0.0.1:8787",
   useDevApiInDevtools: false,
   requestTimeout: 3000,
