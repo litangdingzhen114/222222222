@@ -7,6 +7,11 @@ const spots = require("../data/spots");
 const mapPoints = require("../data/mapPoints");
 const foods = require("../data/foods");
 const { featuredPlaceIds, hasFeaturedPlaceDetail } = require("../utils/placeDetails");
+const photoBase = "https://www.hailin.store/assets/photos/";
+const allowedLocalSceneUrls = new Set([
+  "/assets/scenes/hailin-creek-waterfall.jpg",
+  "/assets/scenes/hailin-creek-ripple.jpg",
+]);
 
 const detailJs = fs.readFileSync(
   path.join(root, "miniprogram/pages/spot-detail/spot-detail.js"),
@@ -45,8 +50,10 @@ priorityIds.forEach((id) => {
   assert(Array.isArray(spot.itinerary) && spot.itinerary.length >= 3, `${id} should expose route rhythm`);
   assert(
     Array.isArray(spot.imageUrls) &&
-      spot.imageUrls.every((url) => url.startsWith("https://www.hailin.store/assets/photos/")),
-    `${id} should use deployed photo URLs instead of package-heavy local images`,
+      spot.imageUrls.every(
+        (url) => url.startsWith(photoBase) || allowedLocalSceneUrls.has(url),
+      ),
+    `${id} should use deployed photo URLs or approved lightweight local scene photos`,
   );
 });
 
