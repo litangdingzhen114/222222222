@@ -75,24 +75,38 @@
       <view wx:for="{{spot.visitTips}}" wx:key="*this" class="notice-row">{{item}}</view>
     </view>
 
-    <view wx:if="{{spot.services && spot.services.length}}" class="service-panel">
-      <view class="section-heading">
-        <view class="section-mark"></view>
-        <text>服务衔接</text>
-      </view>
-      <view
-        wx:for="{{spot.services}}"
-        wx:key="title"
-        class="service-link"
-        data-url="{{item.url}}"
-        data-open-type="{{item.openType}}"
-        bindtap="onServiceTap"
-      >
-        <view>
-          <view class="service-link-title">{{item.title}}</view>
-          <view class="service-link-desc">{{item.desc}}</view>
+    <view wx:if="{{spot.services && spot.services.length}}" class="service-panel service-panel-editorial">
+      <view class="service-panel-line service-panel-line-a"></view>
+      <view class="service-panel-line service-panel-line-b"></view>
+      <view class="service-head">
+        <view class="section-heading service-heading">
+          <view class="section-mark"></view>
+          <text>服务衔接</text>
         </view>
-        <text class="service-link-arrow">›</text>
+        <view class="service-badge">下一站</view>
+      </view>
+      <view class="service-subtitle">把这段停留，接成下一步安排</view>
+      <view class="service-stack">
+        <view
+          wx:for="{{spot.services}}"
+          wx:key="title"
+          class="service-link service-link-{{index}}"
+          data-url="{{item.url}}"
+          data-open-type="{{item.openType}}"
+          bindtap="onServiceTap"
+          hover-class="service-link-hover"
+          hover-stay-time="90"
+        >
+          <view class="service-link-no">0{{index + 1}}</view>
+          <view class="service-link-copy">
+            <view class="service-link-title">{{item.title}}</view>
+            <view class="service-link-desc">{{item.desc}}</view>
+          </view>
+          <view class="service-link-action">
+            <text>去安排</text>
+            <text class="service-link-arrow">↗</text>
+          </view>
+        </view>
       </view>
     </view>
 

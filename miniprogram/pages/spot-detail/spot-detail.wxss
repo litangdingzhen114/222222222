@@ -331,35 +331,217 @@
   background: #C89C3F;
 }
 
-.service-link {
+.service-panel-editorial {
+  position: relative;
+  overflow: hidden;
+  border: 0;
+  background:
+    linear-gradient(138deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 38%),
+    linear-gradient(155deg, #102F2C 0%, #0A4F48 58%, #0B3934 100%);
+  color: #FBFFFC;
+  box-shadow: 0 26rpx 52rpx rgba(12, 63, 57, 0.22);
+}
+
+.service-panel-editorial::before {
+  content: "";
+  position: absolute;
+  left: 28rpx;
+  right: 28rpx;
+  top: 0;
+  height: 2rpx;
+  background: linear-gradient(90deg, rgba(232, 199, 125, 0), rgba(232, 199, 125, 0.86), rgba(232, 199, 125, 0));
+}
+
+.service-panel-line {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.service-panel-line-a {
+  right: -34rpx;
+  top: 86rpx;
+  width: 260rpx;
+  height: 2rpx;
+  transform: rotate(-18deg);
+}
+
+.service-panel-line-b {
+  right: 34rpx;
+  bottom: 52rpx;
+  width: 190rpx;
+  height: 2rpx;
+  transform: rotate(-18deg);
+}
+
+.service-head {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 18rpx;
-  margin-top: 18rpx;
-  padding: 22rpx;
-  border-radius: 14rpx;
-  background: #F4FAF7;
+}
+
+.service-heading {
+  color: #FBFFFC;
+}
+
+.service-heading .section-mark {
+  background: #E8C77D;
+}
+
+.service-badge {
+  flex-shrink: 0;
+  padding: 10rpx 18rpx;
+  border: 1rpx solid rgba(232, 199, 125, 0.5);
+  border-radius: 999rpx;
+  background: rgba(232, 199, 125, 0.12);
+  color: #F5DFA7;
+  font-size: 21rpx;
+  font-weight: 900;
+  letter-spacing: 2rpx;
+}
+
+.service-subtitle {
+  position: relative;
+  z-index: 1;
+  margin-top: 14rpx;
+  color: rgba(251, 255, 252, 0.72);
+  font-size: 24rpx;
+  line-height: 1.45;
+}
+
+.service-stack {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 16rpx;
+  margin-top: 26rpx;
+}
+
+.service-link {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 18rpx;
+  min-height: 124rpx;
+  margin-top: 0;
+  padding: 24rpx;
+  overflow: hidden;
+  border: 1rpx solid rgba(255, 255, 255, 0.16);
+  border-radius: 22rpx;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.1);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.service-link::after {
+  content: "";
+  position: absolute;
+  left: 24rpx;
+  right: 24rpx;
+  bottom: 0;
+  height: 1rpx;
+  background: linear-gradient(90deg, rgba(232, 199, 125, 0.68), rgba(232, 199, 125, 0));
+}
+
+.service-link-0 {
+  min-height: 148rpx;
+  padding: 30rpx 26rpx;
+  border-color: rgba(232, 199, 125, 0.58);
+  background: #FBFFFC;
+  box-shadow: 0 18rpx 34rpx rgba(0, 0, 0, 0.16);
+}
+
+.service-link-1 {
+  margin-left: 28rpx;
+}
+
+.service-link-2 {
+  margin-left: 56rpx;
+  background: rgba(232, 199, 125, 0.1);
+}
+
+.service-link-hover {
+  opacity: 0.9;
+  transform: translateY(2rpx) scale(0.99);
+}
+
+.service-link-no {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 58rpx;
+  height: 58rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.22);
+  border-radius: 999rpx;
+  color: rgba(251, 255, 252, 0.72);
+  font-size: 20rpx;
+  font-weight: 900;
+  letter-spacing: -1rpx;
+}
+
+.service-link-0 .service-link-no {
+  border-color: rgba(200, 156, 63, 0.32);
+  background: rgba(200, 156, 63, 0.12);
+  color: #B78023;
+}
+
+.service-link-copy {
+  min-width: 0;
 }
 
 .service-link-title {
-  color: #193C3A;
-  font-size: 27rpx;
+  color: #FBFFFC;
+  font-size: 28rpx;
   font-weight: 900;
+  line-height: 1.25;
+}
+
+.service-link-0 .service-link-title {
+  color: #123C38;
+  font-size: 31rpx;
 }
 
 .service-link-desc {
   margin-top: 8rpx;
-  color: #607F7A;
+  color: rgba(251, 255, 252, 0.62);
   font-size: 23rpx;
   line-height: 1.45;
 }
 
+.service-link-0 .service-link-desc {
+  color: #607F7A;
+}
+
+.service-link-action {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  flex-shrink: 0;
+  padding: 10rpx 14rpx 10rpx 16rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.18);
+  border-radius: 999rpx;
+  color: rgba(251, 255, 252, 0.82);
+  font-size: 21rpx;
+  font-weight: 900;
+}
+
+.service-link-0 .service-link-action {
+  border-color: rgba(15, 107, 103, 0.12);
+  background: #0F6B67;
+  color: #FBFFFC;
+}
+
 .service-link-arrow {
   flex-shrink: 0;
-  color: #0F6B67;
-  font-size: 44rpx;
-  font-weight: 300;
+  color: currentColor;
+  font-size: 26rpx;
+  font-weight: 900;
+  line-height: 1;
 }
 
 .nearby-row {

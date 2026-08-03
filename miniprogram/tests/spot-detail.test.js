@@ -82,9 +82,12 @@ assert(detailWxml.includes("这里值得停下"), "detail page should render edi
 assert(detailWxml.includes("亮点玩法"), "detail page should render play highlights");
 assert(detailWxml.includes("detail-itinerary"), "detail page should render route rhythm instead of a table");
 assert(detailWxml.includes("服务衔接"), "detail page should keep follow-up service links");
+assert(detailWxml.includes("service-stack"), "service links should use an editorial action stack");
+assert(detailWxml.includes("hover-class=\"service-link-hover\""), "service links should expose a tactile hover state");
 assert(!detailWxml.includes("info-row"), "detail page should not render the old table-like info rows");
 assert(!detailWxml.includes(">穗<"), "detail page should not use the old grain glyph section marker");
 assert(detailWxss.includes("width: 8rpx") && detailWxss.includes("height: 34rpx"), "detail section markers should use a clean accent bar");
+assert(detailWxss.includes(".service-panel-editorial") && detailWxss.includes(".service-link-0"), "service section should use the editorial visual hierarchy");
 assert(detailWxss.includes("height: 520rpx"), "detail hero should have a mature scenic-photo scale");
 assert(detailWxss.includes("grid-template-columns: repeat(3, 1fr)"), "detail cards should keep stable three-column sizing");
 assert(mapJs.includes("hasFeaturedPlaceDetail(point.refId)"), "map detail button should gate non-priority details");
