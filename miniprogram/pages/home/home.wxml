@@ -90,36 +90,38 @@
       </view>
     </scroll-view>
 
-    <section-title title="到村服务" subtitle="预订、直播、民宿和问答入口"></section-title>
+    <section-title title="到村服务" subtitle="到村后的预订、看景和问答顺手接上"></section-title>
     <view class="service-grid">
       <view
         wx:for="{{serviceCards}}"
         wx:key="id"
-        class="service-card"
+        class="service-card service-card-{{index}}"
         data-title="{{item.title}}"
         data-url="{{item.url}}"
         data-open-type="{{item.openType}}"
         bindtap="onServiceTap"
+        hover-class="service-card-hover"
+        hover-stay-time="90"
       >
         <view class="service-icon">
           <image wx:if="{{item.iconPath}}" class="service-icon-img" src="{{item.iconPath}}" mode="aspectFit"></image>
           <text wx:else>{{item.icon}}</text>
         </view>
         <view class="service-copy">
+          <view class="service-status">{{item.status}}</view>
           <view class="service-title-row">
             <text class="service-title">{{item.title}}</text>
           </view>
-          <view class="service-status">{{item.status}}</view>
           <view class="service-desc">{{item.desc}}</view>
           <view class="service-action">
-            <text>{{item.actionText}}</text>
+            <text wx:if="{{index === 0}}">{{item.actionText}}</text>
             <text class="service-arrow">›</text>
           </view>
         </view>
       </view>
     </view>
 
-    <section-title title="热门推荐" subtitle="把常用功能放到手边"></section-title>
+    <section-title title="热门推荐" subtitle="看看村里的招牌体验"></section-title>
     <view class="hot-grid">
       <view
         wx:for="{{hotRecommends}}"
